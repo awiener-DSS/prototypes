@@ -370,7 +370,7 @@ var AppState = {
         activeVouchers: 2, // Will be recalculated from vouchers array
         monthlySpend: 12450.00,
         totalBudget: 50000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: true,
           requireUsername: false,
@@ -1066,7 +1066,7 @@ var AppState = {
         activeVouchers: 6,
         monthlySpend: 24500.00,
         totalBudget: 110000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: true,
           requireUsername: false,
@@ -1266,7 +1266,7 @@ var AppState = {
         activeVouchers: 5,
         monthlySpend: 22800.00,
         totalBudget: 105000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: true,
           requireUsername: true,
@@ -1410,7 +1410,7 @@ var AppState = {
         activeVouchers: 7,
         monthlySpend: 31200.00,
         totalBudget: 130000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: true,
           requireUsername: true,
@@ -1482,7 +1482,7 @@ var AppState = {
         activeVouchers: 4,
         monthlySpend: 18900.00,
         totalBudget: 75000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: false,
           requireUsername: true,
@@ -1524,7 +1524,7 @@ var AppState = {
         activeVouchers: 6,
         monthlySpend: 15200.00,
         totalBudget: 80000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: true,
           requireUsername: true,
@@ -1741,7 +1741,7 @@ var AppState = {
         activeVouchers: 7,
         monthlySpend: 28900.00,
         totalBudget: 150000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: true,
           requireUsername: true,
@@ -2004,7 +2004,7 @@ var AppState = {
         activeVouchers: 5,
         monthlySpend: 26700.00,
         totalBudget: 140000,
-        paymentMethods: ['Credit Card', 'Payroll Deduction'],
+        paymentMethods: ['Credit Card'],
         employeeFieldConfig: {
           requireEmployeeId: true,
           requireUsername: true,
@@ -3043,14 +3043,12 @@ var AppState = {
         customer = this.customers.find(function(p) { return p.name === firstItem.customerName; });
       }
       var customerPaymentMethods = customer && customer.paymentMethods ? customer.paymentMethods : ['Credit Card'];
-      var hasPayrollDeduction = customerPaymentMethods.indexOf('Payroll Deduction') !== -1;
-      var hasCreditCard = customerPaymentMethods.indexOf('Credit Card') !== -1;
       
-      // Determine which payment method to use for remainder (prefer Payroll Deduction if available, otherwise Credit Card)
-      var remainderPaymentMethod = hasPayrollDeduction ? 'Payroll Deduction' : 'Credit Card';
+      // Determine which payment method to use for remainder (always Credit Card)
+      var remainderPaymentMethod = 'Credit Card';
       
       // Calculate payment breakdown for each item
-      // ALWAYS use voucher first, then remainder goes to credit card or payroll deduction
+      // ALWAYS use voucher first, then remainder goes to credit card
       var remainingVoucher = voucherAmount;
       orderItems.forEach(function(item, index) {
         // Add order-level fields
@@ -3079,15 +3077,10 @@ var AppState = {
         // Set payment breakdown fields
         item.voucherAmountPaid = itemVoucherPaid;
         
-        // Set remainder payment method based on partner's available methods
+        // Set remainder payment method (always Credit Card)
         if (itemRemainderPaid > 0) {
-          if (remainderPaymentMethod === 'Payroll Deduction') {
-            item.payrollDeductionAmountPaid = itemRemainderPaid;
-            item.creditCardAmountPaid = 0;
-          } else {
-            item.creditCardAmountPaid = itemRemainderPaid;
-            item.payrollDeductionAmountPaid = 0;
-          }
+          item.creditCardAmountPaid = itemRemainderPaid;
+          item.payrollDeductionAmountPaid = 0;
           // Update payment method to reflect the actual split
           item.paymentMethod = itemVoucherPaid > 0 ? 'Mixed' : remainderPaymentMethod;
         } else {

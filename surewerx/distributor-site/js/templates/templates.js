@@ -1131,13 +1131,13 @@ var Templates = {
   
   // Customer Form Wizard
   customerFormWizard: function(currentStep, formData, isEditMode) {
+    // Payment methods step removed - always default to Credit Card
     var steps = [
       { id: 1, title: 'Basic Information', description: 'Customer name and URL' },
       { id: 2, title: 'Branding', description: 'Upload customer logo' },
       { id: 3, title: 'Employee Fields', description: 'Configure required fields' },
-      { id: 4, title: 'Payment Methods', description: 'Select payment options' },
-      { id: 5, title: 'Terms & Conditions', description: 'Set payment terms' },
-      { id: 6, title: 'Review', description: 'Review and confirm' }
+      { id: 4, title: 'Terms & Conditions', description: 'Set payment terms' },
+      { id: 5, title: 'Review', description: 'Review and confirm' }
     ];
     
     var html = '<div>' +
@@ -1176,8 +1176,9 @@ var Templates = {
     var html = '<div class="row" style="display: flex; flex-wrap: nowrap; align-items: center;">';
     
     steps.forEach(function(step, index) {
-      var isCompleted = currentStep > step.id;
-      var isCurrent = currentStep === step.id;
+      var stepId = step.id;
+      var isCompleted = currentStep > stepId;
+      var isCurrent = currentStep === stepId;
       var statusClass = isCompleted ? 'success' : (isCurrent ? 'primary' : 'default');
       
       // Make steps clickable in edit mode
@@ -1217,11 +1218,9 @@ var Templates = {
       case 3:
         return this.renderStep3(formData, isEditMode);
       case 4:
-        return this.renderStep4(formData);
+        return this.renderStep5(formData, isEditMode); // Terms & Conditions (was step 5)
       case 5:
-        return this.renderStep5(formData, isEditMode);
-      case 6:
-        return this.renderStep6(formData);
+        return this.renderStep6(formData, isEditMode); // Review (was step 6)
       default:
         return '';
     }
@@ -1359,7 +1358,6 @@ var Templates = {
     var selectedMethods = Array.isArray(formData.paymentMethods) ? formData.paymentMethods : 
       (formData.paymentMethods ? [formData.paymentMethods] : ['Credit Card']);
     var hasCreditCard = selectedMethods.indexOf('Credit Card') !== -1;
-    var hasPayroll = selectedMethods.indexOf('Payroll Deduction') !== -1;
     
     return '<h3>Payment Methods</h3>' +
       '<p class="text-muted mb-4">Select the payment methods available to this customer (at least one required)</p>' +
@@ -1374,12 +1372,6 @@ var Templates = {
       '<label>' +
       '<input type="checkbox" name="payment-method" id="payment-credit-card" value="Credit Card" ' + (hasCreditCard ? 'checked' : '') + '> ' +
       '<strong>Credit Card</strong> - Allow employees to pay with a credit card' +
-      '</label>' +
-      '</div>' +
-      '<div class="checkbox">' +
-      '<label>' +
-      '<input type="checkbox" name="payment-method" id="payment-payroll" value="Payroll Deduction" ' + (hasPayroll ? 'checked' : '') + '> ' +
-      '<strong>Payroll Deduction</strong> - Allow employees to have vouchers deducted from their payroll' +
       '</label>' +
       '</div>' +
       '</div>' +
@@ -1415,7 +1407,7 @@ var Templates = {
       '</div>';
   },
   
-  renderStep6: function(formData) {
+  renderStep6: function(formData, isEditMode) {
     var requiredFields = [];
     if (formData.employeeFieldConfig.requireEmployeeId) requiredFields.push('Employee ID');
     if (formData.employeeFieldConfig.requireUsername) requiredFields.push('Username');
@@ -1443,16 +1435,6 @@ var Templates = {
       '</select>' +
       '<small class="text-muted">Inactive customers cannot be accessed by their employees</small>' +
       '</div>' +
-      '</div>' +
-      '</div>' +
-      '<div class="panel panel-default">' +
-      '<div class="panel-heading"><strong>Payment Methods</strong></div>' +
-      '<div class="panel-body">' +
-      (formData.paymentMethods.length > 0 ? 
-        formData.paymentMethods.map(function(m) {
-          return '<p><span class="glyphicon glyphicon-ok text-success"></span> ' + m + '</p>';
-        }).join('') : 
-        '<p class="text-muted">None selected</p>') +
       '</div>' +
       '</div>' +
       '</div>' +

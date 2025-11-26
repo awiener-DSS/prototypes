@@ -2,7 +2,7 @@
 
 var CustomerFormComponent = {
   currentStep: 1,
-  totalSteps: 6,
+  totalSteps: 5,
   isEditMode: false,
   editingCustomerId: null,
   defaultTermsAndConditions: 'Net 30 payment terms. Payment is due within 30 days of invoice date. Late payments may be subject to a 1.5% monthly interest charge. All sales are final unless otherwise specified in writing.',
@@ -27,11 +27,8 @@ var CustomerFormComponent = {
     this.editingCustomerId = customer ? customer.id : null;
     
     if (customer) {
-      // Normalize payment methods - ensure it's an array
-      var paymentMethods = customer.paymentMethods;
-      if (!Array.isArray(paymentMethods) || paymentMethods.length === 0) {
-        paymentMethods = ['Credit Card']; // Default if empty
-      }
+      // Payment methods always default to Credit Card only
+      var paymentMethods = ['Credit Card'];
       
       this.formData = {
         name: customer.name,
@@ -91,8 +88,6 @@ var CustomerFormComponent = {
     $(document).off('change', '#require-username');
     $(document).off('change', '#require-dob');
     $(document).off('change', '#require-start-date');
-    $(document).off('change', '#payment-credit-card');
-    $(document).off('change', '#payment-payroll');
     $(document).off('input', '#terms-and-conditions');
     $(document).off('click', '#use-default-terms-btn');
     $(document).off('click', '#save-customer-btn');
@@ -197,14 +192,7 @@ var CustomerFormComponent = {
       }
     });
     
-    // Payment methods (checkboxes - multiple selection)
-    $(document).on('change', 'input[name="payment-method"]', function() {
-      var selectedMethods = [];
-      $('input[name="payment-method"]:checked').each(function() {
-        selectedMethods.push($(this).val());
-      });
-      self.formData.paymentMethods = selectedMethods;
-    });
+    // Payment methods are no longer shown in the form - always default to Credit Card
     
     // Terms and conditions
     $(document).on('input', '#terms-and-conditions', function() {
@@ -329,10 +317,7 @@ var CustomerFormComponent = {
         }
         return true;
       case 4:
-        if (this.formData.paymentMethods.length === 0) {
-          Helpers.showAlert('Please select at least one payment method', 'danger', '#next-step-btn');
-          return false;
-        }
+        // Terms & Conditions step (no validation needed)
         return true;
       default:
         return true;
@@ -340,22 +325,14 @@ var CustomerFormComponent = {
   },
   
   handleSave: function() {
-    // In edit mode, validate step 1 (name) and step 4 (payment methods) if on those steps
-    // In create mode, always validate step 4 (payment methods)
-    if (this.isEditMode) {
-      // Always validate step 1 (name is required)
-      if (!this.validateStep(1)) {
-        return;
-      }
-      // Validate payment methods if we're on step 4 or 5
-      if (this.currentStep >= 4 && !this.validateStep(4)) {
-        return;
-      }
-    } else {
-      // For new customers, validate step 4 (payment methods)
-      if (!this.validateStep(4)) {
-        return;
-      }
+    // Always validate step 1 (name is required)
+    if (!this.validateStep(1)) {
+      return;
+    }
+    
+    // Ensure payment methods default to Credit Card if not set
+    if (!this.formData.paymentMethods || this.formData.paymentMethods.length === 0) {
+      this.formData.paymentMethods = ['Credit Card'];
     }
     
     if (this.isEditMode) {

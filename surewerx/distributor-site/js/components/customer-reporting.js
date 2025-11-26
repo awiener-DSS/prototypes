@@ -541,8 +541,8 @@ var CustomerReportingComponent = {
               '<span><strong style="color: #059669;">Voucher (' + Helpers.escapeHtml(item.voucherUsed) + '):</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' :
               (item.voucherAmountPaid > 0 ?
                 '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' : '')) +
-            ((item.creditCardAmountPaid > 0 || item.payrollDeductionAmountPaid > 0) ?
-              '<span><strong style="color: #2563eb;">' + (item.payrollDeductionAmountPaid > 0 ? 'Payroll' : 'Credit Card') + ':</strong> ' + Helpers.formatCurrency(item.creditCardAmountPaid || item.payrollDeductionAmountPaid || 0) + '</span>' : '') +
+            (item.creditCardAmountPaid > 0 ?
+              '<span><strong style="color: #2563eb;">Credit Card:</strong> ' + Helpers.formatCurrency(item.creditCardAmountPaid) + '</span>' : '') +
             '</div>' +
             '</div>' +
             '<div style="text-align: right; flex-shrink: 0; min-width: 100px;">' +
@@ -845,7 +845,6 @@ var CustomerReportingComponent = {
           'Voucher Used': item.voucherUsed || '',
           'Voucher Amount': item.voucherAmountPaid || 0,
           'Credit Card Amount': item.creditCardAmountPaid || 0,
-          'Payroll Deduction Amount': item.payrollDeductionAmountPaid || 0,
           'Shipping Address': (item.shippingAddress || '').replace(/<br>/g, ', '),
           'Shipping Carrier': item.shippingCarrier || '',
           'Shipping Method': item.shippingMethod || '',

@@ -593,8 +593,8 @@ var ReportingComponent = {
               '<span><strong style="color: #059669;">Voucher (' + Helpers.escapeHtml(item.voucherUsed) + '):</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' :
               (item.voucherAmountPaid > 0 ?
                 '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' : '')) +
-            ((item.creditCardAmountPaid > 0 || item.payrollDeductionAmountPaid > 0) ?
-              '<span><strong style="color: #2563eb;">' + (item.payrollDeductionAmountPaid > 0 ? 'Payroll' : 'Credit Card') + ':</strong> ' + Helpers.formatCurrency(item.creditCardAmountPaid || item.payrollDeductionAmountPaid || 0) + '</span>' : '') +
+            (item.creditCardAmountPaid > 0 ?
+              '<span><strong style="color: #2563eb;">Credit Card:</strong> ' + Helpers.formatCurrency(item.creditCardAmountPaid) + '</span>' : '') +
             '</div>' +
             '</div>' +
             '<div style="text-align: right; flex-shrink: 0; min-width: 100px;">' +
@@ -923,7 +923,6 @@ var ReportingComponent = {
           'Voucher Amount Paid': (item.voucherAmountPaid || 0).toFixed(2),
           'Voucher Name': item.voucherUsed || '',
           'Credit Card Amount Paid': (item.creditCardAmountPaid || 0).toFixed(2),
-          'Payroll Deduction Amount Paid': (item.payrollDeductionAmountPaid || 0).toFixed(2),
           'Payment Method': item.paymentMethod || ''
         };
         

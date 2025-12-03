@@ -1304,7 +1304,6 @@ var ReportingComponent = {
           'Voucher Amount Paid': (item.voucherAmountPaid || 0).toFixed(2),
           'Voucher Name': item.voucherUsed || '',
           'Refunded Amount': (item.refundedAmount || 0).toFixed(2),
-          'Credit Card Amount Paid': (item.creditCardAmountPaid || 0).toFixed(2),
           'Payment Method': item.paymentMethod || ''
         };
         

@@ -8,7 +8,8 @@ var CustomerReportingComponent = {
     orderNumber: '',
     locationId: 'all',
     employee: '',
-    employeeName: ''
+    employeeName: '',
+    status: [] // Array of selected statuses
   },
   hasSearched: false,
   availableEmployees: [],
@@ -131,14 +132,99 @@ var CustomerReportingComponent = {
       }
     });
     
+    // Initialize date inputs (convert MM/DD/YYYY to YYYY-MM-DD for native date inputs)
+    this.initializeDateInputs();
+    
     // Clear filters button
     $(document).on('click', '#clear-filters-btn', function() {
       self.clearFilters();
     });
     
+    // Status filter dropdown toggle
+    $(document).on('click', '#status-filter-display', function(e) {
+      e.stopPropagation();
+      $('#status-filter-dropdown').toggle();
+    });
+    
+    // Status filter option selection
+    $(document).on('click', '.status-filter-option', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      var status = $(this).data('status');
+      var index = self.filters.status.indexOf(status);
+      if (index === -1) {
+        self.filters.status.push(status);
+      } else {
+        self.filters.status.splice(index, 1);
+      }
+      // Update the display without closing dropdown
+      self.updateStatusFilterDisplay();
+      // Update the dropdown options to show selected state
+      self.updateStatusFilterDropdown();
+    });
+    
+    // Remove status badge
+    $(document).on('click', '.status-remove', function(e) {
+      e.stopPropagation();
+      var status = $(this).data('status');
+      var index = self.filters.status.indexOf(status);
+      if (index !== -1) {
+        self.filters.status.splice(index, 1);
+      }
+      self.updateStatusFilterDisplay();
+      self.updateStatusFilterDropdown();
+      self.applyFilters();
+    });
+    
+    // Close status dropdown when clicking outside
+    $(document).on('click', function(e) {
+      if (!$(e.target).closest('#status-filter-container').length) {
+        $('#status-filter-dropdown').hide();
+      }
+    });
+    
     // Initialize location ID and employee filters
     this.updateLocationIdFilter();
     this.updateEmployeeTypeahead();
+  },
+  
+  updateStatusFilterDisplay: function() {
+    var self = this;
+    var display = $('#status-filter-display');
+    if (this.filters.status.length === 0) {
+      display.html('<span style="color: #9ca3af;">Select statuses...</span>');
+    } else {
+      display.html(this.filters.status.map(function(status) {
+        return '<span class="label label-primary" style="font-size: 11px; padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px;">' +
+               Helpers.escapeHtml(status) +
+               '<span class="status-remove" data-status="' + Helpers.escapeHtml(status) + '" style="cursor: pointer; margin-left: 4px;">×</span>' +
+               '</span>';
+      }).join(''));
+    }
+    // Re-attach remove handler
+    $(document).off('click', '.status-remove').on('click', '.status-remove', function(e) {
+      e.stopPropagation();
+      var status = $(this).data('status');
+      var index = self.filters.status.indexOf(status);
+      if (index !== -1) {
+        self.filters.status.splice(index, 1);
+      }
+      self.updateStatusFilterDisplay();
+      self.updateStatusFilterDropdown();
+      self.applyFilters();
+    });
+  },
+  
+  updateStatusFilterDropdown: function() {
+    var self = this;
+    var dropdown = $('#status-filter-dropdown');
+    dropdown.html(['Shipped', 'Processing', 'Refunded', 'Cancelled'].map(function(status) {
+      var isSelected = self.filters.status.indexOf(status) !== -1;
+      return '<div class="status-filter-option" data-status="' + Helpers.escapeHtml(status) + '" style="padding: 8px 12px; cursor: pointer; ' + (isSelected ? 'background-color: #e3f2fd;' : '') + '">' +
+             (isSelected ? '<span style="color: #1976d2;">✓</span> ' : '') +
+             Helpers.escapeHtml(status) +
+             '</div>';
+    }).join(''));
   },
   
   updateLocationIdFilter: function() {
@@ -291,42 +377,67 @@ var CustomerReportingComponent = {
     return '<div class="filter-panel" style="padding: 12px;">' +
       '<h4 style="margin-top: 0; margin-bottom: 12px; font-size: 16px;">Filters</h4>' +
       '<form class="form-horizontal">' +
-      '<div class="row" style="margin-bottom: 8px;">' +
-      '<div class="col-md-3">' +
-      '<div class="form-group" style="margin-bottom: 8px; margin-right: 10px; padding-left: 15px;">' +
+      '<div class="row" style="margin-bottom: 8px; margin-left: 0; margin-right: 0;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Location ID</label>' +
-      '<select class="form-control" id="filter-location-id" style="height: 32px; font-size: 13px;">' +
+      '<select class="form-control" id="filter-location-id" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '<option value="all">All Location IDs</option>' +
       '</select>' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-3">' +
-      '<div class="form-group" style="margin-bottom: 8px; margin-left: 5px; margin-right: 5px;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Employee</label>' +
       '<div class="employee-typeahead-container" style="position: relative;">' +
-      '<input type="text" class="form-control" id="filter-employee" placeholder="Search employees..." disabled autocomplete="off" style="height: 32px; font-size: 13px;">' +
+      '<input type="text" class="form-control" id="filter-employee" placeholder="Search employees..." disabled autocomplete="off" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '<div id="employee-typeahead-results" class="employee-typeahead-results" style="display: none;"></div>' +
       '</div>' +
       '</div>' +
       '</div>' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="form-group" style="margin-bottom: 8px;">' +
+      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Status</label>' +
+      '<div id="status-filter-container" style="position: relative;">' +
+      '<div id="status-filter-display" class="form-control" style="height: auto; min-height: 32px; font-size: 13px; cursor: pointer; padding: 4px 8px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; width: 90%; box-sizing: border-box;">' +
+      (this.filters.status.length === 0 ? '<span style="color: #9ca3af;">Select statuses...</span>' : '') +
+      this.filters.status.map(function(status) {
+        return '<span class="label label-primary" style="font-size: 11px; padding: 2px 6px; display: inline-flex; align-items: center; gap: 4px;">' +
+               Helpers.escapeHtml(status) +
+               '<span class="status-remove" data-status="' + Helpers.escapeHtml(status) + '" style="cursor: pointer; margin-left: 4px;">×</span>' +
+               '</span>';
+      }).join('') +
       '</div>' +
-      '<div class="row" style="margin-bottom: 8px;">' +
-      '<div class="col-md-3">' +
-      '<div class="form-group" style="margin-bottom: 8px; margin-right: 10px; padding-left: 15px;">' +
+      '<div id="status-filter-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-top: none; z-index: 1000; max-height: 200px; overflow-y: auto; margin-top: -1px;">' +
+      ['Shipped', 'Processing', 'Refunded', 'Cancelled'].map(function(status) {
+        var isSelected = self.filters.status.indexOf(status) !== -1;
+        return '<div class="status-filter-option" data-status="' + Helpers.escapeHtml(status) + '" style="padding: 8px 12px; cursor: pointer; ' + (isSelected ? 'background-color: #e3f2fd;' : '') + '">' +
+               (isSelected ? '<span style="color: #1976d2;">✓</span> ' : '') +
+               Helpers.escapeHtml(status) +
+               '</div>';
+      }).join('') +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="row" style="margin-bottom: 8px; margin-left: 0; margin-right: 0;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Order #</label>' +
-      '<input type="text" class="form-control" id="filter-order-number" placeholder="Order number" value="' + Helpers.escapeHtml(this.filters.orderNumber || '') + '" style="height: 32px; font-size: 13px;">' +
+      '<input type="text" class="form-control" id="filter-order-number" placeholder="Order number" value="' + Helpers.escapeHtml(this.filters.orderNumber || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-3">' +
-      '<div class="form-group" style="margin-bottom: 8px; margin-left: 5px; margin-right: 5px;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date From</label>' +
-      '<input type="date" class="form-control" id="filter-date-from" value="' + Helpers.escapeHtml(this.filters.dateFrom || '') + '" style="height: 32px; font-size: 13px;">' +
+      '<input type="date" class="form-control" id="filter-date-from" value="' + Helpers.escapeHtml(this.filters.dateFrom || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-3">' +
-      '<div class="form-group" style="margin-bottom: 8px; margin-left: 10px; padding-right: 15px;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date To</label>' +
-      '<input type="date" class="form-control" id="filter-date-to" value="' + Helpers.escapeHtml(this.filters.dateTo || '') + '" style="height: 32px; font-size: 13px;">' +
+      '<input type="date" class="form-control" id="filter-date-to" value="' + Helpers.escapeHtml(this.filters.dateTo || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '</div>' +
       '</div>' +
       '</div>' +
@@ -491,6 +602,24 @@ var CustomerReportingComponent = {
         shippingInfo += '</div>';
       }
       
+      // Calculate remaining balance: Grand Total - Vouchers Refunded
+      var totalRefunded = 0;
+      orderItems.forEach(function(item) {
+        if (item.refundedAmount && item.refundedAmount > 0) {
+          totalRefunded += item.refundedAmount;
+        }
+      });
+      var remainingBalance = grandTotal - totalRefunded;
+      var remainingBalanceDisplay = '';
+      // Show remaining balance calculation if vouchers were refunded (even if remaining balance = 0)
+      // Don't show if no vouchers were refunded
+      if (totalRefunded > 0) {
+        var calculationDisplay = '<strong>Grand Total:</strong> ' + Helpers.formatCurrency(grandTotal) + ' - <strong>Vouchers Refunded:</strong> ' + Helpers.formatCurrency(totalRefunded);
+        remainingBalanceDisplay = '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #dc2626; margin-top: 6px; line-height: 1.8; font-weight: 600;">' +
+          '<span style="margin-right: 4px;">' + calculationDisplay + ' = <strong>Remaining Balance:</strong> ' + Helpers.formatCurrency(remainingBalance) + '</span>' +
+          '</div>';
+      }
+      
       return '<div class="transaction-order" style="margin-bottom: 16px;">' +
         '<div class="order-header" style="padding: 12px; background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">' +
         '<div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">' +
@@ -504,6 +633,7 @@ var CustomerReportingComponent = {
         userGroupInfo +
         shippingAddressDisplay +
         shippingInfo +
+        remainingBalanceDisplay +
         '</div>' +
         '<div style="text-align: right; flex-shrink: 0;">' +
         '<div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Order Total</div>' +
@@ -543,7 +673,17 @@ var CustomerReportingComponent = {
                 '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' : '')) +
             (item.creditCardAmountPaid > 0 ?
               '<span><strong style="color: #2563eb;">Credit Card:</strong> ' + Helpers.formatCurrency(item.creditCardAmountPaid) + '</span>' : '') +
+            (item.refundedAmount && item.refundedAmount > 0 ?
+              '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' : '') +
             '</div>' +
+            // Invoice information at line item level
+            ((item.invoiceNumber || item.invoiceDate || item.invoiceDueDate || item.terms) ?
+              '<div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
+              (item.invoiceNumber ? '<span><strong>Invoice #:</strong> ' + Helpers.escapeHtml(item.invoiceNumber) + '</span>' : '') +
+              (item.invoiceDate ? '<span><strong>Invoice Date:</strong> ' + Helpers.formatDate(item.invoiceDate) + '</span>' : '') +
+              (item.invoiceDueDate ? '<span><strong>Invoice Due:</strong> ' + Helpers.formatDate(item.invoiceDueDate) + '</span>' : '') +
+              (item.terms ? '<span><strong>Invoice Terms:</strong> ' + Helpers.escapeHtml(item.terms) + '</span>' : '') +
+              '</div>' : '') +
             '</div>' +
             '<div style="text-align: right; flex-shrink: 0; min-width: 100px;">' +
             '<div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Line Total</div>' +
@@ -620,8 +760,12 @@ var CustomerReportingComponent = {
       }
       
       // Date range filter
+      // Datepicker returns dates in MM/DD/YYYY format
       if (filters.dateFrom && filters.dateFrom.trim() !== '') {
-        var fromDate = new Date(filters.dateFrom);
+        var fromDateStr = filters.dateFrom.trim();
+        // Convert MM/DD/YYYY to Date object
+        var fromDateParts = fromDateStr.split('/');
+        var fromDate = new Date(parseInt(fromDateParts[2]), parseInt(fromDateParts[0]) - 1, parseInt(fromDateParts[1]));
         fromDate.setHours(0, 0, 0, 0);
         var transactionDate = new Date(t.dateOrdered);
         transactionDate.setHours(0, 0, 0, 0);
@@ -632,12 +776,22 @@ var CustomerReportingComponent = {
       }
       
       if (filters.dateTo && filters.dateTo.trim() !== '') {
-        var toDate = new Date(filters.dateTo);
+        var toDateStr = filters.dateTo.trim();
+        // Convert MM/DD/YYYY to Date object
+        var toDateParts = toDateStr.split('/');
+        var toDate = new Date(parseInt(toDateParts[2]), parseInt(toDateParts[0]) - 1, parseInt(toDateParts[1]));
         toDate.setHours(23, 59, 59, 999);
         var transactionDate = new Date(t.dateOrdered);
         transactionDate.setHours(0, 0, 0, 0);
         
         if (transactionDate > toDate) {
+          return false;
+        }
+      }
+      
+      // Status filter (multi-select)
+      if (filters.status && filters.status.length > 0) {
+        if (filters.status.indexOf(t.lineStatus) === -1) {
           return false;
         }
       }
@@ -648,8 +802,21 @@ var CustomerReportingComponent = {
   
   performSearch: function() {
     // Update filters from form
-    this.filters.dateFrom = $('#filter-date-from').val().trim();
-    this.filters.dateTo = $('#filter-date-to').val().trim();
+    // Convert YYYY-MM-DD to MM/DD/YYYY for date filters
+    var dateFrom = $('#filter-date-from').val().trim();
+    if (dateFrom && dateFrom.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      var parts = dateFrom.split('-');
+      this.filters.dateFrom = parts[1] + '/' + parts[2] + '/' + parts[0];
+    } else {
+      this.filters.dateFrom = dateFrom;
+    }
+    var dateTo = $('#filter-date-to').val().trim();
+    if (dateTo && dateTo.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      var parts = dateTo.split('-');
+      this.filters.dateTo = parts[1] + '/' + parts[2] + '/' + parts[0];
+    } else {
+      this.filters.dateTo = dateTo;
+    }
     this.filters.locationId = $('#filter-location-id').val();
     // Employee is already set when selected from typeahead
     if (!this.filters.employee || this.filters.employee === '') {
@@ -668,6 +835,7 @@ var CustomerReportingComponent = {
       }
     }
     this.filters.orderNumber = $('#filter-order-number').val().trim();
+    // Status filter is already maintained in this.filters.status array
     
     // Hide typeahead when searching
     this.hideEmployeeTypeahead();
@@ -679,6 +847,60 @@ var CustomerReportingComponent = {
     $('.panel-default').last().replaceWith(this.renderTransactions());
   },
   
+  initializeDateInputs: function() {
+    var self = this;
+    
+    // Convert MM/DD/YYYY to YYYY-MM-DD for native date inputs
+    function convertToNativeFormat(dateStr) {
+      if (!dateStr) return '';
+      // If already in YYYY-MM-DD format, return as is
+      if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return dateStr;
+      }
+      // If in MM/DD/YYYY format, convert to YYYY-MM-DD
+      if (dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+        var parts = dateStr.split('/');
+        var month = (parts[0].length < 2 ? '0' : '') + parts[0];
+        var day = (parts[1].length < 2 ? '0' : '') + parts[1];
+        var year = parts[2];
+        return year + '-' + month + '-' + day;
+      }
+      return '';
+    }
+    
+    // Convert YYYY-MM-DD to MM/DD/YYYY for filter storage
+    function convertToFilterFormat(dateStr) {
+      if (!dateStr) return '';
+      // If in YYYY-MM-DD format, convert to MM/DD/YYYY
+      if (dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        var parts = dateStr.split('-');
+        return parts[1] + '/' + parts[2] + '/' + parts[0];
+      }
+      // If already in MM/DD/YYYY format, return as is
+      return dateStr;
+    }
+    
+    // Set initial values
+    if (this.filters.dateFrom) {
+      $('#filter-date-from').val(convertToNativeFormat(this.filters.dateFrom));
+    }
+    
+    if (this.filters.dateTo) {
+      $('#filter-date-to').val(convertToNativeFormat(this.filters.dateTo));
+    }
+    
+    // Update filters when date changes (native date input uses YYYY-MM-DD)
+    $('#filter-date-from').on('change', function() {
+      var value = $(this).val();
+      self.filters.dateFrom = convertToFilterFormat(value);
+    });
+    
+    $('#filter-date-to').on('change', function() {
+      var value = $(this).val();
+      self.filters.dateTo = convertToFilterFormat(value);
+    });
+  },
+  
   clearFilters: function() {
     this.filters = {
       dateFrom: '',
@@ -686,7 +908,8 @@ var CustomerReportingComponent = {
       orderNumber: '',
       locationId: 'all',
       employee: '',
-      employeeName: ''
+      employeeName: '',
+      status: []
     };
     
     $('#filter-date-from').val('');
@@ -705,6 +928,9 @@ var CustomerReportingComponent = {
     
     // Re-render transactions
     $('.panel-default').last().replaceWith(this.renderTransactions());
+    // Re-render filters to clear status badges
+    $('.filter-panel').replaceWith(this.renderFilters());
+    this.attachEvents();
   },
   
   exportToCSV: function() {

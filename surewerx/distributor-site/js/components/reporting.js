@@ -2,15 +2,14 @@
 
 var ReportingComponent = {
   filters: {
-    partner: 'all',
+    partner: '',
     dateFrom: '',
     dateTo: '',
     orderNumber: '',
     invoiceNumber: '',
     locationId: 'all',
-    employee: '',
-    employeeName: '',
-    status: [] // Array of selected statuses
+    status: [], // Array of selected statuses
+    branchId: 'all' // Distributor branch filter
   },
   hasSearched: false,
   availableEmployees: [],
@@ -73,7 +72,7 @@ var ReportingComponent = {
       self.performSearch();
     });
     
-    // Allow Enter key to trigger search on filter inputs (except employee typeahead)
+    // Allow Enter key to trigger search on filter inputs
     $(document).on('keypress', '#filter-partner, #filter-date-from, #filter-date-to, #filter-location-id, #filter-order-number, #filter-invoice-number', function(e) {
       if (e.which === 13) { // Enter key
         e.preventDefault();
@@ -84,70 +83,27 @@ var ReportingComponent = {
     // Update location ID dropdown when partner changes
     $(document).on('change', '#filter-partner', function() {
       self.updateLocationIdFilter();
+      self.updateBranchFilter();
       // Reset employee filter when partner changes
       self.filters.employee = '';
       self.filters.employeeName = '';
       $('#filter-employee').val('').prop('disabled', true);
       self.hideEmployeeTypeahead();
+      self.updateFilterEnabledState();
     });
     
-    // Update employee typeahead when location ID changes
-    $(document).on('change', '#filter-location-id', function() {
-      self.updateEmployeeTypeahead();
-      // Reset employee input when location ID changes
-      self.filters.employee = '';
-      self.filters.employeeName = '';
-      $('#filter-employee').val('');
-    });
-    
-    // Employee typeahead functionality
-    $(document).on('input', '#filter-employee', function() {
-      var query = $(this).val().trim();
-      self.filters.employeeName = query;
-      if (query.length > 0) {
-        self.showEmployeeSuggestions(query);
-      } else {
-        self.hideEmployeeTypeahead();
-        self.filters.employee = '';
-      }
-    });
-    
-    // Handle clicking outside to close typeahead
-    $(document).on('click', function(e) {
-      if (!$(e.target).closest('.employee-typeahead-container').length) {
-        self.hideEmployeeTypeahead();
-      }
-    });
-    
-    // Handle selection from typeahead
-    $(document).on('click', '.employee-typeahead-item', function() {
-      var empKey = $(this).data('employee-key');
-      var empName = $(this).data('employee-name');
-      self.filters.employee = empKey;
-      self.filters.employeeName = empName;
-      $('#filter-employee').val(empName);
-      self.hideEmployeeTypeahead();
-    });
-    
-    // Handle Enter key in employee typeahead (select first result or trigger search)
-    $(document).on('keydown', '#filter-employee', function(e) {
-      if (e.which === 13) { // Enter key
-        e.preventDefault();
-        var firstResult = $('.employee-typeahead-item').first();
-        if (firstResult.length) {
-          firstResult.click();
-        } else {
-          $('#search-transactions-btn').click();
-        }
-      } else if (e.which === 27) { // Escape key
-        self.hideEmployeeTypeahead();
-      }
+    // Branch filter
+    $(document).on('change', '#filter-branch', function() {
+      self.filters.branchId = $(this).val();
+      // When branch changes, update available locations for that branch
+      self.updateLocationIdFilter();
     });
     
     // Initialize filters
     this.updateLocationIdFilter();
-    this.updateEmployeeTypeahead();
-    
+    this.updateBranchFilter();
+    this.updateFilterEnabledState();
+
     // Initialize date inputs (convert MM/DD/YYYY to YYYY-MM-DD for native date inputs)
     this.initializeDateInputs();
     
@@ -156,17 +112,21 @@ var ReportingComponent = {
       self.clearFilters();
     });
     
-    // Refund line item (SureWerx only)
-    $(document).on('click', '.refund-line-item-btn', function(e) {
+    // Refund order (SureWerx only)
+    $(document).on('click', '.refund-order-btn', function(e) {
       e.stopPropagation();
       var orderId = $(this).data('order-id');
-      var lineIndex = $(this).data('line-index');
-      self.handleRefund(orderId, lineIndex);
+      self.handleRefund(orderId);
     });
     
     // Status filter dropdown toggle
     $(document).on('click', '#status-filter-display', function(e) {
       e.stopPropagation();
+      // Require a customer before allowing status selection
+      if (!$('#filter-partner').val()) {
+        Helpers.showAlert('Please select a customer before choosing status.', 'warning');
+        return;
+      }
       $('#status-filter-dropdown').toggle();
     });
     
@@ -197,7 +157,6 @@ var ReportingComponent = {
       }
       self.updateStatusFilterDisplay();
       self.updateStatusFilterDropdown();
-      self.applyFilters();
     });
     
     // Close status dropdown when clicking outside
@@ -231,7 +190,6 @@ var ReportingComponent = {
       }
       self.updateStatusFilterDisplay();
       self.updateStatusFilterDropdown();
-      self.applyFilters();
     });
   },
   
@@ -247,31 +205,135 @@ var ReportingComponent = {
     }).join(''));
   },
   
+  updateBranchFilter: function() {
+    var customerId = $('#filter-partner').val();
+    var branchSelect = $('#filter-branch');
+    
+    // Reset to default "All Branches"
+    branchSelect.html('<option value="all">All Branches</option>');
+    branchSelect.prop('disabled', true);
+    this.filters.branchId = 'all';
+    
+    // Branch can only be selected after a specific customer is chosen
+    if (!customerId || customerId === 'all') {
+      return;
+    }
+    
+    var partner = AppState.getCustomerById(customerId);
+    if (!partner || !partner.distributorId || !AppState.branchLocations || AppState.branchLocations.length === 0) {
+      return;
+    }
+    
+    var distributorId = partner.distributorId;
+    
+    // Populate branches for this customer's distributor
+    AppState.branchLocations.forEach(function(branch) {
+      var branchDistributorId = null;
+      if (branch.id.indexOf('br-d1-') === 0) branchDistributorId = 'd1';
+      else if (branch.id.indexOf('br-d2-') === 0) branchDistributorId = 'd2';
+      else if (branch.id.indexOf('br-d3-') === 0) branchDistributorId = 'd3';
+      else if (branch.id.indexOf('br-d4-') === 0) branchDistributorId = 'd4';
+      
+      if (branchDistributorId === distributorId) {
+        var selected = this.filters.branchId === branch.id ? ' selected' : '';
+        branchSelect.append(
+          '<option value="' + Helpers.escapeHtml(branch.id) + '"' + selected + '>' +
+          Helpers.escapeHtml(branch.branchId + ' - ' + branch.branchAddress) +
+          '</option>'
+        );
+      }
+    }.bind(this));
+    
+    branchSelect.prop('disabled', false);
+  },
+  
+  updateFilterEnabledState: function() {
+    // Enable/disable dependent filters based on whether a customer is selected
+    var hasCustomer = !!$('#filter-partner').val();
+    
+    // Branch and Location depend on customer
+    $('#filter-branch').prop('disabled', !hasCustomer);
+    $('#filter-location-id').prop('disabled', !hasCustomer);
+    
+    // Date range depends on customer
+    $('#filter-date-from, #filter-date-to').prop('disabled', !hasCustomer);
+    
+    // Status UI: visually and interactively disable when no customer
+    if (!hasCustomer) {
+      $('#status-filter-display')
+        .css({
+          'background-color': '#f9fafb',
+          'cursor': 'not-allowed',
+          'opacity': '0.6'
+        })
+        .addClass('disabled-filter');
+    } else {
+      $('#status-filter-display')
+        .css({
+          'background-color': '',
+          'cursor': 'pointer',
+          'opacity': ''
+        })
+        .removeClass('disabled-filter');
+    }
+  },
+  
   updateLocationIdFilter: function() {
     var customerId = $('#filter-partner').val();
     var locationIdSelect = $('#filter-location-id');
     
-    // Clear existing options except "All Location IDs"
-    locationIdSelect.html('<option value="all">All Location IDs</option>');
+    // Clear existing options except "All Locations"
+    locationIdSelect.html('<option value="all">All Locations</option>');
+    locationIdSelect.prop('disabled', true);
+    this.filters.locationId = 'all';
     
-    if (customerId && customerId !== 'all') {
-      var partner = AppState.getCustomerById(customerId);
-      if (partner && partner.groups && partner.groups.length > 0) {
-        // Get unique location IDs
-        var locationIds = [];
-        partner.groups.forEach(function(group) {
-          if (group.locationId && locationIds.indexOf(group.locationId) === -1) {
-            locationIds.push(group.locationId);
-          }
-        });
-        locationIds.sort();
-        
-        locationIds.forEach(function(locationId) {
-          var selected = this.filters.locationId === locationId ? ' selected' : '';
-          locationIdSelect.append('<option value="' + Helpers.escapeHtml(locationId) + '"' + selected + '>' + Helpers.escapeHtml(locationId) + '</option>');
-        }.bind(this));
-      }
+    // Require a customer selection
+    if (!customerId || customerId === 'all') {
+      return;
     }
+    
+    var partner = AppState.getCustomerById(customerId);
+    if (!partner || !partner.locations || partner.locations.length === 0) {
+      return;
+    }
+    
+    // Require a specific distributor branch before enabling locations
+    var branchId = $('#filter-branch').val();
+    if (!branchId || branchId === 'all') {
+      // No branch selected yet, keep Location disabled
+      return;
+    }
+    
+    // Filter locations to only those assigned to the selected branch
+    var locations = partner.locations.filter(function(loc) {
+      return loc.distributorBranchId === branchId;
+    });
+    
+    if (locations.length === 0) {
+      return;
+    }
+    
+    // Build location display strings with location ID, address, city, state
+    locations.forEach(function(loc) {
+      if (!loc.locationId) return;
+      
+      // Build display text: "Location ID - Address, City, State"
+      var displayParts = [loc.locationId];
+      var addressParts = [];
+      if (loc.address) addressParts.push(loc.address);
+      if (loc.city) addressParts.push(loc.city);
+      if (loc.state) addressParts.push(loc.state);
+      
+      if (addressParts.length > 0) {
+        displayParts.push(addressParts.join(', '));
+      }
+      
+      var displayText = displayParts.join(' - ');
+      var selected = this.filters.locationId === loc.locationId ? ' selected' : '';
+      locationIdSelect.append('<option value="' + Helpers.escapeHtml(loc.locationId) + '"' + selected + '>' + Helpers.escapeHtml(displayText) + '</option>');
+    }.bind(this));
+    
+    locationIdSelect.prop('disabled', false);
   },
   
   updateEmployeeTypeahead: function() {
@@ -413,7 +475,7 @@ var ReportingComponent = {
       '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Customer</label>' +
       '<select class="form-control" id="filter-partner" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
-      '<option value="all">All Customers</option>' +
+      '<option value="" disabled' + (!this.filters.partner ? ' selected' : '') + '>Select customer...</option>' +
       AppState.getFilteredCustomers().map(function(p) {
         var selected = self.filters.partner === p.id ? ' selected' : '';
         return '<option value="' + p.id + '"' + selected + '>' + Helpers.escapeHtml(p.name) + '</option>';
@@ -423,19 +485,19 @@ var ReportingComponent = {
       '</div>' +
       '<div class="col-md-3" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
-      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Location ID</label>' +
-      '<select class="form-control" id="filter-location-id" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
-      '<option value="all">All Location IDs</option>' +
+      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Distributor Branch</label>' +
+      '<select class="form-control" id="filter-branch" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
+      // Options will be populated dynamically based on selected customer
+      '<option value="all">All Branches</option>' +
       '</select>' +
       '</div>' +
       '</div>' +
       '<div class="col-md-3" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
-      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Employee</label>' +
-      '<div class="employee-typeahead-container" style="position: relative;">' +
-      '<input type="text" class="form-control" id="filter-employee" placeholder="Search employees..." disabled autocomplete="off" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
-      '<div id="employee-typeahead-results" class="employee-typeahead-results" style="display: none;"></div>' +
-      '</div>' +
+      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Location</label>' +
+      '<select class="form-control" id="filter-location-id" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
+      '<option value="all">All Locations</option>' +
+      '</select>' +
       '</div>' +
       '</div>' +
       '<div class="col-md-3" style="padding-left: 10px; padding-right: 10px;">' +
@@ -464,29 +526,28 @@ var ReportingComponent = {
       '</div>' +
       '</div>' +
       '</div>' +
+      // Second row with remaining filters
       '<div class="row" style="margin-bottom: 8px; margin-left: 0; margin-right: 0;">' +
-      '<div class="col-md-3" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Order #</label>' +
       '<input type="text" class="form-control" id="filter-order-number" placeholder="Order number" value="' + Helpers.escapeHtml(this.filters.orderNumber || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-3" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Invoice #</label>' +
       '<input type="text" class="form-control" id="filter-invoice-number" placeholder="Invoice number" value="' + Helpers.escapeHtml(this.filters.invoiceNumber || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-3" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
-      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date From</label>' +
-      '<input type="date" class="form-control" id="filter-date-from" value="' + Helpers.escapeHtml(this.filters.dateFrom || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
+      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date Range</label>' +
+      '<div style="display: flex; align-items: center; gap: 4px; width: 90%;">' +
+      '<input type="date" class="form-control" id="filter-date-from" value="' + Helpers.escapeHtml(this.filters.dateFrom || '') + '" style="height: 32px; font-size: 13px;">' +
+      '<span style="font-size: 12px; color: #6b7280;">to</span>' +
+      '<input type="date" class="form-control" id="filter-date-to" value="' + Helpers.escapeHtml(this.filters.dateTo || '') + '" style="height: 32px; font-size: 13px;">' +
       '</div>' +
-      '</div>' +
-      '<div class="col-md-3" style="padding-left: 10px; padding-right: 10px;">' +
-      '<div class="form-group" style="margin-bottom: 8px;">' +
-      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date To</label>' +
-      '<input type="date" class="form-control" id="filter-date-to" value="' + Helpers.escapeHtml(this.filters.dateTo || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '</div>' +
       '</div>' +
       '</div>' +
@@ -666,14 +727,77 @@ var ReportingComponent = {
       // Calculate remaining balance: Grand Total - Vouchers Refunded
       var orderRemainingBalance = grandTotal - totalRefunded;
       
-      // Show remaining balance calculation if vouchers were refunded (even if remaining balance = 0)
+      // Show remaining balance calculation and refund summary if vouchers were refunded (even if remaining balance = 0)
       // Don't show if no vouchers were refunded
       var remainingBalanceDisplay = '';
       if (totalRefunded > 0) {
         var calculationDisplay = '<strong>Grand Total:</strong> ' + Helpers.formatCurrency(grandTotal) + ' - <strong>Vouchers Refunded:</strong> ' + Helpers.formatCurrency(totalRefunded);
-        remainingBalanceDisplay = '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #dc2626; margin-top: 6px; line-height: 1.8; font-weight: 600;">' +
-          '<span style="margin-right: 4px;">' + calculationDisplay + ' = <strong>Remaining Balance:</strong> ' + Helpers.formatCurrency(orderRemainingBalance) + '</span>' +
-          '</div>';
+        
+        // Group refunded items by voucher
+        var refundedVoucherGroups = {};
+        orderItems.forEach(function(item) {
+          if (item.refundedAmount && item.refundedAmount > 0 && item.voucherAmountPaid && item.voucherAmountPaid > 0 && item.quantity > 0) {
+            var voucherName = item.voucherUsed || 'Unknown Voucher';
+            if (!refundedVoucherGroups[voucherName]) {
+              refundedVoucherGroups[voucherName] = {
+                name: voucherName,
+                totalVoucherAmount: 0,
+                totalRefunded: 0,
+                skuSummaries: []
+              };
+            }
+            refundedVoucherGroups[voucherName].totalVoucherAmount += item.voucherAmountPaid;
+            refundedVoucherGroups[voucherName].totalRefunded += item.refundedAmount;
+            
+            // Calculate refunded quantity for this SKU
+            var perUnit = item.voucherAmountPaid / item.quantity;
+            if (perUnit > 0) {
+              var rawQty = item.refundedAmount / perUnit;
+              var qtyRefunded = Math.round(rawQty); // approximate to nearest whole unit
+              if (qtyRefunded > 0) {
+                // Calculate price for refunded quantity
+                var unitPrice = item.totalPrice / item.quantity;
+                var refundedPrice = unitPrice * qtyRefunded;
+                refundedVoucherGroups[voucherName].skuSummaries.push({
+                  sku: item.surewerxPartNumber || '',
+                  quantity: qtyRefunded,
+                  price: refundedPrice
+                });
+              }
+            }
+          }
+        });
+        
+        // Build refund summary by voucher
+        var refundSummaryHtml = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">' +
+          '<div style="font-size: 11px; color: #b91c1c; font-weight: 600; margin-bottom: 6px;">Refund Summary:</div>';
+        
+        Object.keys(refundedVoucherGroups).forEach(function(voucherName) {
+          var group = refundedVoucherGroups[voucherName];
+          var remaining = group.totalVoucherAmount - group.totalRefunded;
+          
+          refundSummaryHtml += '<div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; padding-left: 12px;">' +
+            '<strong style="color: #374151;">Voucher:</strong> ' + Helpers.escapeHtml(voucherName) + ' | ' +
+            '<strong>Total Voucher Amount:</strong> ' + Helpers.formatCurrency(group.totalVoucherAmount) + ' | ' +
+            '<strong>Remaining:</strong> ' + Helpers.formatCurrency(remaining);
+          
+          if (group.skuSummaries.length > 0) {
+            var skuDisplay = group.skuSummaries.map(function(skuInfo) {
+              return Helpers.escapeHtml(skuInfo.sku) + ' x' + skuInfo.quantity + ' (' + Helpers.formatCurrency(skuInfo.price) + ')';
+            }).join(', ');
+            refundSummaryHtml += '<br><span style="padding-left: 12px; color: #b91c1c;">Refunded SKUs: ' + skuDisplay + '</span>';
+          }
+          
+          refundSummaryHtml += '</div>';
+        });
+        
+        refundSummaryHtml += '</div>';
+        
+        remainingBalanceDisplay =
+          '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #dc2626; margin-top: 6px; line-height: 1.8; font-weight: 600;">' +
+            '<span style="margin-right: 4px;">' + calculationDisplay + ' = <strong>Remaining Balance:</strong> ' + Helpers.formatCurrency(orderRemainingBalance) + '</span>' +
+          '</div>' +
+          refundSummaryHtml;
       }
       
       // Credit card payment display at order level
@@ -686,25 +810,18 @@ var ReportingComponent = {
           '</div>';
       }
       
-      // Build compact shipping info with better spacing
-      var shippingInfo = '';
-      var hasShippingData = firstItem.shippingCarrier || firstItem.shippingMethod || firstItem.trackingNumber || shippingCost > 0;
-      if (hasShippingData) {
-        shippingInfo = '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #6b7280; margin-top: 6px; line-height: 1.8;">';
-        if (firstItem.shippingCarrier) {
-          shippingInfo += '<span style="margin-right: 4px;"><strong style="color: #374151;">Carrier:</strong> ' + Helpers.escapeHtml(firstItem.shippingCarrier) + '</span>';
+      // Check if all voucher-applied items have been fully refunded
+      var allVoucherItemsRefunded = true;
+      var hasVoucherItems = false;
+      orderItems.forEach(function(item) {
+        if (item.voucherAmountPaid && item.voucherAmountPaid > 0) {
+          hasVoucherItems = true;
+          var refunded = item.refundedAmount || 0;
+          if (refunded < item.voucherAmountPaid) {
+            allVoucherItemsRefunded = false;
+          }
         }
-        if (firstItem.shippingMethod) {
-          shippingInfo += '<span style="margin-right: 4px;"><strong style="color: #374151;">Method:</strong> ' + Helpers.escapeHtml(firstItem.shippingMethod) + '</span>';
-        }
-        if (firstItem.trackingNumber) {
-          shippingInfo += '<span style="margin-right: 4px;"><strong style="color: #374151;">Tracking:</strong> ' + Helpers.escapeHtml(firstItem.trackingNumber) + '</span>';
-        }
-        if (shippingCost > 0) {
-          shippingInfo += '<span style="margin-right: 4px;"><strong style="color: #374151;">Shipping:</strong> ' + Helpers.formatCurrency(shippingCost) + '</span>';
-        }
-        shippingInfo += '</div>';
-      }
+      });
       
       return '<div class="transaction-order" style="margin-bottom: 16px;">' +
         '<div class="order-header" style="padding: 12px; background-color: #f9fafb; border-bottom: 1px solid #e5e7eb;">' +
@@ -718,7 +835,6 @@ var ReportingComponent = {
         employeeIdentifierDisplay +
         userGroupInfo +
         shippingAddressDisplay +
-        shippingInfo +
         creditCardDisplay +
         remainingBalanceDisplay +
         '</div>' +
@@ -727,6 +843,11 @@ var ReportingComponent = {
         '<div style="font-size: 18px; font-weight: 600; color: #111827;">' + Helpers.formatCurrency(orderTotal) + '</div>' +
         (shippingCost > 0 ? '<div style="font-size: 11px; color: #6b7280; margin-top: 2px;">+ Shipping: ' + Helpers.formatCurrency(shippingCost) + '</div>' : '') +
         (shippingCost > 0 ? '<div style="font-size: 13px; font-weight: 600; color: #059669; margin-top: 4px; padding-top: 4px; border-top: 1px solid #d1d5db;">Total: ' + Helpers.formatCurrency(grandTotal) + '</div>' : '') +
+        // Order-level refund button for SureWerx users only (if any voucher-applied lines exist and not all are fully refunded)
+        (AppState.currentUser && AppState.currentUser.role === 'SureWerx' && hasVoucherItems && !allVoucherItemsRefunded ?
+          '<div style="margin-top: 8px;">' +
+          '<button class="btn btn-sm btn-warning refund-order-btn" data-order-id="' + Helpers.escapeHtml(orderId) + '" style="font-size: 11px; padding: 4px 8px;">Refund</button>' +
+          '</div>' : '') +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -740,6 +861,13 @@ var ReportingComponent = {
           
           return '<div class="order-item" style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">' +
             '<div style="flex: 1; min-width: 0;">' +
+            // Move invoice information above status / product name so it's more visible
+            ((item.invoiceNumber || item.invoiceDate || item.invoiceDueDate) ?
+              '<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 6px;">' +
+              (item.invoiceNumber ? '<span style="font-size: 15px; font-weight: 600; color: #111827;"><strong>Invoice #:</strong> ' + Helpers.escapeHtml(item.invoiceNumber) + '</span>' : '') +
+              (item.invoiceDate ? '<span style="font-size: 11px; color: #6b7280;"><strong>Invoice Date:</strong> ' + Helpers.formatDate(item.invoiceDate) + '</span>' : '') +
+              (item.invoiceDueDate ? '<span style="font-size: 11px; color: #6b7280;"><strong>Invoice Due:</strong> ' + Helpers.formatDate(item.invoiceDueDate) + '</span>' : '') +
+              '</div>' : '') +
             '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">' +
             '<span class="status-badge ' + Helpers.getStatusBadgeClass(item.lineStatus) + '" style="font-size: 11px; padding: 2px 6px;">' +
             Helpers.escapeHtml(item.lineStatus) +
@@ -758,25 +886,20 @@ var ReportingComponent = {
               '<span><strong style="color: #059669;">Voucher (' + Helpers.escapeHtml(item.voucherUsed) + '):</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' :
               (item.voucherAmountPaid > 0 ?
                 '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' : '')) +
-            (item.refundedAmount && item.refundedAmount > 0 ?
-              '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' : '') +
             '</div>' +
-            // Invoice information at line item level
-            ((item.invoiceNumber || item.invoiceDate || item.invoiceDueDate || item.terms) ?
+            // Shipping info at line item level
+            ((item.shippingCarrier || item.shippingMethod || item.trackingNumber || (shippingCost > 0 && orderItems.indexOf(item) === 0)) ?
               '<div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
-              (item.invoiceNumber ? '<span><strong>Invoice #:</strong> ' + Helpers.escapeHtml(item.invoiceNumber) + '</span>' : '') +
-              (item.invoiceDate ? '<span><strong>Invoice Date:</strong> ' + Helpers.formatDate(item.invoiceDate) + '</span>' : '') +
-              (item.invoiceDueDate ? '<span><strong>Invoice Due:</strong> ' + Helpers.formatDate(item.invoiceDueDate) + '</span>' : '') +
-              (item.terms ? '<span><strong>Invoice Terms:</strong> ' + Helpers.escapeHtml(item.terms) + '</span>' : '') +
+              (item.shippingCarrier ? '<span><strong>Carrier:</strong> ' + Helpers.escapeHtml(item.shippingCarrier) + '</span>' : '') +
+              (item.shippingMethod ? '<span><strong>Method:</strong> ' + Helpers.escapeHtml(item.shippingMethod) + '</span>' : '') +
+              (item.trackingNumber ? '<span><strong>Tracking:</strong> ' + Helpers.escapeHtml(item.trackingNumber) + '</span>' : '') +
+              (shippingCost > 0 && orderItems.indexOf(item) === 0 ? '<span><strong>Shipping:</strong> ' + Helpers.formatCurrency(shippingCost) + '</span>' : '') +
               '</div>' : '') +
             '</div>' +
             '<div style="text-align: right; flex-shrink: 0; min-width: 100px;">' +
             '<div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Line Total</div>' +
             '<div style="font-size: 16px; font-weight: 600; color: #111827;">' + Helpers.formatCurrency(item.totalPrice) + '</div>' +
             '<div style="font-size: 10px; color: #9ca3af; margin-top: 2px;">Cost: ' + Helpers.formatCurrency(item.distributorCost * item.quantity) + '</div>' +
-            // Refund button for SureWerx users only (only show if not already refunded)
-            (AppState.currentUser && AppState.currentUser.role === 'SureWerx' && item.voucherAmountPaid > 0 && (!item.refundedAmount || item.refundedAmount === 0) ?
-              '<button class="btn btn-sm btn-warning refund-line-item-btn" data-order-id="' + Helpers.escapeHtml(orderId) + '" data-line-index="' + orderItems.indexOf(item) + '" style="margin-top: 6px; font-size: 11px; padding: 2px 6px;">Refund</button>' : '') +
             '</div>' +
             '</div>';
         }).join('') +
@@ -805,7 +928,8 @@ var ReportingComponent = {
     
     return transactions.filter(function(t) {
       // Partner filter - check both partnerName and customerName for compatibility
-      if (filters.partner !== 'all') {
+      // Only apply when a specific customer is selected
+      if (filters.partner && filters.partner !== 'all') {
         var partner = AppState.customers.find(function(p) { return p.id === filters.partner; });
         if (!partner) {
           return false;
@@ -833,14 +957,6 @@ var ReportingComponent = {
           if (groupNames.indexOf(t.employeeGroup) === -1) {
             return false;
           }
-        }
-      }
-      
-      // Employee filter (only applies if location ID is selected and employee is specified)
-      // Match by employee name only, since email is not required
-      if (filters.partner !== 'all' && filters.locationId !== 'all' && filters.employee && filters.employee.trim() !== '' && filters.employeeName) {
-        if (!t.employeeName || t.employeeName.toLowerCase() !== filters.employeeName.toLowerCase()) {
-          return false;
         }
       }
       
@@ -897,6 +1013,13 @@ var ReportingComponent = {
         }
       }
       
+      // Distributor branch filter (SureWerx / Distributor users)
+      if (filters.branchId && filters.branchId !== 'all') {
+        if (!t.branchId || t.branchId !== filters.branchId) {
+          return false;
+        }
+      }
+      
       return true;
     });
   },
@@ -904,6 +1027,18 @@ var ReportingComponent = {
   performSearch: function() {
     // Update filters from form
     this.filters.partner = $('#filter-partner').val();
+    
+    // Require a specific customer selection before searching,
+    // UNLESS the user is searching by Order # or Invoice # only
+    var orderNumberInput = $('#filter-order-number').val().trim();
+    var invoiceNumberInput = $('#filter-invoice-number').val().trim();
+    var hasCustomer = !!this.filters.partner;
+    var hasOrderOrInvoice = !!orderNumberInput || !!invoiceNumberInput;
+    
+    if (!hasCustomer && !hasOrderOrInvoice) {
+      Helpers.showAlert('Please select a customer or enter an Order # / Invoice # before searching.', 'warning');
+      return;
+    }
     // Convert YYYY-MM-DD to MM/DD/YYYY for date filters
     var dateFrom = $('#filter-date-from').val().trim();
     if (dateFrom && dateFrom.match(/^\d{4}-\d{2}-\d{2}$/)) {
@@ -920,31 +1055,10 @@ var ReportingComponent = {
       this.filters.dateTo = dateTo;
     }
     this.filters.locationId = $('#filter-location-id').val();
-    // Employee is already set when selected from typeahead
-    // If user typed but didn't select, use the typed value
-    if (!this.filters.employee || this.filters.employee === '') {
-      var typedValue = $('#filter-employee').val().trim();
-      if (typedValue) {
-        // Try to find matching employee by name
-        var matchingEmp = this.availableEmployees.find(function(emp) {
-          return emp.name.toLowerCase() === typedValue.toLowerCase();
-        });
-        if (matchingEmp) {
-          this.filters.employee = matchingEmp.key;
-          this.filters.employeeName = matchingEmp.name;
-        } else {
-          // If no exact match, clear it
-          this.filters.employee = '';
-          this.filters.employeeName = '';
-        }
-      }
-    }
-    this.filters.orderNumber = $('#filter-order-number').val().trim();
-    this.filters.invoiceNumber = $('#filter-invoice-number').val().trim();
+    this.filters.orderNumber = orderNumberInput;
+    this.filters.invoiceNumber = invoiceNumberInput;
+    this.filters.branchId = $('#filter-branch').val();
     // Status filter is already maintained in this.filters.status array
-    
-    // Hide typeahead when searching
-    this.hideEmployeeTypeahead();
     
     // Mark that a search has been performed
     this.hasSearched = true;
@@ -1016,29 +1130,28 @@ var ReportingComponent = {
   
   clearFilters: function() {
     this.filters = {
-      partner: 'all',
+      partner: '',
       dateFrom: '',
       dateTo: '',
       orderNumber: '',
       invoiceNumber: '',
       locationId: 'all',
-      employee: '',
-      employeeName: '',
-      status: []
+      status: [],
+      branchId: 'all'
     };
     
-    $('#filter-partner').val('all');
+    $('#filter-partner').val('');
     $('#filter-date-from').val('');
     $('#filter-date-to').val('');
     $('#filter-order-number').val('');
     $('#filter-invoice-number').val('');
     $('#filter-location-id').val('all');
-    $('#filter-employee').val('');
+    $('#filter-branch').val('all');
     
-    // Update location ID and employee filters
+    // Update location ID and branch filters and disable dependent filters
     this.updateLocationIdFilter();
-    this.updateEmployeeTypeahead();
-    this.hideEmployeeTypeahead();
+    this.updateBranchFilter();
+    this.updateFilterEnabledState();
     
     // Reset search state
     this.hasSearched = false;
@@ -1051,100 +1164,272 @@ var ReportingComponent = {
     Helpers.showAlert('Filters cleared', 'success');
   },
   
-  handleRefund: function(orderId, lineIndex) {
+  handleRefund: function(orderId) {
     var self = this;
     // Get filtered transactions for this order (matching current search/filter state)
     var filteredTransactions = this.getFilteredTransactions();
     var orderTransactions = filteredTransactions.filter(function(t) { return t.orderId === orderId; });
     
-    if (!orderTransactions || orderTransactions.length <= lineIndex) {
+    if (!orderTransactions || orderTransactions.length === 0) {
       Helpers.showAlert('Transaction not found', 'danger');
       return;
     }
     
-    var item = orderTransactions[lineIndex];
-    var refundAmount = item.voucherAmountPaid || 0;
+    // Find all voucher-applied line items
+    var voucherLines = orderTransactions.filter(function(t) {
+      return t.voucherAmountPaid && t.voucherAmountPaid > 0;
+    });
     
-    if (refundAmount <= 0) {
-      Helpers.showAlert('No voucher amount to refund', 'warning');
+    if (!voucherLines || voucherLines.length === 0) {
+      Helpers.showAlert('No voucher-applied line items available to refund for this order.', 'warning');
       return;
     }
     
+    // Group voucher lines by voucher name
+    var voucherGroups = {};
+    voucherLines.forEach(function(line) {
+      var voucherName = line.voucherUsed || 'Unknown Voucher';
+      if (!voucherGroups[voucherName]) {
+        voucherGroups[voucherName] = {
+          name: voucherName,
+          lines: [],
+          totalVoucherAmount: 0,
+          totalRefunded: 0
+        };
+      }
+      voucherGroups[voucherName].lines.push(line);
+      voucherGroups[voucherName].totalVoucherAmount += (line.voucherAmountPaid || 0);
+      voucherGroups[voucherName].totalRefunded += (line.refundedAmount || 0);
+    });
+    
     // Store scroll position and element reference before showing modal
     var scrollPosition = $(window).scrollTop();
-    var refundButton = $('.refund-line-item-btn[data-order-id="' + orderId + '"][data-line-index="' + lineIndex + '"]');
+    var refundButton = $('.refund-order-btn[data-order-id="' + orderId + '"]');
     var orderElement = refundButton.closest('.transaction-order');
     var orderElementOffset = orderElement.length > 0 ? orderElement.offset().top - $(window).scrollTop() : null;
     
-    // Show confirmation modal
-    var confirmMsg = 'Refund voucher amount of ' + Helpers.formatCurrency(refundAmount) + ' for line item: ' + Helpers.escapeHtml(item.productName) + '?';
+    // Build voucher-grouped refund modal
+    var modalBodyHtml = '<p style="margin-bottom: 12px;">Select which SKU and quantity to refund. Only line items with voucher amounts applied are eligible.</p>';
     
-    UIHelpers.showConfirmDialog({
-      title: 'Confirm Refund',
-      message: confirmMsg,
-      confirmText: 'Confirm Refund',
-      cancelText: 'Cancel',
-      confirmClass: 'btn-warning',
-      onConfirm: function() {
-        // Find the actual transaction in AppState.transactions (not filtered) to update it
-        var allTransactions = AppState.transactions;
-        var actualTransaction = allTransactions.find(function(t) {
-          return t.orderId === orderId && 
-                 t.surewerxPartNumber === item.surewerxPartNumber &&
-                 t.quantity === item.quantity &&
-                 t.totalPrice === item.totalPrice;
-        });
+    // Build table for each voucher group
+    Object.keys(voucherGroups).forEach(function(voucherName) {
+      var group = voucherGroups[voucherName];
+      var totalRemaining = group.totalVoucherAmount - group.totalRefunded;
+      
+      modalBodyHtml += '<div style="margin-bottom: 20px; border: 1px solid #e5e7eb; border-radius: 4px; padding: 10px;">' +
+        '<div style="font-weight: 600; font-size: 13px; color: #111827; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb;">' +
+        'Voucher: ' + Helpers.escapeHtml(voucherName) +
+        '</div>' +
+        '<div style="display: flex; gap: 20px; margin-bottom: 10px; font-size: 11px; color: #6b7280;">' +
+        '<span><strong>Total Voucher Amount:</strong> ' + Helpers.formatCurrency(group.totalVoucherAmount) + '</span>' +
+        '<span><strong>Already Refunded:</strong> ' + (group.totalRefunded > 0 ? Helpers.formatCurrency(group.totalRefunded) : '-') + '</span>' +
+        '<span><strong>Remaining:</strong> ' + Helpers.formatCurrency(totalRemaining) + '</span>' +
+        '</div>' +
+        '<table class="table table-condensed table-bordered" style="font-size: 11px; margin-bottom: 0;">' +
+        '<thead>' +
+        '<tr>' +
+        '<th style="width: 30px;"></th>' +
+        '<th>SKU</th>' +
+        '<th>Product</th>' +
+        '<th style="width: 80px; text-align: right;">Price</th>' +
+        '<th style="width: 60px; text-align: right;">Qty</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>';
+      
+      group.lines.forEach(function(line, lineIdx) {
+        var totalQty = line.quantity || 0;
+        var voucherAmount = line.voucherAmountPaid || 0;
+        var alreadyRefunded = line.refundedAmount || 0;
+        var remainingVoucher = voucherAmount - alreadyRefunded;
+        var perUnitVoucher = totalQty > 0 ? voucherAmount / totalQty : 0;
+        var maxRefundQty = (perUnitVoucher > 0 && remainingVoucher > 0) ? Math.floor(remainingVoucher / perUnitVoucher) : 0;
         
-        if (!actualTransaction) {
-          Helpers.showAlert('Transaction not found in system', 'danger');
+        if (maxRefundQty <= 0) {
           return;
         }
         
-        // Process refund - mark the item as refunded
-        if (!actualTransaction.refundedAmount) {
-          actualTransaction.refundedAmount = 0;
-        }
-        actualTransaction.refundedAmount = refundAmount;
+        // Store voucher name and line index for reference
+        var dataVoucherName = Helpers.escapeHtml(voucherName);
+        var dataLineKey = voucherName + '|' + lineIdx;
         
-        // Calculate remaining balance on item: Item Total - Voucher Amount Applied
-        actualTransaction.remainingBalance = actualTransaction.totalPrice - actualTransaction.voucherAmountPaid;
-        
-        // Do NOT change the status - keep original status
-        
-        // Re-render transactions to show updated state
-        if (self.hasSearched) {
-          $('.panel-default').last().replaceWith(self.renderTransactions());
-          Helpers.showAlert('Refund processed successfully', 'success');
-          
-          // Restore scroll position to show the refunded item
-          setTimeout(function() {
-            // Try to find the same order element after re-render
-            var newOrderElement = $('.transaction-order').filter(function() {
-              var orderHeader = $(this).find('.order-header');
-              return orderHeader.length > 0 && orderHeader.text().indexOf('Order #' + orderId) !== -1;
-            }).first();
-            
-            if (newOrderElement.length > 0) {
-              // Calculate the new scroll position to show the order
-              var newScrollPosition = newOrderElement.offset().top - (orderElementOffset || 0);
-              // Ensure we don't scroll to negative position
-              newScrollPosition = Math.max(0, newScrollPosition);
-              
-              $('html, body').animate({
-                scrollTop: newScrollPosition
-              }, 300);
-            } else {
-              // Fallback: restore original scroll position
-              $('html, body').animate({
-                scrollTop: scrollPosition
-              }, 300);
-            }
-          }, 150);
-        }
-      },
-      onCancel: function() {
-        // User cancelled, do nothing
+        modalBodyHtml += '<tr>' +
+          '<td style="text-align: center; vertical-align: middle;">' +
+          '<input type="radio" name="refund-line-select" class="refund-line-select" data-voucher-name="' + dataVoucherName + '" data-line-key="' + dataLineKey + '">' +
+          '</td>' +
+          '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '</td>' +
+          '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.productName || '') + '</td>' +
+          '<td style="text-align: right; vertical-align: middle;">' + Helpers.formatCurrency(line.totalPrice || 0) + '</td>' +
+          '<td style="text-align: right; vertical-align: middle;">' + totalQty + '</td>' +
+          '</tr>';
+      });
+      
+      modalBodyHtml += '</tbody></table></div>';
+    });
+    
+    modalBodyHtml += '<p style="font-size: 11px; color: #6b7280; margin-top: 12px;">Note: If the original voucher is no longer active, the employee will not be able to use this refunded voucher amount.</p>' +
+      '<div class="form-group" style="margin-top: 10px;">' +
+      '<label for="refund-quantity-input">Quantity to refund:</label>' +
+      '<input type="number" id="refund-quantity-input" class="form-control" min="1" value="1">' +
+      '</div>';
+    
+    var modalHtml = '<div class="modal fade" id="refund-quantity-modal" tabindex="-1">' +
+      '<div class="modal-dialog" style="max-width: 900px;">' +
+      '<div class="modal-content">' +
+      '<div class="modal-header">' +
+      '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+      '<h4 class="modal-title">' +
+      '<span class="glyphicon glyphicon-warning-sign text-warning"></span> Refund Order</h4>' +
+      '</div>' +
+      '<div class="modal-body" style="max-height: 600px; overflow-y: auto;">' +
+      modalBodyHtml +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button type="button" class="btn btn-default" id="refund-quantity-cancel-btn">Cancel</button>' +
+      '<button type="button" class="btn btn-warning" id="refund-quantity-confirm-btn">Confirm Refund</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+    
+    $('body').append(modalHtml);
+    $('#refund-quantity-modal').modal('show');
+    
+    // Store voucherGroups in modal data for use in confirm handler
+    $('#refund-quantity-modal').data('voucher-groups', voucherGroups);
+    $('#refund-quantity-modal').data('voucher-lines', voucherLines);
+    
+    // Handle confirm
+    $(document).off('click', '#refund-quantity-confirm-btn').on('click', '#refund-quantity-confirm-btn', function() {
+      // Determine selected voucher line
+      var selectedRadio = $('.refund-line-select:checked');
+      if (!selectedRadio.length) {
+        Helpers.showAlert('Please select a line item to refund.', 'warning');
+        return;
       }
+      
+      var lineKey = selectedRadio.data('line-key');
+      var voucherName = selectedRadio.data('voucher-name');
+      var storedGroups = $('#refund-quantity-modal').data('voucher-groups');
+      
+      // Find the line from the voucher group
+      var line = null;
+      if (storedGroups && storedGroups[voucherName]) {
+        var parts = lineKey.split('|');
+        var lineIdx = parseInt(parts[1], 10);
+        if (!isNaN(lineIdx) && storedGroups[voucherName].lines && storedGroups[voucherName].lines[lineIdx]) {
+          line = storedGroups[voucherName].lines[lineIdx];
+        }
+      }
+      
+      if (!line) {
+        Helpers.showAlert('Invalid line selection for refund.', 'danger');
+        return;
+      }
+      var totalQty = line.quantity || 0;
+      var voucherAmount = line.voucherAmountPaid || 0;
+      var alreadyRefunded = line.refundedAmount || 0;
+      var remainingVoucher = voucherAmount - alreadyRefunded;
+      var perUnitVoucher = totalQty > 0 ? voucherAmount / totalQty : 0;
+      var maxRefundQty = (perUnitVoucher > 0 && remainingVoucher > 0) ? Math.floor(remainingVoucher / perUnitVoucher) : 0;
+      
+      if (maxRefundQty <= 0) {
+        Helpers.showAlert('No remaining voucher amount available to refund for the selected line item.', 'warning');
+        return;
+      }
+      
+      var qtyToRefund = parseInt($('#refund-quantity-input').val(), 10);
+      if (isNaN(qtyToRefund) || qtyToRefund <= 0) {
+        Helpers.showAlert('Please enter a valid quantity to refund.', 'warning');
+        return;
+      }
+      if (qtyToRefund > maxRefundQty) {
+        Helpers.showAlert('Quantity to refund for this line cannot exceed ' + maxRefundQty + '.', 'warning');
+        return;
+      }
+      
+      // Calculate refund amount for selected quantity (rounded to 2 decimals)
+      var refundAmountForQty = Math.round(perUnitVoucher * qtyToRefund * 100) / 100;
+      if (refundAmountForQty <= 0) {
+        Helpers.showAlert('Calculated refund amount is zero. Please adjust the quantity.', 'warning');
+        return;
+      }
+      
+      // Find the actual transaction in AppState.transactions (not filtered) to update it
+      var allTransactions = AppState.transactions;
+      var actualTransaction = allTransactions.find(function(t) {
+        return t.orderId === orderId && 
+               t.surewerxPartNumber === line.surewerxPartNumber &&
+               t.quantity === line.quantity &&
+               t.totalPrice === line.totalPrice;
+      });
+      
+      if (!actualTransaction) {
+        $('#refund-quantity-modal').modal('hide');
+        Helpers.showAlert('Transaction not found in system', 'danger');
+        return;
+      }
+      
+      // Process refund - accumulate refunded amount
+      if (!actualTransaction.refundedAmount) {
+        actualTransaction.refundedAmount = 0;
+      }
+      actualTransaction.refundedAmount += refundAmountForQty;
+      // Cap at total voucher amount
+      if (actualTransaction.refundedAmount > voucherAmount) {
+        actualTransaction.refundedAmount = voucherAmount;
+      }
+      
+      // Calculate remaining balance on item:
+      // Item Total - (Voucher Applied - Vouchers Refunded)
+      var effectiveVoucher = (actualTransaction.voucherAmountPaid || 0) - (actualTransaction.refundedAmount || 0);
+      if (effectiveVoucher < 0) effectiveVoucher = 0;
+      actualTransaction.remainingBalance = actualTransaction.totalPrice - effectiveVoucher;
+      
+      // Do NOT change the status - keep original status
+      
+      $('#refund-quantity-modal').modal('hide');
+      
+      // Re-render transactions to show updated state
+      if (self.hasSearched) {
+        $('.panel-default').last().replaceWith(self.renderTransactions());
+        Helpers.showAlert('Refund processed successfully', 'success');
+        
+        // Restore scroll position to show the refunded item
+        setTimeout(function() {
+          // Try to find the same order element after re-render
+          var newOrderElement = $('.transaction-order').filter(function() {
+            var orderHeader = $(this).find('.order-header');
+            return orderHeader.length > 0 && orderHeader.text().indexOf('Order #' + orderId) !== -1;
+          }).first();
+          
+          if (newOrderElement.length > 0) {
+            // Calculate the new scroll position to show the order
+            var newScrollPosition = newOrderElement.offset().top - (orderElementOffset || 0);
+            // Ensure we don't scroll to negative position
+            newScrollPosition = Math.max(0, newScrollPosition);
+            
+            $('html, body').animate({
+              scrollTop: newScrollPosition
+            }, 300);
+          } else {
+            // Fallback: restore original scroll position
+            $('html, body').animate({
+              scrollTop: scrollPosition
+            }, 300);
+          }
+        }, 150);
+      }
+    });
+    
+    // Handle cancel
+    $(document).off('click', '#refund-quantity-cancel-btn').on('click', '#refund-quantity-cancel-btn', function() {
+      $('#refund-quantity-modal').modal('hide');
+    });
+    
+    // Cleanup on hide
+    $('#refund-quantity-modal').on('hidden.bs.modal', function() {
+      $(this).remove();
     });
   },
   
@@ -1249,6 +1534,7 @@ var ReportingComponent = {
         if (item.voucherAmountPaid && item.voucherAmountPaid > 0) {
           totalVoucherPaid += item.voucherAmountPaid;
         }
+        // Sum up refunded amounts (handles partial refunds correctly)
         if (item.refundedAmount && item.refundedAmount > 0) {
           totalRefunded += item.refundedAmount;
         }
@@ -1259,6 +1545,7 @@ var ReportingComponent = {
       var totalCreditCardPaid = originalCreditCardPaid;
       
       // Calculate remaining balance: Grand Total - Vouchers Refunded
+      // This correctly handles partial refunds since totalRefunded is the sum of all refunded amounts
       var orderRemainingBalance = grandTotal - totalRefunded;
       
       // Find product to get distributor SKU for each item
@@ -1273,7 +1560,6 @@ var ReportingComponent = {
           'Invoice Number': item.invoiceNumber || '',
           'Invoice Date': item.invoiceDate || '',
           'Invoice Due Date': item.invoiceDueDate || '',
-          'Invoice Terms': item.terms || '',
           'Shipping Address': (item.shippingAddress || '').replace(/<br>/g, ', '),
           'Shipping Carrier': item.shippingCarrier || '',
           'Shipping Method': item.shippingMethod || '',
@@ -1303,6 +1589,7 @@ var ReportingComponent = {
           'Line Status': item.lineStatus,
           'Voucher Amount Paid': (item.voucherAmountPaid || 0).toFixed(2),
           'Voucher Name': item.voucherUsed || '',
+          // Refunded Amount correctly handles partial refunds - it contains the actual refunded amount for this line item
           'Refunded Amount': (item.refundedAmount || 0).toFixed(2),
           'Payment Method': item.paymentMethod || ''
         };

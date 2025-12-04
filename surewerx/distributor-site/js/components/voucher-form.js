@@ -50,9 +50,12 @@ var VoucherFormComponent = {
         $('#voucher-end-date').val(formData.endDate || '');
         $('#voucher-active').prop('checked', formData.isActive !== false);
         $('#voucher-rollover').prop('checked', formData.rolloverEnabled || false);
-        if (formData.userGroupId) {
-          $('#voucher-user-group').val(formData.userGroupId);
-          this.updateGroupProductsDisplay(formData.userGroupId);
+        if (formData.departmentId) {
+          $('#voucher-department').val(formData.departmentId);
+          if (formData.locationId) {
+            $('#voucher-department option[value="' + formData.departmentId + '"]').attr('data-location-id', formData.locationId);
+          }
+          this.updateDepartmentProductsDisplay(formData.departmentId, formData.locationId);
         }
         sessionStorage.removeItem('voucherFormData');
       } catch (e) {
@@ -71,9 +74,9 @@ var VoucherFormComponent = {
     if (savedProducts && this.isReturningFromProductSelection) {
       try {
         this.selectedProductIds = JSON.parse(savedProducts);
-        // If a user group is already selected, update the summary
-        var selectedGroupId = $('#voucher-user-group').val();
-        if (selectedGroupId) {
+        // If a department is already selected, update the summary
+        var selectedDepartmentId = $('#voucher-department').val();
+        if (selectedDepartmentId) {
           this.updateSelectedProductsSummary();
         }
         // Don't remove from sessionStorage yet - keep it until form is submitted or cancelled
@@ -83,9 +86,8 @@ var VoucherFormComponent = {
     } else if (voucher && !this.isReturningFromProductSelection) {
       // Only load from voucher if we're not returning from product selection
       // This is already handled in populateForm, but we need to make sure it's called
-      if (voucher.userGroupIds && voucher.userGroupIds.length > 0) {
-        var groupId = voucher.userGroupIds[0];
-        this.updateGroupProductsDisplay(groupId);
+      if (voucher.departmentId) {
+        this.updateDepartmentProductsDisplay(voucher.departmentId, voucher.locationId);
       }
     } else if (!voucher && !this.isReturningFromProductSelection) {
       // For new vouchers, clear any stale sessionStorage data
@@ -100,100 +102,117 @@ var VoucherFormComponent = {
     var html = Templates.header() +
       '<div class="container-fluid">' +
       '<div class="row">' +
-      '<div class="col-md-8 col-md-offset-2">' +
-      '<div style="margin-top: 20px; margin-bottom: 20px;">' +
-      '<button class="btn btn-default" id="back-to-partner">' +
-      '<span class="glyphicon glyphicon-chevron-left"></span> Back to Partner' +
+      '<div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">' +
+      '<div style="margin-top: 15px; margin-bottom: 10px;">' +
+      '<button class="btn btn-default btn-sm" id="back-to-vouchers">' +
+      '<span class="glyphicon glyphicon-chevron-left"></span> Back to Vouchers' +
       '</button>' +
-      '<h2 style="margin-top: 10px;">' + (isEdit ? 'Edit Voucher' : 'Create New Voucher') + '</h2>' +
-      '<p class="text-muted">' + 
-      (isEdit ? 'Update voucher settings. Changes will affect the assigned user group.' : 'Create a voucher that can be assigned to a user group') +
+      '</div>' +
+      '<div style="margin-bottom: 15px;">' +
+      '<h3 style="margin: 0 0 4px 0;">' + (isEdit ? 'Edit Voucher' : 'Create New Voucher') + '</h3>' +
+      '<p class="text-muted" style="margin: 0; font-size: 12px;">' + 
+      (isEdit ? 'Update the active/inactive status of this voucher. To modify other voucher details, create a new voucher.' : 'Create a voucher and assign it to a department.') +
       '</p>' +
       '</div>' +
       
       '<form id="voucher-form">' +
       
-      // Basic Information
+      // Voucher Details (Basic Information + Department Assignment, condensed)
       '<div class="panel panel-default">' +
       '<div class="panel-heading">' +
-      '<h3 class="panel-title">Basic Information</h3>' +
+      '<h3 class="panel-title">Voucher Details</h3>' +
       '</div>' +
       '<div class="panel-body">' +
       
-      '<div class="form-group">' +
+      // Name + Amount
+      '<div class="row">' +
+      '<div class="col-sm-7">' +
+      '<div class="form-group" style="margin-bottom: 10px;">' +
       '<label for="voucher-name">Voucher Name <span class="text-danger">*</span></label>' +
       '<input type="text" class="form-control" id="voucher-name" placeholder="e.g., Monthly Equipment Allowance" required>' +
       '</div>' +
-      
-      '<div class="form-group">' +
-      '<label for="voucher-description">Description</label>' +
-      '<textarea class="form-control" id="voucher-description" rows="3" placeholder="Describe what this voucher can be used for..."></textarea>' +
       '</div>' +
-      
-      '<div class="row">' +
-      '<div class="col-md-4">' +
-      '<div class="form-group">' +
-      '<label for="voucher-amount">Voucher Amount <span class="text-danger">*</span></label>' +
-      '<div class="input-group" style="max-width: 200px;">' +
+      '<div class="col-sm-5">' +
+      '<div class="form-group" style="margin-bottom: 10px;">' +
+      '<label for="voucher-amount">Amount <span class="text-danger">*</span></label>' +
+      '<div class="input-group" style="max-width: 220px;">' +
       '<span class="input-group-addon">$</span>' +
       '<input type="number" class="form-control" id="voucher-amount" step="0.01" min="0" placeholder="0.00" required>' +
       '</div>' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-4">' +
-      '<div class="form-group">' +
+      '</div>' +
+      
+      // Description (under voucher name)
+      '<div class="form-group" style="margin-bottom: 10px;">' +
+      '<label for="voucher-description">Description</label>' +
+      '<small class="text-muted" style="display: block; margin-bottom: 4px;">This description will be shown to employees during purchase.</small>' +
+      '<textarea class="form-control" id="voucher-description" rows="2" placeholder="Describe what this voucher can be used for..."></textarea>' +
+      '</div>' +
+      
+      // Dates
+      '<div class="row">' +
+      '<div class="col-sm-6">' +
+      '<div class="form-group" style="margin-bottom: 10px;">' +
       '<label for="voucher-start-date">Start Date <span class="text-danger">*</span></label>' +
       '<input type="date" class="form-control" id="voucher-start-date" required>' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-4">' +
-      '<div class="form-group">' +
+      '<div class="col-sm-6">' +
+      '<div class="form-group" style="margin-bottom: 10px;">' +
       '<label for="voucher-end-date">End Date <span class="text-danger">*</span></label>' +
       '<input type="date" class="form-control" id="voucher-end-date" required>' +
       '</div>' +
       '</div>' +
       '</div>' +
       
-      '<div class="checkbox">' +
+      // Status / Rollover
+      '<div class="row" style="margin-bottom: 10px;">' +
+      '<div class="col-sm-7">' +
+      '<div class="checkbox" style="margin-top: 5px; margin-bottom: 5px;">' +
       '<label>' +
       '<input type="checkbox" id="voucher-active" checked> ' +
       '<strong>Active</strong> - Voucher is currently active and can be used' +
       '</label>' +
       '</div>' +
-      
-      '<div class="checkbox">' +
+      '</div>' +
+      '<div class="col-sm-5">' +
+      '<div class="checkbox" style="margin-top: 5px; margin-bottom: 5px;">' +
       '<label>' +
       '<input type="checkbox" id="voucher-rollover"> ' +
-      '<strong>Rollover Enabled</strong> - Allow unused balance to carry over to the next period' +
+      '<strong>Rollover Enabled</strong> - Unused credit carries over to future orders until limit reached or voucher expires' +
       '</label>' +
       '</div>' +
-      
       '</div>' +
       '</div>' +
       
-      // User Group Assignment
-      '<div class="panel panel-default">' +
-      '<div class="panel-heading">' +
-      '<h3 class="panel-title">User Group Assignment</h3>' +
-      '</div>' +
-      '<div class="panel-body">' +
-      
-      '<div class="alert alert-info">' +
-      '<span class="glyphicon glyphicon-info-sign"></span> ' +
-      'Vouchers are assigned to a single user group.' +
-      '</div>' +
-      
-      '<div class="form-group">' +
-      '<label for="voucher-user-group">Assign to User Group <span class="text-danger">*</span></label>' +
-      '<select class="form-control" id="voucher-user-group" required>' +
-      '<option value="">Select a user group...</option>';
+      // Department Assignment
+      '<div class="form-group" style="margin-bottom: 10px;">' +
+      '<label for="voucher-department">Assign to Department <span class="text-danger">*</span></label>' +
+      '<small class="text-muted" style="display: block; margin-bottom: 4px;">Choose a department to control who can use this voucher.</small>' +
+      '<select class="form-control" id="voucher-department" required>' +
+      '<option value="">Select a department...</option>';
     
-    // Show all groups
-    partner.groups.forEach(function(group) {
-      html += '<option value="' + group.id + '">' +
-        Helpers.escapeHtml(group.name) + ' (' + group.employeeCount + ' employees)' +
-        '</option>';
-    });
+    // Show all departments organized by location
+    if (partner.locations && partner.locations.length > 0) {
+      partner.locations.forEach(function(location) {
+        if (location.departments && location.departments.length > 0) {
+          location.departments.forEach(function(department) {
+            var locationLabel = location.locationId || 'Location';
+            html += '<option value="' + department.id + '" data-location-id="' + location.id + '">' +
+              Helpers.escapeHtml(locationLabel + ' - ' + department.name) + ' (' + (department.employeeCount || 0) + ' employees)' +
+              '</option>';
+          });
+        }
+      });
+    } else if (partner.groups && partner.groups.length > 0) {
+      // Fallback to old groups structure if locations don't exist
+      partner.groups.forEach(function(group) {
+        html += '<option value="' + group.id + '">' +
+          Helpers.escapeHtml(group.name) + ' (' + (group.employeeCount || 0) + ' employees)' +
+          '</option>';
+      });
+    }
     
       html += '</select>' +
       '</div>' +
@@ -207,20 +226,24 @@ var VoucherFormComponent = {
       '<h3 class="panel-title">Qualified Products</h3>' +
       '</div>' +
       '<div class="panel-body">' +
-      
-      '<p class="text-muted">Choose which products this voucher can be applied to. Qualified products must be a subset of the visible products for the selected user group.</p>' +
-      
-      '<div class="form-group">' +
-      '<button type="button" class="btn btn-primary" id="select-qualified-products-btn">' +
-      '<span class="glyphicon glyphicon-list"></span> Select Qualified Products' +
-      '</button>' +
-      '</div>' +
-      
-      '<div id="selected-products-summary" style="display: none; margin-top: 15px; padding: 15px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">' +
-      '<strong><span id="selected-products-count">0</span> product(s) selected</strong>' +
-      '<div id="selected-products-list" style="margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>' +
-      '</div>' +
-      
+      (isEdit ? 
+        // Read-only display for editing
+        '<div id="voucher-products-readonly">' +
+        '<p class="text-muted" style="margin-bottom: 12px;">Products that can be purchased with this voucher:</p>' +
+        '<div id="voucher-products-list" style="max-height: 300px; overflow-y: auto;"></div>' +
+        '</div>' :
+        // Editable interface for creating
+        '<p class="text-muted" style="margin-bottom: 8px;">Choose which products this voucher can be applied to. These must be a subset of the products visible to the selected department.</p>' +
+        '<div class="form-group">' +
+        '<button type="button" class="btn btn-primary" id="select-qualified-products-btn">' +
+        '<span class="glyphicon glyphicon-list"></span> Select Qualified Products' +
+        '</button>' +
+        '</div>' +
+        '<div id="selected-products-summary" style="display: none; margin-top: 15px; padding: 15px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">' +
+        '<strong><span id="selected-products-count">0</span> product(s) selected</strong>' +
+        '<div id="selected-products-list" style="margin-top: 10px; max-height: 200px; overflow-y: auto;"></div>' +
+        '</div>'
+      ) +
       '</div>' +
       '</div>' +
       
@@ -228,13 +251,14 @@ var VoucherFormComponent = {
       '<div class="form-group">' +
       '<button type="submit" class="btn btn-primary">' +
       '<span class="glyphicon glyphicon-floppy-disk"></span> ' +
-      (isEdit ? 'Update Voucher' : 'Create Voucher') +
+      (isEdit ? 'Update Status' : 'Create Voucher') +
       '</button> ' +
       '<button type="button" class="btn btn-default" id="cancel-voucher-form">Cancel</button>' +
-      (isEdit ? ' <button type="button" class="btn btn-danger" id="delete-voucher-btn" style="float: right;">' +
-      '<span class="glyphicon glyphicon-trash"></span> Delete Voucher' +
-      '</button>' : '') +
       '</div>' +
+      (isEdit ? '<div class="alert alert-info" style="margin-top: 15px; font-size: 12px;">' +
+      '<strong>Note:</strong> Once a voucher has been created, only the Active/Inactive status can be changed. ' +
+      'To modify other voucher details, please create a new voucher.' +
+      '</div>' : '') +
       
       '</form>' +
       
@@ -255,23 +279,113 @@ var VoucherFormComponent = {
     $('#voucher-active').prop('checked', voucher.isActive);
     $('#voucher-rollover').prop('checked', voucher.rolloverEnabled || false);
     
-    if (voucher.userGroupIds && voucher.userGroupIds.length > 0) {
-      $('#voucher-user-group').val(voucher.userGroupIds[0]);
-      this.updateGroupProductsDisplay(voucher.userGroupIds[0]);
+    // When editing, disable all fields except active/inactive checkbox
+    if (this.voucherId) {
+      $('#voucher-name').prop('disabled', true);
+      $('#voucher-description').prop('disabled', true);
+      $('#voucher-amount').prop('disabled', true);
+      $('#voucher-start-date').prop('disabled', true);
+      $('#voucher-end-date').prop('disabled', true);
+      $('#voucher-rollover').prop('disabled', true);
+      $('#voucher-department').prop('disabled', true);
+      $('#select-qualified-products-btn').prop('disabled', true);
+    }
+    
+    // Try new structure first (departmentId/locationId)
+    if (voucher.departmentId) {
+      $('#voucher-department').val(voucher.departmentId);
+      if (voucher.locationId) {
+        $('#voucher-department option[value="' + voucher.departmentId + '"]').attr('data-location-id', voucher.locationId);
+      }
+      this.updateDepartmentProductsDisplay(voucher.departmentId, voucher.locationId);
       
       // Set selected products
       if (voucher.productIds) {
         this.selectedProductIds = voucher.productIds.slice();
-        this.updateSelectedProductsSummary();
+        if (this.voucherId) {
+          // When editing, always show the panel and display products in read-only format
+          $('#qualified-products-panel').show();
+          this.displayVoucherProducts(voucher.productIds);
+        } else {
+          this.updateSelectedProductsSummary();
+        }
+      } else if (this.voucherId) {
+        // When editing, show panel even if no products
+        $('#qualified-products-panel').show();
+        this.displayVoucherProducts([]);
+      }
+    } else if (voucher.departmentId) {
+      // Use department structure
+      $('#voucher-department').val(voucher.departmentId);
+      if (voucher.locationId) {
+        $('#voucher-department option[value="' + voucher.departmentId + '"]').attr('data-location-id', voucher.locationId);
+      }
+      this.updateDepartmentProductsDisplay(voucher.departmentId, voucher.locationId);
+      
+      // Set selected products
+      if (voucher.productIds) {
+        this.selectedProductIds = voucher.productIds.slice();
+        if (this.voucherId) {
+          // When editing, always show the panel and display products in read-only format
+          $('#qualified-products-panel').show();
+          this.displayVoucherProducts(voucher.productIds);
+        } else {
+          this.updateSelectedProductsSummary();
+        }
+      } else if (this.voucherId) {
+        // When editing, show panel even if no products
+        $('#qualified-products-panel').show();
+        this.displayVoucherProducts([]);
+      }
+    } else if (this.voucherId) {
+      // When editing but no department, still show products if they exist
+      if (voucher.productIds && voucher.productIds.length > 0) {
+        $('#qualified-products-panel').show();
+        this.displayVoucherProducts(voucher.productIds);
       }
     }
+  },
+  
+  displayVoucherProducts: function(productIds) {
+    if (!productIds || productIds.length === 0) {
+      $('#voucher-products-list').html('<p class="text-muted">No products assigned to this voucher.</p>');
+      return;
+    }
+    
+    var products = AppState.products.filter(function(p) {
+      return productIds.indexOf(p.id) !== -1;
+    });
+    
+    if (products.length === 0) {
+      $('#voucher-products-list').html('<p class="text-muted">No products found.</p>');
+      return;
+    }
+    
+    var html = '<div class="list-group">';
+    products.forEach(function(product) {
+      html += '<div class="list-group-item" style="padding: 10px 15px;">' +
+        '<div style="display: flex; justify-content: space-between; align-items: center;">' +
+        '<div>' +
+        '<strong style="font-size: 13px; color: #333;">' + Helpers.escapeHtml(product.name || 'Unnamed Product') + '</strong>' +
+        (product.surewerxSku ? '<br><span class="text-muted" style="font-size: 11px;">SKU: ' + Helpers.escapeHtml(product.surewerxSku) + '</span>' : '') +
+        (product.category ? '<br><span class="text-muted" style="font-size: 11px;">Category: ' + Helpers.escapeHtml(product.category) + '</span>' : '') +
+        '</div>' +
+        (product.price ? '<div style="text-align: right;">' +
+        '<span style="font-weight: 600; color: #2c3e50; font-size: 13px;">' + Helpers.formatCurrency(product.price) + '</span>' +
+        '</div>' : '') +
+        '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+    
+    $('#voucher-products-list').html(html);
   },
   
   attachEvents: function() {
     var self = this;
     
-    // Back button
-    $(document).on('click', '#back-to-partner', function() {
+    // Back to vouchers button
+    $(document).on('click', '#back-to-vouchers', function() {
       App.navigate('customer-detail', { customerId: self.customerId, tab: 'vouchers' });
     });
     
@@ -283,25 +397,25 @@ var VoucherFormComponent = {
       App.navigate('customer-detail', { customerId: self.customerId, tab: 'vouchers' });
     });
     
-    // Delete voucher button (only shown when editing)
-    $(document).on('click', '#delete-voucher-btn', function() {
-      self.deleteVoucher();
-    });
     
-    // User group selection
-    $(document).on('change', '#voucher-user-group', function() {
-      var groupId = $(this).val();
-      self.updateGroupProductsDisplay(groupId);
+    // Department selection
+    $(document).on('change', '#voucher-department', function() {
+      var departmentId = $(this).val();
+      var selectedOption = $(this).find('option:selected');
+      var locationId = selectedOption.data('location-id');
+      self.updateDepartmentProductsDisplay(departmentId, locationId);
     });
     
     // Select qualified products button
     $(document).on('click', '#select-qualified-products-btn', function() {
-      var userGroupId = $('#voucher-user-group').val();
-      if (!userGroupId) {
-        Helpers.showAlert('Please select a user group first', 'warning');
+      var departmentId = $('#voucher-department').val();
+      if (!departmentId) {
+        Helpers.showAlert('Please select a department first', 'warning');
         return;
       }
       
+      var selectedOption = $('#voucher-department option:selected');
+      var locationId = selectedOption.data('location-id');
       // Store current form data temporarily (for both new and edit)
       var formData = {
         name: $('#voucher-name').val(),
@@ -311,7 +425,8 @@ var VoucherFormComponent = {
         endDate: $('#voucher-end-date').val(),
         isActive: $('#voucher-active').prop('checked'),
         rolloverEnabled: $('#voucher-rollover').prop('checked'),
-        userGroupId: userGroupId
+        departmentId: departmentId,
+        locationId: locationId || null
       };
       
       // Store in sessionStorage to preserve form data
@@ -323,7 +438,10 @@ var VoucherFormComponent = {
       if (self.voucherId) {
         url += '&voucherId=' + encodeURIComponent(self.voucherId);
       }
-      url += '&userGroupId=' + encodeURIComponent(userGroupId);
+      url += '&departmentId=' + encodeURIComponent(departmentId);
+      if (locationId) {
+        url += '&locationId=' + encodeURIComponent(locationId);
+      }
       window.location.href = url;
     });
     
@@ -334,17 +452,46 @@ var VoucherFormComponent = {
     });
   },
   
-  updateGroupProductsDisplay: function(groupId) {
+  updateDepartmentProductsDisplay: function(departmentId, locationId) {
     var self = this;
-    if (!groupId) {
+    if (!departmentId) {
       $('#qualified-products-panel').hide();
       return;
     }
     
     var partner = AppState.getCustomerById(this.customerId);
-    var group = partner.groups.find(function(g) { return g.id === groupId; });
+    var department = null;
     
-    if (!group) {
+    // Use department structure (locations -> departments)
+    if (locationId && partner.locations && partner.locations.length > 0) {
+      var location = partner.locations.find(function(l) { return l.id === locationId; });
+      if (location && location.departments) {
+        department = location.departments.find(function(d) { return d.id === departmentId; });
+      }
+    }
+    
+    // Fallback: search all locations if locationId not provided
+    if (!department && partner.locations && partner.locations.length > 0) {
+      for (var i = 0; i < partner.locations.length; i++) {
+        var loc = partner.locations[i];
+        if (loc.departments) {
+          department = loc.departments.find(function(d) { return d.id === departmentId; });
+          if (department) {
+            locationId = loc.id;
+            // Update the select option with locationId
+            $('#voucher-department option[value="' + departmentId + '"]').attr('data-location-id', locationId);
+            break;
+          }
+        }
+      }
+    }
+    
+    // Fallback to old groups structure if locations don't exist
+    if (!department && partner.groups && partner.groups.length > 0) {
+      department = partner.groups.find(function(g) { return g.id === departmentId; });
+    }
+    
+    if (!department && !this.voucherId) {
       $('#qualified-products-panel').hide();
       return;
     }
@@ -352,8 +499,18 @@ var VoucherFormComponent = {
     // Show qualified products panel
     $('#qualified-products-panel').show();
     
+    // Only scroll to qualified products section for new vouchers
+    if (!this.voucherId) {
+      var $panel = $('#qualified-products-panel');
+      if ($panel.length) {
+        $('html, body').animate({
+          scrollTop: $panel.offset().top - 80
+        }, 300);
+      }
+    }
+    
     // Only load selected products from sessionStorage if we're returning from product selection page
-    // Don't load stale sessionStorage data when user just selects a group for a new voucher
+    // Don't load stale sessionStorage data when user just selects a department for a new voucher
     if (this.isReturningFromProductSelection) {
     var savedProducts = sessionStorage.getItem('voucherSelectedProducts');
     if (savedProducts) {
@@ -368,12 +525,14 @@ var VoucherFormComponent = {
       }
       }
     } else if (!this.voucherId) {
-      // For new vouchers, ensure selectedProductIds is empty when selecting a group
+      // For new vouchers, ensure selectedProductIds is empty when selecting a department
       this.selectedProductIds = [];
     }
     
-    // Update selected products summary
-    this.updateSelectedProductsSummary();
+    // Update selected products summary (only for new vouchers)
+    if (!this.voucherId) {
+      this.updateSelectedProductsSummary();
+    }
   },
   
   updateSelectedProductsSummary: function() {
@@ -394,7 +553,34 @@ var VoucherFormComponent = {
     var self = this;
     var partner = AppState.getCustomerById(this.customerId);
     
-    // Get form values
+    if (this.voucherId) {
+      // When editing, only allow updating active/inactive status
+      var isActive = $('#voucher-active').prop('checked');
+      
+      UIHelpers.showLoadingSpinner('Updating voucher status...');
+      
+      setTimeout(function() {
+        var updatedVouchers = partner.vouchers.map(function(v) {
+          if (v.id === self.voucherId) {
+            return Object.assign({}, v, { isActive: isActive });
+          }
+          return v;
+        });
+        
+        AppState.updateCustomer(self.customerId, {
+          vouchers: updatedVouchers,
+          activeVouchers: updatedVouchers.filter(function(v) { return v.isActive; }).length
+        });
+        
+        UIHelpers.hideLoadingSpinner();
+        Helpers.showAlert('Voucher status updated successfully', 'success');
+        App.navigate('customer-detail', { customerId: self.customerId, tab: 'vouchers' });
+      }, 500);
+      
+      return;
+    }
+    
+    // Get form values for new voucher
     var name = $('#voucher-name').val().trim();
     var description = $('#voucher-description').val().trim();
     var defaultAmount = parseFloat($('#voucher-amount').val());
@@ -402,7 +588,9 @@ var VoucherFormComponent = {
     var endDate = $('#voucher-end-date').val();
     var isActive = $('#voucher-active').prop('checked');
     var rolloverEnabled = $('#voucher-rollover').prop('checked');
-    var userGroupId = $('#voucher-user-group').val();
+    var departmentId = $('#voucher-department').val();
+    var selectedOption = $('#voucher-department option:selected');
+    var locationId = selectedOption.data('location-id');
     
     // Validation
     if (!name || !defaultAmount || !startDate || !endDate) {
@@ -410,15 +598,30 @@ var VoucherFormComponent = {
       return;
     }
     
-    if (!userGroupId) {
-      Helpers.showAlert('Please select a user group for this voucher', 'warning');
+    if (!departmentId) {
+      Helpers.showAlert('Please select a department for this voucher', 'warning');
       return;
     }
     
-    // Get products
-    var group = partner.groups.find(function(g) { return g.id === userGroupId; });
-    if (!group) {
-      Helpers.showAlert('Selected user group not found', 'warning');
+    // Get department
+    var department = null;
+    if (locationId && partner.locations) {
+      var location = partner.locations.find(function(l) { return l.id === locationId; });
+      if (location && location.departments) {
+        department = location.departments.find(function(d) { return d.id === departmentId; });
+      }
+    }
+    
+    // Fallback to old groups structure
+    if (!department && partner.groups) {
+      var group = partner.groups.find(function(g) { return g.id === departmentId; });
+      if (group) {
+        department = group;
+      }
+    }
+    
+    if (!department) {
+      Helpers.showAlert('Selected department not found', 'warning');
       return;
     }
     
@@ -438,24 +641,20 @@ var VoucherFormComponent = {
       return;
     }
     
-    // VALIDATION: Check for duplicate product assignments in other ACTIVE vouchers within same group
-    // IMPORTANT: Exclude the current voucher being edited to allow updating it with the same products
+    // VALIDATION: Check for duplicate product assignments in other ACTIVE vouchers within same department
     var existingActiveVouchers = partner.vouchers.filter(function(v) {
-      // Exclude current voucher if editing (must match exactly)
-      if (self.voucherId && String(v.id) === String(self.voucherId)) {
-        return false;
+      // Only check ACTIVE vouchers assigned to the same department
+      if (v.departmentId && v.departmentId === departmentId) {
+        if (locationId && v.locationId) {
+          return v.locationId === locationId;
+        }
+        return !locationId && !v.locationId;
       }
-      // Only check ACTIVE vouchers assigned to the same group
-      return v.isActive && v.userGroupIds && v.userGroupIds.indexOf(userGroupId) !== -1;
+      return false;
     });
     
     var duplicateProducts = [];
     existingActiveVouchers.forEach(function(voucher) {
-      // Double-check: skip if this is the voucher being edited (defensive check)
-      if (self.voucherId && String(voucher.id) === String(self.voucherId)) {
-        return;
-      }
-      
       productIds.forEach(function(pid) {
         if (voucher.productIds && voucher.productIds.indexOf(pid) !== -1) {
           var product = AppState.products.find(function(p) { return p.id === pid; });
@@ -482,12 +681,12 @@ var VoucherFormComponent = {
       if (duplicateProducts.length > 5) {
         errorMsg += '... and ' + (duplicateProducts.length - 5) + ' more\\n';
       }
-      errorMsg += '\\nEach product can only be assigned to one active voucher per user group at a time.';
+      errorMsg += '\\nEach product can only be assigned to one active voucher per department at a time.';
       Helpers.showAlert(errorMsg, 'warning');
       return;
     }
     
-    UIHelpers.showLoadingSpinner(this.voucherId ? 'Updating voucher...' : 'Creating voucher...');
+    UIHelpers.showLoadingSpinner('Creating voucher...');
     
     setTimeout(function() {
       var voucherData = {
@@ -499,185 +698,63 @@ var VoucherFormComponent = {
         isActive: isActive,
         rolloverEnabled: rolloverEnabled,
         productIds: productIds,
-        userGroupIds: [userGroupId]
+        departmentId: departmentId,
+        locationId: locationId || null
       };
       
-      if (self.voucherId) {
-        // Edit existing voucher
-        var updatedVouchers = partner.vouchers.map(function(v) {
-          if (v.id === self.voucherId) {
-            return Object.assign({}, v, voucherData);
+      // Create new voucher
+      var newVoucher = Object.assign({
+        id: 'voucher_' + Date.now()
+      }, voucherData);
+      
+      var updatedVouchers = partner.vouchers.concat([newVoucher]);
+      
+      // Update employees in the selected department
+      var updatedEmployees = partner.employees.map(function(emp) {
+        // Check if employee belongs to this department (new structure)
+        var matchesDepartment = false;
+        if (emp.departmentId === departmentId) {
+          if (locationId && emp.locationId) {
+            matchesDepartment = emp.locationId === locationId;
+          } else if (!locationId && !emp.locationId) {
+            matchesDepartment = true;
           }
-          return v;
-        });
+        }
         
-        // Update employees with new voucher amounts
-        var updatedEmployees = partner.employees.map(function(emp) {
-          if (emp.groupId === userGroupId) {
-            var voucherBalances = emp.voucherBalances || [];
-            var existingBalance = voucherBalances.find(function(vb) {
-              return vb.voucherId === self.voucherId;
-            });
-            
-            if (existingBalance) {
-              voucherBalances = voucherBalances.map(function(vb) {
-                if (vb.voucherId === self.voucherId) {
-                  return Object.assign({}, vb, { remainingAmount: defaultAmount });
-                }
-                return vb;
-              });
-            } else {
-              voucherBalances.push({
-                voucherId: self.voucherId,
-                remainingAmount: defaultAmount
-              });
-            }
-            
-            var totalBalance = voucherBalances.reduce(function(sum, vb) {
-              return sum + vb.remainingAmount;
-            }, 0);
-            
-            return Object.assign({}, emp, {
-              voucherBalances: voucherBalances,
-              remainingBalance: totalBalance,
-              voucherExpiry: endDate
-            });
-          }
-          return emp;
-        });
-        
-        AppState.updateCustomer(self.customerId, {
-          vouchers: updatedVouchers,
-          employees: updatedEmployees
-        });
-        
-        // Clear sessionStorage
-        sessionStorage.removeItem('voucherFormData');
-        sessionStorage.removeItem('voucherSelectedProducts');
-        
-        UIHelpers.hideLoadingSpinner();
-        Helpers.showAlert('Voucher updated successfully', 'success');
-        App.navigate('customer-detail', { customerId: self.customerId, tab: 'vouchers' });
-        
-      } else {
-        // Create new voucher
-        var newVoucher = Object.assign({
-          id: 'voucher_' + Date.now()
-        }, voucherData);
-        
-        var updatedVouchers = partner.vouchers.concat([newVoucher]);
-        
-        // Update employees in the selected user group
-        var updatedEmployees = partner.employees.map(function(emp) {
-          if (emp.groupId === userGroupId) {
-            var voucherBalances = emp.voucherBalances || [];
-            voucherBalances.push({
-              voucherId: newVoucher.id,
-              remainingAmount: defaultAmount
-            });
-            
-            var totalBalance = voucherBalances.reduce(function(sum, vb) {
-              return sum + vb.remainingAmount;
-            }, 0);
-            
-            return Object.assign({}, emp, {
-              voucherBalances: voucherBalances,
-              remainingBalance: totalBalance,
-              voucherExpiry: endDate
-            });
-          }
-          return emp;
-        });
-        
-        AppState.updateCustomer(self.customerId, {
-          vouchers: updatedVouchers,
-          employees: updatedEmployees,
-          activeVouchers: updatedVouchers.filter(function(v) { return v.isActive; }).length
-        });
-        
-        // Clear sessionStorage
-        sessionStorage.removeItem('voucherFormData');
-        sessionStorage.removeItem('voucherSelectedProducts');
-        
-        UIHelpers.hideLoadingSpinner();
-        Helpers.showAlert('Voucher created successfully', 'success');
-        App.navigate('customer-detail', { customerId: self.customerId, tab: 'vouchers' });
-      }
-    }, 500);
-  },
-  
-  deleteVoucher: function() {
-    var self = this;
-    if (!this.voucherId) {
-      return; // Can't delete if not editing
-    }
-    
-    var partner = AppState.getCustomerById(this.customerId);
-    var voucher = partner.vouchers.find(function(v) { return v.id === self.voucherId; });
-    
-    if (!voucher) {
-      Helpers.showAlert('Voucher not found', 'error');
-      return;
-    }
-    
-    // Check if voucher is assigned to any employees
-    var affectedEmployees = partner.employees.filter(function(e) {
-      return e.voucherBalances && e.voucherBalances.some(function(vb) {
-        return vb.voucherId === self.voucherId;
+        if (matchesDepartment) {
+          var voucherBalances = emp.voucherBalances || [];
+          voucherBalances.push({
+            voucherId: newVoucher.id,
+            remainingAmount: defaultAmount
+          });
+          
+          var totalBalance = voucherBalances.reduce(function(sum, vb) {
+            return sum + vb.remainingAmount;
+          }, 0);
+          
+          return Object.assign({}, emp, {
+            voucherBalances: voucherBalances,
+            remainingBalance: totalBalance,
+            voucherExpiry: endDate
+          });
+        }
+        return emp;
       });
-    }).length;
-    
-    var message = 'Are you sure you want to delete the voucher "' + voucher.name + '"?';
-    
-    if (affectedEmployees > 0) {
-      message += '\n\nWarning: This voucher is currently assigned to ' + affectedEmployees + ' employee(s). Their voucher balances will be updated.';
-    }
-    
-    UIHelpers.showConfirmDialog({
-      title: 'Delete Voucher',
-      message: message,
-      confirmText: 'Delete Voucher',
-      confirmClass: 'btn-danger',
-      onConfirm: function() {
-        UIHelpers.showLoadingSpinner('Deleting voucher...');
-        
-        setTimeout(function() {
-          var updatedVouchers = partner.vouchers.filter(function(v) { return v.id !== self.voucherId; });
-          
-          // Update employee voucher balances
-          var updatedEmployees = partner.employees.map(function(e) {
-            if (e.voucherBalances) {
-              var newBalances = e.voucherBalances.filter(function(vb) {
-                return vb.voucherId !== self.voucherId;
-              });
-              var newTotal = newBalances.reduce(function(sum, vb) {
-                return sum + vb.remainingAmount;
-              }, 0);
-              
-              return Object.assign({}, e, {
-                voucherBalances: newBalances,
-                remainingBalance: newTotal
-              });
-            }
-            return e;
-          });
-          
-          AppState.updateCustomer(self.customerId, { 
-            vouchers: updatedVouchers,
-            employees: updatedEmployees,
-            activeVouchers: updatedVouchers.filter(function(v) { return v.isActive; }).length
-          });
-          
-          // Clear sessionStorage
-          sessionStorage.removeItem('voucherFormData');
-          sessionStorage.removeItem('voucherSelectedProducts');
-          
-          UIHelpers.hideLoadingSpinner();
-          Helpers.showAlert('Voucher "' + voucher.name + '" deleted successfully', 'success');
-          App.navigate('customer-detail', { customerId: self.customerId, tab: 'vouchers' });
-        }, 500);
-      }
-    });
+      
+      AppState.updateCustomer(self.customerId, {
+        vouchers: updatedVouchers,
+        employees: updatedEmployees,
+        activeVouchers: updatedVouchers.filter(function(v) { return v.isActive; }).length
+      });
+      
+      // Clear sessionStorage
+      sessionStorage.removeItem('voucherFormData');
+      sessionStorage.removeItem('voucherSelectedProducts');
+      
+      UIHelpers.hideLoadingSpinner();
+      Helpers.showAlert('Voucher created successfully', 'success');
+      App.navigate('customer-detail', { customerId: self.customerId, tab: 'vouchers' });
+    }, 500);
   },
   
   updateActiveNav: function(view) {

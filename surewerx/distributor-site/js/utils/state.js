@@ -7,6 +7,7 @@ var AppState = {
   currentTab: 'employees',
   distributorName: 'My Distributor',
   distributorLogo: null,
+  branchLocations: [], // Array of branch locations with { id, branchId, branchAddress }
   selectedDistributorId: null, // For SureWerx employees to select which distributor to view as
   customers: [],
   transactions: [],
@@ -56,6 +57,10 @@ var AppState = {
           this.distributorLogo = null;
         }
       }
+      // Load branch locations
+      if (parsed.branchLocations && Array.isArray(parsed.branchLocations)) {
+        this.branchLocations = parsed.branchLocations;
+      }
       }
       // Only load selectedDistributorId if current user is SureWerx (it's not relevant for distributor users)
       if (parsed.selectedDistributorId !== undefined && 
@@ -73,7 +78,13 @@ var AppState = {
         this.customers = parsed.customers.filter(function(customer) {
           return customersToDelete.indexOf(customer.name) === -1;
         });
-        // If customers were filtered out, save the updated list
+        // Ensure all customers have locations array
+        this.customers.forEach(function(customer) {
+          if (!customer.locations) {
+            customer.locations = [];
+          }
+        });
+        // If customers were filtered out or locations were added, save the updated list
         if (this.customers.length !== parsed.customers.length) {
           this.saveCustomers();
         }
@@ -91,6 +102,7 @@ var AppState = {
       currentUser: this.currentUser,
       distributorName: this.distributorName,
       distributorLogo: this.distributorLogo,
+      branchLocations: this.branchLocations,
       selectedDistributorId: this.selectedDistributorId,
       customers: this.customers
     };
@@ -127,6 +139,7 @@ var AppState = {
     toSave.currentUser = this.currentUser;
     toSave.distributorName = this.distributorName;
     toSave.distributorLogo = this.distributorLogo;
+    toSave.branchLocations = this.branchLocations;
     toSave.selectedDistributorId = this.selectedDistributorId;
     localStorage.setItem('appState', JSON.stringify(toSave));
   },
@@ -227,10 +240,35 @@ var AppState = {
     var index = this.customers.findIndex(function(p) { return p.id === customerId; });
     if (index > -1) {
       this.customers[index] = Object.assign({}, this.customers[index], updates);
+      // Ensure locations array exists
+      if (!this.customers[index].locations) {
+        this.customers[index].locations = [];
+      }
       this.saveCustomers();
       return true;
     }
     return false;
+  },
+  
+  // Get customer location by ID
+  getCustomerLocationById: function(customerId, locationId) {
+    var customer = this.getCustomerById(customerId);
+    if (!customer || !customer.locations) return null;
+    return customer.locations.find(function(l) { return l.id === locationId; });
+  },
+  
+  // Get department by ID (searches through all locations)
+  getDepartmentById: function(customerId, departmentId) {
+    var customer = this.getCustomerById(customerId);
+    if (!customer || !customer.locations) return null;
+    for (var i = 0; i < customer.locations.length; i++) {
+      var location = customer.locations[i];
+      if (location.departments) {
+        var department = location.departments.find(function(d) { return d.id === departmentId; });
+        if (department) return department;
+      }
+    }
+    return null;
   },
   
   // Initialize mock data
@@ -385,7 +423,8 @@ var AppState = {
             employeeId: 'EMP-001',
             username: 'jsmith',
             startDate: '2023-01-15',
-            groupId: 'g1',
+            departmentId: 'g1',
+            locationId: 'LOC-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 250.00,
@@ -401,7 +440,8 @@ var AppState = {
             employeeId: 'EMP-002',
             username: 'sjohnson',
             startDate: '2023-03-20',
-            groupId: 'g1',
+            departmentId: 'g1',
+            locationId: 'LOC-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 300.00,
@@ -446,13 +486,13 @@ var AppState = {
             id: 'g10',
             name: 'Engineering Team',
             department: 'Engineering',
-            location: 'Engineering Center',
-            locationId: 'ENG-001',
-            addressLine1: '1200 Engineering Way',
+            location: 'Main Office',
+            locationId: 'LOC-001',
+            addressLine1: '1000 Boeing Way',
             addressCity: 'Seattle',
             addressState: 'WA',
-            addressZip: '98124',
-            locationAddress: '1200 Engineering Way, Seattle, WA 98124',
+            addressZip: '98108',
+            locationAddress: '1000 Boeing Way, Seattle, WA 98108',
             employeeCount: 0,
             productIds: ['prod1', 'prod16', 'prod28'],
             categoryIds: ['Eye Protection', 'Head Protection', 'Hand Protection']
@@ -476,13 +516,13 @@ var AppState = {
             id: 'g12',
             name: 'Quality Control',
             department: 'Quality Assurance',
-            location: 'QC Lab',
-            locationId: 'QC-001',
-            addressLine1: '1500 Quality Dr',
+            location: 'Warehouse',
+            locationId: 'WH-001',
+            addressLine1: '2500 Distribution Blvd',
             addressCity: 'Renton',
             addressState: 'WA',
             addressZip: '98057',
-            locationAddress: '1500 Quality Dr, Renton, WA 98057',
+            locationAddress: '2500 Distribution Blvd, Renton, WA 98057',
             employeeCount: 0,
             productIds: ['prod1', 'prod3', 'prod30', 'prod36'],
             categoryIds: ['Eye Protection', 'Hand Protection']
@@ -491,13 +531,13 @@ var AppState = {
             id: 'g13',
             name: 'Maintenance Crew',
             department: 'Maintenance',
-            location: 'Maintenance Facility',
-            locationId: 'MAINT-001',
-            addressLine1: '1800 Maintenance Way',
+            location: 'Main Office',
+            locationId: 'LOC-001',
+            addressLine1: '1000 Boeing Way',
             addressCity: 'Seattle',
             addressState: 'WA',
             addressZip: '98108',
-            locationAddress: '1800 Maintenance Way, Seattle, WA 98108',
+            locationAddress: '1000 Boeing Way, Seattle, WA 98108',
             employeeCount: 0,
             productIds: ['prod5', 'prod16', 'prod28', 'prod32', 'prod52', 'prod61'],
             categoryIds: ['Eye Protection', 'Head Protection', 'Hand Protection', 'Body Protection', 'Foot Protection']
@@ -506,13 +546,13 @@ var AppState = {
             id: 'g14',
             name: 'Testing Laboratory',
             department: 'Testing',
-            location: 'Test Facility',
-            locationId: 'TEST-001',
-            addressLine1: '2200 Test Center Dr',
+            location: 'Assembly Plant',
+            locationId: 'ASM-001',
+            addressLine1: '3000 Production Blvd',
             addressCity: 'Everett',
             addressState: 'WA',
             addressZip: '98204',
-            locationAddress: '2200 Test Center Dr, Everett, WA 98204',
+            locationAddress: '3000 Production Blvd, Everett, WA 98204',
             employeeCount: 0,
             productIds: ['prod1', 'prod3', 'prod30', 'prod83', 'prod84'],
             categoryIds: ['Eye Protection', 'Hand Protection', 'Respiratory Protection']
@@ -521,13 +561,13 @@ var AppState = {
             id: 'g15',
             name: 'Tooling Department',
             department: 'Tooling',
-            location: 'Tool Shop',
-            locationId: 'TOOL-001',
-            addressLine1: '900 Tooling Ave',
+            location: 'Warehouse',
+            locationId: 'WH-001',
+            addressLine1: '2500 Distribution Blvd',
             addressCity: 'Renton',
             addressState: 'WA',
             addressZip: '98057',
-            locationAddress: '900 Tooling Ave, Renton, WA 98057',
+            locationAddress: '2500 Distribution Blvd, Renton, WA 98057',
             employeeCount: 0,
             productIds: ['prod1', 'prod5', 'prod16', 'prod28', 'prod32', 'prod61', 'prod73'],
             categoryIds: ['Eye Protection', 'Head Protection', 'Hand Protection', 'Foot Protection', 'Hearing Protection']
@@ -536,13 +576,13 @@ var AppState = {
             id: 'g16',
             name: 'Research & Development',
             department: 'R&D',
-            location: 'R&D Center',
-            locationId: 'RD-001',
-            addressLine1: '500 Innovation Blvd',
+            location: 'Main Office',
+            locationId: 'LOC-001',
+            addressLine1: '1000 Boeing Way',
             addressCity: 'Seattle',
             addressState: 'WA',
-            addressZip: '98124',
-            locationAddress: '500 Innovation Blvd, Seattle, WA 98124',
+            addressZip: '98108',
+            locationAddress: '1000 Boeing Way, Seattle, WA 98108',
             employeeCount: 0,
             productIds: ['prod1', 'prod3', 'prod12', 'prod30', 'prod83'],
             categoryIds: ['Eye Protection', 'Hand Protection', 'Respiratory Protection']
@@ -551,8 +591,8 @@ var AppState = {
             id: 'g17',
             name: 'Facilities Management',
             department: 'Facilities',
-            location: 'Main Campus',
-            locationId: 'FAC-001',
+            location: 'Main Office',
+            locationId: 'LOC-001',
             addressLine1: '1000 Boeing Way',
             addressCity: 'Seattle',
             addressState: 'WA',
@@ -904,8 +944,10 @@ var AppState = {
             isActive: true,
             autoRenewal: true,
             rolloverEnabled: false,
-            productIds: ['prod1', 'prod2', 'prod3'],
-            userGroupIds: ['g1', 'g2']
+            // Qualified products: first subset of department products
+            productIds: ['prod1', 'prod2'],
+            departmentId: 'g1',
+            locationId: 'LOC-001'
           },
           {
             id: 'v2',
@@ -917,8 +959,10 @@ var AppState = {
             isActive: true,
             autoRenewal: false,
             rolloverEnabled: true,
-            productIds: ['prod1', 'prod2', 'prod3', 'prod4'],
-            userGroupIds: ['g1']
+            // Qualified products: non-overlapping subset of same department products
+            productIds: ['prod3'],
+            departmentId: 'g1',
+            locationId: 'LOC-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1009,7 +1053,8 @@ var AppState = {
             employeeId: 'TM-001',
             username: 'rkim',
             startDate: '2022-05-10',
-            groupId: 'g40',
+            departmentId: 'g40',
+            locationId: 'PLANT-TM-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 180.00,
@@ -1047,7 +1092,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod1', 'prod16', 'prod28', 'prod46', 'prod61', 'prod73'],
-            userGroupIds: ['g40']
+            departmentId: 'g40',
+            locationId: 'PLANT-TM-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1081,7 +1127,8 @@ var AppState = {
             employeeId: 'ISS-001',
             dateOfBirth: '1987-08-20',
             startDate: '2021-03-15',
-            groupId: 'g41',
+            departmentId: 'g41',
+            locationId: 'SAFETY-ISS-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 200.00,
@@ -1119,7 +1166,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: true,
             productIds: ['prod1', 'prod3', 'prod16', 'prod28', 'prod46', 'prod61', 'prod73', 'prod83'],
-            userGroupIds: ['g41']
+            departmentId: 'g41',
+            locationId: 'SAFETY-ISS-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1153,7 +1201,8 @@ var AppState = {
             employeeId: 'AC-001',
             username: 'mchen',
             startDate: '2020-11-05',
-            groupId: 'g42',
+            departmentId: 'g42',
+            locationId: 'ASSEMBLY-AC-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 220.00,
@@ -1191,7 +1240,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod1', 'prod5', 'prod16', 'prod28', 'prod32', 'prod46', 'prod61'],
-            userGroupIds: ['g42']
+            departmentId: 'g42',
+            locationId: 'ASSEMBLY-AC-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1247,7 +1297,8 @@ var AppState = {
             autoRenewal: false,
             rolloverEnabled: true,
             productIds: ['prod1', 'prod16', 'prod28', 'prod31', 'prod46', 'prod61', 'prod73'],
-            userGroupIds: ['g43']
+            departmentId: 'g43',
+            locationId: 'TOOL-PTG-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1282,7 +1333,8 @@ var AppState = {
             username: 'jlee',
             dateOfBirth: '1991-04-12',
             startDate: '2022-07-20',
-            groupId: 'g44',
+            departmentId: 'g44',
+            locationId: 'PROC-AM-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 190.00,
@@ -1320,7 +1372,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod1', 'prod3', 'prod16', 'prod28', 'prod34', 'prod46', 'prod61', 'prod73', 'prod83', 'prod84'],
-            userGroupIds: ['g44']
+            departmentId: 'g44',
+            locationId: 'PROC-AM-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1353,7 +1406,8 @@ var AppState = {
             email: 'david.rodriguez@qualitycontrol.com',
             employeeId: 'QC-001',
             startDate: '2021-09-10',
-            groupId: 'g45',
+            departmentId: 'g45',
+            locationId: 'QA-QCI-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 175.00,
@@ -1391,7 +1445,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod1', 'prod3', 'prod30', 'prod36', 'prod83'],
-            userGroupIds: ['g45']
+            departmentId: 'g45',
+            locationId: 'QA-QCI-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1425,7 +1480,8 @@ var AppState = {
             employeeId: 'HE-001',
             username: 'athompson',
             startDate: '2020-02-18',
-            groupId: 'g46',
+            departmentId: 'g46',
+            locationId: 'ASSEMBLY-HE-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 240.00,
@@ -1463,7 +1519,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: true,
             productIds: ['prod1', 'prod5', 'prod16', 'prod28', 'prod32', 'prod46', 'prod61', 'prod73', 'prod93'],
-            userGroupIds: ['g46']
+            departmentId: 'g46',
+            locationId: 'ASSEMBLY-HE-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1540,7 +1597,8 @@ var AppState = {
             username: 'erodriguez',
             dateOfBirth: '1985-03-15',
             startDate: '2022-06-01',
-            groupId: 'g5',
+            departmentId: 'g5',
+            locationId: 'HOSP-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 200.00,
@@ -1556,7 +1614,8 @@ var AppState = {
             username: 'mchen',
             dateOfBirth: '1990-07-22',
             startDate: '2023-02-10',
-            groupId: 'g5',
+            departmentId: 'g5',
+            locationId: 'HOSP-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 150.00,
@@ -1585,8 +1644,8 @@ var AppState = {
             id: 'g5b',
             name: 'Administrative',
             department: 'Administration',
-            location: 'Main Office',
-            locationId: 'ADMIN-001',
+            location: 'Main Hospital',
+            locationId: 'HOSP-001',
             addressLine1: '500 Medical Center Dr',
             addressCity: 'Chicago',
             addressState: 'IL',
@@ -1609,7 +1668,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod30', 'prod36', 'prod83', 'prod84'],
-            userGroupIds: ['g5']
+            departmentId: 'g5',
+            locationId: 'HOSP-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1642,7 +1702,8 @@ var AppState = {
             email: 'james.wilson@energy.com',
             employeeId: 'EN-001',
             startDate: '2021-04-12',
-            groupId: 'g6',
+            departmentId: 'g6',
+            locationId: 'FLD-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 300.00,
@@ -1656,7 +1717,8 @@ var AppState = {
             email: 'patricia.martinez@energy.com',
             employeeId: 'EN-002',
             startDate: '2022-09-05',
-            groupId: 'g6b',
+            departmentId: 'g6b',
+            locationId: 'MAINT-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 250.00,
@@ -1685,8 +1747,8 @@ var AppState = {
             id: 'g6b',
             name: 'Maintenance Team',
             department: 'Maintenance',
-            location: 'Main Facility',
-            locationId: 'MAINT-001',
+            location: 'Field Site A',
+            locationId: 'FLD-001',
             addressLine1: '1500 Construction Way',
             addressCity: 'Phoenix',
             addressState: 'AZ',
@@ -1709,7 +1771,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: true,
             productIds: ['prod16', 'prod46', 'prod61', 'prod93'],
-            userGroupIds: ['g6']
+            departmentId: 'g6',
+            locationId: 'FLD-001'
           },
           {
             id: 'v5',
@@ -1722,7 +1785,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod16', 'prod28', 'prod61', 'prod73'],
-            userGroupIds: ['g6b']
+            departmentId: 'g6b',
+            locationId: 'MAINT-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1757,7 +1821,8 @@ var AppState = {
             username: 'rthompson',
             dateOfBirth: '1988-11-30',
             startDate: '2020-03-15',
-            groupId: 'g7',
+            departmentId: 'g7',
+            locationId: 'DEPOT-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 180.00,
@@ -1773,7 +1838,8 @@ var AppState = {
             username: 'jlee',
             dateOfBirth: '1992-05-18',
             startDate: '2021-08-20',
-            groupId: 'g7',
+            departmentId: 'g7',
+            locationId: 'DEPOT-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 180.00,
@@ -1789,7 +1855,8 @@ var AppState = {
             username: 'dbrown',
             dateOfBirth: '1985-09-12',
             startDate: '2019-11-01',
-            groupId: 'g7b',
+            departmentId: 'g7b',
+            locationId: 'DC-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 200.00,
@@ -1818,8 +1885,8 @@ var AppState = {
             id: 'g7b',
             name: 'Warehouse Staff',
             department: 'Warehouse',
-            location: 'Distribution Center',
-            locationId: 'DC-001',
+            location: 'Main Depot',
+            locationId: 'DEPOT-001',
             addressLine1: '3000 Logistics Blvd',
             addressCity: 'Dallas',
             addressState: 'TX',
@@ -1842,7 +1909,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod46', 'prod48', 'prod61', 'prod73'],
-            userGroupIds: ['g7']
+            departmentId: 'g7',
+            locationId: 'DEPOT-001'
           },
           {
             id: 'v7',
@@ -1855,7 +1923,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: true,
             productIds: ['prod16', 'prod28', 'prod46', 'prod61'],
-            userGroupIds: ['g7b']
+            departmentId: 'g7b',
+            locationId: 'DC-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -1889,7 +1958,8 @@ var AppState = {
             employeeId: 'FP-001',
             dateOfBirth: '1991-02-14',
             startDate: '2022-01-10',
-            groupId: 'g8',
+            departmentId: 'g8',
+            locationId: 'PLANT-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 175.00,
@@ -1904,7 +1974,8 @@ var AppState = {
             employeeId: 'FP-002',
             dateOfBirth: '1987-08-25',
             startDate: '2021-05-20',
-            groupId: 'g8',
+            departmentId: 'g8',
+            locationId: 'PLANT-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 175.00,
@@ -1919,7 +1990,8 @@ var AppState = {
             employeeId: 'FP-003',
             dateOfBirth: '1993-12-08',
             startDate: '2023-03-15',
-            groupId: 'g8b',
+            departmentId: 'g8b',
+            locationId: 'LAB-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 150.00,
@@ -1948,8 +2020,8 @@ var AppState = {
             id: 'g8b',
             name: 'Quality Control',
             department: 'Quality Assurance',
-            location: 'Lab Facility',
-            locationId: 'LAB-001',
+            location: 'Processing Plant',
+            locationId: 'PLANT-001',
             addressLine1: '2000 Industrial Park Dr',
             addressCity: 'Houston',
             addressState: 'TX',
@@ -1972,7 +2044,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod30', 'prod36', 'prod46', 'prod49', 'prod83'],
-            userGroupIds: ['g8']
+            departmentId: 'g8',
+            locationId: 'PLANT-001'
           },
           {
             id: 'v9',
@@ -1985,7 +2058,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod30', 'prod36', 'prod49', 'prod58'],
-            userGroupIds: ['g8b']
+            departmentId: 'g8b',
+            locationId: 'LAB-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -2019,7 +2093,8 @@ var AppState = {
             employeeId: 'AP-001',
             username: 'ctaylor',
             startDate: '2020-07-01',
-            groupId: 'g9',
+            departmentId: 'g9',
+            locationId: 'PLANT-A-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 220.00,
@@ -2034,7 +2109,8 @@ var AppState = {
             employeeId: 'AP-002',
             username: 'ajohnson',
             startDate: '2021-11-15',
-            groupId: 'g9',
+            departmentId: 'g9',
+            locationId: 'PLANT-A-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 220.00,
@@ -2049,7 +2125,8 @@ var AppState = {
             employeeId: 'AP-003',
             username: 'dkim',
             startDate: '2022-04-22',
-            groupId: 'g9b',
+            departmentId: 'g9b',
+            locationId: 'WELD-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 250.00,
@@ -2064,7 +2141,8 @@ var AppState = {
             employeeId: 'AP-004',
             username: 'rmoore',
             startDate: '2023-01-08',
-            groupId: 'g9b',
+            departmentId: 'g9b',
+            locationId: 'WELD-001',
             voucherExpiry: '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: 250.00,
@@ -2093,8 +2171,8 @@ var AppState = {
             id: 'g9b',
             name: 'Welding Department',
             department: 'Manufacturing',
-            location: 'Welding Bay',
-            locationId: 'WELD-001',
+            location: 'Plant Floor A',
+            locationId: 'PLANT-A-001',
             addressLine1: '4000 Manufacturing Ave',
             addressCity: 'Detroit',
             addressState: 'MI',
@@ -2117,7 +2195,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: false,
             productIds: ['prod1', 'prod16', 'prod28', 'prod46', 'prod61'],
-            userGroupIds: ['g9']
+            departmentId: 'g9',
+            locationId: 'PLANT-A-001'
           },
           {
             id: 'v11',
@@ -2130,7 +2209,8 @@ var AppState = {
             autoRenewal: true,
             rolloverEnabled: true,
             productIds: ['prod5', 'prod32', 'prod52', 'prod84'],
-            userGroupIds: ['g9b']
+            departmentId: 'g9b',
+            locationId: 'WELD-001'
           }
         ],
         availableProducts: this.products.slice()
@@ -2260,11 +2340,41 @@ var AppState = {
         }
       });
       
+      // Initialize branch locations for distributors if not already set (needed for location assignment)
+      if (!this.branchLocations || this.branchLocations.length === 0) {
+        this.branchLocations = [
+          // Fastenal (d1) branch locations
+          { id: 'br-d1-001', branchId: 'FAST-SEA-001', branchAddress: '1200 Industrial Way, Seattle, WA 98108' },
+          { id: 'br-d1-002', branchId: 'FAST-CHI-001', branchAddress: '2500 Commerce Dr, Chicago, IL 60611' },
+          { id: 'br-d1-003', branchId: 'FAST-HOU-001', branchAddress: '1800 Business Blvd, Houston, TX 77001' },
+          { id: 'br-d1-004', branchId: 'FAST-ATL-001', branchAddress: '3200 Distribution Ave, Atlanta, GA 30301' },
+          // Grainger (d2) branch locations
+          { id: 'br-d2-001', branchId: 'GRG-CHI-001', branchAddress: '1500 Supply Chain Way, Chicago, IL 60601' },
+          { id: 'br-d2-002', branchId: 'GRG-DAL-001', branchAddress: '2800 Industrial Blvd, Dallas, TX 75201' },
+          { id: 'br-d2-003', branchId: 'GRG-PHO-001', branchAddress: '2200 Manufacturing Dr, Phoenix, AZ 85001' },
+          { id: 'br-d2-004', branchId: 'GRG-DET-001', branchAddress: '1900 Production Ave, Detroit, MI 48201' },
+          // MSC Industrial Supply (d3) branch locations
+          { id: 'br-d3-001', branchId: 'MSC-NYC-001', branchAddress: '1000 Industrial Park, New York, NY 10001' },
+          { id: 'br-d3-002', branchId: 'MSC-LA-001', branchAddress: '3500 Commerce Center Dr, Los Angeles, CA 90001' },
+          { id: 'br-d3-003', branchId: 'MSC-CLE-001', branchAddress: '2000 Manufacturing Way, Cleveland, OH 44101' },
+          { id: 'br-d3-004', branchId: 'MSC-PIT-001', branchAddress: '2700 Steel Blvd, Pittsburgh, PA 15201' },
+          // Motion Industries (d4) branch locations
+          { id: 'br-d4-001', branchId: 'MOT-BIR-001', branchAddress: '1600 Industrial Dr, Birmingham, AL 35201' },
+          { id: 'br-d4-002', branchId: 'MOT-CHA-001', branchAddress: '2400 Manufacturing Ave, Charlotte, NC 28201' },
+          { id: 'br-d4-003', branchId: 'MOT-MIN-001', branchAddress: '3000 Production Way, Minneapolis, MN 55401' },
+          { id: 'br-d4-004', branchId: 'MOT-MIL-001', branchAddress: '1800 Industrial Blvd, Milwaukee, WI 53201' }
+        ];
+        this.saveToStorage();
+      }
+      
       // Populate employees from transactions for all customers
       this.populateEmployeesFromTransactions();
       
       // Enrich transactions with invoice, shipping, and payment breakdown fields
       this.enrichTransactions();
+      
+      // Convert groups to locations with departments for all customers
+      this.convertGroupsToLocations();
       
       // Save merged customers
       this.saveCustomers();
@@ -2632,7 +2742,22 @@ var AppState = {
       { id: 't201', orderId: 'ORD-2024-031', employeeName: 'Anna Rodriguez', employeeEmail: 'anna.rodriguez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Safety Glasses - Tinted', surewerxPartNumber: 'SWX-SG-002', distributorPartNumber: '', quantity: 4, unitPrice: 17.99, totalPrice: 71.96, distributorCost: 13.50, dateOrdered: '2024-11-06', voucherUsed: 'PPE Allowance', voucherAmount: 45.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
       { id: 't202', orderId: 'ORD-2024-031', employeeName: 'Anna Rodriguez', employeeEmail: 'anna.rodriguez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Ear Muffs - Standard', surewerxPartNumber: 'SWX-EM-001', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 17.00, dateOrdered: '2024-11-06', voucherUsed: 'PPE Allowance', voucherAmount: 45.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
       { id: 't203', orderId: 'ORD-2024-032', employeeName: 'Tom Wilson', employeeEmail: 'tom.wilson@manufacturing.com', employeeGroup: 'Maintenance', customerName: 'Manufacturing Corp', productName: 'Welding Gloves - Heavy Duty', surewerxPartNumber: 'SWX-WG-002', distributorPartNumber: '', quantity: 3, unitPrice: 28.99, totalPrice: 86.97, distributorCost: 22.00, dateOrdered: '2024-11-05', voucherUsed: 'Safety Equipment Fund', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
-      { id: 't204', orderId: 'ORD-2024-032', employeeName: 'Tom Wilson', employeeEmail: 'tom.wilson@manufacturing.com', employeeGroup: 'Maintenance', customerName: 'Manufacturing Corp', productName: 'Face Shield - Full Coverage', surewerxPartNumber: 'SWX-FS-001', distributorPartNumber: '', quantity: 1, unitPrice: 28.99, totalPrice: 28.99, distributorCost: 21.00, dateOrdered: '2024-11-05', voucherUsed: 'Safety Equipment Fund', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' }
+      { id: 't204', orderId: 'ORD-2024-032', employeeName: 'Tom Wilson', employeeEmail: 'tom.wilson@manufacturing.com', employeeGroup: 'Maintenance', customerName: 'Manufacturing Corp', productName: 'Face Shield - Full Coverage', surewerxPartNumber: 'SWX-FS-001', distributorPartNumber: '', quantity: 1, unitPrice: 28.99, totalPrice: 28.99, distributorCost: 21.00, dateOrdered: '2024-11-05', voucherUsed: 'Safety Equipment Fund', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
+      // Boeing orders with multiple vouchers applied to different line items
+      { id: 't205', orderId: 'ORD-2024-133', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Clear Lens', surewerxPartNumber: 'SWX-SG-001', distributorPartNumber: '', quantity: 2, unitPrice: 15.99, totalPrice: 31.98, distributorCost: 12.00, dateOrdered: '2024-11-12', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 31.98, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't206', orderId: 'ORD-2024-133', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Hard Hat - Yellow', surewerxPartNumber: 'SWX-HH-002', distributorPartNumber: '', quantity: 1, unitPrice: 24.99, totalPrice: 24.99, distributorCost: 18.50, dateOrdered: '2024-11-12', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 24.99, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't207', orderId: 'ORD-2024-133', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Steel Toe Boots - 6 inch', surewerxPartNumber: 'SWX-ST-001', distributorPartNumber: '', quantity: 1, unitPrice: 89.99, totalPrice: 89.99, distributorCost: 68.00, dateOrdered: '2024-11-12', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 89.99, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't208', orderId: 'ORD-2024-133', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Work Gloves - Leather', surewerxPartNumber: 'SWX-GL-003', distributorPartNumber: '', quantity: 3, unitPrice: 12.99, totalPrice: 38.97, distributorCost: 9.00, dateOrdered: '2024-11-12', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 38.97, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't209', orderId: 'ORD-2024-134', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Orange', surewerxPartNumber: 'SWX-SV-004', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.00, dateOrdered: '2024-11-10', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 39.98, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't210', orderId: 'ORD-2024-134', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Nitrile Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-NG-001', distributorPartNumber: '', quantity: 3, unitPrice: 19.99, totalPrice: 59.97, distributorCost: 14.50, dateOrdered: '2024-11-10', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 59.97, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't211', orderId: 'ORD-2024-134', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Composite Toe Boots - 8 inch', surewerxPartNumber: 'SWX-CT-001', distributorPartNumber: '', quantity: 1, unitPrice: 99.99, totalPrice: 99.99, distributorCost: 76.00, dateOrdered: '2024-11-10', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 99.99, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't212', orderId: 'ORD-2024-135', employeeName: 'Michael Brown', employeeEmail: 'michael.brown@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Dust Mask - N95 (20pk)', surewerxPartNumber: 'SWX-DM-001', distributorPartNumber: '', quantity: 2, unitPrice: 24.99, totalPrice: 49.98, distributorCost: 18.50, dateOrdered: '2024-11-08', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 49.98, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't213', orderId: 'ORD-2024-135', employeeName: 'Michael Brown', employeeEmail: 'michael.brown@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Half Mask Respirator - Reusable', surewerxPartNumber: 'SWX-HM-001', distributorPartNumber: '', quantity: 2, unitPrice: 34.99, totalPrice: 69.98, distributorCost: 26.50, dateOrdered: '2024-11-08', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 69.98, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't214', orderId: 'ORD-2024-135', employeeName: 'Michael Brown', employeeEmail: 'michael.brown@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Winter Work Boots - Insulated', surewerxPartNumber: 'SWX-WB-001', distributorPartNumber: '', quantity: 1, unitPrice: 119.99, totalPrice: 119.99, distributorCost: 91.00, dateOrdered: '2024-11-08', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 119.99, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't215', orderId: 'ORD-2024-136', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Tinted', surewerxPartNumber: 'SWX-SG-002', distributorPartNumber: '', quantity: 3, unitPrice: 17.99, totalPrice: 53.97, distributorCost: 13.50, dateOrdered: '2024-11-05', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 53.97, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't216', orderId: 'ORD-2024-136', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Ear Muffs - Standard', surewerxPartNumber: 'SWX-EM-001', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 17.00, dateOrdered: '2024-11-05', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 45.98, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't217', orderId: 'ORD-2024-136', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Face Shield - Full Coverage', surewerxPartNumber: 'SWX-FS-001', distributorPartNumber: '', quantity: 3, unitPrice: 28.99, totalPrice: 86.97, distributorCost: 21.00, dateOrdered: '2024-11-05', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 86.97, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't218', orderId: 'ORD-2024-136', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Welding Gloves - Heavy Duty', surewerxPartNumber: 'SWX-WG-002', distributorPartNumber: '', quantity: 2, unitPrice: 28.99, totalPrice: 57.98, distributorCost: 22.00, dateOrdered: '2024-11-05', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 57.98, lineStatus: 'Shipped', paymentMethod: 'Voucher' }
     ];
   },
   
@@ -2710,9 +2835,33 @@ var AppState = {
         var groupName = t.employeeGroup;
         
         if (email && !employeeMap.has(email.toLowerCase())) {
-          // Find or create a group for this employee
-          var group = customer.groups.find(function(g) { return g.name === groupName; });
-          var groupId = group ? group.id : (customer.groups.length > 0 ? customer.groups[0].id : null);
+          // Find or create a department for this employee
+          var departmentId = null;
+          var locationId = null;
+          if (customer.locations && customer.locations.length > 0) {
+            for (var locIdx = 0; locIdx < customer.locations.length; locIdx++) {
+              var loc = customer.locations[locIdx];
+              if (loc.departments) {
+                var dept = loc.departments.find(function(d) { return d.name === groupName; });
+                if (dept) {
+                  departmentId = dept.id;
+                  locationId = loc.id;
+                  break;
+                }
+              }
+            }
+            // If not found, use first available department
+            if (!departmentId) {
+              for (var locIdx2 = 0; locIdx2 < customer.locations.length; locIdx2++) {
+                var loc2 = customer.locations[locIdx2];
+                if (loc2.departments && loc2.departments.length > 0) {
+                  departmentId = loc2.departments[0].id;
+                  locationId = loc2.id;
+                  break;
+                }
+              }
+            }
+          }
           
           // Parse name
           var nameParts = name.split(' ');
@@ -2724,7 +2873,8 @@ var AppState = {
             name: name,
             firstName: firstName,
             lastName: lastName,
-            groupId: groupId,
+            departmentId: departmentId,
+            locationId: locationId,
             employeeGroup: groupName
           });
         }
@@ -2759,25 +2909,40 @@ var AppState = {
             employeeId = prefix + '-' + String(num).padStart(3, '0');
           }
           
-          // Get first available group if no groupId specified (for mock data generation)
-          var groupId = empData.groupId;
-          if (!groupId && customer.groups && customer.groups.length > 0) {
-            groupId = customer.groups[0].id;
+          // Get first available department if no departmentId specified (for mock data generation)
+          var departmentId = empData.departmentId;
+          var locationId = empData.locationId;
+          if (!departmentId && customer.locations && customer.locations.length > 0) {
+            for (var i = 0; i < customer.locations.length; i++) {
+              var loc = customer.locations[i];
+              if (loc.departments && loc.departments.length > 0) {
+                departmentId = loc.departments[0].id;
+                locationId = loc.id;
+                break;
+              }
+            }
           }
           
           // Get voucher balances if vouchers exist
           var voucherBalances = [];
           var remainingBalance = 0;
-          if (customer.vouchers && customer.vouchers.length > 0) {
-            var activeVouchers = customer.vouchers.filter(function(v) { return v.isActive; });
+          if (customer.vouchers && customer.vouchers.length > 0 && departmentId) {
+            var activeVouchers = customer.vouchers.filter(function(v) { 
+              if (!v.isActive) return false;
+              if (v.departmentId === departmentId) {
+                if (locationId && v.locationId) {
+                  return v.locationId === locationId;
+                }
+                return !locationId && !v.locationId;
+              }
+              return false;
+            });
             activeVouchers.forEach(function(v) {
-              if (v.userGroupIds && v.userGroupIds.indexOf(groupId) > -1) {
                 voucherBalances.push({
                   voucherId: v.id,
                   remainingAmount: v.defaultAmount || 0
                 });
                 remainingBalance += (v.defaultAmount || 0);
-              }
             });
           }
           
@@ -2787,7 +2952,8 @@ var AppState = {
             firstName: empData.firstName,
             lastName: empData.lastName,
             email: empData.email,
-            groupId: groupId,
+            departmentId: departmentId,
+            locationId: locationId,
             voucherExpiry: customer.vouchers && customer.vouchers.length > 0 ? customer.vouchers[0].endDate : '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: remainingBalance,
@@ -2873,10 +3039,18 @@ var AppState = {
       
       if (currentCount < targetCount) {
         var needed = targetCount - currentCount;
-        // Get first available group if groups exist (for mock data generation)
-        var groupId = null;
-        if (customer.groups && customer.groups.length > 0) {
-          groupId = customer.groups[0].id;
+          // Get first available department if departments exist (for mock data generation)
+        var departmentId = null;
+        var locationId = null;
+        if (customer.locations && customer.locations.length > 0) {
+          for (var locIdx = 0; locIdx < customer.locations.length; locIdx++) {
+            var loc = customer.locations[locIdx];
+            if (loc.departments && loc.departments.length > 0) {
+              departmentId = loc.departments[0].id;
+              locationId = loc.id;
+              break;
+            }
+          }
         }
         
         // Get domain from partner email or generate one
@@ -2925,16 +3099,23 @@ var AppState = {
           // Get voucher balances
           var voucherBalances = [];
           var remainingBalance = 0;
-          if (customer.vouchers && customer.vouchers.length > 0) {
-            var activeVouchers = customer.vouchers.filter(function(v) { return v.isActive; });
+          if (customer.vouchers && customer.vouchers.length > 0 && departmentId) {
+            var activeVouchers = customer.vouchers.filter(function(v) { 
+              if (!v.isActive) return false;
+              if (v.departmentId === departmentId) {
+                if (locationId && v.locationId) {
+                  return v.locationId === locationId;
+                }
+                return !locationId && !v.locationId;
+              }
+              return false;
+            });
             activeVouchers.forEach(function(v) {
-              if (v.userGroupIds && v.userGroupIds.indexOf(groupId) > -1) {
                 voucherBalances.push({
                   voucherId: v.id,
                   remainingAmount: v.defaultAmount || 0
                 });
                 remainingBalance += (v.defaultAmount || 0);
-              }
             });
           }
           
@@ -2944,7 +3125,8 @@ var AppState = {
             firstName: firstName,
             lastName: lastName,
             email: email,
-            groupId: groupId,
+            departmentId: departmentId,
+            locationId: locationId,
             voucherExpiry: customer.vouchers && customer.vouchers.length > 0 ? customer.vouchers[0].endDate : '2024-12-31',
             voucherStatus: 'active',
             remainingBalance: remainingBalance,
@@ -3106,6 +3288,325 @@ var AppState = {
           item.paymentMethod = 'Voucher';
         }
       });
+    });
+  },
+  
+  // Convert customer groups to locations with departments
+  convertGroupsToLocations: function() {
+    var self = this;
+    
+    this.customers.forEach(function(customer) {
+      // Initialize locations array if it doesn't exist
+      if (!customer.locations) {
+        customer.locations = [];
+      }
+      
+      // If customer already has locations with departments, ensure they have city/state
+      if (customer.locations.length > 0) {
+        customer.locations.forEach(function(location) {
+          // If location has addressCity/addressState but not city/state, migrate them
+          if (location.addressCity && !location.city) {
+            location.city = location.addressCity;
+            delete location.addressCity;
+          }
+          if (location.addressState && !location.state) {
+            location.state = location.addressState;
+            delete location.addressState;
+          }
+          // Ensure address is just the address line, not combined
+          if (location.address && location.address.indexOf(',') > -1 && location.city && location.state) {
+            // If address contains city/state and we have separate fields, extract just the address line
+            var addressParts = location.address.split(',');
+            if (addressParts.length >= 3) {
+              location.address = addressParts[0].trim();
+              location.addressLine1 = addressParts[0].trim();
+            }
+          }
+          // Ensure addressLine1 is set if address exists
+          if (location.address && !location.addressLine1) {
+            location.addressLine1 = location.address;
+          }
+        });
+        
+        // Ensure each existing location has a distributor branch assigned
+        if (customer.distributorId && customer.locations.length > 0) {
+          customer.locations.forEach(function(location) {
+            if (!location.distributorBranchId) {
+              // First try to find a branch that matches by city/state
+              var matchingBranch = self.branchLocations.find(function(branch) {
+                var branchDistributorId = null;
+                if (branch.id.startsWith('br-d1-')) branchDistributorId = 'd1';
+                else if (branch.id.startsWith('br-d2-')) branchDistributorId = 'd2';
+                else if (branch.id.startsWith('br-d3-')) branchDistributorId = 'd3';
+                else if (branch.id.startsWith('br-d4-')) branchDistributorId = 'd4';
+                
+                if (branchDistributorId !== customer.distributorId) {
+                  return false;
+                }
+                
+                var branchAddressLower = (branch.branchAddress || '').toLowerCase();
+                var locationCityLower = (location.city || '').toLowerCase();
+                var locationStateLower = (location.state || '').toLowerCase();
+                
+                if (locationCityLower && branchAddressLower.indexOf(locationCityLower) > -1) {
+                  return true;
+                }
+                if (locationStateLower && branchAddressLower.indexOf(locationStateLower) > -1) {
+                  return true;
+                }
+                return false;
+              });
+              
+              if (!matchingBranch) {
+                matchingBranch = self.branchLocations.find(function(branch) {
+                  var branchDistributorId = null;
+                  if (branch.id.startsWith('br-d1-')) branchDistributorId = 'd1';
+                  else if (branch.id.startsWith('br-d2-')) branchDistributorId = 'd2';
+                  else if (branch.id.startsWith('br-d3-')) branchDistributorId = 'd3';
+                  else if (branch.id.startsWith('br-d4-')) branchDistributorId = 'd4';
+                  return branchDistributorId === customer.distributorId;
+                });
+              }
+              
+              if (matchingBranch) {
+                location.distributorBranchId = matchingBranch.id;
+              }
+            }
+          });
+        }
+        
+        // If locations already exist and have departments, skip conversion
+        var hasDepartments = customer.locations.some(function(loc) {
+          return loc.departments && loc.departments.length > 0;
+        });
+        if (hasDepartments) {
+          return;
+        }
+      }
+      
+      // If customer has groups, convert them to locations with departments
+      if (customer.groups && customer.groups.length > 0) {
+        // Group groups by locationId to create locations
+        var locationMap = {};
+        
+        customer.groups.forEach(function(group) {
+          var locationId = group.locationId || 'LOC-' + group.id;
+          var locationKey = locationId;
+          
+          // Create location if it doesn't exist
+          if (!locationMap[locationKey]) {
+            // Parse locationAddress if it exists but addressLine1 doesn't
+            var addressLine1 = group.addressLine1 || '';
+            var city = group.addressCity || '';
+            var state = group.addressState || '';
+            var zip = group.addressZip || '';
+            
+            // If locationAddress exists but we don't have separate fields, try to parse it
+            if (!addressLine1 && group.locationAddress) {
+              var addressParts = group.locationAddress.split(',');
+              if (addressParts.length >= 3) {
+                addressLine1 = addressParts[0].trim();
+                city = addressParts[1].trim();
+                var stateZip = addressParts[2].trim();
+                var stateZipParts = stateZip.split(' ');
+                if (stateZipParts.length >= 2) {
+                  state = stateZipParts[0].trim();
+                  zip = stateZipParts.slice(1).join(' ').trim();
+                } else {
+                  state = stateZip;
+                }
+              } else {
+                addressLine1 = group.locationAddress;
+              }
+            }
+            
+            locationMap[locationKey] = {
+              id: locationId,
+              locationId: locationId,
+              address: addressLine1,
+              addressLine1: addressLine1 || '',
+              city: city,
+              state: state,
+              addressZip: zip,
+              departments: []
+            };
+          }
+          
+          // Add department to location
+          locationMap[locationKey].departments.push({
+            id: group.id,
+            name: group.name,
+            employeeCount: group.employeeCount || 0,
+            productIds: group.productIds || [],
+            categoryIds: group.categoryIds || []
+          });
+        });
+        
+        // Convert locationMap to array
+        customer.locations = Object.keys(locationMap).map(function(key) {
+          return locationMap[key];
+        });
+      } else if (customer.locations.length === 0) {
+        // If no groups and no locations, create a default location with multiple departments
+        var defaultLocation = {
+          id: 'LOC-001',
+          locationId: 'LOC-001',
+          address: 'Main Office',
+          addressLine1: 'Main Office',
+          city: '',
+          state: '',
+          addressZip: '',
+          departments: [
+            {
+              id: 'DEPT-001',
+              name: 'Operations',
+              employeeCount: 0,
+              productIds: [],
+              categoryIds: []
+            },
+            {
+              id: 'DEPT-002',
+              name: 'Administration',
+              employeeCount: 0,
+              productIds: [],
+              categoryIds: []
+            }
+          ]
+        };
+        
+        // Assign distributor branch if customer has distributorId
+        if (customer.distributorId) {
+          var firstBranch = self.branchLocations.find(function(branch) {
+            var branchDistributorId = null;
+            if (branch.id.startsWith('br-d1-')) branchDistributorId = 'd1';
+            else if (branch.id.startsWith('br-d2-')) branchDistributorId = 'd2';
+            else if (branch.id.startsWith('br-d3-')) branchDistributorId = 'd3';
+            else if (branch.id.startsWith('br-d4-')) branchDistributorId = 'd4';
+            return branchDistributorId === customer.distributorId;
+          });
+          if (firstBranch) {
+            defaultLocation.distributorBranchId = firstBranch.id;
+          }
+        }
+        
+        customer.locations = [defaultLocation];
+      }
+      
+      // Update employees to reference correct department/location IDs
+      if (customer.employees && customer.employees.length > 0) {
+        customer.employees.forEach(function(employee) {
+          // If employee has departmentId but no locationId, find the location
+          if (employee.departmentId && !employee.locationId) {
+            // Search through locations to find the department
+            for (var i = 0; i < customer.locations.length; i++) {
+              var location = customer.locations[i];
+              if (location.departments) {
+                var department = location.departments.find(function(d) { return d.id === employee.departmentId; });
+                if (department) {
+                  employee.locationId = location.id;
+                  break;
+                }
+              }
+            }
+          }
+          
+          // If employee has locationId but no departmentId, assign to first department in that location
+          if (employee.locationId && !employee.departmentId) {
+            var location = customer.locations.find(function(l) { return l.id === employee.locationId; });
+            if (location && location.departments && location.departments.length > 0) {
+              employee.departmentId = location.departments[0].id;
+            }
+          }
+          
+          // If employee has neither, assign to first location's first department
+          if (!employee.departmentId && !employee.locationId && customer.locations.length > 0) {
+            var firstLocation = customer.locations[0];
+            if (firstLocation.departments && firstLocation.departments.length > 0) {
+              employee.locationId = firstLocation.id;
+              employee.departmentId = firstLocation.departments[0].id;
+            }
+          }
+        });
+        
+        // Recalculate employee counts for departments
+        customer.locations.forEach(function(location) {
+          if (location.departments) {
+            location.departments.forEach(function(department) {
+              var count = customer.employees.filter(function(e) {
+                return e.departmentId === department.id && e.locationId === location.id;
+              }).length;
+              department.employeeCount = count;
+            });
+          }
+        });
+      }
+      
+      // Ensure each location has a distributor branch assigned
+      if (customer.distributorId && customer.locations && customer.locations.length > 0) {
+        customer.locations.forEach(function(location) {
+          if (!location.distributorBranchId) {
+            // First try to find a branch that matches by city/state
+            var matchingBranch = self.branchLocations.find(function(branch) {
+              // Match by distributor ID (branch ID prefix matches distributor)
+              var branchDistributorId = null;
+              if (branch.id.startsWith('br-d1-')) branchDistributorId = 'd1';
+              else if (branch.id.startsWith('br-d2-')) branchDistributorId = 'd2';
+              else if (branch.id.startsWith('br-d3-')) branchDistributorId = 'd3';
+              else if (branch.id.startsWith('br-d4-')) branchDistributorId = 'd4';
+              
+              // Must match distributor first
+              if (branchDistributorId !== customer.distributorId) {
+                return false;
+              }
+              
+              // Try to match by city and state in branch address
+              var branchAddressLower = (branch.branchAddress || '').toLowerCase();
+              var locationCityLower = (location.city || '').toLowerCase();
+              var locationStateLower = (location.state || '').toLowerCase();
+              
+              if (locationCityLower && branchAddressLower.indexOf(locationCityLower) > -1) {
+                return true;
+              }
+              if (locationStateLower && branchAddressLower.indexOf(locationStateLower) > -1) {
+                return true;
+              }
+              return false;
+            });
+            
+            // If no city/state match found, use first branch of distributor
+            if (!matchingBranch) {
+              matchingBranch = self.branchLocations.find(function(branch) {
+                var branchDistributorId = null;
+                if (branch.id.startsWith('br-d1-')) branchDistributorId = 'd1';
+                else if (branch.id.startsWith('br-d2-')) branchDistributorId = 'd2';
+                else if (branch.id.startsWith('br-d3-')) branchDistributorId = 'd3';
+                else if (branch.id.startsWith('br-d4-')) branchDistributorId = 'd4';
+                return branchDistributorId === customer.distributorId;
+              });
+            }
+            
+            if (matchingBranch) {
+              location.distributorBranchId = matchingBranch.id;
+            }
+          }
+        });
+      }
+      
+      // Ensure each location has multiple departments (at least 2)
+      if (customer.locations && customer.locations.length > 0) {
+        customer.locations.forEach(function(location) {
+          if (location.departments && location.departments.length === 1) {
+            // If location only has one department, add a default second department
+            location.departments.push({
+              id: 'DEPT-' + location.id + '-002',
+              name: 'Additional Department',
+              employeeCount: 0,
+              productIds: [],
+              categoryIds: []
+            });
+          }
+        });
+      }
     });
   }
 };

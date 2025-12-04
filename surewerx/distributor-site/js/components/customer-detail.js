@@ -3,6 +3,8 @@
 var CustomerDetailComponent = {
   customerId: null,
   currentTab: 'groups',
+  departmentLocationFilter: null, // Store selected location filter
+  locationFilter: null, // Store location filter for locations tab
   selectedGroupId: null,
   voucherStatusFilter: 'all',
   
@@ -38,8 +40,10 @@ var CustomerDetailComponent = {
     }
     
     this.customerId = customerId;
-    this.currentTab = tab || 'employees'; // Default to employees tab per FRD
+    this.currentTab = tab || 'locations'; // Default to locations tab
     this.selectedGroupId = null;
+    this.departmentLocationFilter = null; // Reset location filter
+    this.locationFilter = null; // Reset location filter
     EmployeeTableEnhanced.init(); // Initialize enhanced table features
     this.render();
     this.attachEvents();
@@ -87,23 +91,139 @@ var CustomerDetailComponent = {
       self.showAddEmployeeModal();
     });
     
-    // Create group button
-    $(document).on('click', '#create-group-btn', function() {
-      self.showCreateGroupModal();
+    // Create location button
+    $(document).on('click', '#add-location-btn', function() {
+      self.showLocationModal(null);
     });
     
-    // Edit group button
+    // Edit location button
+    $(document).on('click', '.edit-location-btn', function() {
+      var locationId = $(this).data('location-id');
+      self.showLocationModal(locationId);
+    });
+    
+    // Delete location button
+    $(document).on('click', '.delete-location-btn', function() {
+      var locationId = $(this).data('location-id');
+      self.deleteLocation(locationId);
+    });
+
+    // Click on location row to edit location (similar UX to departments)
+    $(document).on('click', '.location-row', function(e) {
+      // Don't trigger when clicking on action buttons or links inside the row
+      if ($(e.target).closest('button, .btn, a').length > 0) {
+        return;
+      }
+
+      var locationId = $(this).data('location-id');
+      if (locationId) {
+        self.showLocationModal(locationId);
+      }
+    });
+    
+    // Create department button
+    $(document).on('click', '#create-department-btn', function() {
+      self.showDepartmentModal(null, null);
+    });
+    
+    // Legacy support
+    $(document).on('click', '#create-group-btn', function() {
+      self.showDepartmentModal(null, null);
+    });
+    
+    // Edit department name button
+    $(document).on('click', '.edit-department-name-btn', function(e) {
+      e.stopPropagation();
+      var departmentId = $(this).data('department-id');
+      var locationId = $(this).data('location-id');
+      self.showDepartmentModal(locationId, departmentId);
+    });
+    
+    // Manage product visibility button
+    $(document).on('click', '.manage-product-visibility-btn', function(e) {
+      e.stopPropagation();
+      var departmentId = $(this).data('department-id');
+      var locationId = $(this).data('location-id');
+      App.navigate('group-product-visibility', { 
+        customerId: self.customerId, 
+        groupId: departmentId,
+        locationId: locationId
+      });
+    });
+    
+    // Legacy support for old edit-department-btn class
+    $(document).on('click', '.edit-department-btn', function(e) {
+      e.stopPropagation();
+      var departmentId = $(this).data('department-id');
+      var locationId = $(this).data('location-id');
+      self.showDepartmentModal(locationId, departmentId);
+    });
+    
+    // Delete department button
+    $(document).on('click', '.delete-department-btn', function(e) {
+      e.stopPropagation();
+      var departmentId = $(this).data('department-id');
+      var locationId = $(this).data('location-id');
+      self.deleteDepartment(locationId, departmentId);
+    });
+    
+    // Click on department row to navigate to product visibility
+    $(document).on('click', '.selectable-row[data-department-id]', function(e) {
+      // Don't trigger if clicking on a button or action element
+      if ($(e.target).closest('button, .btn, a').length > 0) {
+        return;
+      }
+      
+      var $row = $(this);
+      var departmentId = $row.data('department-id');
+      var locationId = $row.data('location-id');
+      
+      // Navigate to product visibility
+      App.navigate('group-product-visibility', { 
+        customerId: self.customerId, 
+        groupId: departmentId,
+        locationId: locationId
+      });
+    });
+    
+    // Legacy support for old group buttons
     $(document).on('click', '.edit-group-btn', function(e) {
-      e.stopPropagation(); // Prevent triggering the group card click
+      e.stopPropagation();
       var groupId = $(this).data('group-id');
-      // Navigate to full-page user group form
+      // Try to find department in new structure
+      var department = AppState.getDepartmentById(self.customerId, groupId);
+      if (department) {
+        // Find which location contains this department
+        var customer = AppState.getCustomerById(self.customerId);
+        if (customer && customer.locations) {
+          for (var i = 0; i < customer.locations.length; i++) {
+            var loc = customer.locations[i];
+            if (loc.departments && loc.departments.find(function(d) { return d.id === groupId; })) {
+              self.showDepartmentModal(loc.id, groupId);
+              return;
+            }
+          }
+        }
+      }
+      // Fallback to old navigation
       App.navigate('customer-group-form', { customerId: self.customerId, groupId: groupId });
     });
     
-    // Delete group button
     $(document).on('click', '.delete-group-btn', function(e) {
-      e.stopPropagation(); // Prevent triggering the group card click
+      e.stopPropagation();
       var groupId = $(this).data('group-id');
+      // Try to find and delete in new structure
+      var customer = AppState.getCustomerById(self.customerId);
+      if (customer && customer.locations) {
+        for (var i = 0; i < customer.locations.length; i++) {
+          var loc = customer.locations[i];
+          if (loc.departments && loc.departments.find(function(d) { return d.id === groupId; })) {
+            self.deleteDepartment(loc.id, groupId);
+            return;
+          }
+        }
+      }
+      // Fallback to old delete
       self.deleteGroup(groupId);
     });
     
@@ -124,7 +244,7 @@ var CustomerDetailComponent = {
       }
       var groupId = $(this).data('group-id');
       if (groupId) {
-        // Navigate to edit user group page
+        // Navigate to edit department page
         App.navigate('customer-group-form', { customerId: self.customerId, groupId: groupId });
       }
     });
@@ -139,6 +259,23 @@ var CustomerDetailComponent = {
       var voucherId = $(this).data('voucher-id');
       self.showEditVoucherModal(voucherId);
     });
+
+    // Click on voucher row to edit voucher (similar UX to departments)
+    $(document).on('click', '.voucher-row', function(e) {
+      // Customers view vouchers read-only; disable row click for them
+      if (AppState.currentUser && AppState.currentUser.role === 'Customer') {
+        return;
+      }
+      // Don't trigger when clicking on action buttons or links inside the row
+      if ($(e.target).closest('button, .btn, a').length > 0) {
+        return;
+      }
+
+      var voucherId = $(this).data('voucher-id');
+      if (voucherId) {
+        self.showEditVoucherModal(voucherId);
+      }
+    });
     
     // Voucher status filter
     $(document).on('change', '#voucher-status-filter', function() {
@@ -146,7 +283,7 @@ var CustomerDetailComponent = {
       self.renderTabContent('vouchers');
     });
     
-    // User group filter typeaheads will be initialized after render
+    // Department filter typeaheads will be initialized after render
     
     // Delete employee button
     $(document).on('click', '.delete-employee-btn', function(e) {
@@ -183,6 +320,87 @@ var CustomerDetailComponent = {
       var productId = $(this).data('product-id');
       var visible = $(this).prop('checked');
       self.updateProductVisibility(productId, visible);
+    });
+    
+    // Employee search
+    $(document).on('click', '#search-employees-btn', function() {
+      EmployeeTableEnhanced.searchTerm = $('#employee-search').val();
+      self.renderTabContent('employees');
+    });
+    
+    $(document).on('keypress', '#employee-search', function(e) {
+      if (e.which === 13) {
+        e.preventDefault();
+        EmployeeTableEnhanced.searchTerm = $(this).val();
+        self.renderTabContent('employees');
+      }
+    });
+    
+    // Department location filter - search as you type
+    var locationFilterTimeout;
+    $(document).on('input', '#department-location-filter', function() {
+      var $input = $(this);
+      var searchTerm = $input.val().trim();
+      self.departmentLocationFilter = searchTerm || null;
+      
+      // Debounce the filter to avoid too many re-renders
+      clearTimeout(locationFilterTimeout);
+      locationFilterTimeout = setTimeout(function() {
+        // Store cursor position before re-render
+        var cursorPos = $input[0].selectionStart;
+        self.renderTabContent('departments');
+        // Restore focus and cursor position after render
+        setTimeout(function() {
+          var $newInput = $('#department-location-filter');
+          if ($newInput.length) {
+            $newInput.focus();
+            if ($newInput[0].setSelectionRange) {
+              $newInput[0].setSelectionRange(cursorPos, cursorPos);
+            }
+          }
+        }, 10);
+      }, 300);
+    });
+    
+    // Clear location filter button (for departments)
+    $(document).on('click', '#clear-location-filter-btn', function() {
+      if ($(this).closest('#departments-tab-content').length > 0 || $(this).closest('[data-tab="departments"]').length > 0) {
+        // This is the departments filter clear button
+        $('#department-location-filter').val('');
+        self.departmentLocationFilter = null;
+        self.renderTabContent('departments');
+      } else {
+        // This is the locations filter clear button
+        $('#location-filter').val('');
+        self.locationFilter = null;
+        self.renderTabContent('locations');
+      }
+    });
+    
+    // Location filter - search as you type (for locations tab)
+    var locationFilterTimeout;
+    $(document).on('input', '#location-filter', function() {
+      var $input = $(this);
+      var searchTerm = $input.val().trim();
+      self.locationFilter = searchTerm || null;
+      
+      // Debounce the filter to avoid too many re-renders
+      clearTimeout(locationFilterTimeout);
+      locationFilterTimeout = setTimeout(function() {
+        // Store cursor position before re-render
+        var cursorPos = $input[0].selectionStart;
+        self.renderTabContent('locations');
+        // Restore focus and cursor position after render
+        setTimeout(function() {
+          var $newInput = $('#location-filter');
+          if ($newInput.length) {
+            $newInput.focus();
+            if ($newInput[0].setSelectionRange) {
+              $newInput[0].setSelectionRange(cursorPos, cursorPos);
+            }
+          }
+        }, 50);
+      }, 300);
     });
   },
   
@@ -223,8 +441,14 @@ var CustomerDetailComponent = {
     var content = '';
     
     switch(tabName) {
+      case 'locations':
+        content = this.renderLocationsTab(customer);
+        break;
+      case 'departments':
+        content = this.renderDepartmentsTab(customer);
+        break;
       case 'groups':
-        content = this.renderGroupsTab(customer);
+        content = this.renderDepartmentsTab(customer); // Legacy support
         break;
       case 'employees':
         content = this.renderEmployeesTab(customer);
@@ -273,7 +497,7 @@ var CustomerDetailComponent = {
         '<tr>' +
         '<th>Name</th>' +
         (customer.employeeFieldConfig.requireEmployeeId ? '<th>Employee ID</th>' : '') +
-        '<th>Group</th>' +
+        '<th>Department</th>' +
         '<th>Status</th>' +
         '<th>Notes</th>' +
         '<th>Actions</th>' +
@@ -282,12 +506,32 @@ var CustomerDetailComponent = {
         '<tbody>';
       
       customer.employees.forEach(function(emp) {
+        // Try to find department in new structure first
+        var department = null;
+        var departmentName = '-';
+        if (emp.departmentId && emp.locationId && customer.locations) {
+          var location = customer.locations.find(function(l) { return l.id === emp.locationId; });
+          if (location && location.departments) {
+            department = location.departments.find(function(d) { return d.id === emp.departmentId; });
+          }
+        }
+        // Fallback to old group structure
+        if (!department && emp.groupId && customer.groups) {
         var group = customer.groups.find(function(g) { return g.id === emp.groupId; });
+          if (group) {
+            departmentName = Helpers.escapeHtml(group.name);
+          }
+        } else if (department) {
+          var location = customer.locations.find(function(l) { return l.id === emp.locationId; });
+          departmentName = (location ? Helpers.escapeHtml(location.locationId || 'Unnamed') + ' - ' : '') + 
+            Helpers.escapeHtml(department.name);
+        }
+        
         var isActive = emp.status !== 'inactive';
         html += '<tr' + (!isActive ? ' class="text-muted"' : '') + '>' +
           '<td>' + Helpers.escapeHtml(emp.name) + '</td>' +
           (customer.employeeFieldConfig.requireEmployeeId ? '<td>' + Helpers.escapeHtml(emp.employeeId || '') + '</td>' : '') +
-          '<td>' + (group ? Helpers.escapeHtml(group.name) : '-') + '</td>' +
+          '<td>' + departmentName + '</td>' +
           '<td><span class="label label-' + (isActive ? 'success' : 'default') + '">' + (isActive ? 'Active' : 'Inactive') + '</span></td>' +
           '<td>' + (emp.notes ? Helpers.escapeHtml(emp.notes) : '-') + '</td>' +
           '<td>' +
@@ -347,12 +591,12 @@ var CustomerDetailComponent = {
       '<span class="glyphicon glyphicon-info-sign" style="font-size: 20px; color: #1976d2;"></span>' +
       '</div>' +
       '<div style="flex: 1;">' +
-      '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">How User Groups Work</h4>' +
+      '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">How Departments Work</h4>' +
       '<p style="margin: 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
-      'User groups allow you to organize employees and configure settings for multiple employees at once. ' +
-      'Each group can have its own product visibility, vouchers, and payment options. ' +
-      '<strong>You must create at least one user group before you can add employees.</strong> ' +
-      'Create groups based on department, location, or any other criteria, then assign employees to those groups.' +
+      'Departments allow you to organize employees and configure settings for multiple employees at once. ' +
+      'Each department can have its own product visibility, vouchers, and payment options. ' +
+      '<strong>You must create at least one department before you can add employees.</strong> ' +
+      'Create departments based on organizational structure, location, or any other criteria, then assign employees to those departments.' +
       '</p>' +
       '</div>' +
       '</div>' +
@@ -472,7 +716,632 @@ var CustomerDetailComponent = {
     return html;
   },
   
-  filterUserGroups: function() {
+  renderLocationsTab: function(customer) {
+    var self = this;
+    var isDistributor = AppState.currentUser && (AppState.currentUser.role === 'Distributor' || (AppState.currentUser.role === 'SureWerx' && AppState.selectedDistributorId));
+    
+    // Get locations from customer (initialize if not exists)
+    var locations = customer.locations || [];
+    
+    // Get distributor branches for assignment
+    var distributorBranches = AppState.branchLocations || [];
+    
+    var html = '<div class="row">' +
+      '<div class="col-md-12">' +
+      // Help / info section for locations (similar styling to departments help)
+      '<div class="alert alert-info" style="background-color: #e3f2fd; border-color: #90caf9; margin-bottom: 20px;">' +
+      '<div style="display: flex; align-items: start; gap: 15px;">' +
+      '<div style="background-color: #bbdefb; padding: 10px; border-radius: 4px; flex-shrink: 0;">' +
+      '<span class="glyphicon glyphicon-info-sign" style="font-size: 20px; color: #1976d2;"></span>' +
+      '</div>' +
+      '<div style="flex: 1;">' +
+      '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">How Locations Work</h4>' +
+      '<p style="margin: 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
+      'Locations represent physical sites (branches, plants, facilities) where your employees work. ' +
+      'Each location can be assigned to a distributor branch and can contain multiple departments. ' +
+      'Create locations first, then add departments within each location to organize employees and configure product visibility and vouchers.' +
+      '</p>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      // Filter and actions row
+      '<div class="mb-4" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">' +
+      '<div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 300px;">' +
+      '<label for="location-filter" style="margin: 0; font-weight: 500; white-space: nowrap;">Filter by Location:</label>' +
+      '<div style="position: relative; flex: 1; max-width: 400px;">' +
+      '<input type="text" class="form-control" id="location-filter" placeholder="Search by location ID, address, city, state, or branch..." value="' + Helpers.escapeHtml(self.locationFilter || '') + '" autocomplete="off">' +
+      '<span class="glyphicon glyphicon-search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none;"></span>' +
+      '</div>' +
+      (this.locationFilter ? 
+        '<button class="btn btn-xs btn-default" id="clear-location-filter-btn" title="Clear filter" style="padding: 5px 10px;">' +
+        '<span class="glyphicon glyphicon-remove"></span>' +
+        '</button>' : '') +
+      '</div>' +
+      '<button class="btn btn-primary" id="add-location-btn">' +
+      '<span class="glyphicon glyphicon-plus"></span> Add Location' +
+      '</button>' +
+      '</div>';
+    
+    // Filter locations based on search term
+    var filteredLocations = locations;
+    if (this.locationFilter) {
+      var searchTerm = this.locationFilter.toLowerCase();
+      filteredLocations = locations.filter(function(loc) {
+        var locationId = (loc.locationId || '').toLowerCase();
+        var address = (loc.address || '').toLowerCase();
+        var city = (loc.city || '').toLowerCase();
+        var state = (loc.state || '').toLowerCase();
+        
+        // Also search by distributor branch name
+        var branchName = 'Not Assigned';
+        if (loc.distributorBranchId) {
+          var branch = distributorBranches.find(function(b) { return b.id === loc.distributorBranchId; });
+          if (branch) {
+            branchName = (branch.branchId || '') + ' ' + (branch.branchAddress || '');
+          }
+        }
+        branchName = branchName.toLowerCase();
+        
+        return locationId.indexOf(searchTerm) > -1 ||
+               address.indexOf(searchTerm) > -1 ||
+               city.indexOf(searchTerm) > -1 ||
+               state.indexOf(searchTerm) > -1 ||
+               branchName.indexOf(searchTerm) > -1;
+      });
+    }
+    
+    if (filteredLocations.length === 0 && locations.length > 0) {
+      html += '<div class="alert alert-info">No locations found matching your search.</div>';
+    } else if (locations.length === 0) {
+      html += '<div class="alert alert-info">' +
+        '<p>No locations have been added yet. Click "Add Location" to create the first location.</p>' +
+        '</div>';
+    } else {
+      html += '<div class="table-responsive">' +
+        '<table class="table table-striped table-bordered">' +
+        '<thead>' +
+        '<tr>' +
+        '<th>Location ID</th>' +
+        '<th>Address</th>' +
+        '<th>City</th>' +
+        '<th>State</th>' +
+        '<th>Distributor Branch</th>' +
+        '<th>Departments</th>' +
+        '<th style="width: 120px;">Actions</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>';
+      
+      filteredLocations.forEach(function(location) {
+        // Count departments in this location
+        var departmentCount = (location.departments || []).length;
+        
+        // Get distributor branch name
+        var branchName = 'Not Assigned';
+        if (location.distributorBranchId) {
+          var branch = distributorBranches.find(function(b) { return b.id === location.distributorBranchId; });
+          if (branch) {
+            branchName = branch.branchId + ' - ' + branch.branchAddress;
+          }
+        }
+        
+        html += '<tr class="location-row selectable-row" data-location-id="' + location.id + '" style="cursor: pointer;">' +
+          '<td><strong>' + Helpers.escapeHtml(location.locationId || '') + '</strong></td>' +
+          '<td>' + Helpers.escapeHtml(location.address || '') + '</td>' +
+          '<td>' + Helpers.escapeHtml(location.city || '') + '</td>' +
+          '<td>' + Helpers.escapeHtml(location.state || '') + '</td>' +
+          '<td>' + Helpers.escapeHtml(branchName) + '</td>' +
+          '<td>' + departmentCount + ' department' + (departmentCount !== 1 ? 's' : '') + '</td>' +
+          '<td>' +
+          '<button type="button" class="btn btn-xs btn-default edit-location-btn" data-location-id="' + location.id + '" title="Edit">' +
+          '<span class="glyphicon glyphicon-pencil"></span>' +
+          '</button> ' +
+          '<button type="button" class="btn btn-xs btn-danger delete-location-btn" data-location-id="' + location.id + '" title="Delete">' +
+          '<span class="glyphicon glyphicon-trash"></span>' +
+          '</button>' +
+          '</td>' +
+          '</tr>';
+      });
+      
+      html += '</tbody></table></div>';
+    }
+    
+    html += '</div></div>';
+    
+    return html;
+  },
+  
+  renderDepartmentsTab: function(customer) {
+    var self = this;
+    var isDistributor = AppState.currentUser && (AppState.currentUser.role === 'Distributor' || (AppState.currentUser.role === 'SureWerx' && AppState.selectedDistributorId));
+    
+    // Get locations
+    var locations = customer.locations || [];
+    
+    var html = '<div class="row">' +
+      '<div class="col-md-12">' +
+      '<div class="alert alert-info" style="background-color: #e3f2fd; border-color: #90caf9; margin-bottom: 20px;">' +
+      '<div style="display: flex; align-items: start; gap: 15px;">' +
+      '<div style="background-color: #bbdefb; padding: 10px; border-radius: 4px; flex-shrink: 0;">' +
+      '<span class="glyphicon glyphicon-info-sign" style="font-size: 20px; color: #1976d2;"></span>' +
+      '</div>' +
+      '<div style="flex: 1;">' +
+      '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">How Departments Work</h4>' +
+      '<p style="margin: 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
+      'Departments are organized within Locations. Each location can have multiple departments. ' +
+      'Departments allow you to organize employees and configure settings for multiple employees at once. ' +
+      'Each department can have its own product visibility, vouchers, and payment options. ' +
+      '<strong>You must create at least one location and one department before you can add employees.</strong> ' +
+      'Create departments based on organizational structure, then assign employees to those departments.' +
+      '</p>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+    
+    if (locations.length === 0) {
+      html += '<div class="alert alert-warning">' +
+        '<p><strong>No locations found.</strong> Please create at least one location in the Locations tab before creating departments.</p>' +
+        '</div>';
+    } else {
+      html += '<div class="mb-4" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">' +
+        '<div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 300px;">' +
+        '<label for="department-location-filter" style="margin: 0; font-weight: 500; white-space: nowrap;">Filter by Location:</label>' +
+        '<div style="position: relative; flex: 1; max-width: 400px;">' +
+        '<input type="text" class="form-control" id="department-location-filter" placeholder="Search by location ID, address, city, or state..." value="' + Helpers.escapeHtml(self.departmentLocationFilter || '') + '" autocomplete="off">' +
+        '<span class="glyphicon glyphicon-search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none;"></span>' +
+        '</div>' +
+        (this.departmentLocationFilter ? 
+          '<button class="btn btn-xs btn-default" id="clear-location-filter-btn" title="Clear filter" style="padding: 5px 10px;">' +
+          '<span class="glyphicon glyphicon-remove"></span>' +
+          '</button>' : '') +
+        '</div>' +
+        '<button class="btn btn-primary" id="create-department-btn">' +
+        '<span class="glyphicon glyphicon-plus"></span> Create Department' +
+        '</button>' +
+        '</div>';
+      
+      // Filter locations based on search term
+      var filteredLocations = locations;
+      if (this.departmentLocationFilter) {
+        var searchTerm = this.departmentLocationFilter.toLowerCase();
+        filteredLocations = locations.filter(function(loc) {
+          var locationId = (loc.locationId || '').toLowerCase();
+          var address = (loc.address || '').toLowerCase();
+          var city = (loc.city || '').toLowerCase();
+          var state = (loc.state || '').toLowerCase();
+          return locationId.indexOf(searchTerm) > -1 ||
+                 address.indexOf(searchTerm) > -1 ||
+                 city.indexOf(searchTerm) > -1 ||
+                 state.indexOf(searchTerm) > -1;
+        });
+      }
+      
+      // Collect all departments from filtered locations for table display
+      var allDepartments = [];
+      filteredLocations.forEach(function(location) {
+        var departments = location.departments || [];
+        departments.forEach(function(department) {
+          allDepartments.push({
+            department: department,
+            location: location
+          });
+        });
+      });
+      
+      if (allDepartments.length === 0) {
+        html += '<div class="alert alert-info">' +
+          '<p>No departments found. Click "Create Department" to add departments to your locations.</p>' +
+          '</div>';
+      } else {
+        html += '<div class="table-responsive">' +
+          '<table class="table table-striped table-bordered">' +
+          '<thead>' +
+          '<tr>' +
+          '<th>Department Name</th>' +
+          '<th>Location ID</th>' +
+          '<th>Location Address</th>' +
+          '<th>City</th>' +
+          '<th>State</th>' +
+          '<th style="width: 200px;">Actions</th>' +
+          '</tr>' +
+          '</thead>' +
+          '<tbody>';
+        
+        allDepartments.forEach(function(item) {
+          var department = item.department;
+          var location = item.location;
+          
+          html += '<tr class="selectable-row" data-department-id="' + department.id + '" data-location-id="' + location.id + '" style="cursor: pointer;">' +
+            '<td><strong>' + Helpers.escapeHtml(department.name || 'Unnamed Department') + '</strong></td>' +
+            '<td>' + Helpers.escapeHtml(location.locationId || '') + '</td>' +
+            '<td>' + Helpers.escapeHtml(location.address || '') + '</td>' +
+            '<td>' + Helpers.escapeHtml(location.city || '') + '</td>' +
+            '<td>' + Helpers.escapeHtml(location.state || '') + '</td>' +
+            '<td>' +
+            '<button type="button" class="btn btn-xs btn-default edit-department-name-btn" data-department-id="' + department.id + '" data-location-id="' + location.id + '" title="Edit Department">' +
+            '<span class="glyphicon glyphicon-pencil"></span>' +
+            '</button> ' +
+            '<button type="button" class="btn btn-xs btn-primary manage-product-visibility-btn" data-department-id="' + department.id + '" data-location-id="' + location.id + '" title="Manage Product Visibility">' +
+            'Product Visibility' +
+            '</button> ' +
+            '<button type="button" class="btn btn-xs btn-danger delete-department-btn" data-department-id="' + department.id + '" data-location-id="' + location.id + '" title="Delete Department">' +
+            '<span class="glyphicon glyphicon-trash"></span>' +
+            '</button>' +
+            '</td>' +
+            '</tr>';
+        });
+        
+        html += '</tbody></table></div>';
+      }
+    }
+    
+    html += '</div></div>';
+    
+    return html;
+  },
+  
+  showLocationModal: function(locationId) {
+    var self = this;
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    var location = null;
+    var isEdit = !!locationId;
+    
+    if (isEdit) {
+      location = (customer.locations || []).find(function(l) { return l.id === locationId; });
+      if (!location) {
+        Helpers.showAlert('Location not found', 'danger');
+        return;
+      }
+    }
+    
+    // Get distributor branches
+    var distributorBranches = AppState.branchLocations || [];
+    
+    // Remove existing modal if present
+    $('#location-modal').remove();
+    
+    var branchOptions = '<option value="">Not Assigned</option>';
+    distributorBranches.forEach(function(branch) {
+      var selected = (isEdit && location.distributorBranchId === branch.id) ? ' selected' : '';
+      branchOptions += '<option value="' + branch.id + '"' + selected + '>' + 
+        Helpers.escapeHtml(branch.branchId) + ' - ' + Helpers.escapeHtml(branch.branchAddress) + '</option>';
+    });
+    
+    var modalHtml = '<div class="modal fade" id="location-modal" tabindex="-1" role="dialog">' +
+      '<div class="modal-dialog" role="document">' +
+      '<div class="modal-content">' +
+      '<div class="modal-header">' +
+      '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+      '<span aria-hidden="true">&times;</span>' +
+      '</button>' +
+      '<h4 class="modal-title">' + (isEdit ? 'Edit Location' : 'Add Location') + '</h4>' +
+      '</div>' +
+      '<form id="location-form">' +
+      '<div class="modal-body">' +
+      '<div class="form-group">' +
+      '<label for="modal-location-id">Location ID *</label>' +
+      '<input type="text" class="form-control" id="modal-location-id" value="' + (location ? Helpers.escapeHtml(location.locationId || '') : '') + '" placeholder="Enter location ID" required>' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="modal-location-address">Address *</label>' +
+      '<input type="text" class="form-control" id="modal-location-address" value="' + (location ? Helpers.escapeHtml(location.address || '') : '') + '" placeholder="Enter address" required>' +
+      '</div>' +
+      '<div class="row">' +
+      '<div class="col-md-6">' +
+      '<div class="form-group">' +
+      '<label for="modal-location-city">City *</label>' +
+      '<input type="text" class="form-control" id="modal-location-city" value="' + (location ? Helpers.escapeHtml(location.city || '') : '') + '" placeholder="Enter city" required>' +
+      '</div>' +
+      '</div>' +
+      '<div class="col-md-6">' +
+      '<div class="form-group">' +
+      '<label for="modal-location-state">State *</label>' +
+      '<input type="text" class="form-control" id="modal-location-state" value="' + (location ? Helpers.escapeHtml(location.state || '') : '') + '" placeholder="Enter state" required>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="modal-distributor-branch">Distributor Branch</label>' +
+      '<select class="form-control" id="modal-distributor-branch">' +
+      branchOptions +
+      '</select>' +
+      '<p class="help-block">Assign this location to a distributor branch</p>' +
+      '</div>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>' +
+      '<button type="submit" class="btn btn-primary">' + (isEdit ? 'Update Location' : 'Add Location') + '</button>' +
+      '</div>' +
+      '</form>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+    
+    $('body').append(modalHtml);
+    
+    // Handle form submit
+    $(document).off('submit', '#location-form').on('submit', '#location-form', function(e) {
+      e.preventDefault();
+      var locationIdValue = $('#modal-location-id').val();
+      var address = $('#modal-location-address').val();
+      var city = $('#modal-location-city').val();
+      var state = $('#modal-location-state').val();
+      var distributorBranchId = $('#modal-distributor-branch').val() || null;
+      
+      if (isEdit) {
+        self.handleUpdateLocation(locationId, locationIdValue, address, city, state, distributorBranchId);
+      } else {
+        self.handleAddLocation(locationIdValue, address, city, state, distributorBranchId);
+      }
+      
+      $('#location-modal').modal('hide');
+    });
+    
+    // Cleanup on hide
+    $('#location-modal').on('hidden.bs.modal', function() {
+      $(this).remove();
+    });
+    
+    // Show modal
+    $('#location-modal').modal('show');
+  },
+  
+  handleAddLocation: function(locationId, address, city, state, distributorBranchId) {
+    if (!locationId || !address || !city || !state) {
+      Helpers.showAlert('Please fill in all required fields', 'warning');
+      return;
+    }
+    
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    var newLocation = {
+      id: Helpers.generateId(),
+      locationId: locationId.trim(),
+      address: address.trim(),
+      city: city.trim(),
+      state: state.trim(),
+      distributorBranchId: distributorBranchId || null,
+      departments: []
+    };
+    
+    if (!customer.locations) {
+      customer.locations = [];
+    }
+    customer.locations.push(newLocation);
+    AppState.updateCustomer(this.customerId, { locations: customer.locations });
+    
+    Helpers.showAlert('Location added successfully', 'success');
+    this.renderTabContent('locations');
+  },
+  
+  handleUpdateLocation: function(locationId, locationIdValue, address, city, state, distributorBranchId) {
+    if (!locationIdValue || !address || !city || !state) {
+      Helpers.showAlert('Please fill in all required fields', 'warning');
+      return;
+    }
+    
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    var location = (customer.locations || []).find(function(l) { return l.id === locationId; });
+    if (location) {
+      location.locationId = locationIdValue.trim();
+      location.address = address.trim();
+      location.city = city.trim();
+      location.state = state.trim();
+      location.distributorBranchId = distributorBranchId || null;
+      
+      AppState.updateCustomer(this.customerId, { locations: customer.locations });
+      Helpers.showAlert('Location updated successfully', 'success');
+    }
+    
+    this.renderTabContent('locations');
+  },
+  
+  deleteLocation: function(locationId) {
+    if (!confirm('Are you sure you want to delete this location? All departments and employees in this location will also be deleted.')) {
+      return;
+    }
+    
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    customer.locations = (customer.locations || []).filter(function(l) { return l.id !== locationId; });
+    AppState.updateCustomer(this.customerId, { locations: customer.locations });
+    
+    Helpers.showAlert('Location deleted successfully', 'success');
+    this.renderTabContent('locations');
+  },
+  
+  showDepartmentModal: function(locationId, departmentId) {
+    var self = this;
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    var department = null;
+    var isEdit = !!departmentId;
+    var locations = customer.locations || [];
+    
+    if (isEdit && locationId) {
+      var location = locations.find(function(l) { return l.id === locationId; });
+      if (location && location.departments) {
+        department = location.departments.find(function(d) { return d.id === departmentId; });
+      }
+      if (!department) {
+        Helpers.showAlert('Department not found', 'danger');
+        return;
+      }
+    }
+    
+    if (locations.length === 0) {
+      Helpers.showAlert('Please create at least one location before creating departments', 'warning');
+      return;
+    }
+    
+    // Remove existing modal if present
+    $('#department-modal').remove();
+    
+    var locationOptions = '';
+    locations.forEach(function(loc) {
+      var selected = '';
+      if (isEdit && locationId === loc.id) {
+        selected = ' selected';
+      } else if (!isEdit && !locationId && locations.length === 1) {
+        selected = ' selected';
+      } else if (!isEdit && locationId === loc.id) {
+        selected = ' selected';
+      }
+      locationOptions += '<option value="' + loc.id + '"' + selected + '>' + 
+        Helpers.escapeHtml(loc.locationId || 'Unnamed') + ' - ' + 
+        Helpers.escapeHtml(loc.address || '') + ', ' + 
+        Helpers.escapeHtml(loc.city || '') + ', ' + 
+        Helpers.escapeHtml(loc.state || '') + '</option>';
+    });
+    
+    var modalHtml = '<div class="modal fade" id="department-modal" tabindex="-1" role="dialog">' +
+      '<div class="modal-dialog modal-lg" role="document">' +
+      '<div class="modal-content">' +
+      '<div class="modal-header">' +
+      '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+      '<span aria-hidden="true">&times;</span>' +
+      '</button>' +
+      '<h4 class="modal-title">' + (isEdit ? 'Edit Department' : 'Create Department') + '</h4>' +
+      '</div>' +
+      '<form id="department-form">' +
+      '<div class="modal-body">' +
+      '<div class="form-group">' +
+      '<label for="modal-department-location">Location *</label>' +
+      '<select class="form-control" id="modal-department-location" required' + (isEdit ? ' disabled' : '') + '>' +
+      locationOptions +
+      '</select>' +
+      (isEdit ? '<p class="help-block">Location cannot be changed after creation</p>' : '<p class="help-block">Select the location for this department</p>') +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="modal-department-name">Department Name *</label>' +
+      '<input type="text" class="form-control" id="modal-department-name" value="' + (department ? Helpers.escapeHtml(department.name || '') : '') + '" placeholder="Enter department name" required>' +
+      '</div>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>' +
+      '<button type="submit" class="btn btn-primary">' + (isEdit ? 'Update Department' : 'Create Department') + '</button>' +
+      '</div>' +
+      '</form>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+    
+    $('body').append(modalHtml);
+    
+    // Handle form submit
+    $(document).off('submit', '#department-form').on('submit', '#department-form', function(e) {
+      e.preventDefault();
+      var selectedLocationId = $('#modal-department-location').val();
+      var departmentName = $('#modal-department-name').val();
+      
+      if (!selectedLocationId || !departmentName) {
+        Helpers.showAlert('Please fill in all required fields', 'warning');
+        return;
+      }
+      
+      if (isEdit) {
+        self.handleUpdateDepartment(locationId, departmentId, departmentName);
+      } else {
+        self.handleAddDepartment(selectedLocationId, departmentName);
+      }
+      
+      $('#department-modal').modal('hide');
+    });
+    
+    // Cleanup on hide
+    $('#department-modal').on('hidden.bs.modal', function() {
+      $(this).remove();
+    });
+    
+    // Show modal
+    $('#department-modal').modal('show');
+  },
+  
+  handleAddDepartment: function(locationId, departmentName) {
+    if (!locationId || !departmentName) {
+      Helpers.showAlert('Please fill in all required fields', 'warning');
+      return;
+    }
+    
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    var location = (customer.locations || []).find(function(l) { return l.id === locationId; });
+    if (!location) {
+      Helpers.showAlert('Location not found', 'danger');
+      return;
+    }
+    
+    if (!location.departments) {
+      location.departments = [];
+    }
+    
+    var newDepartment = {
+      id: Helpers.generateId(),
+      name: departmentName.trim(),
+      employeeCount: 0,
+      productIds: [],
+      employees: []
+    };
+    
+    location.departments.push(newDepartment);
+    AppState.updateCustomer(this.customerId, { locations: customer.locations });
+    
+    Helpers.showAlert('Department created successfully', 'success');
+    this.renderTabContent('departments');
+  },
+  
+  handleUpdateDepartment: function(locationId, departmentId, departmentName) {
+    if (!departmentName) {
+      Helpers.showAlert('Please fill in department name', 'warning');
+      return;
+    }
+    
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    var location = (customer.locations || []).find(function(l) { return l.id === locationId; });
+    if (!location || !location.departments) {
+      Helpers.showAlert('Location or department not found', 'danger');
+      return;
+    }
+    
+    var department = location.departments.find(function(d) { return d.id === departmentId; });
+    if (department) {
+      department.name = departmentName.trim();
+      AppState.updateCustomer(this.customerId, { locations: customer.locations });
+      Helpers.showAlert('Department updated successfully', 'success');
+    }
+    
+    this.renderTabContent('departments');
+  },
+  
+  deleteDepartment: function(locationId, departmentId) {
+    if (!confirm('Are you sure you want to delete this department? All employees in this department will also be deleted.')) {
+      return;
+    }
+    
+    var customer = AppState.getCustomerById(this.customerId);
+    if (!customer) return;
+    
+    var location = (customer.locations || []).find(function(l) { return l.id === locationId; });
+    if (location && location.departments) {
+      location.departments = location.departments.filter(function(d) { return d.id !== departmentId; });
+      AppState.updateCustomer(this.customerId, { locations: customer.locations });
+      Helpers.showAlert('Department deleted successfully', 'success');
+    }
+    
+    this.renderTabContent('departments');
+  },
+  
+  filterDepartments: function() {
     var locationId = $('#filter-group-location-id').val();
     var locationCity = $('#filter-group-location-city').val();
     var locationState = $('#filter-group-location-state').val();
@@ -508,7 +1377,7 @@ var CustomerDetailComponent = {
     
     // Handle filter button click
     $(document).on('click', '#apply-group-filters-btn', function() {
-      self.filterUserGroups();
+      self.filterDepartments();
     });
     
     // Handle clear filters button click
@@ -516,26 +1385,51 @@ var CustomerDetailComponent = {
       $('#filter-group-location-id').val('');
       $('#filter-group-location-city').val('');
       $('#filter-group-location-state').val('');
-      self.filterUserGroups();
+      self.filterDepartments();
     });
   },
   
   renderVouchersTab: function(customer) {
     var self = this;
     var isDistributor = AppState.currentUser && (AppState.currentUser.role === 'Distributor' || (AppState.currentUser.role === 'SureWerx' && AppState.selectedDistributorId));
-    var hasGroupsWithProducts = customer.groups.some(function(g) {
+    var isCustomerUser = AppState.currentUser && AppState.currentUser.role === 'Customer';
+    
+    // Check for departments with products (new structure)
+    var hasDepartmentsWithProducts = false;
+    if (customer.locations && customer.locations.length > 0) {
+      hasDepartmentsWithProducts = customer.locations.some(function(loc) {
+        return loc.departments && loc.departments.some(function(dept) {
+          return (dept.productIds || []).length > 0;
+        });
+      });
+    }
+    // Fallback to old groups structure
+    var hasGroupsWithProducts = customer.groups && customer.groups.some(function(g) {
       return (g.productIds || []).length > 0;
     });
-    var hasEmployees = customer.groups.some(function(g) {
-      return g.employeeCount > 0;
+    var hasAnyWithProducts = hasDepartmentsWithProducts || hasGroupsWithProducts;
+    
+    // Check for departments with employees
+    var hasDepartmentsWithEmployees = false;
+    if (customer.locations && customer.locations.length > 0) {
+      hasDepartmentsWithEmployees = customer.locations.some(function(loc) {
+        return loc.departments && loc.departments.some(function(dept) {
+          return (dept.employeeCount || 0) > 0;
+        });
+      });
+    }
+    // Fallback to old groups structure
+    var hasEmployees = customer.groups && customer.groups.some(function(g) {
+      return (g.employeeCount || 0) > 0;
     });
+    var hasAnyEmployees = hasDepartmentsWithEmployees || hasEmployees;
     
     var html = '<div class="row">' +
       '<div class="col-md-12">';
     
     // Help Section - Only visible for distributors
     if (isDistributor) {
-      if (!hasEmployees) {
+      if (!hasAnyEmployees) {
         // No employees
         html += '<div class="alert alert-info" style="background-color: #e3f2fd; border-color: #90caf9; margin-bottom: 20px;">' +
           '<div style="display: flex; align-items: start; gap: 15px;">' +
@@ -543,30 +1437,30 @@ var CustomerDetailComponent = {
           '<span class="glyphicon glyphicon-info-sign" style="font-size: 20px; color: #1976d2;"></span>' +
           '</div>' +
           '<div style="flex: 1;">' +
-          '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Create User Groups First</h4>' +
+          '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Create Departments First</h4>' +
           '<p style="margin: 0 0 12px 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
-          'Before creating vouchers, you need to create user groups in the User Groups tab. Once user groups are created, you can add employees to those groups and assign product visibility to enable voucher creation.' +
+          'Before creating vouchers, you need to create locations and departments in the Locations and Departments tabs. Once departments are created, you can add employees to those departments and assign product visibility to enable voucher creation.' +
           '</p>' +
-          '<button class="btn btn-sm btn-primary" onclick="CustomerDetailComponent.switchTab(\'groups\')">' +
-          'Go to User Groups' +
+          '<button class="btn btn-sm btn-primary" onclick="CustomerDetailComponent.switchTab(\'departments\')">' +
+          'Go to Departments' +
           '</button>' +
           '</div>' +
           '</div>' +
           '</div>';
-      } else if (!hasGroupsWithProducts) {
-        // Has employees but no groups with products
+      } else if (!hasAnyWithProducts) {
+        // Has employees but no departments with products
         html += '<div class="alert alert-info" style="background-color: #e3f2fd; border-color: #90caf9; margin-bottom: 20px;">' +
           '<div style="display: flex; align-items: start; gap: 15px;">' +
           '<div style="background-color: #bbdefb; padding: 10px; border-radius: 4px; flex-shrink: 0;">' +
           '<span class="glyphicon glyphicon-info-sign" style="font-size: 20px; color: #1976d2;"></span>' +
           '</div>' +
           '<div style="flex: 1;">' +
-          '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Assign Products to User Groups</h4>' +
+          '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Assign Products to Departments</h4>' +
           '<p style="margin: 0 0 12px 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
-          'Before creating vouchers, you need to assign product visibility to at least one user group. Go to the Employees & Groups section, edit a user group, and configure which products that group can access.' +
+          'Before creating vouchers, you need to assign product visibility to at least one department. Go to the Departments section, and use "Manage Product Visibility" to configure which products that department can access.' +
           '</p>' +
-          '<button class="btn btn-sm btn-primary" onclick="CustomerDetailComponent.switchTab(\'groups\')">' +
-          'Go to User Groups' +
+          '<button class="btn btn-sm btn-primary" onclick="CustomerDetailComponent.switchTab(\'departments\')">' +
+          'Go to Departments' +
           '</button>' +
           '</div>' +
           '</div>' +
@@ -579,9 +1473,9 @@ var CustomerDetailComponent = {
           '<span class="glyphicon glyphicon-info-sign" style="font-size: 20px; color: #1976d2;"></span>' +
           '</div>' +
           '<div style="flex: 1;">' +
-          '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Create Vouchers for User Groups</h4>' +
+          '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Create Vouchers for Departments</h4>' +
           '<p style="margin: 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
-          'Vouchers define the allowance amounts, validity periods, and qualified products that user groups can access. Each voucher is assigned to a single user group and can be configured with auto-renewal and rollover settings.' +
+          'Vouchers define the allowance amounts, validity periods, and qualified products that departments can access. Each voucher is assigned to a single department and can be configured with auto-renewal and rollover settings.' +
           '</p>' +
           '</div>' +
           '</div>' +
@@ -589,21 +1483,21 @@ var CustomerDetailComponent = {
       }
     }
     
-    html += '<div class="mb-4" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">' +
-      (isDistributor ? 
-        '<button class="btn btn-primary" id="create-voucher-btn"' +
-        (!hasGroupsWithProducts ? ' disabled title="Add user groups with products first"' : '') + '>' +
-        '<span class="glyphicon glyphicon-plus"></span> Create Voucher' +
-        '</button>' : '') +
+    html += '<div class="mb-4" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">' +
       (customer.vouchers.length > 0 ? 
-        '<div style="margin-left: auto;">' +
-        '<label for="voucher-status-filter" style="margin-right: 8px; font-weight: normal;">Filter by Status:</label>' +
+        '<div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 300px;">' +
+        '<label for="voucher-status-filter" style="margin: 0; font-weight: 500; white-space: nowrap;">Filter by Status:</label>' +
         '<select class="form-control" id="voucher-status-filter" style="display: inline-block; width: auto; height: 32px; font-size: 13px;">' +
         '<option value="all"' + (this.voucherStatusFilter === 'all' ? ' selected' : '') + '>All Vouchers</option>' +
         '<option value="active"' + (this.voucherStatusFilter === 'active' ? ' selected' : '') + '>Active</option>' +
         '<option value="inactive"' + (this.voucherStatusFilter === 'inactive' ? ' selected' : '') + '>Inactive</option>' +
         '</select>' +
-        '</div>' : '') +
+        '</div>' : '<div></div>') +
+      (isDistributor ? 
+        '<button class="btn btn-primary" id="create-voucher-btn"' +
+        (!hasAnyWithProducts ? ' disabled title="Add departments with products first"' : '') + '>' +
+        '<span class="glyphicon glyphicon-plus"></span> Create Voucher' +
+        '</button>' : '') +
       '</div>';
     
     if (customer.vouchers.length > 0) {
@@ -618,43 +1512,117 @@ var CustomerDetailComponent = {
       if (filteredVouchers.length === 0) {
         html += '<div class="alert alert-info">No vouchers found matching the selected filter.</div>';
       } else {
-        html += '<div id="vouchers-list">';
+        html += '<div class="table-responsive">' +
+          '<table class="table table-striped table-bordered">' +
+          '<thead>' +
+          '<tr>' +
+          '<th>Voucher Name</th>' +
+          '<th>Status</th>' +
+          '<th>Department</th>' +
+          '<th>Amount</th>' +
+          '<th>Period</th>' +
+          (!isCustomerUser ? '<th style="width: 80px;">Actions</th>' : '') +
+          '</tr>' +
+          '</thead>' +
+          '<tbody>';
         
         filteredVouchers.forEach(function(voucher) {
-        // Get assigned user group
-        var assignedGroup = null;
-        if (voucher.userGroupIds && voucher.userGroupIds.length > 0) {
-          assignedGroup = customer.groups.find(function(g) {
-            return g.id === voucher.userGroupIds[0];
-          });
-        }
-        
-        html += '<div class="user-group-card" data-voucher-id="' + voucher.id + '" data-voucher-status="' + (voucher.isActive ? 'active' : 'inactive') + '" style="padding: 12px;' + (isDistributor ? '' : ' cursor: default;') + '">' +
-          '<div class="group-header" style="margin-bottom: 8px;">' +
-          '<h4 style="margin: 0; font-size: 15px; font-weight: 600;">' + Helpers.escapeHtml(voucher.name) + '</h4>' +
-          (isDistributor ? 
-            '<div class="btn-group btn-group-xs">' +
-            '<button class="btn btn-default edit-voucher-btn" data-voucher-id="' + voucher.id + '" style="padding: 3px 8px; background-color: transparent; border-color: transparent; color: #6b7280;" title="Edit Voucher">' +
-            '<span class="glyphicon glyphicon-pencil"></span>' +
-            '</button>' +
-            '</div>' : '') +
-          '</div>' +
-          '<div style="display: flex; flex-wrap: wrap; gap: 12px; font-size: 12px; color: #6b7280;">' +
-          '<div>' +
+          // Normalize legacy voucher data: support old userGroupIds by mapping to departmentId
+          var effectiveDepartmentId = voucher.departmentId;
+          var effectiveLocationId = voucher.locationId;
+          
+          if (!effectiveDepartmentId && voucher.userGroupIds && voucher.userGroupIds.length > 0) {
+            effectiveDepartmentId = voucher.userGroupIds[0];
+          }
+          
+          // Try to infer locationId if missing by scanning locations for the department
+          if ((!effectiveLocationId || !effectiveDepartmentId) && customer.locations && customer.locations.length > 0) {
+            customer.locations.some(function(loc) {
+              if (loc.departments && loc.departments.length > 0) {
+                var dept = loc.departments.find(function(d) { return d.id === effectiveDepartmentId; });
+                if (dept) {
+                  effectiveLocationId = loc.id;
+                  return true;
+                }
+              }
+              return false;
+            });
+          }
+          
+          // Get assigned department (new structure)
+          var assignedDepartment = null;
+          var assignedLocation = null;
+          
+          // Prefer explicit (or inferred) location match when both IDs are present
+          if (effectiveDepartmentId && effectiveLocationId && customer.locations) {
+            assignedLocation = customer.locations.find(function(loc) {
+              return loc.id === effectiveLocationId;
+            });
+            if (assignedLocation && assignedLocation.departments) {
+              assignedDepartment = assignedLocation.departments.find(function(dept) {
+                return dept.id === effectiveDepartmentId;
+              });
+            }
+          }
+          
+          // Fallback: search all locations for the department if not found yet
+          if (!assignedDepartment && effectiveDepartmentId && customer.locations && customer.locations.length > 0) {
+            customer.locations.some(function(loc) {
+              if (loc.departments && loc.departments.length > 0) {
+                var dept = loc.departments.find(function(d) { return d.id === effectiveDepartmentId; });
+                if (dept) {
+                  assignedLocation = loc;
+                  assignedDepartment = dept;
+                  return true;
+                }
+              }
+              return false;
+            });
+          }
+
+          var departmentLabel = '';
+          if (assignedDepartment) {
+            if (assignedLocation) {
+              departmentLabel = Helpers.escapeHtml(assignedLocation.locationId || 'Unnamed') + ' - ' + Helpers.escapeHtml(assignedDepartment.name);
+            } else {
+              departmentLabel = Helpers.escapeHtml(assignedDepartment.name);
+            }
+          } else if (effectiveDepartmentId && customer.groups && customer.groups.length > 0) {
+            // Fallback to legacy groups data if locations/departments are not available
+            var legacyGroup = customer.groups.find(function(g) { return g.id === effectiveDepartmentId; });
+            if (legacyGroup) {
+              var legacyLocationId = legacyGroup.locationId || '';
+              if (legacyLocationId) {
+                departmentLabel = Helpers.escapeHtml(legacyLocationId + ' - ' + legacyGroup.name);
+              } else {
+                departmentLabel = Helpers.escapeHtml(legacyGroup.name);
+              }
+            }
+          }
+
+          var rowClass = isCustomerUser ? '' : 'selectable-row voucher-row';
+          var rowStyle = isCustomerUser ? '' : ' style="cursor: pointer;"';
+          
+          html += '<tr class="' + rowClass + '" data-voucher-id="' + voucher.id + '"' + rowStyle + '>' +
+            '<td><strong>' + Helpers.escapeHtml(voucher.name) + '</strong></td>' +
+            '<td>' +
           '<span class="label ' + (voucher.isActive ? 'label-success' : 'label-default') + '" style="font-size: 11px; padding: 2px 6px;">' +
           (voucher.isActive ? 'Active' : 'Inactive') +
           '</span>' +
-          '</div>' +
-          (assignedGroup ? 
-            '<div><strong>Group:</strong> ' + Helpers.escapeHtml(assignedGroup.name) + ' (' + assignedGroup.employeeCount + ')</div>' : '') +
-          '<div><strong>Amount:</strong> <span class="text-primary" style="font-weight: 600;">' + Helpers.formatCurrency(voucher.defaultAmount) + '</span></div>' +
-          '<div><strong>Period:</strong> ' + Helpers.formatDate(voucher.startDate) + ' - ' + Helpers.formatDate(voucher.endDate) + '</div>' +
-          '</div>' +
-          (voucher.description ? '<div class="text-muted" style="margin-top: 6px; font-size: 12px; line-height: 1.4;">' + Helpers.escapeHtml(voucher.description) + '</div>' : '') +
-          '</div>';
+            '</td>' +
+            '<td>' + (departmentLabel || '<span class="text-muted">Unassigned</span>') + '</td>' +
+            '<td><span class="text-primary" style="font-weight: 600;">' + Helpers.formatCurrency(voucher.defaultAmount) + '</span></td>' +
+            '<td>' + Helpers.formatDate(voucher.startDate) + ' - ' + Helpers.formatDate(voucher.endDate) + '</td>' +
+            (!isCustomerUser && isDistributor ?
+              '<td>' +
+              '<button class="btn btn-xs btn-default edit-voucher-btn" data-voucher-id="' + voucher.id + '" title="Edit Voucher">' +
+              '<span class="glyphicon glyphicon-pencil"></span>' +
+              '</button>' +
+              '</td>' : (!isCustomerUser ? '<td></td>' : '')) +
+            '</tr>';
         });
-        
-        html += '</div>';
+
+        html += '</tbody></table></div>';
       }
     } else {
       html += '<div class="alert alert-info">No voucher programs configured yet.</div>';
@@ -680,11 +1648,19 @@ var CustomerDetailComponent = {
   showAddEmployeeModal: function() {
     var customer = AppState.getCustomerById(this.customerId);
     
-    // Check if customer has any user groups
-    if (!customer.groups || customer.groups.length === 0) {
-      Helpers.showAlert('Please create at least one User Group before adding employees.', 'warning');
-      // Switch to groups tab
-      this.switchTab('groups');
+    // Check if customer has any locations with departments
+    var hasDepartments = false;
+    if (customer.locations && customer.locations.length > 0) {
+      hasDepartments = customer.locations.some(function(loc) {
+        return loc.departments && loc.departments.length > 0;
+      });
+    }
+    
+    // Fallback to old groups structure for backward compatibility
+    if (!hasDepartments && (!customer.groups || customer.groups.length === 0)) {
+      Helpers.showAlert('Please create at least one Location and Department before adding employees.', 'warning');
+      // Switch to departments tab
+      this.switchTab('departments');
       return;
     }
     
@@ -709,8 +1685,8 @@ var CustomerDetailComponent = {
     var customer = AppState.getCustomerById(this.customerId);
     var group = customer.groups.find(function(g) { return g.id === groupId; });
     
-    // Check if group has employees
-    var employeeCount = customer.employees.filter(function(e) { return e.groupId === groupId; }).length;
+    // Check if department has employees
+    var employeeCount = customer.employees.filter(function(e) { return e.departmentId === groupId && e.locationId === locationId; }).length;
     var message = 'Are you sure you want to delete "' + group.name + '"?';
     
     if (employeeCount > 0) {
@@ -718,7 +1694,7 @@ var CustomerDetailComponent = {
     }
     
     UIHelpers.showConfirmDialog({
-      title: 'Delete User Group',
+      title: 'Delete Department',
       message: message,
       confirmText: 'Delete Group',
       confirmClass: 'btn-danger',
@@ -730,8 +1706,8 @@ var CustomerDetailComponent = {
           
           // Remove group assignment from employees
           var updatedEmployees = customer.employees.map(function(e) {
-            if (e.groupId === groupId) {
-              return Object.assign({}, e, { groupId: null });
+            if (e.departmentId === groupId && e.locationId === locationId) {
+              return Object.assign({}, e, { departmentId: null, locationId: null });
             }
             return e;
           });
@@ -752,11 +1728,19 @@ var CustomerDetailComponent = {
   showCreateVoucherModal: function() {
     var customer = AppState.getCustomerById(this.customerId);
     
-    // Check if customer has any user groups
-    if (!customer.groups || customer.groups.length === 0) {
-      Helpers.showAlert('Please create at least one User Group before creating vouchers.', 'warning');
-      // Switch to groups tab
-      this.switchTab('groups');
+    // Check if customer has any locations with departments
+    var hasDepartments = false;
+    if (customer.locations && customer.locations.length > 0) {
+      hasDepartments = customer.locations.some(function(loc) {
+        return loc.departments && loc.departments.length > 0;
+      });
+    }
+    
+    // Fallback to old groups structure for backward compatibility
+    if (!hasDepartments && (!customer.groups || customer.groups.length === 0)) {
+      Helpers.showAlert('Please create at least one Location and Department before creating vouchers.', 'warning');
+      // Switch to departments tab
+      this.switchTab('departments');
       return;
     }
     
@@ -803,69 +1787,6 @@ var CustomerDetailComponent = {
     });
   },
   
-  deleteVoucher: function(voucherId) {
-    var self = this;
-    var customer = AppState.getCustomerById(this.customerId);
-    var voucher = customer.vouchers.find(function(v) { return v.id === voucherId; });
-    
-    if (!voucher) return;
-    
-    // Check if voucher is assigned to any employees
-    var affectedEmployees = customer.employees.filter(function(e) {
-      return e.voucherBalances && e.voucherBalances.some(function(vb) {
-        return vb.voucherId === voucherId;
-      });
-    }).length;
-    
-    var message = 'Are you sure you want to delete the voucher "' + voucher.name + '"?';
-    
-    if (affectedEmployees > 0) {
-      message += '\n\nWarning: This voucher is currently assigned to ' + affectedEmployees + ' employee(s). Their voucher balances will be updated.';
-    }
-    
-    UIHelpers.showConfirmDialog({
-      title: 'Delete Voucher',
-      message: message,
-      confirmText: 'Delete Voucher',
-      confirmClass: 'btn-danger',
-      onConfirm: function() {
-        UIHelpers.showLoadingSpinner('Deleting voucher...');
-        
-        setTimeout(function() {
-          var updatedVouchers = customer.vouchers.filter(function(v) { return v.id !== voucherId; });
-          
-          // Update employee voucher balances
-          var updatedEmployees = customer.employees.map(function(e) {
-            if (e.voucherBalances) {
-              var newBalances = e.voucherBalances.filter(function(vb) {
-                return vb.voucherId !== voucherId;
-              });
-              var newTotal = newBalances.reduce(function(sum, vb) {
-                return sum + vb.remainingAmount;
-              }, 0);
-              
-              return Object.assign({}, e, {
-                voucherBalances: newBalances,
-                remainingBalance: newTotal
-              });
-            }
-            return e;
-          });
-          
-          AppState.updateCustomer(self.customerId, { 
-            vouchers: updatedVouchers,
-            employees: updatedEmployees,
-            activeVouchers: updatedVouchers.filter(function(v) { return v.isActive; }).length
-          });
-          
-          UIHelpers.hideLoadingSpinner();
-          self.renderTabContent('vouchers');
-          Helpers.showAlert('Voucher "' + voucher.name + '" deleted successfully', 'success');
-        }, 500);
-      }
-    });
-  },
-  
   deleteEmployee: function(employeeId) {
     var self = this;
     var customer = AppState.getCustomerById(this.customerId);
@@ -888,17 +1809,54 @@ var CustomerDetailComponent = {
         setTimeout(function() {
           var updatedEmployees = customer.employees.filter(function(e) { return e.id !== employeeId; });
           
-          // Update employee counts in groups
-          var updatedGroups = customer.groups.map(function(group) {
-            var count = updatedEmployees.filter(function(e) { return e.groupId === group.id; }).length;
-            return Object.assign({}, group, { employeeCount: count });
-          });
+          // Update employee counts in departments
+          var updatedLocations = null;
+          var updatedGroups = null;
           
-          AppState.updateCustomer(self.customerId, { 
+          // Use new structure (locations -> departments)
+          if (customer.locations && customer.locations.length > 0) {
+            updatedLocations = customer.locations.map(function(loc) {
+              if (loc.departments) {
+                var updatedDepartments = loc.departments.map(function(dept) {
+                  var count = updatedEmployees.filter(function(e) { 
+                    return e.departmentId === dept.id && e.locationId === loc.id; 
+                  }).length;
+                  return Object.assign({}, dept, { employeeCount: count });
+                });
+                return Object.assign({}, loc, { departments: updatedDepartments });
+              }
+              return loc;
+            });
+          }
+          
+          // Update employee counts in departments (new structure)
+          if (customer.locations && customer.locations.length > 0) {
+            updatedLocations = customer.locations.map(function(loc) {
+              if (loc.departments) {
+                var updatedDepartments = loc.departments.map(function(dept) {
+                  var count = updatedEmployees.filter(function(e) { 
+                    return e.departmentId === dept.id && e.locationId === loc.id; 
+                  }).length;
+                  return Object.assign({}, dept, { employeeCount: count });
+                });
+                return Object.assign({}, loc, { departments: updatedDepartments });
+              }
+              return loc;
+            });
+          }
+          
+          var updateData = {
             employees: updatedEmployees,
-            groups: updatedGroups,
             employeeCount: updatedEmployees.length
-          });
+          };
+          if (updatedLocations) {
+            updateData.locations = updatedLocations;
+          }
+          if (updatedGroups) {
+            updateData.groups = updatedGroups;
+          }
+          
+          AppState.updateCustomer(self.customerId, updateData);
           
           UIHelpers.hideLoadingSpinner();
           self.renderTabContent('employees');

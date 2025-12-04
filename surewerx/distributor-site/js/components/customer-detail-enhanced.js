@@ -44,28 +44,39 @@ $(document).on('click', '#clear-selection-btn', function() {
   EmployeeTableEnhanced.clearSelection();
 });
 
-// Bulk change group
+// Bulk change department
 $(document).on('click', '#bulk-change-group-btn', function() {
   var customer = AppState.getCustomerById(CustomerDetailComponent.customerId);
   var selectedIds = EmployeeTableEnhanced.selectedEmployees;
   
-  EmployeeTableEnhanced.showBulkGroupChangeModal(selectedIds, customer.groups, function(targetGroupId) {
+  EmployeeTableEnhanced.showBulkGroupChangeModal(selectedIds, customer.groups, function(targetDepartmentId) {
+    // Get the selected option to find locationId
+    var selectedOption = $('#bulk-target-group option:selected');
+    var targetLocationId = selectedOption.data('location-id');
+    
     // Update employees
     var updatedEmployees = customer.employees.map(function(emp) {
       if (selectedIds.indexOf(emp.id) > -1) {
-        // Get vouchers for new group
-        var groupVouchers = customer.vouchers.filter(function(v) {
-          return v.userGroupIds && v.userGroupIds.indexOf(targetGroupId) > -1;
+        // Get vouchers for new department
+        var deptVouchers = customer.vouchers.filter(function(v) {
+          if (v.departmentId === targetDepartmentId) {
+            if (targetLocationId && v.locationId) {
+              return v.locationId === targetLocationId;
+            }
+            return !targetLocationId && !v.locationId;
+          }
+          return false;
         });
         
-        var totalBalance = groupVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
-        var voucherBalances = groupVouchers.map(function(v) {
+        var totalBalance = deptVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
+        var voucherBalances = deptVouchers.map(function(v) {
           return { voucherId: v.id, remainingAmount: v.defaultAmount };
         });
-        var voucherExpiry = groupVouchers.length > 0 ? groupVouchers[0].endDate : '';
+        var voucherExpiry = deptVouchers.length > 0 ? deptVouchers[0].endDate : '';
         
         return Object.assign({}, emp, {
-          groupId: targetGroupId,
+          departmentId: targetDepartmentId,
+          locationId: targetLocationId || null,
           voucherBalances: voucherBalances,
           remainingBalance: totalBalance,
           voucherExpiry: voucherExpiry
@@ -74,16 +85,54 @@ $(document).on('click', '#bulk-change-group-btn', function() {
       return emp;
     });
     
-    // Update employee counts in groups
-    var updatedGroups = customer.groups.map(function(group) {
-      var count = updatedEmployees.filter(function(e) { return e.groupId === group.id; }).length;
-      return Object.assign({}, group, { employeeCount: count });
-    });
+    // Update employee counts in departments
+    var updatedLocations = null;
+    var updatedGroups = null;
     
-    AppState.updateCustomer(CustomerDetailComponent.customerId, {
-      employees: updatedEmployees,
-      groups: updatedGroups
-    });
+    // Use new structure (locations -> departments)
+    if (customer.locations && customer.locations.length > 0) {
+      updatedLocations = customer.locations.map(function(loc) {
+        if (loc.departments) {
+          var updatedDepartments = loc.departments.map(function(dept) {
+            var count = updatedEmployees.filter(function(e) { 
+              return e.departmentId === dept.id && e.locationId === loc.id; 
+            }).length;
+            return Object.assign({}, dept, { employeeCount: count });
+          });
+          return Object.assign({}, loc, { departments: updatedDepartments });
+        }
+        return loc;
+      });
+    }
+    
+    // Update employee counts in departments (new structure)
+    var updatedLocations = null;
+    if (customer.locations && customer.locations.length > 0) {
+      updatedLocations = customer.locations.map(function(loc) {
+        if (loc.departments) {
+          var updatedDepartments = loc.departments.map(function(dept) {
+            var count = updatedEmployees.filter(function(e) { 
+              return e.departmentId === dept.id && e.locationId === loc.id; 
+            }).length;
+            return Object.assign({}, dept, { employeeCount: count });
+          });
+          return Object.assign({}, loc, { departments: updatedDepartments });
+        }
+        return loc;
+      });
+    }
+    
+    var updateData = {
+      employees: updatedEmployees
+    };
+    if (updatedLocations) {
+      updateData.locations = updatedLocations;
+    }
+    if (updatedGroups) {
+      updateData.groups = updatedGroups;
+    }
+    
+    AppState.updateCustomer(CustomerDetailComponent.customerId, updateData);
     
     EmployeeTableEnhanced.clearSelection();
     CustomerDetailComponent.renderTabContent('employees');

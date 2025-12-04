@@ -56,7 +56,7 @@
       // Get customerId from URL parameter
       var urlParams = new URLSearchParams(window.location.search);
       var customerId = urlParams.get('customerId');
-      var tab = urlParams.get('tab') || 'groups';
+      var tab = urlParams.get('tab') || 'locations';
       
       // Check if customerId is missing, null, empty, or the string "undefined"
       if (!customerId || customerId === 'undefined' || customerId === 'null') {

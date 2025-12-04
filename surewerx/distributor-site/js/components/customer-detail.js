@@ -2,7 +2,7 @@
 
 var CustomerDetailComponent = {
   customerId: null,
-  currentTab: 'groups',
+  currentTab: 'locations',
   departmentLocationFilter: null, // Store selected location filter
   locationFilter: null, // Store location filter for locations tab
   selectedGroupId: null,

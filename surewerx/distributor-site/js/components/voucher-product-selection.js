@@ -2,17 +2,19 @@
 var VoucherProductSelectionComponent = {
   customerId: null,
   voucherId: null,
-  userGroupId: null,
+  departmentId: null,
+  locationId: null,
   partner: null,
-  group: null,
+  department: null,
   selectedProductIds: [],
   availableProducts: [],
   searchQuery: '',
   
-  init: function(customerId, voucherId, userGroupId) {
+  init: function(customerId, voucherId, departmentId, locationId) {
     this.customerId = customerId;
     this.voucherId = voucherId || null;
-    this.userGroupId = userGroupId;
+    this.departmentId = departmentId;
+    this.locationId = locationId || null;
     
     // Refresh partner data to get latest state
     this.partner = AppState.customers.find(function(p) { return p.id === customerId; });
@@ -23,9 +25,38 @@ var VoucherProductSelectionComponent = {
       return;
     }
     
-    this.group = this.partner.groups.find(function(g) { return g.id === userGroupId; });
-    if (!this.group) {
-      Helpers.showAlert('User group not found', 'danger');
+    // Try to find department in new structure (locations -> departments)
+    if (this.locationId && this.partner.locations && this.partner.locations.length > 0) {
+      var location = this.partner.locations.find(function(l) { return l.id === this.locationId; }.bind(this));
+      if (location && location.departments) {
+        this.department = location.departments.find(function(d) { return d.id === this.departmentId; }.bind(this));
+      }
+    }
+    
+    // Fallback: search all locations if locationId not provided
+    if (!this.department && this.partner.locations && this.partner.locations.length > 0) {
+      for (var i = 0; i < this.partner.locations.length; i++) {
+        var loc = this.partner.locations[i];
+        if (loc.departments) {
+          this.department = loc.departments.find(function(d) { return d.id === this.departmentId; }.bind(this));
+          if (this.department) {
+            this.locationId = loc.id;
+            break;
+          }
+        }
+      }
+    }
+    
+    // Fallback to old groups structure
+    if (!this.department && this.partner.groups && this.partner.groups.length > 0) {
+      var group = this.partner.groups.find(function(g) { return g.id === this.departmentId; }.bind(this));
+      if (group) {
+        this.department = group;
+      }
+    }
+    
+    if (!this.department) {
+      Helpers.showAlert('Department not found', 'danger');
       this.goBackToVoucherForm();
       return;
     }
@@ -226,11 +257,16 @@ var VoucherProductSelectionComponent = {
           if (this.voucherId && v.id === this.voucherId) {
             return false;
           }
-          return v.isActive && 
-                 v.userGroupIds && 
-                 v.userGroupIds.indexOf(this.userGroupId) !== -1 &&
-                 v.productIds && 
-                 v.productIds.indexOf(product.id) !== -1;
+          // Check if voucher is assigned to this department
+          var matchesDepartment = false;
+          if (v.departmentId === this.departmentId) {
+            if (this.locationId && v.locationId) {
+              matchesDepartment = v.locationId === this.locationId;
+            } else if (!this.locationId && !v.locationId) {
+              matchesDepartment = true;
+            }
+          }
+          return v.isActive && matchesDepartment && v.productIds && v.productIds.indexOf(product.id) !== -1;
         }.bind(this));
         if (activeVouchers.length > 0) {
           conflictInfo = '<span class="text-muted" style="font-size: 11px; display: block; margin-top: 3px;">Already assigned to: ' + Helpers.escapeHtml(activeVouchers[0].name) + '</span>';
@@ -417,19 +453,24 @@ var VoucherProductSelectionComponent = {
   },
   
   checkProductConflict: function(productId) {
-    // Check if product is already assigned to an active voucher for this user group
+    // Check if product is already assigned to an active voucher for this department
     // Exclude the current voucher if editing
     var activeVouchers = this.partner.vouchers.filter(function(v) {
       // Exclude current voucher if editing
       if (this.voucherId && v.id === this.voucherId) {
         return false;
       }
-      // Check if voucher is active, assigned to this group, and has this product
-      return v.isActive && 
-             v.userGroupIds && 
-             v.userGroupIds.indexOf(this.userGroupId) !== -1 &&
-             v.productIds && 
-             v.productIds.indexOf(productId) !== -1;
+      // Check if voucher is assigned to this department
+      var matchesDepartment = false;
+      if (v.departmentId === this.departmentId) {
+        if (this.locationId && v.locationId) {
+          matchesDepartment = v.locationId === this.locationId;
+        } else if (!this.locationId && !v.locationId) {
+          matchesDepartment = true;
+        }
+      }
+      // Check if voucher is active, assigned to this department, and has this product
+      return v.isActive && matchesDepartment && v.productIds && v.productIds.indexOf(productId) !== -1;
     }.bind(this));
     
     if (activeVouchers.length > 0) {

@@ -52,9 +52,14 @@
       var urlParams = new URLSearchParams(window.location.search);
       var customerId = urlParams.get('customerId');
       var voucherId = urlParams.get('voucherId');
-      var userGroupId = urlParams.get('userGroupId');
+      var departmentId = urlParams.get('departmentId');
+      var locationId = urlParams.get('locationId');
+      var userGroupId = urlParams.get('userGroupId'); // For backward compatibility
       
-      if (!customerId || !userGroupId) {
+      // Use departmentId if provided, otherwise fall back to userGroupId
+      var targetDepartmentId = departmentId || userGroupId;
+      
+      if (!customerId || !targetDepartmentId) {
         window.location.href = 'dashboard.html';
         return;
       }
@@ -66,7 +71,7 @@
       }
       
       HeaderComponent.attachEvents();
-      VoucherProductSelectionComponent.init(customerId, voucherId, userGroupId);
+      VoucherProductSelectionComponent.init(customerId, voucherId, targetDepartmentId, locationId);
     });
   </script>
 </body>

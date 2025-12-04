@@ -42,21 +42,45 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
     '<input type="date" class="form-control" id="edit-employee-start-date" value="' + (employee.startDate || '') + '"' + (partner.employeeFieldConfig.requireStartDate ? ' required' : '') + '>' +
     '</div>';
   
-  // User Group (always shown)
+  // Department (always shown)
   modalHtml += '<div class="form-group">' +
-    '<label>User Group *</label>' +
-    '<select class="form-control" id="edit-employee-group" required>' +
-    partner.groups.map(function(g) {
-      var groupVouchers = partner.vouchers.filter(function(v) {
-        return v.userGroupIds && v.userGroupIds.indexOf(g.id) > -1;
-      });
-      var totalAmount = groupVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
-      var selected = g.id === employee.groupId ? ' selected' : '';
-      return '<option value="' + g.id + '"' + selected + '>' +
-        Helpers.escapeHtml(g.name) + ' - $' + totalAmount.toFixed(2) + ' (' + groupVouchers.length + ' vouchers)' +
-        '</option>';
-    }).join('') +
+    '<label>Department *</label>' +
+    '<select class="form-control" id="edit-employee-department" required>' +
+    (function() {
+      var options = '';
+      var currentDepartmentId = employee.departmentId || employee.groupId; // Support both
+      var currentLocationId = employee.locationId;
+      
+      // Use new structure (locations -> departments)
+      if (partner.locations && partner.locations.length > 0) {
+        partner.locations.forEach(function(loc) {
+          if (loc.departments && loc.departments.length > 0) {
+            loc.departments.forEach(function(dept) {
+              var deptVouchers = partner.vouchers.filter(function(v) {
+                if (v.departmentId === dept.id) {
+                  if (loc.id && v.locationId) {
+                    return v.locationId === loc.id;
+                  }
+                  return !loc.id && !v.locationId;
+                }
+                return false;
+              });
+              var totalAmount = deptVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
+              var selected = (dept.id === currentDepartmentId && loc.id === currentLocationId) ? ' selected' : '';
+              options += '<option value="' + dept.id + '" data-location-id="' + loc.id + '"' + selected + '>' +
+                Helpers.escapeHtml(loc.locationId || 'Unnamed') + ' - ' + Helpers.escapeHtml(dept.name) +
+                ' - $' + totalAmount.toFixed(2) + ' (' + deptVouchers.length + ' vouchers)' +
+                '</option>';
+            });
+          }
+        });
+      }
+      
+      // Fallback to old groups structure
+      return options;
+    })() +
     '</select>' +
+    '<p class="help-block">Select the department for this employee</p>' +
     '</div>';
   
   // Notes (always shown)
@@ -82,8 +106,12 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
     
     var firstName = $('#edit-employee-first-name').val();
     var lastName = $('#edit-employee-last-name').val();
-    var newGroupId = $('#edit-employee-group').val();
-    var oldGroupId = employee.groupId;
+    var newDepartmentId = $('#edit-employee-department').val();
+    var selectedOption = $('#edit-employee-department option:selected');
+    var newLocationId = selectedOption.data('location-id');
+    
+    var oldDepartmentId = employee.departmentId || employee.groupId;
+    var oldLocationId = employee.locationId;
     
     // Get all identifier fields (both required and optional)
     var employeeId = $('#edit-employee-id').val().trim() || undefined;
@@ -99,24 +127,32 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
       username: username,
       dateOfBirth: dateOfBirth,
       startDate: startDate,
-      groupId: newGroupId,
+      departmentId: newDepartmentId,
+      locationId: newLocationId || null,
+      // Keep groupId for backward compatibility
       notes: $('#edit-employee-notes').val() || ''
     };
     
-    // If group changed, update voucher balances
-    if (newGroupId !== oldGroupId) {
-      var groupVouchers = partner.vouchers.filter(function(v) {
-        return v.userGroupIds && v.userGroupIds.indexOf(newGroupId) > -1;
+    // If department changed, update voucher balances
+    if (newDepartmentId !== oldDepartmentId || newLocationId !== oldLocationId) {
+      var deptVouchers = partner.vouchers.filter(function(v) {
+        if (v.departmentId === newDepartmentId) {
+          if (newLocationId && v.locationId) {
+            return v.locationId === newLocationId;
+          }
+          return !newLocationId && !v.locationId;
+        }
+        return false;
       });
       
-      var totalBalance = groupVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
-      var voucherBalances = groupVouchers.map(function(v) {
+      var totalBalance = deptVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
+      var voucherBalances = deptVouchers.map(function(v) {
         return {
           voucherId: v.id,
           remainingAmount: v.defaultAmount
         };
       });
-      var voucherExpiry = groupVouchers.length > 0 ? groupVouchers[0].endDate : '';
+      var voucherExpiry = deptVouchers.length > 0 ? deptVouchers[0].endDate : '';
       
       updatedEmployeeData.voucherBalances = voucherBalances;
       updatedEmployeeData.remainingBalance = totalBalance;
@@ -133,16 +169,38 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
       return e;
     });
     
-    // Update employee counts in groups
-    var updatedGroups = partner.groups.map(function(group) {
-      var count = updatedEmployees.filter(function(e) { return e.groupId === group.id; }).length;
-      return Object.assign({}, group, { employeeCount: count });
-    });
+    // Update employee counts in departments
+    var updatedLocations = null;
+    var updatedGroups = null;
     
-    AppState.updateCustomer(customerId, {
-      employees: updatedEmployees,
-      groups: updatedGroups
-    });
+    // Use new structure (locations -> departments)
+    if (partner.locations && partner.locations.length > 0) {
+      updatedLocations = partner.locations.map(function(loc) {
+        if (loc.departments) {
+          var updatedDepartments = loc.departments.map(function(dept) {
+            var count = updatedEmployees.filter(function(e) { 
+              return e.departmentId === dept.id && e.locationId === loc.id; 
+            }).length;
+            return Object.assign({}, dept, { employeeCount: count });
+          });
+          return Object.assign({}, loc, { departments: updatedDepartments });
+        }
+        return loc;
+      });
+    }
+    
+    
+    var updateData = {
+      employees: updatedEmployees
+    };
+    if (updatedLocations) {
+      updateData.locations = updatedLocations;
+    }
+    if (updatedGroups) {
+      updateData.groups = updatedGroups;
+    }
+    
+    AppState.updateCustomer(customerId, updateData);
     
     $('#edit-employee-modal').modal('hide');
     CustomerDetailComponent.renderTabContent('employees');

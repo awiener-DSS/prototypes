@@ -1034,24 +1034,6 @@ h3 {
   border-color: #1e40af;
 }
 
-/* Ghost button styles for action buttons */
-.edit-employee-btn:hover,
-.edit-group-btn:hover,
-.edit-voucher-btn:hover,
-.expand-row-btn:hover {
-  background-color: #f3f4f6 !important;
-  border-color: #d1d5db !important;
-  color: #374151 !important;
-}
-
-.delete-employee-btn:hover,
-.delete-group-btn:hover,
-.delete-voucher-btn:hover {
-  background-color: #fef2f2 !important;
-  border-color: #fecaca !important;
-  color: #991b1b !important;
-}
-
 /* Selectable table rows - click anywhere to toggle checkbox */
 .selectable-row {
   cursor: pointer;

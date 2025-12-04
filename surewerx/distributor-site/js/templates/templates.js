@@ -390,10 +390,13 @@ var Templates = {
       
       '<div class="customer-detail-tabs">' +
       '<ul class="nav nav-tabs" role="tablist">' +
-      '<li role="presentation">' +
-      '<a href="#groups-tab" data-tab="groups" role="tab">User Groups</a>' +
-      '</li>' +
       '<li role="presentation" class="active">' +
+      '<a href="#locations-tab" data-tab="locations" role="tab">Locations</a>' +
+      '</li>' +
+      '<li role="presentation">' +
+      '<a href="#departments-tab" data-tab="departments" role="tab">Departments</a>' +
+      '</li>' +
+      '<li role="presentation">' +
       '<a href="#employees-tab" data-tab="employees" role="tab">Employees</a>' +
       '</li>' +
       '<li role="presentation">' +
@@ -414,7 +417,7 @@ var Templates = {
       '<div class="col-md-12">' +
       '<div class="well">' +
       '<h4>Employees & Groups</h4>' +
-      '<p class="text-muted">Manage employees and user groups for this customer</p>' +
+      '<p class="text-muted">Manage employees and departments for this customer</p>' +
       '<button class="btn btn-primary">' +
       '<span class="glyphicon glyphicon-plus"></span> Add Employee' +
       '</button>' +
@@ -565,12 +568,32 @@ var Templates = {
       '<input type="date" class="form-control" id="employee-startdate"' + (customer.employeeFieldConfig.requireStartDate ? ' required' : '') + '>' +
       '</div>' +
       '<div class="form-group">' +
-      '<label>User Group *</label>' +
-      '<select class="form-control" id="employee-group" required>' +
-      customer.groups.map(function(g) {
-        return '<option value="' + g.id + '">' + Helpers.escapeHtml(g.name) + '</option>';
-      }).join('') +
+      '<label>Department *</label>' +
+      '<select class="form-control" id="employee-department" required>' +
+      (function() {
+        var options = '';
+        // Use new structure (locations -> departments)
+        if (customer.locations && customer.locations.length > 0) {
+          customer.locations.forEach(function(loc) {
+            if (loc.departments && loc.departments.length > 0) {
+              loc.departments.forEach(function(dept) {
+                options += '<option value="' + dept.id + '" data-location-id="' + loc.id + '">' +
+                  Helpers.escapeHtml(loc.locationId || 'Unnamed') + ' - ' + Helpers.escapeHtml(dept.name) +
+                  '</option>';
+              });
+            }
+          });
+        }
+        // Fallback to old groups structure for backward compatibility only
+        if (!options && customer.groups && customer.groups.length > 0) {
+          customer.groups.forEach(function(g) {
+            options += '<option value="' + g.id + '" data-is-legacy-group="true">' + Helpers.escapeHtml(g.name) + '</option>';
+          });
+        }
+        return options;
+      })() +
       '</select>' +
+      '<p class="help-block">Select the department for this employee</p>' +
       '</div>' +
       '<div class="form-group">' +
       '<label>Notes</label>' +
@@ -592,7 +615,11 @@ var Templates = {
     $(document).off('submit', '#add-employee-form').on('submit', '#add-employee-form', function(e) {
       e.preventDefault();
       
-      var groupId = $('#employee-group').val();
+      var departmentId = $('#employee-department').val();
+      var selectedOption = $('#employee-department option:selected');
+      var locationId = selectedOption.data('location-id');
+      var isLegacyGroup = selectedOption.data('is-legacy-group') === true;
+      
       var firstName = $('#employee-firstname').val();
       var lastName = $('#employee-lastname').val();
       var notes = $('#employee-notes').val();
@@ -611,7 +638,8 @@ var Templates = {
         username: username,
         dateOfBirth: dateOfBirth,
         startDate: startDate,
-        groupId: groupId,
+        departmentId: departmentId,
+        locationId: locationId || null,
         voucherExpiry: '2024-12-31',
         voucherStatus: 'active',
         remainingBalance: 0,
@@ -621,19 +649,57 @@ var Templates = {
       
       var updatedEmployees = customer.employees.concat([newEmployee]);
       
-      // Update group employee count
-      var updatedGroups = customer.groups.map(function(g) {
-        if (g.id === groupId) {
-          return Object.assign({}, g, { employeeCount: g.employeeCount + 1 });
-        }
-        return g;
-      });
+      // Update department employee count
+      var updatedLocations = null;
+      var updatedGroups = null;
       
-      AppState.updateCustomer(customerId, { 
+      // Use new structure (locations -> departments)
+      if (locationId && customer.locations && customer.locations.length > 0) {
+        updatedLocations = customer.locations.map(function(loc) {
+          if (loc.id === locationId && loc.departments) {
+            var updatedDepartments = loc.departments.map(function(dept) {
+              if (dept.id === departmentId) {
+                return Object.assign({}, dept, { 
+                  employeeCount: (dept.employeeCount || 0) + 1,
+                  employees: (dept.employees || []).concat([newEmployee.id])
+                });
+              }
+              return dept;
+            });
+            return Object.assign({}, loc, { departments: updatedDepartments });
+          }
+          return loc;
+        });
+      }
+      
+      // Update employee counts in departments (new structure)
+      if (customer.locations && customer.locations.length > 0) {
+        updatedLocations = customer.locations.map(function(loc) {
+          if (loc.departments) {
+            var updatedDepartments = loc.departments.map(function(dept) {
+              if (dept.id === departmentId && loc.id === locationId) {
+                return Object.assign({}, dept, { employeeCount: (dept.employeeCount || 0) + 1 });
+              }
+              return dept;
+            });
+            return Object.assign({}, loc, { departments: updatedDepartments });
+          }
+          return loc;
+        });
+      }
+      
+      var updateData = { 
         employees: updatedEmployees,
-        groups: updatedGroups,
         employeeCount: updatedEmployees.length
-      });
+      };
+      if (updatedLocations) {
+        updateData.locations = updatedLocations;
+      }
+      if (updatedGroups) {
+        updateData.groups = updatedGroups;
+      }
+      
+      AppState.updateCustomer(customerId, updateData);
       
       $('#add-employee-modal').modal('hide');
       CustomerDetailComponent.renderTabContent('employees');
@@ -647,12 +713,12 @@ var Templates = {
   
   // Show Create Group Modal (simple version - replaced with full page form)
   showCreateGroupModal: function(customer, customerId) {
-    // Navigate to full-page user group form instead
+    // Navigate to full-page department form instead
     App.navigate('customer-group-form', { customerId: customerId });
   },
   
-  // Render full-page User Group Form
-  renderUserGroupForm: function(customer, customerId, groupId) {
+  // Render full-page Department Form
+  renderDepartmentForm: function(customer, customerId, groupId) {
     var group = groupId ? customer.groups.find(function(g) { return g.id === groupId; }) : null;
     var isEdit = !!group;
     
@@ -666,16 +732,16 @@ var Templates = {
       
       // Page Title
       '<div style="margin-bottom: 30px;">' +
-      '<h2>' + (isEdit ? 'Edit User Group' : 'Create User Group') + '</h2>' +
-      '<p class="text-muted">' + 
-      (isEdit ? 'Update group information and product visibility' : 'Create a new user group and assign product visibility') +
+      '<h2>' + (isEdit ? 'Edit Department' : 'Create Department') + '</h2>' +
+      '<p class="text-muted">' +
+      (isEdit ? 'Update department information and product visibility' : 'Create a new department and assign product visibility') +
       '</p>' +
       '</div>' +
       
       // Form Card
       '<div class="panel panel-default">' +
       '<div class="panel-body" style="padding: 30px;">' +
-      '<form id="user-group-form">' +
+      '<form id="department-form">' +
       
       // Basic Information Section
       '<div style="margin-bottom: 30px;">' +
@@ -708,7 +774,7 @@ var Templates = {
       '<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">' +
       '<div>' +
       '<h4 style="margin: 0 0 5px 0;">Product Visibility</h4>' +
-      '<p class="text-muted" style="margin: 0; font-size: 13px;">Select which products this user group can access</p>' +
+      '<p class="text-muted" style="margin: 0; font-size: 13px;">Select which products this department can access</p>' +
       '</div>' +
       '<button type="button" class="btn btn-default btn-sm" id="toggle-all-products">Select All</button>' +
       '</div>' +
@@ -761,7 +827,7 @@ var Templates = {
       '<div class="modal-content">' +
       '<div class="modal-header">' +
       '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-      '<h4 class="modal-title">Edit User Group</h4>' +
+      '<h4 class="modal-title">Edit Department</h4>' +
       '</div>' +
       '<form id="edit-group-form">' +
       '<div class="modal-body">' +
@@ -851,18 +917,18 @@ var Templates = {
       '<textarea class="form-control" id="voucher-description" rows="2"></textarea>' +
       '</div>' +
       
-      // User Group Assignment Section
+      // Department Assignment Section
       '<div class="form-group">' +
-      '<label>Assign to User Group *</label>' +
-      '<p class="help-block">Select which user group can use this voucher</p>';
+      '<label>Assign to Department *</label>' +
+      '<p class="help-block">Select which department can use this voucher</p>';
     
     if (eligibleGroups.length === 0) {
       modalHtml += '<div class="alert alert-warning">' +
-        'No user groups with product visibility available. Create a user group and assign products first.' +
+        'No departments with product visibility available. Create a department and assign products first.' +
         '</div>';
     } else {
       modalHtml += '<select class="form-control" id="voucher-usergroup" required>' +
-        '<option value="">-- Select User Group --</option>';
+        '<option value="">-- Select Department --</option>';
       eligibleGroups.forEach(function(group) {
         modalHtml += '<option value="' + group.id + '">' + 
           Helpers.escapeHtml(group.name) + ' (' + group.employeeCount + ' employees, ' + 
@@ -929,11 +995,11 @@ var Templates = {
       
       var userGroupId = $('#voucher-usergroup').val();
       if (!userGroupId) {
-        Helpers.showAlert('Please select a user group', 'warning');
+        Helpers.showAlert('Please select a department', 'warning');
         return;
       }
       
-      // Get products from selected user group
+      // Get products from selected department
       var selectedGroup = customer.groups.find(function(g) { return g.id === userGroupId; });
       var productIds = selectedGroup ? (selectedGroup.productIds || []) : [];
       
@@ -976,7 +1042,7 @@ var Templates = {
       return (g.productIds || []).length > 0;
     });
     
-    // Get current user group assignment
+    // Get current department assignment
     var currentUserGroupId = (voucher.userGroupIds && voucher.userGroupIds.length > 0) ? voucher.userGroupIds[0] : '';
     
     var modalHtml = '<div class="modal fade" id="edit-voucher-modal" tabindex="-1">' +
@@ -1007,18 +1073,18 @@ var Templates = {
       '<textarea class="form-control" id="edit-voucher-description" rows="2">' + Helpers.escapeHtml(voucher.description) + '</textarea>' +
       '</div>' +
       
-      // User Group Assignment Section
+      // Department Assignment Section
       '<div class="form-group">' +
-      '<label>Assign to User Group *</label>' +
-      '<p class="help-block">Select which user group can use this voucher</p>';
+      '<label>Assign to Department *</label>' +
+      '<p class="help-block">Select which department can use this voucher</p>';
     
     if (eligibleGroups.length === 0) {
       modalHtml += '<div class="alert alert-warning">' +
-        'No user groups with product visibility available. Create a user group and assign products first.' +
+        'No departments with product visibility available. Create a department and assign products first.' +
         '</div>';
     } else {
       modalHtml += '<select class="form-control" id="edit-voucher-usergroup" required>' +
-        '<option value="">-- Select User Group --</option>';
+        '<option value="">-- Select Department --</option>';
       eligibleGroups.forEach(function(group) {
         var selected = group.id === currentUserGroupId ? 'selected' : '';
         modalHtml += '<option value="' + group.id + '" ' + selected + '>' + 
@@ -1086,11 +1152,11 @@ var Templates = {
       
       var userGroupId = $('#edit-voucher-usergroup').val();
       if (!userGroupId) {
-        Helpers.showAlert('Please select a user group', 'warning');
+        Helpers.showAlert('Please select a department', 'warning');
         return;
       }
       
-      // Get products from selected user group
+      // Get products from selected department
       var selectedGroup = customer.groups.find(function(g) { return g.id === userGroupId; });
       var productIds = selectedGroup ? (selectedGroup.productIds || []) : [];
       

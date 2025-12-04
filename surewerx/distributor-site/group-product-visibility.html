@@ -52,6 +52,7 @@
       var urlParams = new URLSearchParams(window.location.search);
       var customerId = urlParams.get('customerId');
       var groupId = urlParams.get('groupId');
+      var locationId = urlParams.get('locationId');
       
       if (!customerId || !groupId) {
         window.location.href = 'dashboard.html';
@@ -65,7 +66,7 @@
       }
       
       HeaderComponent.attachEvents();
-      GroupProductVisibilityComponent.init(customerId, groupId);
+      GroupProductVisibilityComponent.init(customerId, groupId, locationId);
     });
   </script>
 </body>

@@ -5,12 +5,14 @@ var EmployeeTableEnhanced = {
   expandedRows: [],
   sortColumn: null,
   sortDirection: 'asc',
+  searchTerm: '',
   
   init: function() {
     this.selectedEmployees = [];
     this.expandedRows = [];
     this.sortColumn = null;
     this.sortDirection = 'asc';
+    this.searchTerm = '';
   },
   
   toggleSelection: function(employeeId) {
@@ -110,8 +112,10 @@ var EmployeeTableEnhanced = {
           bVal = (b.email || '').toLowerCase();
           break;
         case 'group':
-          aVal = a.groupId || '';
-          bVal = b.groupId || '';
+        case 'department':
+          // Try departmentId first, fallback to groupId
+          aVal = a.departmentId || a.groupId || '';
+          bVal = b.departmentId || b.groupId || '';
           break;
         case 'balance':
           aVal = a.remainingBalance || 0;
@@ -165,19 +169,65 @@ var EmployeeTableEnhanced = {
     }
   },
   
+  filterEmployees: function(employees, customer) {
+    if (!this.searchTerm || !this.searchTerm.trim()) {
+      return employees;
+    }
+    
+    var searchLower = this.searchTerm.toLowerCase();
+    
+    return employees.filter(function(emp) {
+      // Search by name
+      var nameMatch = (emp.firstName && emp.firstName.toLowerCase().indexOf(searchLower) > -1) ||
+        (emp.lastName && emp.lastName.toLowerCase().indexOf(searchLower) > -1) ||
+        (emp.name && emp.name.toLowerCase().indexOf(searchLower) > -1);
+      
+      // Search by employee ID
+      var idMatch = emp.employeeId && emp.employeeId.toLowerCase().indexOf(searchLower) > -1;
+      
+      // Search by username
+      var usernameMatch = emp.username && emp.username.toLowerCase().indexOf(searchLower) > -1;
+      
+      // Search by department name
+      var departmentMatch = false;
+      if (emp.departmentId && emp.locationId && customer.locations) {
+        var location = customer.locations.find(function(l) { return l.id === emp.locationId; });
+        if (location && location.departments) {
+          var department = location.departments.find(function(d) { return d.id === emp.departmentId; });
+          if (department && department.name.toLowerCase().indexOf(searchLower) > -1) {
+            departmentMatch = true;
+          }
+        }
+      }
+      // Fallback to old group structure
+      if (!departmentMatch && emp.groupId && customer.groups) {
+        var group = customer.groups.find(function(g) { return g.id === emp.groupId; });
+        if (group && group.name.toLowerCase().indexOf(searchLower) > -1) {
+          departmentMatch = true;
+        }
+      }
+      
+      // Search by notes
+      var notesMatch = emp.notes && emp.notes.toLowerCase().indexOf(searchLower) > -1;
+      
+      return nameMatch || idMatch || usernameMatch || departmentMatch || notesMatch;
+    });
+  },
+  
   exportEmployees: function(employees, partnerName) {
     if (!employees || employees.length === 0) {
       Helpers.showAlert('No employees to export', 'warning', '#export-employees-btn');
       return;
     }
     
-    var headers = ['Name', 'Group', 'Voucher Status', 'Remaining Balance', 'Voucher Expiry'];
+    var headers = ['Name', 'Department', 'Voucher Status', 'Remaining Balance', 'Voucher Expiry'];
     var csv = headers.join(',') + '\n';
     
     employees.forEach(function(emp) {
+      var departmentName = emp.departmentName || emp.groupName || 'Unassigned';
       var row = [
         emp.name,
-        emp.groupName || 'Default Group',
+        departmentName,
         emp.voucherStatus,
         '$' + emp.remainingBalance.toFixed(2),
         emp.voucherExpiry
@@ -201,33 +251,60 @@ var EmployeeTableEnhanced = {
   },
   
   showBulkGroupChangeModal: function(selectedEmployeeIds, groups, onSave) {
+    // This function is called with groups parameter for backward compatibility
+    // But we should get departments from customer instead
+    var customer = AppState.getCustomerById(CustomerDetailComponent.customerId);
+    if (!customer) {
+      Helpers.showAlert('Customer not found', 'danger');
+      return;
+    }
+    
+    // Build department options from locations
+    var departmentOptions = '';
+    if (customer.locations && customer.locations.length > 0) {
+      customer.locations.forEach(function(loc) {
+        if (loc.departments && loc.departments.length > 0) {
+          loc.departments.forEach(function(dept) {
+            departmentOptions += '<option value="' + dept.id + '" data-location-id="' + loc.id + '">' +
+              Helpers.escapeHtml(loc.locationId || 'Unnamed') + ' - ' + Helpers.escapeHtml(dept.name) +
+              '</option>';
+          });
+        }
+      });
+    }
+    // Fallback to old groups
+    if (!departmentOptions && groups && groups.length > 0) {
+      groups.forEach(function(g) {
+        departmentOptions += '<option value="' + g.id + '" data-is-legacy-group="true">' + 
+          Helpers.escapeHtml(g.name) + '</option>';
+      });
+    }
+    
     var modalHtml = '<div class="modal fade" id="bulk-group-change-modal" tabindex="-1">' +
       '<div class="modal-dialog">' +
       '<div class="modal-content">' +
       '<div class="modal-header">' +
       '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-      '<h4 class="modal-title">Change User Group</h4>' +
+      '<h4 class="modal-title">Change Department</h4>' +
       '</div>' +
       '<form id="bulk-group-change-form">' +
       '<div class="modal-body">' +
       '<div class="alert alert-info">' +
       '<strong><span class="glyphicon glyphicon-info-sign"></span> Note:</strong><br>' +
-      'You are about to change the user group for <strong>' + selectedEmployeeIds.length + ' employee(s)</strong>.<br>' +
-      'This will update their voucher balances based on the new group\'s configuration.' +
+      'You are about to change the department for <strong>' + selectedEmployeeIds.length + ' employee(s)</strong>.<br>' +
+      'This will update their voucher balances based on the new department\'s configuration.' +
       '</div>' +
       '<div class="form-group">' +
-      '<label>New User Group *</label>' +
+      '<label>New Department *</label>' +
       '<select class="form-control" id="bulk-target-group" required>' +
-      '<option value="">-- Select a group --</option>' +
-      groups.map(function(g) {
-        return '<option value="' + g.id + '">' + Helpers.escapeHtml(g.name) + '</option>';
-      }).join('') +
+      '<option value="">-- Select a department --</option>' +
+      departmentOptions +
       '</select>' +
       '</div>' +
       '</div>' +
       '<div class="modal-footer">' +
       '<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>' +
-      '<button type="submit" class="btn btn-primary">Change Group</button>' +
+      '<button type="submit" class="btn btn-primary">Change Department</button>' +
       '</div>' +
       '</form>' +
       '</div>' +
@@ -240,14 +317,14 @@ var EmployeeTableEnhanced = {
     $(document).off('submit', '#bulk-group-change-form').on('submit', '#bulk-group-change-form', function(e) {
       e.preventDefault();
       
-      var targetGroupId = $('#bulk-target-group').val();
-      if (!targetGroupId) {
-        Helpers.showAlert('Please select a target group', 'danger');
+      var targetDepartmentId = $('#bulk-target-group').val();
+      if (!targetDepartmentId) {
+        Helpers.showAlert('Please select a target department', 'danger');
         return;
       }
       
       $('#bulk-group-change-modal').modal('hide');
-      onSave(targetGroupId);
+      onSave(targetDepartmentId);
     });
     
     $('#bulk-group-change-modal').on('hidden.bs.modal', function() {

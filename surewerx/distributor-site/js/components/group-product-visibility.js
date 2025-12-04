@@ -7,9 +7,10 @@ var GroupProductVisibilityComponent = {
   selectedProductIds: [],
   searchTerm: '',
   
-  init: function(customerId, groupId) {
+  init: function(customerId, groupId, locationId) {
     this.customerId = customerId;
     this.groupId = groupId;
+    this.locationId = locationId || null;
     
     // Refresh partner data to get latest state
     this.partner = AppState.customers.find(function(p) { return p.id === customerId; });
@@ -20,14 +21,27 @@ var GroupProductVisibilityComponent = {
       return;
     }
     
-    this.group = this.partner.groups.find(function(g) { return g.id === groupId; });
+    // Try new structure first (locations -> departments)
+    this.group = null;
+    if (this.locationId && this.partner.locations) {
+      var location = this.partner.locations.find(function(l) { return l.id === this.locationId; }.bind(this));
+      if (location && location.departments) {
+        this.group = location.departments.find(function(d) { return d.id === groupId; });
+      }
+    }
+    
+    // Fallback to old groups structure
+    if (!this.group && this.partner.groups) {
+      this.group = this.partner.groups.find(function(g) { return g.id === groupId; });
+    }
+    
     if (!this.group) {
-      Helpers.showAlert('User group not found', 'danger');
-      App.navigate('customer-detail', { customerId: customerId, tab: 'groups' });
+      Helpers.showAlert('Department not found', 'danger');
+      App.navigate('customer-detail', { customerId: customerId, tab: 'departments' });
       return;
     }
     
-    // Load current product selections from the group
+    // Load current product selections from the group/department
     this.selectedProductIds = this.group.productIds ? this.group.productIds.slice() : [];
     this.searchTerm = '';
     
@@ -42,10 +56,10 @@ var GroupProductVisibilityComponent = {
       '<div class="row mb-4">' +
       '<div class="col-md-12">' +
       '<button class="btn btn-default mb-3" id="back-to-group-form">' +
-      '<span class="glyphicon glyphicon-chevron-left"></span> Back to User Group' +
+      '<span class="glyphicon glyphicon-chevron-left"></span> Back to Departments' +
       '</button>' +
       '<h2>Product Visibility</h2>' +
-      '<p class="text-muted">Select which products the user group "' + Helpers.escapeHtml(this.group.name) + '" can access</p>' +
+      '<p class="text-muted">Select which products the department "' + Helpers.escapeHtml(this.group.name) + '" can access</p>' +
       '</div>' +
       '</div>' +
       
@@ -75,13 +89,21 @@ var GroupProductVisibilityComponent = {
       this.renderProductsTable() +
       '</div>' +
       
-      '<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0;">' +
+      '</div>' +
+      '</div>' +
+      // Fixed footer actions (match voucher Select Qualified Products UX)
+      '<div style="position: fixed; bottom: 0; left: 0; right: 0; background-color: #fff; padding: 15px; border-top: 2px solid #e0e0e0; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); z-index: 1000;">' +
+      '<div class="container">' +
+      '<div class="row">' +
+      '<div class="col-md-12 text-right">' +
       '<button type="button" class="btn btn-default" id="cancel-btn">Cancel</button> ' +
       '<button type="button" class="btn btn-primary" id="save-btn">Save Product Visibility</button>' +
       '</div>' +
-      
       '</div>' +
-      '</div>';
+      '</div>' +
+      '</div>' +
+      // Spacer so content above doesn't hide behind fixed footer
+      '<div style="height: 70px;"></div>';
     
     $('#app-container').html(html);
     this.updateActiveNav('dashboard');
@@ -375,12 +397,12 @@ var GroupProductVisibilityComponent = {
     
     // Back button
     $(document).on('click', '#back-to-group-form', function() {
-      App.navigate('partner-group-form', { customerId: self.customerId, groupId: self.groupId });
+      App.navigate('customer-detail', { customerId: self.customerId, tab: 'departments' });
     });
     
     // Cancel button
     $(document).on('click', '#cancel-btn', function() {
-      App.navigate('partner-group-form', { customerId: self.customerId, groupId: self.groupId });
+      App.navigate('customer-detail', { customerId: self.customerId, tab: 'departments' });
     });
     
     // Search button
@@ -525,19 +547,44 @@ var GroupProductVisibilityComponent = {
   },
   
   saveProductVisibility: function() {
-    // Update the group's productIds
-    var updatedGroups = this.partner.groups.map(function(g) {
-      if (g.id === this.groupId) {
-        return Object.assign({}, g, { productIds: this.selectedProductIds });
+    // Try new structure first (locations -> departments)
+    if (this.locationId && this.partner.locations) {
+      var location = this.partner.locations.find(function(l) { return l.id === this.locationId; }.bind(this));
+      if (location && location.departments) {
+        var updatedDepartments = location.departments.map(function(d) {
+          if (d.id === this.groupId) {
+            return Object.assign({}, d, { productIds: this.selectedProductIds });
+          }
+          return d;
+        }.bind(this));
+        
+        var updatedLocations = this.partner.locations.map(function(l) {
+          if (l.id === this.locationId) {
+            return Object.assign({}, l, { departments: updatedDepartments });
+          }
+          return l;
+        }.bind(this));
+        
+        AppState.updateCustomer(this.customerId, { locations: updatedLocations });
+        Helpers.showAlert('Product visibility updated successfully', 'success');
+        App.navigate('customer-detail', { customerId: this.customerId, tab: 'departments' });
+        return;
       }
-      return g;
-    }.bind(this));
+    }
     
-    AppState.updateCustomer(this.customerId, { groups: updatedGroups });
-    Helpers.showAlert('Product visibility updated successfully', 'success');
-    
-    // Navigate back to group form
-    App.navigate('partner-group-form', { customerId: this.customerId, groupId: this.groupId });
+    // Fallback to old groups structure
+    if (this.partner.groups) {
+      var updatedGroups = this.partner.groups.map(function(g) {
+        if (g.id === this.groupId) {
+          return Object.assign({}, g, { productIds: this.selectedProductIds });
+        }
+        return g;
+      }.bind(this));
+      
+        AppState.updateCustomer(this.customerId, { groups: updatedGroups });
+      Helpers.showAlert('Product visibility updated successfully', 'success');
+      App.navigate('customer-detail', { customerId: this.customerId, tab: 'departments' });
+    }
   },
   
   updateActiveNav: function(view) {

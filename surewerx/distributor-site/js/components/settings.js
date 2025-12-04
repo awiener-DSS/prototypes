@@ -5,11 +5,13 @@ var SettingsComponent = {
     distributorName: '',
     distributorLogo: null
   },
+  editingBranchId: null, // ID of branch being edited, null if adding new
   
   init: function() {
     // Load current distributor settings from AppState
     this.formData.distributorName = AppState.distributorName || 'My Distributor';
     this.formData.distributorLogo = AppState.distributorLogo || null;
+    this.editingBranchId = null;
     
     this.render();
     this.attachEvents();
@@ -71,6 +73,22 @@ var SettingsComponent = {
       '</div>' +
       '</div>' +
       
+      // Branch Locations Section
+      '<div class="panel panel-default" style="margin-top: 20px;">' +
+      '<div class="panel-heading">' +
+      '<h3 class="panel-title">Branch Locations</h3>' +
+      '</div>' +
+      '<div class="panel-body">' +
+      '<div class="clearfix" style="margin-bottom: 15px;">' +
+      '<p class="text-muted pull-left" style="margin: 0; padding-top: 7px;">Manage branch locations for your distributor</p>' +
+      '<button type="button" class="btn btn-primary pull-right" id="add-branch-location-btn">' +
+      '<span class="glyphicon glyphicon-plus"></span> Add Branch Location' +
+      '</button>' +
+      '</div>' +
+      this.renderBranchLocationsList() +
+      '</div>' +
+      '</div>' +
+      
       '</div>' +
       '</div>';
     
@@ -113,6 +131,25 @@ var SettingsComponent = {
       e.preventDefault();
       self.handleSave();
     });
+    
+    // Add branch location button
+    $(document).on('click', '#add-branch-location-btn', function() {
+      self.editingBranchId = null;
+      self.showBranchLocationModal(null);
+    });
+    
+    // Edit branch location
+    $(document).on('click', '.edit-branch-btn', function() {
+      var branchId = $(this).data('branch-id');
+      self.editingBranchId = branchId;
+      self.showBranchLocationModal(branchId);
+    });
+    
+    // Delete branch location
+    $(document).on('click', '.delete-branch-btn', function() {
+      var branchId = $(this).data('branch-id');
+      self.handleDeleteBranchLocation(branchId);
+    });
   },
   
   updateActiveNav: function(view) {
@@ -151,5 +188,164 @@ var SettingsComponent = {
     
     Helpers.showAlert('Distributor settings updated successfully', 'success');
     App.navigate('dashboard');
+  },
+  
+  renderBranchLocationsList: function() {
+    var branches = AppState.branchLocations || [];
+    if (branches.length === 0) {
+      return '<p class="text-muted">No branch locations added yet.</p>';
+    }
+    
+    var html = '<table class="table table-striped">' +
+      '<thead>' +
+      '<tr>' +
+      '<th>Branch ID</th>' +
+      '<th>Branch Address</th>' +
+      '<th style="width: 120px;">Actions</th>' +
+      '</tr>' +
+      '</thead>' +
+      '<tbody>';
+    
+    var self = this;
+    branches.forEach(function(branch) {
+      html += '<tr>' +
+        '<td>' + Helpers.escapeHtml(branch.branchId) + '</td>' +
+        '<td>' + Helpers.escapeHtml(branch.branchAddress) + '</td>' +
+        '<td>' +
+        '<button type="button" class="btn btn-xs btn-default edit-branch-btn" data-branch-id="' + branch.id + '" title="Edit">' +
+        '<span class="glyphicon glyphicon-pencil"></span>' +
+        '</button> ' +
+        '<button type="button" class="btn btn-xs btn-danger delete-branch-btn" data-branch-id="' + branch.id + '" title="Delete">' +
+        '<span class="glyphicon glyphicon-trash"></span>' +
+        '</button>' +
+        '</td>' +
+        '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    return html;
+  },
+  
+  showBranchLocationModal: function(branchId) {
+    var self = this;
+    var branch = null;
+    var isEdit = !!branchId;
+    
+    if (isEdit) {
+      branch = AppState.branchLocations.find(function(b) { return b.id === branchId; });
+      if (!branch) {
+        Helpers.showAlert('Branch location not found', 'danger');
+        return;
+      }
+    }
+    
+    // Remove existing modal if present
+    $('#branch-location-modal').remove();
+    
+    var modalHtml = '<div class="modal fade" id="branch-location-modal" tabindex="-1" role="dialog">' +
+      '<div class="modal-dialog" role="document">' +
+      '<div class="modal-content">' +
+      '<div class="modal-header">' +
+      '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+      '<span aria-hidden="true">&times;</span>' +
+      '</button>' +
+      '<h4 class="modal-title">' + (isEdit ? 'Edit Branch Location' : 'Add Branch Location') + '</h4>' +
+      '</div>' +
+      '<form id="branch-location-form">' +
+      '<div class="modal-body">' +
+      '<div class="form-group">' +
+      '<label for="modal-branch-id">Branch ID</label>' +
+      '<input type="text" class="form-control" id="modal-branch-id" value="' + (branch ? Helpers.escapeHtml(branch.branchId) : '') + '" placeholder="Enter branch ID" required>' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="modal-branch-address">Branch Address</label>' +
+      '<textarea class="form-control" id="modal-branch-address" rows="3" placeholder="Enter branch address" required>' + (branch ? Helpers.escapeHtml(branch.branchAddress) : '') + '</textarea>' +
+      '</div>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>' +
+      '<button type="submit" class="btn btn-primary">' + (isEdit ? 'Update Branch Location' : 'Add Branch Location') + '</button>' +
+      '</div>' +
+      '</form>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+    
+    $('body').append(modalHtml);
+    
+    // Handle form submit
+    $(document).off('submit', '#branch-location-form').on('submit', '#branch-location-form', function(e) {
+      e.preventDefault();
+      var branchIdValue = $('#modal-branch-id').val();
+      var branchAddressValue = $('#modal-branch-address').val();
+      
+      if (isEdit) {
+        self.handleUpdateBranchLocation(branchId, branchIdValue, branchAddressValue);
+      } else {
+        self.handleAddBranchLocation(branchIdValue, branchAddressValue);
+      }
+      
+      $('#branch-location-modal').modal('hide');
+    });
+    
+    // Cleanup on hide
+    $('#branch-location-modal').on('hidden.bs.modal', function() {
+      $(this).remove();
+    });
+    
+    // Show modal
+    $('#branch-location-modal').modal('show');
+  },
+  
+  handleAddBranchLocation: function(branchId, branchAddress) {
+    if (!branchId || !branchAddress) {
+      Helpers.showAlert('Please fill in both Branch ID and Branch Address', 'warning');
+      return;
+    }
+    
+    var newBranch = {
+      id: Helpers.generateId(),
+      branchId: branchId.trim(),
+      branchAddress: branchAddress.trim()
+    };
+    
+    AppState.branchLocations = AppState.branchLocations || [];
+    AppState.branchLocations.push(newBranch);
+    AppState.saveToStorage();
+    
+    Helpers.showAlert('Branch location added successfully', 'success');
+    this.editingBranchId = null;
+    this.render();
+    // Modal will be closed by the submit handler
+  },
+  
+  handleUpdateBranchLocation: function(branchId, branchIdValue, branchAddress) {
+    if (!branchIdValue || !branchAddress) {
+      Helpers.showAlert('Please fill in both Branch ID and Branch Address', 'warning');
+      return;
+    }
+    
+    var branch = AppState.branchLocations.find(function(b) { return b.id === branchId; });
+    if (branch) {
+      branch.branchId = branchIdValue.trim();
+      branch.branchAddress = branchAddress.trim();
+      AppState.saveToStorage();
+      Helpers.showAlert('Branch location updated successfully', 'success');
+    }
+    
+    this.editingBranchId = null;
+    this.render();
+  },
+  
+  handleDeleteBranchLocation: function(branchId) {
+    if (!confirm('Are you sure you want to delete this branch location?')) {
+      return;
+    }
+    
+    AppState.branchLocations = AppState.branchLocations.filter(function(b) { return b.id !== branchId; });
+    AppState.saveToStorage();
+    Helpers.showAlert('Branch location deleted successfully', 'success');
+    this.editingBranchId = null;
+    this.render();
   }
 };

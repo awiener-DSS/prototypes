@@ -57,6 +57,9 @@ var Navigation = {
           if (params.groupId) {
             url += '&groupId=' + encodeURIComponent(params.groupId);
           }
+          if (params.locationId) {
+            url += '&locationId=' + encodeURIComponent(params.locationId);
+          }
         }
         window.location.href = url;
         break;

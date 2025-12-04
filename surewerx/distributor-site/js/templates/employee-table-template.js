@@ -4,30 +4,37 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
   var html = '<div class="row">' +
     '<div class="col-md-12">';
   
-  // Check if customer has any user groups
+  // Check if customer has any departments (in locations) or groups (legacy)
+  var hasDepartments = false;
+  if (customer.locations && customer.locations.length > 0) {
+    hasDepartments = customer.locations.some(function(loc) {
+      return loc.departments && loc.departments.length > 0;
+    });
+  }
   var hasGroups = customer.groups && customer.groups.length > 0;
+  var hasAny = hasDepartments || hasGroups;
   
-  // Help Section - Conditional based on whether groups exist
-  if (!hasGroups) {
-    // No groups - show "Create User Groups First" message
+  // Help Section - Conditional based on whether departments exist
+  if (!hasAny) {
+    // No departments - show "Create Departments First" message
     html += '<div class="alert alert-info" style="background-color: #e3f2fd; border-color: #90caf9; margin-bottom: 20px;">' +
       '<div style="display: flex; align-items: start; gap: 15px;">' +
       '<div style="background-color: #bbdefb; padding: 10px; border-radius: 4px; flex-shrink: 0;">' +
       '<span class="glyphicon glyphicon-info-sign" style="font-size: 20px; color: #1976d2;"></span>' +
       '</div>' +
       '<div style="flex: 1;">' +
-      '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Create User Groups First</h4>' +
+      '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">Create Departments First</h4>' +
       '<p style="margin: 0 0 12px 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
-      'Before adding employees, you need to create user groups in the User Groups tab. Once user groups are created, you can add employees and assign them to those groups.' +
+      'Before adding employees, you need to create locations and departments in the Locations and Departments tabs. Once departments are created, you can add employees and assign them to those departments.' +
       '</p>' +
-      '<button class="btn btn-sm btn-primary" onclick="CustomerDetailComponent.switchTab(\'groups\')">' +
-      'Go to User Groups' +
+      '<button class="btn btn-sm btn-primary" onclick="CustomerDetailComponent.switchTab(\'departments\')">' +
+      'Go to Departments' +
       '</button>' +
       '</div>' +
       '</div>' +
       '</div>';
   } else {
-    // Has groups - show "How Employee Management Works" message
+    // Has departments - show "How Employee Management Works" message
     html += '<div class="alert alert-info" style="background-color: #e3f2fd; border-color: #90caf9; margin-bottom: 20px;">' +
       '<div style="display: flex; align-items: start; gap: 15px;">' +
       '<div style="background-color: #bbdefb; padding: 10px; border-radius: 4px; flex-shrink: 0;">' +
@@ -37,7 +44,7 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
       '<h4 style="margin: 0 0 8px 0; color: #0d47a1; font-size: 14px; font-weight: 600;">How Employee Management Works</h4>' +
       '<p style="margin: 0; color: #1565c0; font-size: 13px; line-height: 1.5;">' +
       'Add individual employees by entering their details such as name and configured fields like Employee ID, Username, or date of birth. ' +
-      'Each employee must be assigned to a user group when created. You can later reassign them to different user groups as needed. ' +
+      'Each employee must be assigned to a department when created. You can later reassign them to different departments as needed. ' +
       'Use the bulk upload feature to add multiple employees at once from a CSV file.' +
       '</p>' +
       '</div>' +
@@ -46,39 +53,39 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
   }
   
   // Employees section only - full width
-  html += '<div class="mb-4">' +
-    '<div class="btn-toolbar" style="margin-bottom: 15px;">' +
-    '<button class="btn btn-primary" id="add-employee-btn"' +
-    (!hasGroups ? ' disabled title="Create user groups first"' : '') + '>' +
-    '<span class="glyphicon glyphicon-plus"></span> Add Employee' +
-    '</button> ' +
-    '<button class="btn btn-primary" id="bulk-import-btn"' +
-    (!hasGroups ? ' disabled title="Create user groups first"' : '') + '>' +
-    '<span class="glyphicon glyphicon-upload"></span> Import Employees' +
-    '</button>' +
-    '</div>';
+  html += '<div class="mb-4" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">';
   
-  // Only show search if groups exist
-  if (hasGroups) {
-    html += '<div class="row">' +
-      '<div class="col-md-6">' +
-      '<div class="input-group">' +
+  // Only show search if departments exist
+  if (hasAny) {
+    html += '<div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 300px;">' +
+      '<div class="input-group" style="flex: 1; max-width: 500px;">' +
       '<span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>' +
-      '<input type="text" class="form-control" id="employee-search" placeholder="Search employees by name, ID, username, group, notes..." value="' + Helpers.escapeHtml(EmployeeTableEnhanced.searchTerm || '') + '">' +
-      '<span class="input-group-btn">' +
+      '<input type="text" class="form-control" id="employee-search" placeholder="Search by name, ID, username, department, or notes" value="' + Helpers.escapeHtml(EmployeeTableEnhanced.searchTerm || '') + '">' +
+      '<span class="input-group-btn" style="padding-left: 6px;">' +
       '<button class="btn btn-primary" type="button" id="search-employees-btn">' +
       '<span class="glyphicon glyphicon-search"></span> Search' +
       '</button>' +
       '</span>' +
       '</div>' +
-      '</div>' +
       '</div>';
+  } else {
+    html += '<div></div>';
   }
   
-  html += '</div>';
+  html += '<div style="display: flex; gap: 10px;">' +
+    '<button class="btn btn-primary" id="add-employee-btn"' +
+    (!hasAny ? ' disabled title="Create departments first"' : '') + '>' +
+    '<span class="glyphicon glyphicon-plus"></span> Add Employee' +
+    '</button>' +
+    '<button class="btn btn-primary" id="bulk-import-btn"' +
+    (!hasAny ? ' disabled title="Create departments first"' : '') + '>' +
+    '<span class="glyphicon glyphicon-upload"></span> Import Employees' +
+    '</button>' +
+    '</div>' +
+    '</div>';
   
-  // Only show employee table and bulk actions if groups exist
-  if (hasGroups) {
+  // Only show employee table and bulk actions if departments exist
+  if (hasAny) {
     // Bulk actions toolbar (hidden by default)
     html += '<div id="bulk-actions-toolbar" class="alert alert-info" style="display: none;">' +
       '<div class="row">' +
@@ -87,7 +94,7 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
       '</div>' +
       '<div class="col-sm-6 text-right">' +
       '<button class="btn btn-sm btn-primary" id="bulk-change-group-btn">' +
-      '<span class="glyphicon glyphicon-transfer"></span> Change Group' +
+      '<span class="glyphicon glyphicon-transfer"></span> Change Department' +
       '</button> ' +
       '<button class="btn btn-sm btn-default" id="clear-selection-btn">' +
       '<span class="glyphicon glyphicon-remove"></span> Clear Selection' +
@@ -111,7 +118,7 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
     var showStartDate = true; // Always show - available as optional field
     
     html += '<div class="table-responsive">' +
-      '<table class="table table-hover">' +
+      '<table class="table table-striped table-bordered">' +
       '<thead>' +
       '<tr>' +
       '<th style="width: 30px;">' +
@@ -122,7 +129,7 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
       (showUsername ? '<th>Username</th>' : '') +
       (showDateOfBirth ? '<th>Date of Birth</th>' : '') +
       (showStartDate ? '<th>Start Date</th>' : '') +
-      '<th>Group</th>' +
+      '<th>Department</th>' +
       '<th>Notes</th>' +
       '<th style="width: 120px;">Actions</th>' +
       '</tr>' +
@@ -133,7 +140,26 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
       html += '<tr><td colspan="100%" class="text-center text-muted">No employees found matching your search.</td></tr>';
     } else {
       employees.forEach(function(emp) {
-      var group = customer.groups.find(function(g) { return g.id === emp.groupId; });
+      // Try to find department in new structure first
+      var department = null;
+      var departmentName = '-';
+      if (emp.departmentId && emp.locationId && customer.locations) {
+        var location = customer.locations.find(function(l) { return l.id === emp.locationId; });
+        if (location && location.departments) {
+          department = location.departments.find(function(d) { return d.id === emp.departmentId; });
+        }
+      }
+      // Fallback to old group structure
+      if (!department && emp.groupId && customer.groups) {
+        var group = customer.groups.find(function(g) { return g.id === emp.groupId; });
+        if (group) {
+          departmentName = Helpers.escapeHtml(group.name);
+        }
+      } else if (department) {
+        var location = customer.locations.find(function(l) { return l.id === emp.locationId; });
+        departmentName = (location ? Helpers.escapeHtml(location.locationId || 'Unnamed') + ' - ' : '') + 
+          Helpers.escapeHtml(department.name);
+      }
       
       html += '<tr class="selectable-row" data-employee-id="' + emp.id + '" style="cursor: pointer;">' +
         '<td>' +
@@ -148,17 +174,15 @@ Templates.renderEmployeesTabEnhanced = function(customer) {
           '<td>' + Helpers.formatDate(emp.dateOfBirth || '') + '</td>' : '') +
         (showStartDate ? 
           '<td>' + Helpers.formatDate(emp.startDate || '') + '</td>' : '') +
-        '<td>' + (group ? Helpers.escapeHtml(group.name) : '-') + '</td>' +
+        '<td>' + departmentName + '</td>' +
         '<td>' + (emp.notes ? Helpers.escapeHtml(emp.notes) : '-') + '</td>' +
         '<td>' +
-        '<div class="btn-group btn-group-xs">' +
-        '<button class="btn btn-default edit-employee-btn" data-employee-id="' + emp.id + '" title="Edit" style="padding: 5px 10px; background-color: transparent; border-color: transparent; color: #6b7280;">' +
+        '<button type="button" class="btn btn-xs btn-default edit-employee-btn" data-employee-id="' + emp.id + '" title="Edit">' +
         '<span class="glyphicon glyphicon-pencil"></span>' +
-        '</button>' +
-        '<button class="btn btn-default delete-employee-btn" data-employee-id="' + emp.id + '" title="Delete" style="padding: 5px 10px; background-color: transparent; border-color: transparent; color: #dc2626;">' +
+        '</button> ' +
+        '<button type="button" class="btn btn-xs btn-danger delete-employee-btn" data-employee-id="' + emp.id + '" title="Delete">' +
         '<span class="glyphicon glyphicon-trash"></span>' +
         '</button>' +
-        '</div>' +
         '</td>' +
         '</tr>';
       });

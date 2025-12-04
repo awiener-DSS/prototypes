@@ -30,7 +30,7 @@ var EmployeeBulkImport = {
       '<ol class="mb-0 mt-2">' +
       '<li>Download the CSV template</li>' +
       '<li>Fill in employee information</li>' +
-      '<li>Select the user group for these employees</li>' +
+      '<li>Select the department for these employees</li>' +
       '<li>Upload the completed CSV file</li>' +
       '</ol>' +
       '</div>' +
@@ -44,21 +44,33 @@ var EmployeeBulkImport = {
       '</div>' +
       '</div>' +
       '<div class="panel panel-default">' +
-      '<div class="panel-heading"><strong>Step 2: User Group Assignment</strong></div>' +
+      '<div class="panel-heading"><strong>Step 2: Department Assignment</strong></div>' +
       '<div class="panel-body">' +
-      '<p class="text-muted">You can assign employees to user groups in two ways:</p>' +
+      '<p class="text-muted">You can assign employees to departments in two ways:</p>' +
       '<ul class="text-muted">' +
-      '<li><strong>Option 1:</strong> Select a default user group below (all employees will be assigned to this group)</li>' +
-      '<li><strong>Option 2:</strong> Include a "User Group" column in your CSV file (each employee can be assigned to a different group)</li>' +
+      '<li><strong>Option 1:</strong> Select a default department below (all employees will be assigned to this department)</li>' +
+      '<li><strong>Option 2:</strong> Include a "Department" column in your CSV file (each employee can be assigned to a different department)</li>' +
       '</ul>' +
       '<div class="form-group">' +
-      '<label>Default User Group (Optional - only used if CSV doesn\'t have User Group column)</label>' +
+      '<label>Default Department (Optional - only used if CSV doesn\'t have Department column)</label>' +
       '<select class="form-control" id="bulk-import-group-select">' +
       '<option value="">-- No default group --</option>' +
       partner.groups.map(function(g) {
-        var groupVouchers = partner.vouchers.filter(function(v) {
-          return v.userGroupIds && v.userGroupIds.indexOf(g.id) > -1;
-        });
+          // Get vouchers for this department (legacy group)
+          var groupVouchers = [];
+          if (partner.locations) {
+            partner.locations.forEach(function(loc) {
+              if (loc.departments) {
+                loc.departments.forEach(function(dept) {
+                  if (dept.id === g.id) {
+                    groupVouchers = partner.vouchers.filter(function(v) {
+                      return v.departmentId === dept.id && v.locationId === loc.id;
+                    });
+                  }
+                });
+              }
+            });
+          }
         var totalAmount = groupVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
         var selected = g.id === self.selectedGroupId ? ' selected' : '';
         return '<option value="' + g.id + '"' + selected + '>' +
@@ -66,7 +78,7 @@ var EmployeeBulkImport = {
           '</option>';
       }).join('') +
       '</select>' +
-      '<p class="help-block">If your CSV includes a "User Group" column, employees will be assigned to the groups specified in the CSV. Otherwise, they will be assigned to the default group selected above.</p>' +
+      '<p class="help-block">If your CSV includes a "Department" column (or legacy "User Group" column), employees will be assigned to the departments specified in the CSV. Otherwise, they will be assigned to the default department selected above.</p>' +
       '</div>' +
       '</div>' +
       '</div>' +
@@ -135,7 +147,7 @@ var EmployeeBulkImport = {
   
   downloadTemplate: function(partner) {
     // Build header - always include all identifier fields (required and optional)
-    var headers = ['First Name', 'Last Name', 'Employee ID', 'Username', 'Date of Birth', 'Start Date', 'User Group', 'Notes'];
+    var headers = ['First Name', 'Last Name', 'Employee ID', 'Username', 'Date of Birth', 'Start Date', 'Department', 'Notes'];
     
     // Create CSV with header row
     var csv = headers.join(',') + '\n';
@@ -189,7 +201,11 @@ var EmployeeBulkImport = {
         var usernameIndex = headerRow.indexOf('Username');
         var dateOfBirthIndex = headerRow.indexOf('Date of Birth');
         var startDateIndex = headerRow.indexOf('Start Date');
-        var userGroupIndex = headerRow.indexOf('User Group');
+        var userGroupIndex = headerRow.indexOf('Department');
+        if (userGroupIndex === -1) {
+          // Fallback to legacy "User Group" column name
+          userGroupIndex = headerRow.indexOf('User Group');
+        }
         var notesIndex = headerRow.indexOf('Notes');
         var hasUserGroupColumn = userGroupIndex !== -1;
         
@@ -223,35 +239,54 @@ var EmployeeBulkImport = {
           dateOfBirth = dateOfBirth || undefined;
           startDate = startDate || undefined;
           
-          // Get user group from CSV or use default
+          // Get department from CSV or use default
           var groupName = '';
           var assignedGroupId = null;
           
           if (hasUserGroupColumn && userGroupIndex !== -1) {
-            // User Group column exists in CSV
+            // Department column exists in CSV (legacy column name "User Group")
             groupName = (values[userGroupIndex] || '').trim();
             if (groupName) {
-              // Find group by name (case-insensitive)
-              var foundGroup = partner.groups.find(function(g) {
-                return g.name.toLowerCase() === groupName.toLowerCase();
-              });
-              if (foundGroup) {
-                assignedGroupId = foundGroup.id;
-              } else {
+              // Find department by name (case-insensitive) - try new structure first
+              var foundDepartment = null;
+              if (partner.locations && partner.locations.length > 0) {
+                for (var i = 0; i < partner.locations.length; i++) {
+                  var loc = partner.locations[i];
+                  if (loc.departments) {
+                    foundDepartment = loc.departments.find(function(d) {
+                      return d.name.toLowerCase() === groupName.toLowerCase();
+                    });
+                    if (foundDepartment) {
+                      assignedGroupId = foundDepartment.id;
+                      break;
+                    }
+                  }
+                }
+              }
+              // Fallback to old groups structure
+              if (!foundDepartment && partner.groups) {
+                var foundGroup = partner.groups.find(function(g) {
+                  return g.name.toLowerCase() === groupName.toLowerCase();
+                });
+                if (foundGroup) {
+                  assignedGroupId = foundGroup.id;
+                }
+              }
+              if (!assignedGroupId) {
                 errorCount++;
-                errors.push('Row ' + (index + 2) + ': User Group "' + groupName + '" not found for ' + firstName + ' ' + lastName);
+                errors.push('Row ' + (index + 2) + ': Department "' + groupName + '" not found for ' + firstName + ' ' + lastName);
                 return;
               }
             }
           }
           
-          // If no group from CSV, use default group
+          // If no department from CSV, use default department
           if (!assignedGroupId) {
             if (self.selectedGroupId) {
               assignedGroupId = self.selectedGroupId;
             } else {
               errorCount++;
-              errors.push('Row ' + (index + 2) + ': No user group specified for ' + firstName + ' ' + lastName + '. Please either include a User Group column in the CSV or select a default group.');
+              errors.push('Row ' + (index + 2) + ': No department specified for ' + firstName + ' ' + lastName + '. Please either include a Department column in the CSV or select a default department.');
               return;
             }
           }
@@ -322,9 +357,21 @@ var EmployeeBulkImport = {
           });
           
           // Get vouchers for this group
-          var groupVouchers = partner.vouchers.filter(function(v) {
-            return v.userGroupIds && v.userGroupIds.indexOf(assignedGroupId) > -1;
-          });
+            // Get vouchers for assigned department
+            var groupVouchers = [];
+            if (partner.locations) {
+              partner.locations.forEach(function(loc) {
+                if (loc.departments) {
+                  loc.departments.forEach(function(dept) {
+                    if (dept.id === assignedGroupId) {
+                      groupVouchers = partner.vouchers.filter(function(v) {
+                        return v.departmentId === dept.id && v.locationId === loc.id;
+                      });
+                    }
+                  });
+                }
+              });
+            }
           
           // Calculate total voucher balance
           var totalBalance = groupVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
@@ -342,11 +389,25 @@ var EmployeeBulkImport = {
           
           if (existingEmployee) {
             // Update existing employee
+            // Find location for this department
+            var assignedLocationId = null;
+            if (partner.locations) {
+              partner.locations.forEach(function(loc) {
+                if (loc.departments) {
+                  var dept = loc.departments.find(function(d) { return d.id === assignedGroupId; });
+                  if (dept) {
+                    assignedLocationId = loc.id;
+                  }
+                }
+              });
+            }
+            
             var updatedEmployee = Object.assign({}, existingEmployee, {
               firstName: firstName,
               lastName: lastName,
               name: firstName + ' ' + lastName,
-              groupId: assignedGroupId,
+              departmentId: assignedGroupId,
+              locationId: assignedLocationId,
               voucherExpiry: voucherExpiry,
               voucherStatus: 'active',
               remainingBalance: totalBalance,
@@ -366,6 +427,19 @@ var EmployeeBulkImport = {
             });
           } else {
             // Create new employee - include all fields (required and optional)
+            // Find location for this department
+            var assignedLocationId = null;
+            if (partner.locations) {
+              partner.locations.forEach(function(loc) {
+                if (loc.departments) {
+                  var dept = loc.departments.find(function(d) { return d.id === assignedGroupId; });
+                  if (dept) {
+                    assignedLocationId = loc.id;
+                  }
+                }
+              });
+            }
+            
             var employeeData = {
               id: Helpers.generateId(),
               firstName: firstName,
@@ -375,7 +449,8 @@ var EmployeeBulkImport = {
               username: username,
               dateOfBirth: dateOfBirth,
               startDate: startDate,
-              groupId: assignedGroupId,
+              departmentId: assignedGroupId,
+              locationId: assignedLocationId,
               voucherExpiry: voucherExpiry,
               voucherStatus: 'active',
               remainingBalance: totalBalance,
@@ -407,25 +482,22 @@ var EmployeeBulkImport = {
         allEmployees = allEmployees.concat(employeesToCreate);
         
         // Update employee count for all affected groups
-        var affectedGroupIds = {};
-        employeesToUpdate.forEach(function(u) {
-          if (u.newEmployee && u.newEmployee.groupId) {
-            affectedGroupIds[u.newEmployee.groupId] = true;
-          }
-        });
-        employeesToCreate.forEach(function(emp) {
-          if (emp && emp.groupId) {
-            affectedGroupIds[emp.groupId] = true;
-          }
-        });
-        
-        var updatedGroups = partner.groups.map(function(g) {
-          if (affectedGroupIds[g.id]) {
-            var count = allEmployees.filter(function(e) { return e.groupId === g.id; }).length;
-            return Object.assign({}, g, { employeeCount: count });
-          }
-          return g;
-        });
+        // Update employee counts in departments
+        var updatedLocations = null;
+        if (partner.locations) {
+          updatedLocations = partner.locations.map(function(loc) {
+            if (loc.departments) {
+              var updatedDepartments = loc.departments.map(function(dept) {
+                var count = allEmployees.filter(function(e) { 
+                  return e.departmentId === dept.id && e.locationId === loc.id; 
+                }).length;
+                return Object.assign({}, dept, { employeeCount: count });
+              });
+              return Object.assign({}, loc, { departments: updatedDepartments });
+            }
+            return loc;
+          });
+        }
         
         AppState.updateCustomer(partner.id, {
           employees: allEmployees,

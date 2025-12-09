@@ -847,8 +847,8 @@ var CustomerReportingComponent = {
           totalRefunded += item.refundedAmount;
           
           // Determine the actual voucher amount allocated to this line item
-          // If the line item is eligible for a voucher, use the voucher amount from orderVoucherTotals
-          // Cap it at the line item's total price (can't allocate more voucher than the item costs)
+          // When multiple items qualify for the same voucher and the total exceeds the limit,
+          // we need to proportionally allocate the capped voucher amount across qualifying items
           var lineVoucherAllocation = 0;
           if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
             // Find matching voucher name (exact or case-insensitive)
@@ -859,14 +859,28 @@ var CustomerReportingComponent = {
               });
             
             if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
-              // Use the voucher amount from orderVoucherTotals, but cap at the line item's total price
-              // Since vouchers are applied at order level, we need to determine how much of the voucher
-              // was effectively allocated to this line. Use the minimum of voucher amount and line total.
-              lineVoucherAllocation = Math.min(orderVoucherTotals[matchingVoucherName], item.totalPrice);
+              // Get the total amount applied from this voucher (already capped at voucher limit)
+              var voucherAppliedAmount = orderVoucherTotals[matchingVoucherName];
+              
+              // Calculate the sum of all line items that qualified for this voucher
+              var voucherQualifyingTotal = orderItems.reduce(function(sum, orderItem) {
+                if (orderItem.eligibleVoucherName === matchingVoucherName ||
+                    (orderItem.eligibleVoucherName && matchingVoucherName && 
+                     orderItem.eligibleVoucherName.toLowerCase().trim() === matchingVoucherName.toLowerCase().trim())) {
+                  return sum + orderItem.totalPrice;
+                }
+                return sum;
+              }, 0);
+              
+              // Proportionally allocate the voucher amount to this line item
+              // Allocation = (line item total / qualifying total) * voucher applied amount
+              if (voucherQualifyingTotal > 0) {
+                lineVoucherAllocation = (item.totalPrice / voucherQualifyingTotal) * voucherAppliedAmount;
+              }
             }
           }
           
-          // If no voucher allocation found, fall back to proportional allocation
+          // If no voucher allocation found, fall back to proportional allocation across all vouchers
           if (lineVoucherAllocation === 0 && totalVoucherApplied > 0 && orderTotal > 0) {
             var voucherRatio = totalVoucherApplied / orderTotal;
             lineVoucherAllocation = item.totalPrice * voucherRatio;
@@ -1577,8 +1591,8 @@ var CustomerReportingComponent = {
           totalRefunded += item.refundedAmount;
           
           // Determine the actual voucher amount allocated to this line item
-          // If the line item is eligible for a voucher, use the voucher amount from orderVoucherTotals
-          // Cap it at the line item's total price (can't allocate more voucher than the item costs)
+          // When multiple items qualify for the same voucher and the total exceeds the limit,
+          // we need to proportionally allocate the capped voucher amount across qualifying items
           var lineVoucherAllocation = 0;
           if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
             // Find matching voucher name (exact or case-insensitive)
@@ -1589,14 +1603,28 @@ var CustomerReportingComponent = {
               });
             
             if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
-              // Use the voucher amount from orderVoucherTotals, but cap at the line item's total price
-              // Since vouchers are applied at order level, we need to determine how much of the voucher
-              // was effectively allocated to this line. Use the minimum of voucher amount and line total.
-              lineVoucherAllocation = Math.min(orderVoucherTotals[matchingVoucherName], item.totalPrice);
+              // Get the total amount applied from this voucher (already capped at voucher limit)
+              var voucherAppliedAmount = orderVoucherTotals[matchingVoucherName];
+              
+              // Calculate the sum of all line items that qualified for this voucher
+              var voucherQualifyingTotal = orderItems.reduce(function(sum, orderItem) {
+                if (orderItem.eligibleVoucherName === matchingVoucherName ||
+                    (orderItem.eligibleVoucherName && matchingVoucherName && 
+                     orderItem.eligibleVoucherName.toLowerCase().trim() === matchingVoucherName.toLowerCase().trim())) {
+                  return sum + orderItem.totalPrice;
+                }
+                return sum;
+              }, 0);
+              
+              // Proportionally allocate the voucher amount to this line item
+              // Allocation = (line item total / qualifying total) * voucher applied amount
+              if (voucherQualifyingTotal > 0) {
+                lineVoucherAllocation = (item.totalPrice / voucherQualifyingTotal) * voucherAppliedAmount;
+              }
             }
           }
           
-          // If no voucher allocation found, fall back to proportional allocation
+          // If no voucher allocation found, fall back to proportional allocation across all vouchers
           if (lineVoucherAllocation === 0 && totalVoucherApplied > 0 && orderTotal > 0) {
             var voucherRatio = totalVoucherApplied / orderTotal;
             lineVoucherAllocation = item.totalPrice * voucherRatio;

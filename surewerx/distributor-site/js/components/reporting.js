@@ -1027,7 +1027,6 @@ var ReportingComponent = {
         '<div style="flex: 1; min-width: 200px;">' +
         '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap;">' +
         '<span style="font-weight: 600; font-size: 14px; color: #111827;">Order #' + Helpers.escapeHtml(orderId) + '</span>' +
-        '<span class="label label-default" style="font-size: 11px; padding: 2px 6px;">' + Helpers.escapeHtml(firstItem.employeeGroup) + '</span>' +
         '</div>' +
         '<div style="font-size: 12px; color: #374151; margin-top: 2px;"><strong>' + Helpers.escapeHtml(firstItem.employeeName) + '</strong> • ' + Helpers.escapeHtml(firstItem.partnerName || firstItem.customerName || '') + '</div>' +
         employeeIdentifierDisplay +
@@ -1060,11 +1059,10 @@ var ReportingComponent = {
           return '<div class="order-item" style="padding: 10px 12px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;">' +
             '<div style="flex: 1; min-width: 0;">' +
             // Move invoice information above status / product name so it's more visible
-            ((item.invoiceNumber || item.invoiceDate || item.invoiceDueDate) ?
+            ((item.invoiceNumber || item.invoiceDate) ?
               '<div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 6px;">' +
               (item.invoiceNumber ? '<span style="font-size: 15px; font-weight: 600; color: #111827;"><strong>Invoice #:</strong> ' + Helpers.escapeHtml(item.invoiceNumber) + '</span>' : '') +
               (item.invoiceDate ? '<span style="font-size: 11px; color: #6b7280;"><strong>Invoice Date:</strong> ' + Helpers.formatDate(item.invoiceDate) + '</span>' : '') +
-              (item.invoiceDueDate ? '<span style="font-size: 11px; color: #6b7280;"><strong>Invoice Due:</strong> ' + Helpers.formatDate(item.invoiceDueDate) + '</span>' : '') +
               '</div>' : '') +
             '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap;">' +
             '<span class="status-badge ' + Helpers.getStatusBadgeClass(item.lineStatus) + '" style="font-size: 11px; padding: 2px 6px;">' +
@@ -1082,52 +1080,10 @@ var ReportingComponent = {
             (item.voucherEligible && item.eligibleVoucherName ?
               '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.escapeHtml(item.eligibleVoucherName) + '</span>' : '') +
             '</div>' +
-            '<div style="display: inline-flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
-            // Show voucher name if this item was paid by voucher
-            // If order has voucher applied (totalVoucherApplied > 0) and item has a voucher name
-            // Match voucher name case-insensitively or if item qualifies for any voucher on the order
-            (function() {
-              // Show voucher if order has vouchers applied
-              if (totalVoucherApplied > 0 || Object.keys(orderVoucherTotals).length > 0) {
-                // Try to find voucher name from various sources
-                var voucherName = item.eligibleVoucherName || item.voucherUsed || firstItem.voucherUsed;
-                
-                if (voucherName) {
-                  // Find matching voucher name (exact or case-insensitive)
-                  var matchingVoucherName = orderVoucherTotals[voucherName] ? voucherName :
-                    Object.keys(orderVoucherTotals).find(function(vName) {
-                      if (!vName || !voucherName) return false;
-                      return vName.toLowerCase().trim() === voucherName.toLowerCase().trim();
-                    });
-                  
-                  // If no exact match but we have a voucher name, use it
-                  if (!matchingVoucherName && voucherName) {
-                    matchingVoucherName = voucherName;
-                  }
-                  
-                  // If still no match but order has vouchers, use the first voucher name
-                  if (!matchingVoucherName && Object.keys(orderVoucherTotals).length > 0) {
-                    matchingVoucherName = Object.keys(orderVoucherTotals)[0];
-                  }
-                  
-                  if (matchingVoucherName) {
-                    // Show voucher name only (no amount at line level)
-                    var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(matchingVoucherName) + '</span>';
-                    return displayText;
-                  }
-                } else if (Object.keys(orderVoucherTotals).length > 0) {
-                  // Fallback: show first voucher if no specific voucher name found
-                  var firstVoucherName = Object.keys(orderVoucherTotals)[0];
-                  var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(firstVoucherName) + '</span>';
-                  return displayText;
-                }
-              }
-              return '';
-            })() +
-            // Only show refunded amount at line level (voucher calculations are at order level only)
             (item.refundedAmount && item.refundedAmount > 0 ?
-              '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' : '') +
-            '</div>' +
+              '<div style="display: inline-flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
+              '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' +
+              '</div>' : '') +
             // Shipping info at line item level
             ((item.shippingCarrier || item.shippingMethod || item.trackingNumber || (shippingCost > 0 && orderItems.indexOf(item) === 0)) ?
               '<div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +

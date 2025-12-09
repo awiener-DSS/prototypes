@@ -20,8 +20,21 @@ var ReportingComponent = {
     if (AppState.enrichTransactions) {
       AppState.enrichTransactions();
     }
+    // Default to first customer if no customer is selected
+    if (!this.filters.partner) {
+      var customers = AppState.getFilteredCustomers();
+      if (customers && customers.length > 0) {
+        this.filters.partner = customers[0].id;
+      }
+    }
     this.render();
     this.attachEvents();
+    // After rendering, update dependent filters if a customer is selected
+    if (this.filters.partner) {
+      this.updateLocationIdFilter();
+      this.updateBranchFilter();
+      this.updateFilterEnabledState();
+    }
   },
   
   render: function() {
@@ -99,7 +112,7 @@ var ReportingComponent = {
       self.updateLocationIdFilter();
     });
     
-    // Initialize filters
+    // Initialize filters (after setting default customer)
     this.updateLocationIdFilter();
     this.updateBranchFilter();
     this.updateFilterEnabledState();
@@ -467,6 +480,13 @@ var ReportingComponent = {
   
   renderFilters: function() {
     var self = this;
+    // Ensure a customer is selected (default to first if none selected)
+    if (!this.filters.partner) {
+      var customers = AppState.getFilteredCustomers();
+      if (customers && customers.length > 0) {
+        this.filters.partner = customers[0].id;
+      }
+    }
     return '<div class="filter-panel" style="padding: 12px;">' +
       '<h4 style="margin-top: 0; margin-bottom: 12px; font-size: 16px;">Filters</h4>' +
       '<form class="form-horizontal">' +
@@ -475,7 +495,6 @@ var ReportingComponent = {
       '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Customer</label>' +
       '<select class="form-control" id="filter-partner" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
-      '<option value="" disabled' + (!this.filters.partner ? ' selected' : '') + '>Select customer...</option>' +
       AppState.getFilteredCustomers().map(function(p) {
         var selected = self.filters.partner === p.id ? ' selected' : '';
         return '<option value="' + p.id + '"' + selected + '>' + Helpers.escapeHtml(p.name) + '</option>';
@@ -683,141 +702,299 @@ var ReportingComponent = {
           '</div>';
       }
       
-      // Calculate original order total (before refunds) to determine original credit card amount
-      var originalOrderTotal = orderItems.reduce(function(sum, item) {
-        if (item.lineStatus === 'Shipped' || item.lineStatus === 'Processing') {
-          return sum + item.totalPrice; // Use original totalPrice, don't subtract refunds
-        }
-        return sum;
-      }, 0);
-      var originalGrandTotal = originalOrderTotal + shippingCost;
+      // Calculate order-level voucher totals and payment breakdown (per requirements)
+      var orderVoucherTotals = firstItem.orderVoucherTotals || {};
+      var totalVoucherApplied = firstItem.totalVoucherApplied || 0;
       
-      // Calculate payment totals at order level
-      var totalVoucherPaid = 0;
-      var totalCreditCardPaid = 0;
+      // Check for any vouchers specified in voucherUsed that aren't already in orderVoucherTotals
+      // This handles cases where enrichTransactions missed some vouchers
+      if (partner && partner.vouchers) {
+        // Collect all unique voucher names from all line items
+        var voucherNamesToProcess = [];
+        orderItems.forEach(function(item) {
+          if (item.voucherUsed && voucherNamesToProcess.indexOf(item.voucherUsed) === -1) {
+            voucherNamesToProcess.push(item.voucherUsed);
+          }
+        });
+        
+        // Process each voucher found in the order that isn't already in orderVoucherTotals
+        voucherNamesToProcess.forEach(function(voucherName) {
+          // Skip if this voucher is already in orderVoucherTotals
+          if (orderVoucherTotals[voucherName]) {
+            return;
+          }
+          
+          var voucher = partner.vouchers.find(function(v) {
+            return v.name === voucherName || (v.name && v.name.toLowerCase().trim() === voucherName.toLowerCase().trim());
+          });
+          
+          if (voucher && voucher.isActive) {
+            // Sum qualifying line items for this voucher
+            // Only include items that have this voucher in their voucherUsed field
+            var voucherLineTotal = 0;
+            orderItems.forEach(function(item) {
+              // Only process items that are assigned to this voucher
+              if (item.voucherUsed === voucherName && item.surewerxPartNumber) {
+                var product = AppState.products.find(function(p) {
+                  return p.surewerxSku === item.surewerxPartNumber;
+                });
+                if (product && voucher.productIds && voucher.productIds.indexOf(product.id) !== -1) {
+                  voucherLineTotal += item.totalPrice;
+                }
+              }
+            });
+            
+            // If no products matched but voucherUsed is set, apply voucher to items assigned to it
+            if (voucherLineTotal === 0) {
+              var itemsForThisVoucher = orderItems.filter(function(item) {
+                return item.voucherUsed === voucherName;
+              });
+              var totalForThisVoucher = itemsForThisVoucher.reduce(function(sum, item) {
+                return sum + item.totalPrice;
+              }, 0);
+              
+              if (totalForThisVoucher > 0) {
+                var voucherLimit = voucher.defaultAmount || 0;
+                voucherLineTotal = Math.min(totalForThisVoucher, voucherLimit);
+              }
+            }
+            
+            if (voucherLineTotal > 0) {
+              var voucherLimit = voucher.defaultAmount || 0;
+              var voucherAmountUsed = Math.min(voucherLineTotal, voucherLimit);
+              orderVoucherTotals[voucherName] = voucherAmountUsed;
+              totalVoucherApplied += voucherAmountUsed;
+            }
+          }
+        });
+      }
+      
+      var orderRemainingBalance = firstItem.remainingBalance !== undefined ? firstItem.remainingBalance : (grandTotal - totalVoucherApplied);
+      var orderCreditCardPayment = firstItem.creditCardPayment !== undefined ? firstItem.creditCardPayment : (orderRemainingBalance > 0 ? orderRemainingBalance : 0);
+      
+      // Get voucher details (limit and remaining balance) for each voucher
+      var voucherDetails = {};
+      if (partner && partner.vouchers && Object.keys(orderVoucherTotals).length > 0) {
+        for (var voucherName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(voucherName)) {
+            var voucher = partner.vouchers.find(function(v) {
+              return v.name === voucherName || (v.name && v.name.toLowerCase().trim() === voucherName.toLowerCase().trim());
+            });
+            if (voucher) {
+              var voucherLimit = voucher.defaultAmount || 0;
+              var voucherAmountApplied = orderVoucherTotals[voucherName]; // Amount used/applied for this voucher
+              // Remaining balance = voucher limit minus voucher amount applied
+              var voucherRemainingBalance = Math.max(0, voucherLimit - voucherAmountApplied);
+              voucherDetails[voucherName] = {
+                limit: voucherLimit,
+                total: voucherAmountApplied,
+                remainingBalance: voucherRemainingBalance
+              };
+            }
+          }
+        }
+      }
+      
+      // Calculate refunds (voucher refunds vs credit card refunds) - voucher first priority
+      var totalVoucherRefunded = 0;
+      var totalCreditCardCollection = 0; // Sum of all exceeded amounts (refund > voucher allocation per line)
       var totalRefunded = 0;
-      var totalRemainingBalance = 0;
       var hasRefunds = false;
       var allItemsRefunded = true;
+      
+      // Track refunds per voucher
+      var voucherRefundTotals = {};
+      if (orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+        for (var vName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(vName)) {
+            voucherRefundTotals[vName] = 0;
+          }
+        }
+      }
+      
       orderItems.forEach(function(item) {
-        if (item.voucherAmountPaid && item.voucherAmountPaid > 0) {
-          totalVoucherPaid += item.voucherAmountPaid;
-        }
-        if (item.creditCardAmountPaid && item.creditCardAmountPaid > 0) {
-          totalCreditCardPaid += item.creditCardAmountPaid;
-        }
         if (item.refundedAmount && item.refundedAmount > 0) {
           totalRefunded += item.refundedAmount;
           hasRefunds = true;
-          // Add remaining balance for this item
-          if (item.remainingBalance !== undefined) {
-            totalRemainingBalance += item.remainingBalance;
+          
+          // Determine the actual voucher amount allocated to this line item
+          // If the line item is eligible for a voucher, use the voucher amount from orderVoucherTotals
+          // Cap it at the line item's total price (can't allocate more voucher than the item costs)
+          var lineVoucherAllocation = 0;
+          if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name (exact or case-insensitive)
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
+              // Use the voucher amount from orderVoucherTotals, but cap at the line item's total price
+              // Since vouchers are applied at order level, we need to determine how much of the voucher
+              // was effectively allocated to this line. Use the minimum of voucher amount and line total.
+              lineVoucherAllocation = Math.min(orderVoucherTotals[matchingVoucherName], item.totalPrice);
+            }
+          }
+          
+          // If no voucher allocation found, fall back to proportional allocation
+          if (lineVoucherAllocation === 0 && totalVoucherApplied > 0 && orderTotal > 0) {
+            var voucherRatio = totalVoucherApplied / orderTotal;
+            lineVoucherAllocation = item.totalPrice * voucherRatio;
+          }
+          
+          // Calculate how much of this refund exceeds the voucher allocation for this line
+          if (item.refundedAmount > lineVoucherAllocation) {
+            // This line's refund exceeded its voucher portion - track the excess
+            var exceededAmount = item.refundedAmount - lineVoucherAllocation;
+            totalCreditCardCollection += exceededAmount;
+          }
+          
+          // Determine voucher refund amount (up to the line's voucher allocation)
+          var lineVoucherRefund = Math.min(item.refundedAmount, lineVoucherAllocation);
+          totalVoucherRefunded += lineVoucherRefund;
+          
+          // Allocate voucher refund to the specific voucher this line item is eligible for
+          if (lineVoucherRefund > 0 && item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName) {
+              // Allocate the full line voucher refund to this specific voucher
+              voucherRefundTotals[matchingVoucherName] = (voucherRefundTotals[matchingVoucherName] || 0) + lineVoucherRefund;
+            } else {
+              // Fall back to proportional allocation if no matching voucher found
+              if (totalVoucherApplied > 0) {
+                for (var vName in orderVoucherTotals) {
+                  if (orderVoucherTotals.hasOwnProperty(vName)) {
+                    var voucherRatio = orderVoucherTotals[vName] / totalVoucherApplied;
+                    var voucherRefundAmount = lineVoucherRefund * voucherRatio;
+                    voucherRefundTotals[vName] = (voucherRefundTotals[vName] || 0) + voucherRefundAmount;
+                  }
+                }
+              }
+            }
           }
         } else {
           allItemsRefunded = false;
         }
       });
       
-      // Calculate original credit card amount using original grand total (before refunds)
-      // Credit card amount never changes - it's based on the original order
-      var originalCreditCardPaid = Math.max(0, originalGrandTotal - totalVoucherPaid);
-      // Use the original credit card amount (credit card cannot be refunded)
-      totalCreditCardPaid = originalCreditCardPaid;
-      
-      // Calculate remaining balance: Grand Total - Vouchers Refunded
-      var orderRemainingBalance = grandTotal - totalRefunded;
-      
-      // Show remaining balance calculation and refund summary if vouchers were refunded (even if remaining balance = 0)
-      // Don't show if no vouchers were refunded
-      var remainingBalanceDisplay = '';
-      if (totalRefunded > 0) {
-        var calculationDisplay = '<strong>Grand Total:</strong> ' + Helpers.formatCurrency(grandTotal) + ' - <strong>Vouchers Refunded:</strong> ' + Helpers.formatCurrency(totalRefunded);
-        
-        // Group refunded items by voucher
-        var refundedVoucherGroups = {};
-        orderItems.forEach(function(item) {
-          if (item.refundedAmount && item.refundedAmount > 0 && item.voucherAmountPaid && item.voucherAmountPaid > 0 && item.quantity > 0) {
-            var voucherName = item.voucherUsed || 'Unknown Voucher';
-            if (!refundedVoucherGroups[voucherName]) {
-              refundedVoucherGroups[voucherName] = {
-                name: voucherName,
-                totalVoucherAmount: 0,
-                totalRefunded: 0,
-                skuSummaries: []
-              };
-            }
-            refundedVoucherGroups[voucherName].totalVoucherAmount += item.voucherAmountPaid;
-            refundedVoucherGroups[voucherName].totalRefunded += item.refundedAmount;
-            
-            // Calculate refunded quantity for this SKU
-            var perUnit = item.voucherAmountPaid / item.quantity;
-            if (perUnit > 0) {
-              var rawQty = item.refundedAmount / perUnit;
-              var qtyRefunded = Math.round(rawQty); // approximate to nearest whole unit
-              if (qtyRefunded > 0) {
-                // Calculate price for refunded quantity
-                var unitPrice = item.totalPrice / item.quantity;
-                var refundedPrice = unitPrice * qtyRefunded;
-                refundedVoucherGroups[voucherName].skuSummaries.push({
-                  sku: item.surewerxPartNumber || '',
-                  quantity: qtyRefunded,
-                  price: refundedPrice
-                });
-              }
-            }
-          }
-        });
-        
-        // Build refund summary by voucher
-        var refundSummaryHtml = '<div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e7eb;">' +
-          '<div style="font-size: 11px; color: #b91c1c; font-weight: 600; margin-bottom: 6px;">Refund Summary:</div>';
-        
-        Object.keys(refundedVoucherGroups).forEach(function(voucherName) {
-          var group = refundedVoucherGroups[voucherName];
-          var remaining = group.totalVoucherAmount - group.totalRefunded;
-          
-          refundSummaryHtml += '<div style="font-size: 11px; color: #6b7280; margin-bottom: 4px; padding-left: 12px;">' +
-            '<strong style="color: #374151;">Voucher:</strong> ' + Helpers.escapeHtml(voucherName) + ' | ' +
-            '<strong>Total Voucher Amount:</strong> ' + Helpers.formatCurrency(group.totalVoucherAmount) + ' | ' +
-            '<strong>Remaining:</strong> ' + Helpers.formatCurrency(remaining);
-          
-          if (group.skuSummaries.length > 0) {
-            var skuDisplay = group.skuSummaries.map(function(skuInfo) {
-              return Helpers.escapeHtml(skuInfo.sku) + ' x' + skuInfo.quantity + ' (' + Helpers.formatCurrency(skuInfo.price) + ')';
-            }).join(', ');
-            refundSummaryHtml += '<br><span style="padding-left: 12px; color: #b91c1c;">Refunded SKUs: ' + skuDisplay + '</span>';
-          }
-          
-          refundSummaryHtml += '</div>';
-        });
-        
-        refundSummaryHtml += '</div>';
-        
-        remainingBalanceDisplay =
-          '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #dc2626; margin-top: 6px; line-height: 1.8; font-weight: 600;">' +
-            '<span style="margin-right: 4px;">' + calculationDisplay + ' = <strong>Remaining Balance:</strong> ' + Helpers.formatCurrency(orderRemainingBalance) + '</span>' +
-          '</div>' +
-          refundSummaryHtml;
+      // Round voucher refund totals to avoid floating point issues
+      for (var vName in voucherRefundTotals) {
+        if (voucherRefundTotals.hasOwnProperty(vName)) {
+          voucherRefundTotals[vName] = Math.round(voucherRefundTotals[vName] * 100) / 100;
+        }
       }
       
-      // Credit card payment display at order level
-      // Always show if credit card was originally used (based on original order total)
-      // Credit card amount never changes - it cannot be refunded
-      var creditCardDisplay = '';
-      if (totalCreditCardPaid > 0 || totalVoucherPaid < originalGrandTotal) {
-        creditCardDisplay = '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #2563eb; margin-top: 6px; line-height: 1.8; font-weight: 600;">' +
-          '<span style="margin-right: 4px;"><strong>Credit Card Payment:</strong> ' + Helpers.formatCurrency(totalCreditCardPaid) + '</span>' +
-          '</div>';
+      // Calculate remaining balance: Only show if refund was made AND refund exceeded voucher amount
+      // Remaining balance = excess refund amount (refund - voucher applied)
+      var calculatedRemainingBalance = 0;
+      if (totalRefunded > 0 && totalRefunded > totalVoucherApplied) {
+        calculatedRemainingBalance = totalRefunded - totalVoucherApplied;
+      }
+      
+      // Build payment breakdown display
+      var paymentBreakdownDisplay = '';
+      // Show payment breakdown if there are vouchers OR credit card payment OR if voucher totals exist
+      if (totalVoucherApplied > 0 || orderCreditCardPayment > 0 || Object.keys(orderVoucherTotals).length > 0) {
+        paymentBreakdownDisplay = '<div style="font-size: 12px; color: #374151; margin-top: 6px; line-height: 1.8; padding: 8px; background-color: #f9fafb; border-radius: 4px;">';
+        
+        // Show credit card payment first (only if no refund or refund didn't exceed voucher)
+        if (orderCreditCardPayment > 0 && calculatedRemainingBalance === 0) {
+          paymentBreakdownDisplay += '<div style="margin-bottom: 8px;">';
+          paymentBreakdownDisplay += '<strong style="color: #2563eb;">Paid by Credit Card:</strong> ' + Helpers.formatCurrency(orderCreditCardPayment);
+          paymentBreakdownDisplay += '</div>';
+        }
+        
+        // Show voucher breakdown with individual vouchers
+        if (Object.keys(orderVoucherTotals).length > 0) {
+          paymentBreakdownDisplay += '<div>';
+          paymentBreakdownDisplay += '<strong style="color: #059669;">Paid by Voucher:</strong> ' + Helpers.formatCurrency(totalVoucherApplied) + '<br>';
+          paymentBreakdownDisplay += '<div style="margin-top: 4px; margin-left: 10px;">';
+          for (var voucherName in orderVoucherTotals) {
+            if (orderVoucherTotals.hasOwnProperty(voucherName)) {
+              var voucherDetail = voucherDetails[voucherName];
+              var voucherAmount = voucherDetail ? voucherDetail.total : orderVoucherTotals[voucherName];
+              paymentBreakdownDisplay += '<span>• <strong>' + Helpers.escapeHtml(voucherName) + '</strong>: ' + Helpers.formatCurrency(voucherAmount);
+              if (voucherDetail && voucherDetail.remainingBalance > 0) {
+                paymentBreakdownDisplay += ' (Remaining: ' + Helpers.formatCurrency(voucherDetail.remainingBalance) + ')';
+              }
+              paymentBreakdownDisplay += '</span><br>';
+            }
+          }
+          paymentBreakdownDisplay += '</div>';
+          paymentBreakdownDisplay += '</div>';
+        } else if (totalVoucherApplied > 0) {
+          paymentBreakdownDisplay += '<div>';
+          paymentBreakdownDisplay += '<strong style="color: #059669;">Paid by Voucher:</strong> ' + Helpers.formatCurrency(totalVoucherApplied);
+          paymentBreakdownDisplay += '</div>';
+        }
+        
+        paymentBreakdownDisplay += '</div>';
+      }
+      
+      // Build refund breakdown display
+      var refundBreakdownDisplay = '';
+      if (totalRefunded > 0) {
+        refundBreakdownDisplay = '<div style="font-size: 12px; color: #dc2626; margin-top: 6px; line-height: 1.8; padding: 8px; background-color: #fef2f2; border-radius: 4px;">';
+        
+        // Voucher Amount Refunded: Show each voucher name and amount
+        refundBreakdownDisplay += '<div style="margin-bottom: 8px;">';
+        refundBreakdownDisplay += '<strong>Voucher Amount Refunded:</strong><br>';
+        if (Object.keys(voucherRefundTotals).length > 0) {
+          var hasVoucherRefunds = false;
+          for (var vName in voucherRefundTotals) {
+            if (voucherRefundTotals.hasOwnProperty(vName) && voucherRefundTotals[vName] > 0) {
+              refundBreakdownDisplay += '<span style="margin-left: 10px;">• ' + Helpers.escapeHtml(vName) + ': ' + Helpers.formatCurrency(voucherRefundTotals[vName]) + '</span><br>';
+              hasVoucherRefunds = true;
+            }
+          }
+          if (!hasVoucherRefunds) {
+            refundBreakdownDisplay += '<span style="margin-left: 10px; color: #6b7280;">No voucher refunds</span><br>';
+          }
+        } else if (totalVoucherRefunded > 0) {
+          refundBreakdownDisplay += '<span style="margin-left: 10px;">' + Helpers.formatCurrency(totalVoucherRefunded) + '</span><br>';
+        } else {
+          refundBreakdownDisplay += '<span style="margin-left: 10px; color: #6b7280;">No voucher refunds</span><br>';
+        }
+        refundBreakdownDisplay += '</div>';
+        
+        // Amount to be Collected from Credit Card
+        refundBreakdownDisplay += '<div style="font-weight: 700; color: #991b1b; margin-bottom: 8px;">';
+        refundBreakdownDisplay += '<strong>Amount to be Collected from Credit Card:</strong> ' + Helpers.formatCurrency(totalCreditCardCollection);
+        refundBreakdownDisplay += '</div>';
+        
+        refundBreakdownDisplay += '</div>';
       }
       
       // Check if all voucher-applied items have been fully refunded
       var allVoucherItemsRefunded = true;
-      var hasVoucherItems = false;
+      // Check for vouchers: either in orderVoucherTotals, totalVoucherApplied, or item-level indicators
+      var hasVoucherItems = Object.keys(orderVoucherTotals).length > 0 || totalVoucherApplied > 0;
+      if (!hasVoucherItems) {
+        // Fallback: check item-level indicators
+        orderItems.forEach(function(item) {
+          if (item.voucherEligible || (item.voucherAmountPaid && item.voucherAmountPaid > 0) || item.voucherUsed) {
+            hasVoucherItems = true;
+          }
+        });
+      }
+      
+      // Check if all items are fully refunded
       orderItems.forEach(function(item) {
-        if (item.voucherAmountPaid && item.voucherAmountPaid > 0) {
-          hasVoucherItems = true;
+        if (hasVoucherItems && (item.voucherEligible || (item.voucherAmountPaid && item.voucherAmountPaid > 0) || item.voucherUsed)) {
           var refunded = item.refundedAmount || 0;
-          if (refunded < item.voucherAmountPaid) {
+          var voucherAllocation = item.voucherAmountPaid || 0;
+          // If no voucher allocation but voucher was used, check against line total
+          if (voucherAllocation === 0 && item.voucherUsed) {
+            voucherAllocation = item.totalPrice; // Use line total as fallback
+          }
+          if (refunded < voucherAllocation) {
             allVoucherItemsRefunded = false;
           }
         }
@@ -835,8 +1012,8 @@ var ReportingComponent = {
         employeeIdentifierDisplay +
         userGroupInfo +
         shippingAddressDisplay +
-        creditCardDisplay +
-        remainingBalanceDisplay +
+        paymentBreakdownDisplay +
+        refundBreakdownDisplay +
         '</div>' +
         '<div style="text-align: right; flex-shrink: 0;">' +
         '<div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Order Total</div>' +
@@ -880,12 +1057,65 @@ var ReportingComponent = {
             (item.distributorPartNumber ? '<span><strong>Dist. SKU:</strong> ' + Helpers.escapeHtml(item.distributorPartNumber) + '</span>' : '') +
             '<span><strong>Qty:</strong> ' + item.quantity + '</span>' +
             '<span><strong>Unit Price:</strong> ' + Helpers.formatCurrency(item.unitPrice) + '</span>' +
+            // Show voucher name if eligible (line-item level)
+            (item.voucherEligible && item.eligibleVoucherName ?
+              '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.escapeHtml(item.eligibleVoucherName) + '</span>' : '') +
             '</div>' +
             '<div style="display: inline-flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
-            ((item.voucherAmountPaid > 0 && item.voucherUsed) ?
-              '<span><strong style="color: #059669;">Voucher (' + Helpers.escapeHtml(item.voucherUsed) + '):</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' :
-              (item.voucherAmountPaid > 0 ?
-                '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' : '')) +
+            // Show voucher name if this item was paid by voucher
+            // If order has voucher applied (totalVoucherApplied > 0) and item has a voucher name
+            // Match voucher name case-insensitively or if item qualifies for any voucher on the order
+            (function() {
+              // Show voucher if order has vouchers applied
+              if (totalVoucherApplied > 0 || Object.keys(orderVoucherTotals).length > 0) {
+                // Try to find voucher name from various sources
+                var voucherName = item.eligibleVoucherName || item.voucherUsed || firstItem.voucherUsed;
+                
+                if (voucherName) {
+                  // Find matching voucher name (exact or case-insensitive)
+                  var matchingVoucherName = orderVoucherTotals[voucherName] ? voucherName :
+                    Object.keys(orderVoucherTotals).find(function(vName) {
+                      if (!vName || !voucherName) return false;
+                      return vName.toLowerCase().trim() === voucherName.toLowerCase().trim();
+                    });
+                  
+                  // If no exact match but we have a voucher name, use it
+                  if (!matchingVoucherName && voucherName) {
+                    matchingVoucherName = voucherName;
+                  }
+                  
+                  // If still no match but order has vouchers, use the first voucher name
+                  if (!matchingVoucherName && Object.keys(orderVoucherTotals).length > 0) {
+                    matchingVoucherName = Object.keys(orderVoucherTotals)[0];
+                  }
+                  
+                  if (matchingVoucherName) {
+                    // Show voucher name and amount paid by voucher for this line
+                    var voucherAmount = item.voucherAmountPaid || 0;
+                    var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(matchingVoucherName);
+                    if (voucherAmount > 0) {
+                      displayText += ' (' + Helpers.formatCurrency(voucherAmount) + ')';
+                    }
+                    displayText += '</span>';
+                    return displayText;
+                  }
+                } else if (Object.keys(orderVoucherTotals).length > 0) {
+                  // Fallback: show first voucher if no specific voucher name found
+                  var firstVoucherName = Object.keys(orderVoucherTotals)[0];
+                  var voucherAmount = item.voucherAmountPaid || 0;
+                  var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(firstVoucherName);
+                  if (voucherAmount > 0) {
+                    displayText += ' (' + Helpers.formatCurrency(voucherAmount) + ')';
+                  }
+                  displayText += '</span>';
+                  return displayText;
+                }
+              }
+              return '';
+            })() +
+            // Only show refunded amount at line level (voucher calculations are at order level only)
+            (item.refundedAmount && item.refundedAmount > 0 ?
+              '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' : '') +
             '</div>' +
             // Shipping info at line item level
             ((item.shippingCarrier || item.shippingMethod || item.trackingNumber || (shippingCost > 0 && orderItems.indexOf(item) === 0)) ?
@@ -1129,8 +1359,12 @@ var ReportingComponent = {
   },
   
   clearFilters: function() {
+    // Default to first customer
+    var customers = AppState.getFilteredCustomers();
+    var defaultCustomerId = (customers && customers.length > 0) ? customers[0].id : '';
+    
     this.filters = {
-      partner: '',
+      partner: defaultCustomerId,
       dateFrom: '',
       dateTo: '',
       orderNumber: '',
@@ -1140,7 +1374,7 @@ var ReportingComponent = {
       branchId: 'all'
     };
     
-    $('#filter-partner').val('');
+    $('#filter-partner').val(defaultCustomerId);
     $('#filter-date-from').val('');
     $('#filter-date-to').val('');
     $('#filter-order-number').val('');
@@ -1166,18 +1400,26 @@ var ReportingComponent = {
   
   handleRefund: function(orderId) {
     var self = this;
-    // Get filtered transactions for this order (matching current search/filter state)
-    var filteredTransactions = this.getFilteredTransactions();
-    var orderTransactions = filteredTransactions.filter(function(t) { return t.orderId === orderId; });
+    // Get ALL transactions from AppState (not filtered) to get fresh refund data
+    var allTransactions = AppState.transactions || [];
+    var orderTransactions = allTransactions.filter(function(t) { return t.orderId === orderId; });
     
     if (!orderTransactions || orderTransactions.length === 0) {
       Helpers.showAlert('Transaction not found', 'danger');
       return;
     }
     
+    // Re-enrich transactions to ensure we have latest data
+    if (AppState.enrichTransactions) {
+      AppState.enrichTransactions();
+      // Re-fetch after enrichment
+      orderTransactions = AppState.transactions.filter(function(t) { return t.orderId === orderId; });
+    }
+    
     // Find all voucher-applied line items
+    // Check for voucherAmountPaid OR voucherUsed OR if order has vouchers
     var voucherLines = orderTransactions.filter(function(t) {
-      return t.voucherAmountPaid && t.voucherAmountPaid > 0;
+      return (t.voucherAmountPaid && t.voucherAmountPaid > 0) || t.voucherUsed || t.eligibleVoucherName;
     });
     
     if (!voucherLines || voucherLines.length === 0) {
@@ -1185,93 +1427,68 @@ var ReportingComponent = {
       return;
     }
     
-    // Group voucher lines by voucher name
-    var voucherGroups = {};
-    voucherLines.forEach(function(line) {
-      var voucherName = line.voucherUsed || 'Unknown Voucher';
-      if (!voucherGroups[voucherName]) {
-        voucherGroups[voucherName] = {
-          name: voucherName,
-          lines: [],
-          totalVoucherAmount: 0,
-          totalRefunded: 0
-        };
-      }
-      voucherGroups[voucherName].lines.push(line);
-      voucherGroups[voucherName].totalVoucherAmount += (line.voucherAmountPaid || 0);
-      voucherGroups[voucherName].totalRefunded += (line.refundedAmount || 0);
-    });
-    
     // Store scroll position and element reference before showing modal
     var scrollPosition = $(window).scrollTop();
     var refundButton = $('.refund-order-btn[data-order-id="' + orderId + '"]');
     var orderElement = refundButton.closest('.transaction-order');
     var orderElementOffset = orderElement.length > 0 ? orderElement.offset().top - $(window).scrollTop() : null;
     
-    // Build voucher-grouped refund modal
-    var modalBodyHtml = '<p style="margin-bottom: 12px;">Select which SKU and quantity to refund. Only line items with voucher amounts applied are eligible.</p>';
+    // Build refund modal with flat list of line items
+    var modalBodyHtml = '<p style="margin-bottom: 12px;">Select line items and quantities to refund. You can refund multiple items at once.</p>';
     
-    // Build table for each voucher group
-    Object.keys(voucherGroups).forEach(function(voucherName) {
-      var group = voucherGroups[voucherName];
-      var totalRemaining = group.totalVoucherAmount - group.totalRefunded;
+    modalBodyHtml += '<table class="table table-condensed table-bordered" style="font-size: 11px; margin-bottom: 12px;">' +
+      '<thead>' +
+      '<tr>' +
+      '<th style="width: 30px; text-align: center;">Select</th>' +
+      '<th>SKU</th>' +
+      '<th>Product</th>' +
+      '<th style="width: 80px; text-align: right;">Price</th>' +
+      '<th style="width: 60px; text-align: right;">Qty</th>' +
+      '<th style="width: 100px; text-align: right;">Refunded</th>' +
+      '<th style="width: 100px; text-align: right;">Available</th>' +
+      '<th style="width: 80px; text-align: center;">Qty to Refund</th>' +
+      '</tr>' +
+      '</thead>' +
+      '<tbody>';
+    
+    voucherLines.forEach(function(line, lineIdx) {
+      var totalQty = line.quantity || 0;
+      var alreadyRefunded = line.refundedAmount || 0;
+      var unitPrice = totalQty > 0 ? line.totalPrice / totalQty : 0;
+      // Calculate how many units have already been refunded
+      var alreadyRefundedQty = unitPrice > 0 ? Math.round((alreadyRefunded / unitPrice) * 100) / 100 : 0;
+      var remainingQty = totalQty - alreadyRefundedQty;
+      var remainingAmount = line.totalPrice - alreadyRefunded;
       
-      modalBodyHtml += '<div style="margin-bottom: 20px; border: 1px solid #e5e7eb; border-radius: 4px; padding: 10px;">' +
-        '<div style="font-weight: 600; font-size: 13px; color: #111827; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb;">' +
-        'Voucher: ' + Helpers.escapeHtml(voucherName) +
-        '</div>' +
-        '<div style="display: flex; gap: 20px; margin-bottom: 10px; font-size: 11px; color: #6b7280;">' +
-        '<span><strong>Total Voucher Amount:</strong> ' + Helpers.formatCurrency(group.totalVoucherAmount) + '</span>' +
-        '<span><strong>Already Refunded:</strong> ' + (group.totalRefunded > 0 ? Helpers.formatCurrency(group.totalRefunded) : '-') + '</span>' +
-        '<span><strong>Remaining:</strong> ' + Helpers.formatCurrency(totalRemaining) + '</span>' +
-        '</div>' +
-        '<table class="table table-condensed table-bordered" style="font-size: 11px; margin-bottom: 0;">' +
-        '<thead>' +
-        '<tr>' +
-        '<th style="width: 30px;"></th>' +
-        '<th>SKU</th>' +
-        '<th>Product</th>' +
-        '<th style="width: 80px; text-align: right;">Price</th>' +
-        '<th style="width: 60px; text-align: right;">Qty</th>' +
-        '</tr>' +
-        '</thead>' +
-        '<tbody>';
+      // Disable if fully refunded
+      var isFullyRefunded = remainingQty <= 0 || remainingAmount <= 0;
+      var rowStyle = isFullyRefunded ? 'opacity: 0.5; background-color: #f9fafb;' : '';
+      var disabledAttr = isFullyRefunded ? 'disabled' : '';
+      var maxRefundQty = Math.floor(remainingQty);
       
-      group.lines.forEach(function(line, lineIdx) {
-        var totalQty = line.quantity || 0;
-        var voucherAmount = line.voucherAmountPaid || 0;
-        var alreadyRefunded = line.refundedAmount || 0;
-        var remainingVoucher = voucherAmount - alreadyRefunded;
-        var perUnitVoucher = totalQty > 0 ? voucherAmount / totalQty : 0;
-        var maxRefundQty = (perUnitVoucher > 0 && remainingVoucher > 0) ? Math.floor(remainingVoucher / perUnitVoucher) : 0;
-        
-        if (maxRefundQty <= 0) {
-          return;
-        }
-        
-        // Store voucher name and line index for reference
-        var dataVoucherName = Helpers.escapeHtml(voucherName);
-        var dataLineKey = voucherName + '|' + lineIdx;
-        
-        modalBodyHtml += '<tr>' +
-          '<td style="text-align: center; vertical-align: middle;">' +
-          '<input type="radio" name="refund-line-select" class="refund-line-select" data-voucher-name="' + dataVoucherName + '" data-line-key="' + dataLineKey + '">' +
-          '</td>' +
-          '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '</td>' +
-          '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.productName || '') + '</td>' +
-          '<td style="text-align: right; vertical-align: middle;">' + Helpers.formatCurrency(line.totalPrice || 0) + '</td>' +
-          '<td style="text-align: right; vertical-align: middle;">' + totalQty + '</td>' +
-          '</tr>';
-      });
-      
-      modalBodyHtml += '</tbody></table></div>';
+      modalBodyHtml += '<tr style="' + rowStyle + '">' +
+        '<td style="text-align: center; vertical-align: middle;">' +
+        '<input type="checkbox" class="refund-line-checkbox" data-line-idx="' + lineIdx + '" ' + disabledAttr + '>' +
+        '</td>' +
+        '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '</td>' +
+        '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.productName || '') + '</td>' +
+        '<td style="text-align: right; vertical-align: middle;">' + Helpers.formatCurrency(line.totalPrice || 0) + '</td>' +
+        '<td style="text-align: right; vertical-align: middle;">' + totalQty + '</td>' +
+        '<td style="text-align: right; vertical-align: middle; color: ' + (alreadyRefunded > 0 ? '#dc2626' : '#6b7280') + ';">' + 
+          (alreadyRefunded > 0 ? Helpers.formatCurrency(alreadyRefunded) : '-') + 
+        '</td>' +
+        '<td style="text-align: right; vertical-align: middle; color: ' + (remainingAmount > 0 ? '#059669' : '#6b7280') + '; font-weight: ' + (remainingAmount > 0 ? '600' : '400') + ';">' + 
+          (remainingAmount > 0 ? Helpers.formatCurrency(remainingAmount) : '-') + 
+        '</td>' +
+        '<td style="text-align: center; vertical-align: middle;">' +
+        '<input type="number" class="form-control input-sm refund-qty-input" data-line-idx="' + lineIdx + '" min="1" max="' + maxRefundQty + '" value="1" style="width: 60px; padding: 2px 4px; font-size: 11px; height: 24px;" ' + disabledAttr + '>' +
+        '</td>' +
+        '</tr>';
     });
     
-    modalBodyHtml += '<p style="font-size: 11px; color: #6b7280; margin-top: 12px;">Note: If the original voucher is no longer active, the employee will not be able to use this refunded voucher amount.</p>' +
-      '<div class="form-group" style="margin-top: 10px;">' +
-      '<label for="refund-quantity-input">Quantity to refund:</label>' +
-      '<input type="number" id="refund-quantity-input" class="form-control" min="1" value="1">' +
-      '</div>';
+    modalBodyHtml += '</tbody></table>';
+    
+    modalBodyHtml += '<p style="font-size: 11px; color: #6b7280; margin-top: 12px;">Note: If the original voucher is no longer active, the employee will not be able to use this refunded voucher amount.</p>';
     
     var modalHtml = '<div class="modal fade" id="refund-quantity-modal" tabindex="-1">' +
       '<div class="modal-dialog" style="max-width: 900px;">' +
@@ -1292,134 +1509,263 @@ var ReportingComponent = {
       '</div>' +
       '</div>';
     
+    // Remove any existing modal first
+    $('#refund-quantity-modal').remove();
+    
     $('body').append(modalHtml);
     $('#refund-quantity-modal').modal('show');
     
-    // Store voucherGroups in modal data for use in confirm handler
-    $('#refund-quantity-modal').data('voucher-groups', voucherGroups);
+    // Store voucher lines in modal data for use in confirm handler
     $('#refund-quantity-modal').data('voucher-lines', voucherLines);
+    $('#refund-quantity-modal').data('order-id', orderId);
     
     // Handle confirm
     $(document).off('click', '#refund-quantity-confirm-btn').on('click', '#refund-quantity-confirm-btn', function() {
-      // Determine selected voucher line
-      var selectedRadio = $('.refund-line-select:checked');
-      if (!selectedRadio.length) {
-        Helpers.showAlert('Please select a line item to refund.', 'warning');
+      // Get all selected checkboxes
+      var selectedCheckboxes = $('.refund-line-checkbox:checked');
+      if (!selectedCheckboxes.length) {
+        Helpers.showAlert('Please select at least one line item to refund.', 'warning');
         return;
       }
       
-      var lineKey = selectedRadio.data('line-key');
-      var voucherName = selectedRadio.data('voucher-name');
-      var storedGroups = $('#refund-quantity-modal').data('voucher-groups');
+      // Get fresh data from AppState transactions (not stored groups which may be stale)
+      var allTransactions = AppState.transactions || [];
+      var orderTransactions = allTransactions.filter(function(t) { return t.orderId === orderId; });
       
-      // Find the line from the voucher group
-      var line = null;
-      if (storedGroups && storedGroups[voucherName]) {
-        var parts = lineKey.split('|');
-        var lineIdx = parseInt(parts[1], 10);
-        if (!isNaN(lineIdx) && storedGroups[voucherName].lines && storedGroups[voucherName].lines[lineIdx]) {
-          line = storedGroups[voucherName].lines[lineIdx];
+      // Re-enrich to get latest data
+      if (AppState.enrichTransactions) {
+        AppState.enrichTransactions();
+        orderTransactions = AppState.transactions.filter(function(t) { return t.orderId === orderId; });
+      }
+      
+      // Get refundable voucher lines from modal data
+      var storedVoucherLines = $('#refund-quantity-modal').data('voucher-lines') || [];
+      
+      // Validate and collect refund items
+      var refundItems = [];
+      var hasError = false;
+      var errorMessage = '';
+      
+      selectedCheckboxes.each(function() {
+        var lineIdx = parseInt($(this).data('line-idx'), 10);
+        var qtyInput = $('.refund-qty-input[data-line-idx="' + lineIdx + '"]');
+        var qtyToRefund = parseInt(qtyInput.val(), 10);
+        
+        if (isNaN(lineIdx) || !storedVoucherLines[lineIdx]) {
+          hasError = true;
+          errorMessage = 'Invalid line selection.';
+          return false;
         }
-      }
-      
-      if (!line) {
-        Helpers.showAlert('Invalid line selection for refund.', 'danger');
-        return;
-      }
-      var totalQty = line.quantity || 0;
-      var voucherAmount = line.voucherAmountPaid || 0;
-      var alreadyRefunded = line.refundedAmount || 0;
-      var remainingVoucher = voucherAmount - alreadyRefunded;
-      var perUnitVoucher = totalQty > 0 ? voucherAmount / totalQty : 0;
-      var maxRefundQty = (perUnitVoucher > 0 && remainingVoucher > 0) ? Math.floor(remainingVoucher / perUnitVoucher) : 0;
-      
-      if (maxRefundQty <= 0) {
-        Helpers.showAlert('No remaining voucher amount available to refund for the selected line item.', 'warning');
-        return;
-      }
-      
-      var qtyToRefund = parseInt($('#refund-quantity-input').val(), 10);
-      if (isNaN(qtyToRefund) || qtyToRefund <= 0) {
-        Helpers.showAlert('Please enter a valid quantity to refund.', 'warning');
-        return;
-      }
-      if (qtyToRefund > maxRefundQty) {
-        Helpers.showAlert('Quantity to refund for this line cannot exceed ' + maxRefundQty + '.', 'warning');
-        return;
-      }
-      
-      // Calculate refund amount for selected quantity (rounded to 2 decimals)
-      var refundAmountForQty = Math.round(perUnitVoucher * qtyToRefund * 100) / 100;
-      if (refundAmountForQty <= 0) {
-        Helpers.showAlert('Calculated refund amount is zero. Please adjust the quantity.', 'warning');
-        return;
-      }
-      
-      // Find the actual transaction in AppState.transactions (not filtered) to update it
-      var allTransactions = AppState.transactions;
-      var actualTransaction = allTransactions.find(function(t) {
-        return t.orderId === orderId && 
-               t.surewerxPartNumber === line.surewerxPartNumber &&
-               t.quantity === line.quantity &&
-               t.totalPrice === line.totalPrice;
+        
+        var line = storedVoucherLines[lineIdx];
+        var totalQty = line.quantity || 0;
+        var alreadyRefunded = line.refundedAmount || 0;
+        var unitPrice = totalQty > 0 ? line.totalPrice / totalQty : 0;
+        var alreadyRefundedQty = unitPrice > 0 ? Math.round((alreadyRefunded / unitPrice) * 100) / 100 : 0;
+        var remainingQty = totalQty - alreadyRefundedQty;
+        var maxRefundQty = Math.floor(remainingQty);
+        
+        if (isNaN(qtyToRefund) || qtyToRefund <= 0) {
+          hasError = true;
+          errorMessage = 'Please enter a valid quantity for ' + (line.productName || line.surewerxPartNumber) + '.';
+          return false;
+        }
+        
+        if (qtyToRefund > maxRefundQty) {
+          hasError = true;
+          errorMessage = 'Quantity to refund for ' + (line.productName || line.surewerxPartNumber) + ' cannot exceed ' + maxRefundQty + '.';
+          return false;
+        }
+        
+        var refundAmount = Math.round(unitPrice * qtyToRefund * 100) / 100;
+        if (refundAmount <= 0) {
+          hasError = true;
+          errorMessage = 'Calculated refund amount is zero for ' + (line.productName || line.surewerxPartNumber) + '.';
+          return false;
+        }
+        
+        refundItems.push({
+          line: line,
+          qtyToRefund: qtyToRefund,
+          refundAmount: refundAmount
+        });
       });
       
-      if (!actualTransaction) {
-        $('#refund-quantity-modal').modal('hide');
-        Helpers.showAlert('Transaction not found in system', 'danger');
+      if (hasError) {
+        Helpers.showAlert(errorMessage, 'warning');
         return;
       }
       
-      // Process refund - accumulate refunded amount
-      if (!actualTransaction.refundedAmount) {
-        actualTransaction.refundedAmount = 0;
-      }
-      actualTransaction.refundedAmount += refundAmountForQty;
-      // Cap at total voucher amount
-      if (actualTransaction.refundedAmount > voucherAmount) {
-        actualTransaction.refundedAmount = voucherAmount;
+      if (refundItems.length === 0) {
+        Helpers.showAlert('No valid items to refund.', 'warning');
+        return;
       }
       
-      // Calculate remaining balance on item:
-      // Item Total - (Voucher Applied - Vouchers Refunded)
-      var effectiveVoucher = (actualTransaction.voucherAmountPaid || 0) - (actualTransaction.refundedAmount || 0);
-      if (effectiveVoucher < 0) effectiveVoucher = 0;
-      actualTransaction.remainingBalance = actualTransaction.totalPrice - effectiveVoucher;
+      // Calculate total refund amount
+      var totalRefundAmount = refundItems.reduce(function(sum, item) {
+        return sum + item.refundAmount;
+      }, 0);
       
-      // Do NOT change the status - keep original status
+      // Build confirmation modal
+      var confirmBodyHtml = '<div style="margin-bottom: 20px;">' +
+        '<div style="padding: 12px; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; margin-bottom: 16px;">' +
+        '<div style="display: flex; align-items: flex-start; gap: 10px;">' +
+        '<span class="glyphicon glyphicon-warning-sign" style="color: #f59e0b; font-size: 20px; margin-top: 2px;"></span>' +
+        '<div style="flex: 1;">' +
+        '<div style="font-weight: 600; color: #92400e; margin-bottom: 6px;">Critical Warning</div>' +
+        '<ul style="margin: 0; padding-left: 18px; color: #92400e; font-size: 13px;">' +
+        '<li style="margin-bottom: 4px;"><strong>This action cannot be undone.</strong></li>' +
+        '<li style="margin-bottom: 4px;">Voucher amounts (if applicable) will be <strong>immediately available</strong> to the employee.</li>' +
+        '<li>Credit card refunds will be processed according to payment provider policies.</li>' +
+        '</ul>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '<div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Refund Summary:</div>' +
+        '<table class="table table-condensed table-bordered" style="font-size: 12px; margin-bottom: 12px;">' +
+        '<thead>' +
+        '<tr>' +
+        '<th>SKU</th>' +
+        '<th>Product</th>' +
+        '<th style="text-align: center;">Qty</th>' +
+        '<th style="text-align: right;">Amount</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>';
       
-      $('#refund-quantity-modal').modal('hide');
+      refundItems.forEach(function(item) {
+        confirmBodyHtml += '<tr>' +
+          '<td>' + Helpers.escapeHtml(item.line.surewerxPartNumber || '') + '</td>' +
+          '<td>' + Helpers.escapeHtml(item.line.productName || '') + '</td>' +
+          '<td style="text-align: center;">' + item.qtyToRefund + '</td>' +
+          '<td style="text-align: right;">' + Helpers.formatCurrency(item.refundAmount) + '</td>' +
+          '</tr>';
+      });
       
-      // Re-render transactions to show updated state
-      if (self.hasSearched) {
-        $('.panel-default').last().replaceWith(self.renderTransactions());
-        Helpers.showAlert('Refund processed successfully', 'success');
+      confirmBodyHtml += '</tbody>' +
+        '<tfoot>' +
+        '<tr style="font-weight: 600; background-color: #f9fafb;">' +
+        '<td colspan="3" style="text-align: right;">Total Refund Amount:</td>' +
+        '<td style="text-align: right;">' + Helpers.formatCurrency(totalRefundAmount) + '</td>' +
+        '</tr>' +
+        '</tfoot>' +
+        '</table>' +
+        '<div style="font-size: 13px; color: #6b7280; margin-top: 12px;">Please confirm that you want to process this refund.</div>' +
+        '</div>';
+      
+      var confirmModalHtml = '<div class="modal fade" id="refund-confirmation-modal" tabindex="-1">' +
+        '<div class="modal-dialog">' +
+        '<div class="modal-content">' +
+        '<div class="modal-header" style="background-color: #fef3c7; border-bottom: 2px solid #f59e0b;">' +
+        '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+        '<h4 class="modal-title">' +
+        '<span class="glyphicon glyphicon-warning-sign" style="color: #f59e0b;"></span> Confirm Refund</h4>' +
+        '</div>' +
+        '<div class="modal-body">' +
+        confirmBodyHtml +
+        '</div>' +
+        '<div class="modal-footer">' +
+        '<button type="button" class="btn btn-default" id="refund-final-cancel-btn">Cancel</button>' +
+        '<button type="button" class="btn btn-danger" id="refund-final-confirm-btn">Confirm Refund</button>' +
+        '</div>' +
+        '</div>' +
+        '</div>' +
+        '</div>';
+      
+      // Remove existing confirmation modal if present
+      $('#refund-confirmation-modal').remove();
+      
+      // Append and show confirmation modal
+      $('body').append(confirmModalHtml);
+      $('#refund-confirmation-modal').modal('show');
+      
+      // Store refund items for final confirmation
+      $('#refund-confirmation-modal').data('refund-items', refundItems);
+      $('#refund-confirmation-modal').data('order-id', orderId);
+      
+      // Handle final confirmation
+      $(document).off('click', '#refund-final-confirm-btn').on('click', '#refund-final-confirm-btn', function() {
+        var storedRefundItems = $('#refund-confirmation-modal').data('refund-items') || [];
+        var storedOrderId = $('#refund-confirmation-modal').data('order-id');
         
-        // Restore scroll position to show the refunded item
-        setTimeout(function() {
-          // Try to find the same order element after re-render
-          var newOrderElement = $('.transaction-order').filter(function() {
-            var orderHeader = $(this).find('.order-header');
-            return orderHeader.length > 0 && orderHeader.text().indexOf('Order #' + orderId) !== -1;
-          }).first();
+        // Process all refunds
+        var refundCount = 0;
+        storedRefundItems.forEach(function(item) {
+          var line = item.line;
+          var refundAmountForQty = item.refundAmount;
           
-          if (newOrderElement.length > 0) {
-            // Calculate the new scroll position to show the order
-            var newScrollPosition = newOrderElement.offset().top - (orderElementOffset || 0);
-            // Ensure we don't scroll to negative position
-            newScrollPosition = Math.max(0, newScrollPosition);
+          // Find the actual transaction in AppState.transactions (not filtered) to update it
+          var actualTransaction = allTransactions.find(function(t) {
+            return t.orderId === storedOrderId && 
+                   t.surewerxPartNumber === line.surewerxPartNumber &&
+                   t.quantity === line.quantity &&
+                   t.totalPrice === line.totalPrice;
+          });
+          
+          if (actualTransaction) {
+            // Process refund - accumulate refunded amount
+            if (!actualTransaction.refundedAmount) {
+              actualTransaction.refundedAmount = 0;
+            }
+            actualTransaction.refundedAmount += refundAmountForQty;
+            // Cap at line total (cannot refund more than the line item cost)
+            if (actualTransaction.refundedAmount > actualTransaction.totalPrice) {
+              actualTransaction.refundedAmount = actualTransaction.totalPrice;
+            }
             
-            $('html, body').animate({
-              scrollTop: newScrollPosition
-            }, 300);
-          } else {
-            // Fallback: restore original scroll position
-            $('html, body').animate({
-              scrollTop: scrollPosition
-            }, 300);
+            // Calculate remaining balance on item
+            var effectiveVoucher = (actualTransaction.voucherAmountPaid || 0) - (actualTransaction.refundedAmount || 0);
+            if (effectiveVoucher < 0) effectiveVoucher = 0;
+            actualTransaction.remainingBalance = actualTransaction.totalPrice - effectiveVoucher;
+            
+            refundCount++;
           }
-        }, 150);
-      }
+        });
+        
+        $('#refund-confirmation-modal').modal('hide');
+        $('#refund-quantity-modal').modal('hide');
+        
+        // Re-render transactions to show updated state
+        if (self.hasSearched) {
+          $('.panel-default').last().replaceWith(self.renderTransactions());
+          Helpers.showAlert('Successfully processed ' + refundCount + ' refund' + (refundCount !== 1 ? 's' : ''), 'success');
+          
+          // Restore scroll position to show the refunded item
+          setTimeout(function() {
+            // Try to find the same order element after re-render
+            var newOrderElement = $('.transaction-order').filter(function() {
+              var orderHeader = $(this).find('.order-header');
+              return orderHeader.length > 0 && orderHeader.text().indexOf('Order #' + storedOrderId) !== -1;
+            }).first();
+            
+            if (newOrderElement.length > 0) {
+              // Calculate the new scroll position to show the order
+              var newScrollPosition = newOrderElement.offset().top - (orderElementOffset || 0);
+              // Ensure we don't scroll to negative position
+              newScrollPosition = Math.max(0, newScrollPosition);
+              
+              $('html, body').animate({
+                scrollTop: newScrollPosition
+              }, 300);
+            } else {
+              // Fallback: restore original scroll position
+              $('html, body').animate({
+                scrollTop: scrollPosition
+              }, 300);
+            }
+          }, 150);
+        }
+      });
+      
+      // Handle final cancel
+      $(document).off('click', '#refund-final-cancel-btn').on('click', '#refund-final-cancel-btn', function() {
+        $('#refund-confirmation-modal').modal('hide');
+      });
+      
+      // Cleanup confirmation modal on hide
+      $('#refund-confirmation-modal').on('hidden.bs.modal', function() {
+        $(this).remove();
+      });
     });
     
     // Handle cancel
@@ -1499,54 +1845,180 @@ var ReportingComponent = {
         }
       }
       
-      // Find employee to get employeeId or username
+      // Find employee to get employeeId or username and name parts
       var employee = null;
       var employeeIdentifier = '';
       var employeeIdentifierLabel = '';
+      var employeeFirstName = '';
+      var employeeLastName = '';
       if (partner && partner.employees && firstItem.employeeName) {
         employee = partner.employees.find(function(emp) {
           var empName = emp.firstName && emp.lastName ? emp.firstName + ' ' + emp.lastName : emp.name || '';
           return empName === firstItem.employeeName;
         });
         
-        if (employee && partner.employeeFieldConfig) {
-          if (partner.employeeFieldConfig.requireEmployeeId && employee.employeeId) {
-            employeeIdentifier = employee.employeeId;
-            employeeIdentifierLabel = 'Employee ID';
-          } else if (partner.employeeFieldConfig.requireUsername && employee.username) {
-            employeeIdentifier = employee.username;
-            employeeIdentifierLabel = 'Username';
-          } else if (employee.employeeId) {
-            employeeIdentifier = employee.employeeId;
-            employeeIdentifierLabel = 'Employee ID';
-          } else if (employee.username) {
-            employeeIdentifier = employee.username;
-            employeeIdentifierLabel = 'Username';
+        if (employee) {
+          employeeFirstName = employee.firstName || '';
+          employeeLastName = employee.lastName || '';
+          
+          if (partner.employeeFieldConfig) {
+            if (partner.employeeFieldConfig.requireEmployeeId && employee.employeeId) {
+              employeeIdentifier = employee.employeeId;
+              employeeIdentifierLabel = 'Employee ID';
+            } else if (partner.employeeFieldConfig.requireUsername && employee.username) {
+              employeeIdentifier = employee.username;
+              employeeIdentifierLabel = 'Username';
+            } else if (employee.employeeId) {
+              employeeIdentifier = employee.employeeId;
+              employeeIdentifierLabel = 'Employee ID';
+            } else if (employee.username) {
+              employeeIdentifier = employee.username;
+              employeeIdentifierLabel = 'Username';
+            }
           }
         }
       }
       
-      // Calculate order-level totals for credit card and remaining balance
-      var totalVoucherPaid = 0;
-      var totalRefunded = 0;
-      var originalGrandTotal = grandTotal;
-      orderItems.forEach(function(item) {
-        if (item.voucherAmountPaid && item.voucherAmountPaid > 0) {
-          totalVoucherPaid += item.voucherAmountPaid;
+      // Get distributor information
+      var distributorName = firstItem.distributorName || '';
+      var distributorCustomerNumber = '';
+      var distributorBranchCode = '';
+      if (partner && distributorName) {
+        var dist = AppState.distributors.find(function(d) { return d.name === distributorName; });
+        if (dist) {
+          distributorCustomerNumber = dist.customerNumber || '';
+          distributorBranchCode = dist.branchCode || '';
         }
-        // Sum up refunded amounts (handles partial refunds correctly)
+      }
+      
+      // Get order-level voucher information (from first item, same for all items in order)
+      var orderVoucherTotals = firstItem.orderVoucherTotals || {};
+      var totalVoucherApplied = firstItem.totalVoucherApplied || 0;
+      var orderRemainingBalance = firstItem.remainingBalance !== undefined ? firstItem.remainingBalance : (grandTotal - totalVoucherApplied);
+      var orderCreditCardPayment = firstItem.creditCardPayment !== undefined ? firstItem.creditCardPayment : (orderRemainingBalance > 0 ? orderRemainingBalance : 0);
+      
+      // Calculate refunds (voucher refunds vs credit card refunds) - voucher first priority
+      var totalVoucherRefunded = 0;
+      var totalCreditCardCollection = 0; // Sum of all exceeded amounts (refund > voucher allocation per line)
+      var totalRefunded = 0;
+      
+      // Track refunds per voucher
+      var voucherRefundTotals = {};
+      if (orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+        for (var vName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(vName)) {
+            voucherRefundTotals[vName] = 0;
+          }
+        }
+      }
+      
+      orderItems.forEach(function(item) {
         if (item.refundedAmount && item.refundedAmount > 0) {
           totalRefunded += item.refundedAmount;
+          
+          // Determine the actual voucher amount allocated to this line item
+          // If the line item is eligible for a voucher, use the voucher amount from orderVoucherTotals
+          // Cap it at the line item's total price (can't allocate more voucher than the item costs)
+          var lineVoucherAllocation = 0;
+          if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name (exact or case-insensitive)
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
+              // Use the voucher amount from orderVoucherTotals, but cap at the line item's total price
+              // Since vouchers are applied at order level, we need to determine how much of the voucher
+              // was effectively allocated to this line. Use the minimum of voucher amount and line total.
+              lineVoucherAllocation = Math.min(orderVoucherTotals[matchingVoucherName], item.totalPrice);
+            }
+          }
+          
+          // If no voucher allocation found, fall back to proportional allocation
+          if (lineVoucherAllocation === 0 && totalVoucherApplied > 0 && orderTotal > 0) {
+            var voucherRatio = totalVoucherApplied / orderTotal;
+            lineVoucherAllocation = item.totalPrice * voucherRatio;
+          }
+          
+          // Calculate how much of this refund exceeds the voucher allocation for this line
+          if (item.refundedAmount > lineVoucherAllocation) {
+            // This line's refund exceeded its voucher portion - track the excess
+            var exceededAmount = item.refundedAmount - lineVoucherAllocation;
+            totalCreditCardCollection += exceededAmount;
+          }
+          
+          // Determine voucher refund amount (up to the line's voucher allocation)
+          var lineVoucherRefund = Math.min(item.refundedAmount, lineVoucherAllocation);
+          totalVoucherRefunded += lineVoucherRefund;
+          
+          // Allocate voucher refund to the specific voucher this line item is eligible for
+          if (lineVoucherRefund > 0 && item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName) {
+              // Allocate the full line voucher refund to this specific voucher
+              voucherRefundTotals[matchingVoucherName] = (voucherRefundTotals[matchingVoucherName] || 0) + lineVoucherRefund;
+            } else {
+              // Fall back to proportional allocation if no matching voucher found
+              if (totalVoucherApplied > 0) {
+                for (var vName in orderVoucherTotals) {
+                  if (orderVoucherTotals.hasOwnProperty(vName)) {
+                    var voucherRatio = orderVoucherTotals[vName] / totalVoucherApplied;
+                    var voucherRefundAmount = lineVoucherRefund * voucherRatio;
+                    voucherRefundTotals[vName] = (voucherRefundTotals[vName] || 0) + voucherRefundAmount;
+                  }
+                }
+              }
+            }
+          }
         }
       });
       
-      // Calculate original credit card amount using original grand total (before refunds)
-      var originalCreditCardPaid = Math.max(0, originalGrandTotal - totalVoucherPaid);
-      var totalCreditCardPaid = originalCreditCardPaid;
+      // Round voucher refund totals to avoid floating point issues
+      for (var vName in voucherRefundTotals) {
+        if (voucherRefundTotals.hasOwnProperty(vName)) {
+          voucherRefundTotals[vName] = Math.round(voucherRefundTotals[vName] * 100) / 100;
+        }
+      }
       
-      // Calculate remaining balance: Grand Total - Vouchers Refunded
-      // This correctly handles partial refunds since totalRefunded is the sum of all refunded amounts
-      var orderRemainingBalance = grandTotal - totalRefunded;
+      // Calculate remaining balance: Only show if refund was made AND refund exceeded voucher amount
+      var calculatedRemainingBalance = 0;
+      if (totalRefunded > 0 && totalRefunded > totalVoucherApplied) {
+        calculatedRemainingBalance = totalRefunded - totalVoucherApplied;
+      }
+      
+      // Build voucher totals string (per voucher)
+      var voucherTotalsStr = '';
+      if (Object.keys(orderVoucherTotals).length > 0) {
+        var voucherParts = [];
+        for (var vName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(vName)) {
+            voucherParts.push(vName + ': ' + Helpers.formatCurrency(orderVoucherTotals[vName]));
+          }
+        }
+        voucherTotalsStr = voucherParts.join('; ');
+      } else if (totalVoucherApplied > 0) {
+        voucherTotalsStr = 'Total: ' + Helpers.formatCurrency(totalVoucherApplied);
+      }
+      
+      // Build voucher refund totals string (per voucher)
+      var voucherRefundTotalsStr = '';
+      if (Object.keys(voucherRefundTotals).length > 0) {
+        var voucherRefundParts = [];
+        for (var vName in voucherRefundTotals) {
+          if (voucherRefundTotals.hasOwnProperty(vName) && voucherRefundTotals[vName] > 0) {
+            voucherRefundParts.push(vName + ': ' + Helpers.formatCurrency(voucherRefundTotals[vName]));
+          }
+        }
+        voucherRefundTotalsStr = voucherRefundParts.length > 0 ? voucherRefundParts.join('; ') : '';
+      }
       
       // Find product to get distributor SKU for each item
       orderItems.forEach(function(item) {
@@ -1556,10 +2028,9 @@ var ReportingComponent = {
         var customSku = product && product.customSku ? product.customSku : '';
         
         var csvRow = {
+          // Order level transactional information
           'Order ID': item.orderId,
-          'Invoice Number': item.invoiceNumber || '',
-          'Invoice Date': item.invoiceDate || '',
-          'Invoice Due Date': item.invoiceDueDate || '',
+          'Date Ordered': Helpers.formatDate(item.dateOrdered),
           'Shipping Address': (item.shippingAddress || '').replace(/<br>/g, ', '),
           'Shipping Carrier': item.shippingCarrier || '',
           'Shipping Method': item.shippingMethod || '',
@@ -1567,9 +2038,19 @@ var ReportingComponent = {
           'Shipping Cost': shippingCost > 0 && orderItems.indexOf(item) === 0 ? shippingCost.toFixed(2) : '0.00',
           'Order Total': orderTotal.toFixed(2),
           'Grand Total': grandTotal.toFixed(2),
-          'Credit Card Payment': (totalCreditCardPaid > 0 || totalVoucherPaid < originalGrandTotal ? totalCreditCardPaid : 0).toFixed(2),
-          'Remaining Balance': (totalRefunded > 0 ? orderRemainingBalance.toFixed(2) : ''),
-          'Employee Name': item.employeeName,
+          // Order-level voucher totals (per voucher)
+          'Voucher Totals (Order Level)': voucherTotalsStr,
+          'Total Voucher Applied': totalVoucherApplied.toFixed(2),
+          'Remaining Balance': calculatedRemainingBalance > 0 ? calculatedRemainingBalance.toFixed(2) : '',
+          'Credit Card Payment': calculatedRemainingBalance === 0 ? orderCreditCardPayment.toFixed(2) : '',
+          // Refund information
+          'Voucher Amount Refunded': voucherRefundTotalsStr,
+          'Amount to be Collected from Credit Card': totalCreditCardCollection > 0 ? totalCreditCardCollection.toFixed(2) : '',
+          'Total Refunded': totalRefunded > 0 ? totalRefunded.toFixed(2) : '',
+          // Customer and Employee information
+          'Customer': item.partnerName || item.customerName || '',
+          'Employee First Name': employeeFirstName,
+          'Employee Last Name': employeeLastName,
           'User Group': item.employeeGroup,
           'Location ID': locationId,
           'Location Name': locationName,
@@ -1578,19 +2059,28 @@ var ReportingComponent = {
           'City': addressCity,
           'State': addressState,
           'Zip': addressZip,
-          'Customer': item.partnerName || item.customerName || '',
+          // Distributor information
+          'Distributor': distributorName,
+          'Distributor Customer Number': distributorCustomerNumber,
+          'Distributor Branch Code': distributorBranchCode,
+          // SKU information
           'Product Name': item.productName,
           'SureWerx SKU': item.surewerxPartNumber,
           'Distributor SKU': customSku,
+          // Item level transactional information
           'Quantity': item.quantity,
           'Unit Price': item.unitPrice.toFixed(2),
           'Line Total': item.totalPrice.toFixed(2),
           'Line Cost': (item.distributorCost * item.quantity).toFixed(2),
           'Line Status': item.lineStatus,
+          'Voucher Name': item.voucherUsed || item.eligibleVoucherName || '',
           'Voucher Amount Paid': (item.voucherAmountPaid || 0).toFixed(2),
-          'Voucher Name': item.voucherUsed || '',
           // Refunded Amount correctly handles partial refunds - it contains the actual refunded amount for this line item
           'Refunded Amount': (item.refundedAmount || 0).toFixed(2),
+          // Invoice columns
+          'Invoice Number': item.invoiceNumber || '',
+          'Invoice Date': item.invoiceDate || '',
+          'Invoice Due Date': item.invoiceDueDate || '',
           'Payment Method': item.paymentMethod || ''
         };
         

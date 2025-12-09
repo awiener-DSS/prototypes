@@ -944,8 +944,8 @@ var AppState = {
             isActive: true,
             autoRenewal: true,
             rolloverEnabled: false,
-            // Qualified products: first subset of department products
-            productIds: ['prod1', 'prod2'],
+            // Qualified products: includes safety glasses, hard hats, steel toe boots, composite toe boots, work gloves, safety vests, nitrile gloves, and dust masks
+            productIds: ['prod1', 'prod2', 'prod16', 'prod61', 'prod62', 'prod28', 'prod46', 'prod47', 'prod30', 'prod83'],
             departmentId: 'g1',
             locationId: 'LOC-001'
           },
@@ -960,7 +960,7 @@ var AppState = {
             autoRenewal: false,
             rolloverEnabled: true,
             // Qualified products: non-overlapping subset of same department products
-            productIds: ['prod3'],
+            productIds: ['prod3', 'prod30', 'prod36', 'prod46', 'prod47', 'prod74', 'prod83', 'prod84'],
             departmentId: 'g1',
             locationId: 'LOC-001'
           }
@@ -1021,7 +1021,36 @@ var AppState = {
             categoryIds: ['Eye Protection', 'Head Protection', 'Hand Protection', 'Body Protection', 'Foot Protection']
           }
         ],
-        vouchers: [],
+        vouchers: [
+          {
+            id: 'v3',
+            name: 'Safety Equipment Fund',
+            description: 'Monthly safety equipment fund for production staff',
+            defaultAmount: 100.00,
+            startDate: '2024-01-01',
+            endDate: '2024-12-31',
+            isActive: true,
+            autoRenewal: true,
+            rolloverEnabled: false,
+            productIds: ['prod1', 'prod3', 'prod16', 'prod28', 'prod30', 'prod31', 'prod34', 'prod36', 'prod46', 'prod61', 'prod62', 'prod73'],
+            departmentId: 'g3',
+            locationId: 'MFG-001'
+          },
+          {
+            id: 'v4',
+            name: 'Maintenance PPE Budget',
+            description: 'Quarterly PPE budget for maintenance team',
+            defaultAmount: 150.00,
+            startDate: '2024-01-01',
+            endDate: '2024-12-31',
+            isActive: true,
+            autoRenewal: false,
+            rolloverEnabled: true,
+            productIds: ['prod3', 'prod4', 'prod16', 'prod28', 'prod32', 'prod52', 'prod61', 'prod62'],
+            departmentId: 'g3b',
+            locationId: 'MAINT-MFG-001'
+          }
+        ],
         availableProducts: this.products.slice()
       },
       {
@@ -1564,7 +1593,36 @@ var AppState = {
             categoryIds: ['Eye Protection', 'Head Protection', 'Hand Protection', 'Body Protection', 'Foot Protection', 'Hearing Protection', 'Fall Protection']
           }
         ],
-        vouchers: [],
+        vouchers: [
+          {
+            id: 'v5',
+            name: 'PPE Allowance',
+            description: 'Monthly PPE allowance for site workers',
+            defaultAmount: 200.00,
+            startDate: '2024-01-01',
+            endDate: '2024-12-31',
+            isActive: true,
+            autoRenewal: true,
+            rolloverEnabled: false,
+            productIds: ['prod1', 'prod2', 'prod16', 'prod19', 'prod20', 'prod28', 'prod29', 'prod46', 'prod47', 'prod48', 'prod53', 'prod61', 'prod62', 'prod65', 'prod73', 'prod74', 'prod93'],
+            departmentId: 'g4',
+            locationId: 'SITE-001'
+          },
+          {
+            id: 'v6',
+            name: 'Construction Safety Equipment',
+            description: 'Quarterly safety equipment budget',
+            defaultAmount: 250.00,
+            startDate: '2024-01-01',
+            endDate: '2024-12-31',
+            isActive: true,
+            autoRenewal: false,
+            rolloverEnabled: true,
+            productIds: ['prod16', 'prod19', 'prod20', 'prod29', 'prod46', 'prod47', 'prod48', 'prod61', 'prod62', 'prod65', 'prod93'],
+            departmentId: 'g4',
+            locationId: 'SITE-001'
+          }
+        ],
         availableProducts: this.products.slice()
       },
       {
@@ -2530,54 +2588,58 @@ var AppState = {
       { id: 't1', orderId: 'ORD-2024-001', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Clear Lens', surewerxPartNumber: 'SWX-SG-001', distributorPartNumber: '', quantity: 2, unitPrice: 15.99, totalPrice: 31.98, distributorCost: 12.00, dateOrdered: '2024-11-01', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't2', orderId: 'ORD-2024-001', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Hard Hat - Yellow', surewerxPartNumber: 'SWX-HH-002', distributorPartNumber: '', quantity: 1, unitPrice: 24.99, totalPrice: 24.99, distributorCost: 18.50, dateOrdered: '2024-11-01', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't3', orderId: 'ORD-2024-002', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Work Gloves - Leather', surewerxPartNumber: 'SWX-GL-003', distributorPartNumber: '', quantity: 3, unitPrice: 12.99, totalPrice: 38.97, distributorCost: 9.00, dateOrdered: '2024-10-28', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't4', orderId: 'ORD-2024-002', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Orange', surewerxPartNumber: 'SWX-SV-004', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.00, dateOrdered: '2024-10-28', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't5', orderId: 'ORD-2024-003', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Steel Toe Boots - 6 inch', surewerxPartNumber: 'SWX-ST-001', distributorPartNumber: '', quantity: 1, unitPrice: 89.99, totalPrice: 89.99, distributorCost: 68.00, dateOrdered: '2024-10-15', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't4', orderId: 'ORD-2024-002', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Orange', surewerxPartNumber: 'SWX-SV-004', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.00, dateOrdered: '2024-10-28', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't5', orderId: 'ORD-2024-003', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Steel Toe Boots - 6 inch', surewerxPartNumber: 'SWX-ST-001', distributorPartNumber: '', quantity: 1, unitPrice: 89.99, totalPrice: 89.99, distributorCost: 68.00, dateOrdered: '2024-10-15', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't5b', orderId: 'ORD-2024-003', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Goggles - Anti-Fog', surewerxPartNumber: 'SWX-SG-003', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 16.00, dateOrdered: '2024-10-15', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't6', orderId: 'ORD-2024-004', employeeName: 'Mike Davis', employeeEmail: 'mike.davis@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Ear Plugs - Foam (200 pairs)', surewerxPartNumber: 'SWX-EP-001', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.50, dateOrdered: '2024-11-05', voucherUsed: 'Safety Equipment Fund', voucherAmount: 100.00, lineStatus: 'Processing', paymentMethod: 'Voucher' },
-      { id: 't7', orderId: 'ORD-2024-004', employeeName: 'Mike Davis', employeeEmail: 'mike.davis@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Safety Goggles - Anti-Fog', surewerxPartNumber: 'SWX-SG-003', distributorPartNumber: '', quantity: 4, unitPrice: 22.99, totalPrice: 91.96, distributorCost: 16.00, dateOrdered: '2024-11-05', voucherUsed: 'Safety Equipment Fund', voucherAmount: 100.00, lineStatus: 'Processing', paymentMethod: 'Credit Card' },
+      { id: 't7', orderId: 'ORD-2024-004', employeeName: 'Mike Davis', employeeEmail: 'mike.davis@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Safety Goggles - Anti-Fog', surewerxPartNumber: 'SWX-SG-003', distributorPartNumber: '', quantity: 4, unitPrice: 22.99, totalPrice: 91.96, distributorCost: 16.00, dateOrdered: '2024-11-05', voucherUsed: 'Maintenance PPE Budget', voucherAmount: 150.00, lineStatus: 'Processing', paymentMethod: 'Mixed' },
       { id: 't8', orderId: 'ORD-2024-005', employeeName: 'Lisa Chen', employeeEmail: 'lisa.chen@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Hard Hat - Full Brim', surewerxPartNumber: 'SWX-HH-006', distributorPartNumber: '', quantity: 1, unitPrice: 32.99, totalPrice: 32.99, distributorCost: 25.00, dateOrdered: '2024-11-03', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't9', orderId: 'ORD-2024-005', employeeName: 'Lisa Chen', employeeEmail: 'lisa.chen@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Work Gloves - Cowhide', surewerxPartNumber: 'SWX-GL-004', distributorPartNumber: '', quantity: 5, unitPrice: 14.99, totalPrice: 74.95, distributorCost: 11.00, dateOrdered: '2024-11-03', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't9', orderId: 'ORD-2024-005', employeeName: 'Lisa Chen', employeeEmail: 'lisa.chen@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Work Gloves - Cowhide', surewerxPartNumber: 'SWX-GL-004', distributorPartNumber: '', quantity: 5, unitPrice: 14.99, totalPrice: 74.95, distributorCost: 11.00, dateOrdered: '2024-11-03', voucherUsed: 'Construction Safety Equipment', voucherAmount: 250.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't10', orderId: 'ORD-2024-006', employeeName: 'Robert Martinez', employeeEmail: 'robert.martinez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Reflective Vest - Class 3', surewerxPartNumber: 'SWX-RV-001', distributorPartNumber: '', quantity: 2, unitPrice: 29.99, totalPrice: 59.98, distributorCost: 22.50, dateOrdered: '2024-10-30', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't11', orderId: 'ORD-2024-007', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Nitrile Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-NG-001', distributorPartNumber: '', quantity: 3, unitPrice: 19.99, totalPrice: 59.97, distributorCost: 14.50, dateOrdered: '2024-10-22', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't12', orderId: 'ORD-2024-008', employeeName: 'Tom Wilson', employeeEmail: 'tom.wilson@manufacturing.com', employeeGroup: 'Maintenance', customerName: 'Manufacturing Corp', productName: 'Welding Gloves - Heavy Duty', surewerxPartNumber: 'SWX-WG-002', distributorPartNumber: '', quantity: 2, unitPrice: 28.99, totalPrice: 57.98, distributorCost: 22.00, dateOrdered: '2024-10-20', voucherUsed: 'Safety Equipment Fund', voucherAmount: 100.00, lineStatus: 'Returned', paymentMethod: 'Voucher' },
+      { id: 't11b', orderId: 'ORD-2024-007', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Clear Lens', surewerxPartNumber: 'SWX-SG-001', distributorPartNumber: '', quantity: 1, unitPrice: 15.99, totalPrice: 15.99, distributorCost: 12.00, dateOrdered: '2024-10-22', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't12', orderId: 'ORD-2024-008', employeeName: 'Tom Wilson', employeeEmail: 'tom.wilson@manufacturing.com', employeeGroup: 'Maintenance', customerName: 'Manufacturing Corp', productName: 'Welding Gloves - Heavy Duty', surewerxPartNumber: 'SWX-WG-002', distributorPartNumber: '', quantity: 2, unitPrice: 28.99, totalPrice: 57.98, distributorCost: 22.00, dateOrdered: '2024-10-20', voucherUsed: 'Maintenance PPE Budget', voucherAmount: 150.00, lineStatus: 'Returned', paymentMethod: 'Voucher' },
       { id: 't13', orderId: 'ORD-2024-009', employeeName: 'Anna Rodriguez', employeeEmail: 'anna.rodriguez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Safety Glasses - Tinted', surewerxPartNumber: 'SWX-SG-002', distributorPartNumber: '', quantity: 3, unitPrice: 17.99, totalPrice: 53.97, distributorCost: 13.50, dateOrdered: '2024-10-18', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't14', orderId: 'ORD-2024-009', employeeName: 'Anna Rodriguez', employeeEmail: 'anna.rodriguez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Ear Muffs - Standard', surewerxPartNumber: 'SWX-EM-001', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 17.00, dateOrdered: '2024-10-18', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't15', orderId: 'ORD-2024-010', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Dust Mask - N95 (20pk)', surewerxPartNumber: 'SWX-DM-001', distributorPartNumber: '', quantity: 2, unitPrice: 24.99, totalPrice: 49.98, distributorCost: 18.50, dateOrdered: '2024-10-12', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't14', orderId: 'ORD-2024-009', employeeName: 'Anna Rodriguez', employeeEmail: 'anna.rodriguez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Ear Muffs - Standard', surewerxPartNumber: 'SWX-EM-001', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 17.00, dateOrdered: '2024-10-18', voucherUsed: 'Construction Safety Equipment', voucherAmount: 250.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't15', orderId: 'ORD-2024-010', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Dust Mask - N95 (20pk)', surewerxPartNumber: 'SWX-DM-001', distributorPartNumber: '', quantity: 2, unitPrice: 24.99, totalPrice: 49.98, distributorCost: 18.50, dateOrdered: '2024-10-12', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't16', orderId: 'ORD-2024-011', employeeName: 'David Kim', employeeEmail: 'david.kim@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Cut Resistant Gloves - Level 5', surewerxPartNumber: 'SWX-CR-001', distributorPartNumber: '', quantity: 4, unitPrice: 24.99, totalPrice: 99.96, distributorCost: 18.50, dateOrdered: '2024-10-10', voucherUsed: 'Safety Equipment Fund', voucherAmount: 100.00, lineStatus: 'Cancelled', paymentMethod: 'Voucher' },
-      { id: 't17', orderId: 'ORD-2024-012', employeeName: 'Jessica Brown', employeeEmail: 'jessica.brown@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Winter Work Boots - Insulated', surewerxPartNumber: 'SWX-WB-001', distributorPartNumber: '', quantity: 1, unitPrice: 119.99, totalPrice: 119.99, distributorCost: 91.00, dateOrdered: '2024-10-05', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't18', orderId: 'ORD-2024-013', employeeName: 'Carlos Garcia', employeeEmail: 'carlos.garcia@manufacturing.com', employeeGroup: 'Maintenance', customerName: 'Manufacturing Corp', productName: 'Face Shield - Full Coverage', surewerxPartNumber: 'SWX-FS-001', distributorPartNumber: '', quantity: 3, unitPrice: 28.99, totalPrice: 86.97, distributorCost: 21.00, dateOrdered: '2024-10-01', voucherUsed: 'Safety Equipment Fund', voucherAmount: 100.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't17', orderId: 'ORD-2024-012', employeeName: 'Jessica Brown', employeeEmail: 'jessica.brown@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Winter Work Boots - Insulated', surewerxPartNumber: 'SWX-WB-001', distributorPartNumber: '', quantity: 1, unitPrice: 119.99, totalPrice: 119.99, distributorCost: 91.00, dateOrdered: '2024-10-05', voucherUsed: 'Construction Safety Equipment', voucherAmount: 250.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't18', orderId: 'ORD-2024-013', employeeName: 'Carlos Garcia', employeeEmail: 'carlos.garcia@manufacturing.com', employeeGroup: 'Maintenance', customerName: 'Manufacturing Corp', productName: 'Face Shield - Full Coverage', surewerxPartNumber: 'SWX-FS-001', distributorPartNumber: '', quantity: 3, unitPrice: 28.99, totalPrice: 86.97, distributorCost: 21.00, dateOrdered: '2024-10-01', voucherUsed: 'Maintenance PPE Budget', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't19', orderId: 'ORD-2024-014', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Yellow', surewerxPartNumber: 'SWX-SV-005', distributorPartNumber: '', quantity: 4, unitPrice: 19.99, totalPrice: 79.96, distributorCost: 14.00, dateOrdered: '2024-09-28', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't20', orderId: 'ORD-2024-015', employeeName: 'Michael Lee', employeeEmail: 'michael.lee@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Hard Hat - Vented', surewerxPartNumber: 'SWX-HH-005', distributorPartNumber: '', quantity: 2, unitPrice: 29.99, totalPrice: 59.98, distributorCost: 22.50, dateOrdered: '2024-09-25', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't20', orderId: 'ORD-2024-015', employeeName: 'Michael Lee', employeeEmail: 'michael.lee@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Hard Hat - Vented', surewerxPartNumber: 'SWX-HH-005', distributorPartNumber: '', quantity: 2, unitPrice: 29.99, totalPrice: 59.98, distributorCost: 22.50, dateOrdered: '2024-09-25', voucherUsed: 'Construction Safety Equipment', voucherAmount: 250.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't21', orderId: 'ORD-2024-016', employeeName: 'Emma White', employeeEmail: 'emma.white@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Chemical Resistant Gloves', surewerxPartNumber: 'SWX-CG-001', distributorPartNumber: '', quantity: 3, unitPrice: 21.99, totalPrice: 65.97, distributorCost: 16.50, dateOrdered: '2024-09-20', voucherUsed: 'Safety Equipment Fund', voucherAmount: 100.00, lineStatus: 'Returned', paymentMethod: 'Voucher' },
-      { id: 't22', orderId: 'ORD-2024-017', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Composite Toe Boots - 8 inch', surewerxPartNumber: 'SWX-CT-001', distributorPartNumber: '', quantity: 1, unitPrice: 99.99, totalPrice: 99.99, distributorCost: 76.00, dateOrdered: '2024-09-15', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't23', orderId: 'ORD-2024-018', employeeName: 'James Taylor', employeeEmail: 'james.taylor@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Rain Suit - 2 Piece', surewerxPartNumber: 'SWX-RS-001', distributorPartNumber: '', quantity: 2, unitPrice: 38.99, totalPrice: 77.98, distributorCost: 29.50, dateOrdered: '2024-09-10', voucherUsed: 'PPE Allowance', voucherAmount: 200.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't22', orderId: 'ORD-2024-017', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Composite Toe Boots - 8 inch', surewerxPartNumber: 'SWX-CT-001', distributorPartNumber: '', quantity: 1, unitPrice: 99.99, totalPrice: 99.99, distributorCost: 76.00, dateOrdered: '2024-09-15', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't22b', orderId: 'ORD-2024-017', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Goggles - Anti-Fog', surewerxPartNumber: 'SWX-SG-003', distributorPartNumber: '', quantity: 1, unitPrice: 22.99, totalPrice: 22.99, distributorCost: 16.00, dateOrdered: '2024-09-15', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't23', orderId: 'ORD-2024-018', employeeName: 'James Taylor', employeeEmail: 'james.taylor@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Rain Suit - 2 Piece', surewerxPartNumber: 'SWX-RS-001', distributorPartNumber: '', quantity: 2, unitPrice: 38.99, totalPrice: 77.98, distributorCost: 29.50, dateOrdered: '2024-09-10', voucherUsed: 'Construction Safety Equipment', voucherAmount: 250.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't24', orderId: 'ORD-2024-019', employeeName: 'Sophia Anderson', employeeEmail: 'sophia.anderson@manufacturing.com', employeeGroup: 'Quality Control', customerName: 'Manufacturing Corp', productName: 'Latex Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-LG-001', distributorPartNumber: '', quantity: 4, unitPrice: 15.99, totalPrice: 63.96, distributorCost: 11.50, dateOrdered: '2024-09-05', voucherUsed: 'Safety Equipment Fund', voucherAmount: 100.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't25', orderId: 'ORD-2024-020', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Half Mask Respirator - Reusable', surewerxPartNumber: 'SWX-HM-001', distributorPartNumber: '', quantity: 2, unitPrice: 34.99, totalPrice: 69.98, distributorCost: 26.50, dateOrdered: '2024-08-28', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't25', orderId: 'ORD-2024-020', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Half Mask Respirator - Reusable', surewerxPartNumber: 'SWX-HM-001', distributorPartNumber: '', quantity: 2, unitPrice: 34.99, totalPrice: 69.98, distributorCost: 26.50, dateOrdered: '2024-08-28', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't25b', orderId: 'ORD-2024-020', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Nitrile Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-NG-001', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.50, dateOrdered: '2024-08-28', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       // Mixed payment method transactions - voucher + credit card
       { id: 't26', orderId: 'ORD-2024-021', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Steel Toe Boots - 6 inch', surewerxPartNumber: 'SWX-ST-001', distributorPartNumber: '', quantity: 1, unitPrice: 89.99, totalPrice: 89.99, distributorCost: 68.00, dateOrdered: '2024-11-10', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
       { id: 't27', orderId: 'ORD-2024-021', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Hard Hat - Yellow', surewerxPartNumber: 'SWX-HH-002', distributorPartNumber: '', quantity: 1, unitPrice: 24.99, totalPrice: 24.99, distributorCost: 18.50, dateOrdered: '2024-11-10', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
-      { id: 't28', orderId: 'ORD-2024-021', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Clear Lens', surewerxPartNumber: 'SWX-SG-001', distributorPartNumber: '', quantity: 2, unitPrice: 15.99, totalPrice: 31.98, distributorCost: 12.00, dateOrdered: '2024-11-10', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
+      { id: 't28', orderId: 'ORD-2024-021', employeeName: 'John Smith', employeeEmail: 'john.smith@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Clear Lens', surewerxPartNumber: 'SWX-SG-001', distributorPartNumber: '', quantity: 2, unitPrice: 15.99, totalPrice: 31.98, distributorCost: 12.00, dateOrdered: '2024-11-10', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
       { id: 't29', orderId: 'ORD-2024-022', employeeName: 'Lisa Chen', employeeEmail: 'lisa.chen@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Winter Work Boots - Insulated', surewerxPartNumber: 'SWX-WB-001', distributorPartNumber: '', quantity: 1, unitPrice: 119.99, totalPrice: 119.99, distributorCost: 91.00, dateOrdered: '2024-11-08', voucherUsed: 'PPE Allowance', voucherAmount: 50.00, lineStatus: 'Processing', paymentMethod: 'Mixed' },
-      { id: 't30', orderId: 'ORD-2024-022', employeeName: 'Lisa Chen', employeeEmail: 'lisa.chen@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Work Gloves - Cowhide', surewerxPartNumber: 'SWX-GL-004', distributorPartNumber: '', quantity: 3, unitPrice: 14.99, totalPrice: 44.97, distributorCost: 11.00, dateOrdered: '2024-11-08', voucherUsed: 'PPE Allowance', voucherAmount: 50.00, lineStatus: 'Processing', paymentMethod: 'Mixed' },
+      { id: 't30', orderId: 'ORD-2024-022', employeeName: 'Lisa Chen', employeeEmail: 'lisa.chen@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Work Gloves - Cowhide', surewerxPartNumber: 'SWX-GL-004', distributorPartNumber: '', quantity: 3, unitPrice: 14.99, totalPrice: 44.97, distributorCost: 11.00, dateOrdered: '2024-11-08', voucherUsed: 'Construction Safety Equipment', voucherAmount: 250.00, lineStatus: 'Processing', paymentMethod: 'Mixed' },
       { id: 't31', orderId: 'ORD-2024-023', employeeName: 'Mike Davis', employeeEmail: 'mike.davis@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Composite Toe Boots - 8 inch', surewerxPartNumber: 'SWX-CT-001', distributorPartNumber: '', quantity: 1, unitPrice: 99.99, totalPrice: 99.99, distributorCost: 76.00, dateOrdered: '2024-11-07', voucherUsed: 'Safety Equipment Fund', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
-      { id: 't32', orderId: 'ORD-2024-023', employeeName: 'Mike Davis', employeeEmail: 'mike.davis@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Safety Goggles - Anti-Fog', surewerxPartNumber: 'SWX-SG-003', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 16.00, dateOrdered: '2024-11-07', voucherUsed: 'Safety Equipment Fund', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
+      { id: 't32', orderId: 'ORD-2024-023', employeeName: 'Mike Davis', employeeEmail: 'mike.davis@manufacturing.com', employeeGroup: 'Production Floor', customerName: 'Manufacturing Corp', productName: 'Safety Goggles - Anti-Fog', surewerxPartNumber: 'SWX-SG-003', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 16.00, dateOrdered: '2024-11-07', voucherUsed: 'Maintenance PPE Budget', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
       { id: 't33', orderId: 'ORD-2024-024', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Orange', surewerxPartNumber: 'SWX-SV-004', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.00, dateOrdered: '2024-11-06', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
-      { id: 't34', orderId: 'ORD-2024-024', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Nitrile Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-NG-001', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.50, dateOrdered: '2024-11-06', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
+      { id: 't34', orderId: 'ORD-2024-024', employeeName: 'Sarah Johnson', employeeEmail: 'sarah.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Nitrile Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-NG-001', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.50, dateOrdered: '2024-11-06', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
       { id: 't35', orderId: 'ORD-2024-025', employeeName: 'Robert Martinez', employeeEmail: 'robert.martinez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Hard Hat - Full Brim', surewerxPartNumber: 'SWX-HH-006', distributorPartNumber: '', quantity: 1, unitPrice: 32.99, totalPrice: 32.99, distributorCost: 25.00, dateOrdered: '2024-11-05', voucherUsed: 'PPE Allowance', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
-      { id: 't36', orderId: 'ORD-2024-025', employeeName: 'Robert Martinez', employeeEmail: 'robert.martinez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Reflective Vest - Class 3', surewerxPartNumber: 'SWX-RV-001', distributorPartNumber: '', quantity: 1, unitPrice: 29.99, totalPrice: 29.99, distributorCost: 22.50, dateOrdered: '2024-11-05', voucherUsed: 'PPE Allowance', voucherAmount: 50.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
+      { id: 't36', orderId: 'ORD-2024-025', employeeName: 'Robert Martinez', employeeEmail: 'robert.martinez@construction.com', employeeGroup: 'Site Workers', customerName: 'Construction Services', productName: 'Reflective Vest - Class 3', surewerxPartNumber: 'SWX-RV-001', distributorPartNumber: '', quantity: 1, unitPrice: 29.99, totalPrice: 29.99, distributorCost: 22.50, dateOrdered: '2024-11-05', voucherUsed: 'Construction Safety Equipment', voucherAmount: 250.00, lineStatus: 'Shipped', paymentMethod: 'Mixed' },
       // Additional transactions to reach 75%+ employee voucher usage for some partners
       // Boeing - adding 32 more employees (34 total = 75.6% of 45)
-      { id: 't37', orderId: 'ORD-2024-026', employeeName: 'Michael Brown', employeeEmail: 'michael.brown@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Clear Lens', surewerxPartNumber: 'SWX-SG-001', distributorPartNumber: '', quantity: 2, unitPrice: 15.99, totalPrice: 31.98, distributorCost: 12.00, dateOrdered: '2024-10-25', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't38', orderId: 'ORD-2024-027', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Hard Hat - Yellow', surewerxPartNumber: 'SWX-HH-002', distributorPartNumber: '', quantity: 1, unitPrice: 24.99, totalPrice: 24.99, distributorCost: 18.50, dateOrdered: '2024-10-20', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't39', orderId: 'ORD-2024-028', employeeName: 'David Wilson', employeeEmail: 'david.wilson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Work Gloves - Leather', surewerxPartNumber: 'SWX-GL-003', distributorPartNumber: '', quantity: 3, unitPrice: 12.99, totalPrice: 38.97, distributorCost: 9.00, dateOrdered: '2024-10-18', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't40', orderId: 'ORD-2024-029', employeeName: 'Jennifer Martinez', employeeEmail: 'jennifer.martinez@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Orange', surewerxPartNumber: 'SWX-SV-004', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.00, dateOrdered: '2024-10-15', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't37', orderId: 'ORD-2024-026', employeeName: 'Michael Brown', employeeEmail: 'michael.brown@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Clear Lens', surewerxPartNumber: 'SWX-SG-001', distributorPartNumber: '', quantity: 2, unitPrice: 15.99, totalPrice: 31.98, distributorCost: 12.00, dateOrdered: '2024-10-25', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't38', orderId: 'ORD-2024-027', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Hard Hat - Yellow', surewerxPartNumber: 'SWX-HH-002', distributorPartNumber: '', quantity: 1, unitPrice: 24.99, totalPrice: 24.99, distributorCost: 18.50, dateOrdered: '2024-10-20', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't39', orderId: 'ORD-2024-028', employeeName: 'David Wilson', employeeEmail: 'david.wilson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Work Gloves - Leather', surewerxPartNumber: 'SWX-GL-003', distributorPartNumber: '', quantity: 3, unitPrice: 12.99, totalPrice: 38.97, distributorCost: 9.00, dateOrdered: '2024-10-18', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't40', orderId: 'ORD-2024-029', employeeName: 'Jennifer Martinez', employeeEmail: 'jennifer.martinez@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Orange', surewerxPartNumber: 'SWX-SV-004', distributorPartNumber: '', quantity: 2, unitPrice: 19.99, totalPrice: 39.98, distributorCost: 14.00, dateOrdered: '2024-10-15', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't41', orderId: 'ORD-2024-030', employeeName: 'Robert Taylor', employeeEmail: 'robert.taylor@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Steel Toe Boots - 6 inch', surewerxPartNumber: 'SWX-ST-001', distributorPartNumber: '', quantity: 1, unitPrice: 89.99, totalPrice: 89.99, distributorCost: 68.00, dateOrdered: '2024-10-12', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't42', orderId: 'ORD-2024-031', employeeName: 'Lisa Anderson', employeeEmail: 'lisa.anderson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Nitrile Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-NG-001', distributorPartNumber: '', quantity: 3, unitPrice: 19.99, totalPrice: 59.97, distributorCost: 14.50, dateOrdered: '2024-10-10', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't43', orderId: 'ORD-2024-032', employeeName: 'James White', employeeEmail: 'james.white@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Dust Mask - N95 (20pk)', surewerxPartNumber: 'SWX-DM-001', distributorPartNumber: '', quantity: 2, unitPrice: 24.99, totalPrice: 49.98, distributorCost: 18.50, dateOrdered: '2024-10-08', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't42', orderId: 'ORD-2024-031', employeeName: 'Lisa Anderson', employeeEmail: 'lisa.anderson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Nitrile Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-NG-001', distributorPartNumber: '', quantity: 3, unitPrice: 19.99, totalPrice: 59.97, distributorCost: 14.50, dateOrdered: '2024-10-10', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't43', orderId: 'ORD-2024-032', employeeName: 'James White', employeeEmail: 'james.white@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Dust Mask - N95 (20pk)', surewerxPartNumber: 'SWX-DM-001', distributorPartNumber: '', quantity: 2, unitPrice: 24.99, totalPrice: 49.98, distributorCost: 18.50, dateOrdered: '2024-10-08', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't44', orderId: 'ORD-2024-033', employeeName: 'Patricia Garcia', employeeEmail: 'patricia.garcia@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Vest - Hi-Vis Yellow', surewerxPartNumber: 'SWX-SV-005', distributorPartNumber: '', quantity: 4, unitPrice: 19.99, totalPrice: 79.96, distributorCost: 14.00, dateOrdered: '2024-10-05', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't45', orderId: 'ORD-2024-034', employeeName: 'Christopher Lee', employeeEmail: 'christopher.lee@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Composite Toe Boots - 8 inch', surewerxPartNumber: 'SWX-CT-001', distributorPartNumber: '', quantity: 1, unitPrice: 99.99, totalPrice: 99.99, distributorCost: 76.00, dateOrdered: '2024-10-03', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't46', orderId: 'ORD-2024-035', employeeName: 'Amanda Rodriguez', employeeEmail: 'amanda.rodriguez@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Half Mask Respirator - Reusable', surewerxPartNumber: 'SWX-HM-001', distributorPartNumber: '', quantity: 2, unitPrice: 34.99, totalPrice: 69.98, distributorCost: 26.50, dateOrdered: '2024-10-01', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't47', orderId: 'ORD-2024-036', employeeName: 'Daniel Kim', employeeEmail: 'daniel.kim@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Safety Glasses - Tinted', surewerxPartNumber: 'SWX-SG-002', distributorPartNumber: '', quantity: 3, unitPrice: 17.99, totalPrice: 53.97, distributorCost: 13.50, dateOrdered: '2024-09-28', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
-      { id: 't48', orderId: 'ORD-2024-037', employeeName: 'Rachel Moore', employeeEmail: 'rachel.moore@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Ear Muffs - Standard', surewerxPartNumber: 'SWX-EM-001', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 17.00, dateOrdered: '2024-09-25', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
+      { id: 't48', orderId: 'ORD-2024-037', employeeName: 'Rachel Moore', employeeEmail: 'rachel.moore@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Ear Muffs - Standard', surewerxPartNumber: 'SWX-EM-001', distributorPartNumber: '', quantity: 2, unitPrice: 22.99, totalPrice: 45.98, distributorCost: 17.00, dateOrdered: '2024-09-25', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't49', orderId: 'ORD-2024-038', employeeName: 'Thomas Chen', employeeEmail: 'thomas.chen@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Winter Work Boots - Insulated', surewerxPartNumber: 'SWX-WB-001', distributorPartNumber: '', quantity: 1, unitPrice: 119.99, totalPrice: 119.99, distributorCost: 91.00, dateOrdered: '2024-09-22', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 300.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't50', orderId: 'ORD-2024-039', employeeName: 'Maria Johnson', employeeEmail: 'maria.johnson@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Rain Suit - 2 Piece', surewerxPartNumber: 'SWX-RS-001', distributorPartNumber: '', quantity: 2, unitPrice: 38.99, totalPrice: 77.98, distributorCost: 29.50, dateOrdered: '2024-09-20', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't51', orderId: 'ORD-2024-040', employeeName: 'Kevin Brown', employeeEmail: 'kevin.brown@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Latex Gloves - Disposable (100pk)', surewerxPartNumber: 'SWX-LG-001', distributorPartNumber: '', quantity: 4, unitPrice: 15.99, totalPrice: 63.96, distributorCost: 11.50, dateOrdered: '2024-09-18', voucherUsed: 'Monthly Safety Allowance', voucherAmount: 150.00, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
@@ -3245,9 +3307,171 @@ var AppState = {
       // Determine which payment method to use for remainder (always Credit Card)
       var remainderPaymentMethod = 'Credit Card';
       
-      // Calculate payment breakdown for each item
-      // ALWAYS use voucher first, then remainder goes to credit card
-      var remainingVoucher = voucherAmount;
+      // VOUCHER APPLICATION AT ORDER LEVEL (per requirements)
+      // 1. Determine voucher eligibility at line-item (SKU) level
+      // 2. Group line items by voucher and sum their totals
+      // 3. Cap each voucher total at the voucher limit
+      // 4. Calculate remaining balance and credit card payment at order level
+      
+      // Get customer to check voucher eligibility
+      var customer = null;
+      if (this.customers && Array.isArray(this.customers)) {
+        customer = this.customers.find(function(p) { return p.name === firstItem.customerName; });
+      }
+      
+      // First pass: Determine voucher eligibility for each line item and group by voucher
+      var voucherLineTotals = {}; // { voucherName: sum of qualifying line item totals }
+      var voucherLimits = {}; // { voucherName: voucher limit (defaultAmount) }
+      
+      orderItems.forEach(function(item) {
+        // Determine voucher eligibility at line-item (SKU) level
+        var voucherEligible = false;
+        var eligibleVoucherName = null;
+        
+        if (customer && customer.vouchers && item.surewerxPartNumber) {
+          // Find active vouchers for this customer
+          var activeVouchers = customer.vouchers.filter(function(v) {
+            return v.isActive && v.productIds && v.productIds.length > 0;
+          });
+          
+          // Check if this SKU is in any voucher's product list
+          var product = AppState.products.find(function(p) {
+            return p.surewerxSku === item.surewerxPartNumber;
+          });
+          
+          if (product) {
+            // If voucherUsed is specified in the transaction, prioritize that voucher
+            if (item.voucherUsed) {
+              var specifiedVoucher = activeVouchers.find(function(v) {
+                return v.name === item.voucherUsed || (v.name && v.name.toLowerCase().trim() === item.voucherUsed.toLowerCase().trim());
+              });
+              
+              if (specifiedVoucher && specifiedVoucher.productIds && specifiedVoucher.productIds.indexOf(product.id) !== -1) {
+                voucherEligible = true;
+                eligibleVoucherName = specifiedVoucher.name;
+                
+                // Initialize voucher totals if not already done
+                if (!voucherLineTotals[specifiedVoucher.name]) {
+                  voucherLineTotals[specifiedVoucher.name] = 0;
+                  voucherLimits[specifiedVoucher.name] = specifiedVoucher.defaultAmount || 0;
+                }
+                
+                // Add this line item's total to the voucher's line total
+                voucherLineTotals[specifiedVoucher.name] += item.totalPrice;
+              }
+            } else {
+              // If no voucherUsed specified, check if product ID is in any voucher's productIds
+              activeVouchers.forEach(function(voucher) {
+                if (voucher.productIds && voucher.productIds.indexOf(product.id) !== -1) {
+                  voucherEligible = true;
+                  eligibleVoucherName = voucher.name;
+                  
+                  // Initialize voucher totals if not already done
+                  if (!voucherLineTotals[voucher.name]) {
+                    voucherLineTotals[voucher.name] = 0;
+                    voucherLimits[voucher.name] = voucher.defaultAmount || 0;
+                  }
+                  
+                  // Add this line item's total to the voucher's line total
+                  voucherLineTotals[voucher.name] += item.totalPrice;
+                }
+              });
+            }
+          }
+        }
+        
+        // Store eligibility for later use
+        item.voucherEligible = voucherEligible;
+        item.eligibleVoucherName = eligibleVoucherName || item.voucherUsed || firstItem.voucherUsed || null;
+      });
+      
+      // Calculate order-level voucher totals (capped at voucher limits)
+      var orderVoucherTotals = {}; // { voucherName: amount used (capped at limit) }
+      var totalVoucherApplied = 0;
+      
+      for (var voucherName in voucherLineTotals) {
+        if (voucherLineTotals.hasOwnProperty(voucherName)) {
+          var voucherLineTotal = voucherLineTotals[voucherName];
+          var voucherLimit = voucherLimits[voucherName] || 0;
+          var voucherAmountUsed = Math.min(voucherLineTotal, voucherLimit);
+          
+          orderVoucherTotals[voucherName] = voucherAmountUsed;
+          totalVoucherApplied += voucherAmountUsed;
+        }
+      }
+      
+      // Fallback: Check for any vouchers specified in voucherUsed that weren't found in the first pass
+      // This handles cases where product matching failed or vouchers were missed
+      if (customer && customer.vouchers) {
+        // Collect all unique voucher names from all line items
+        var voucherNamesToProcess = [];
+        orderItems.forEach(function(item) {
+          if (item.voucherUsed && voucherNamesToProcess.indexOf(item.voucherUsed) === -1) {
+            voucherNamesToProcess.push(item.voucherUsed);
+          }
+        });
+        
+        // Process each voucher found in the order that isn't already in orderVoucherTotals
+        voucherNamesToProcess.forEach(function(voucherName) {
+          // Skip if this voucher is already in orderVoucherTotals
+          if (orderVoucherTotals[voucherName]) {
+            return;
+          }
+          
+          var voucher = customer.vouchers.find(function(v) {
+            return v.name === voucherName || (v.name && v.name.toLowerCase().trim() === voucherName.toLowerCase().trim());
+          });
+          
+          if (voucher && voucher.isActive) {
+            // Re-check line items against this voucher's product list
+            // Only include items that have this voucher in their voucherUsed field
+            var voucherLineTotal = 0;
+            orderItems.forEach(function(item) {
+              // Only process items that are assigned to this voucher
+              if (item.voucherUsed === voucherName && item.surewerxPartNumber) {
+                var product = AppState.products.find(function(p) {
+                  return p.surewerxSku === item.surewerxPartNumber;
+                });
+                if (product && voucher.productIds && voucher.productIds.indexOf(product.id) !== -1) {
+                  voucherLineTotal += item.totalPrice;
+                }
+              }
+            });
+            
+            // If no products matched but voucherUsed is set, apply voucher to at least part of the order
+            // This ensures all orders with voucherUsed set will use at least some voucher amount
+            if (voucherLineTotal === 0 && orderTotal > 0) {
+              // Calculate total for items assigned to this voucher
+              var itemsForThisVoucher = orderItems.filter(function(item) {
+                return item.voucherUsed === voucherName;
+              });
+              var totalForThisVoucher = itemsForThisVoucher.reduce(function(sum, item) {
+                return sum + item.totalPrice;
+              }, 0);
+              
+              if (totalForThisVoucher > 0) {
+                // Apply voucher to the items assigned to it, capped at voucher limit
+                var voucherLimit = voucher.defaultAmount || 0;
+                voucherLineTotal = Math.min(totalForThisVoucher, voucherLimit);
+              }
+            }
+            
+            if (voucherLineTotal > 0) {
+              var voucherLimit = voucher.defaultAmount || 0;
+              var voucherAmountUsed = Math.min(voucherLineTotal, voucherLimit);
+              orderVoucherTotals[voucherName] = voucherAmountUsed;
+              totalVoucherApplied += voucherAmountUsed;
+            }
+          }
+        });
+      }
+      
+      // Calculate remaining balance and credit card payment at order level
+      var grandTotal = orderTotal + shippingCost;
+      var remainingBalance = grandTotal - totalVoucherApplied;
+      var creditCardPayment = remainingBalance > 0 ? remainingBalance : 0;
+      
+      // Second pass: Add order-level fields and payment breakdown to each item
       orderItems.forEach(function(item, index) {
         // Add order-level fields
         item.invoiceNumber = invoiceNumber;
@@ -3265,27 +3489,46 @@ var AppState = {
           item.partnerName = item.customerName;
         }
         
-        // Calculate payment breakdown for this item
-        // ALWAYS use voucher first, then remainder
+        // Store order-level voucher information (same for all items in order)
+        item.orderVoucherTotals = orderVoucherTotals; // Order-level voucher totals per voucher
+        item.totalVoucherApplied = totalVoucherApplied; // Total voucher amount applied at order level
+        item.remainingBalance = remainingBalance; // Remaining balance after vouchers
+        item.creditCardPayment = creditCardPayment; // Credit card payment required
+        
+        // For backward compatibility and display purposes, calculate line-item payment breakdown
+        // This represents the allocation, but actual voucher application is at order level
         var itemTotal = item.totalPrice;
-        var itemVoucherPaid = Math.min(itemTotal, remainingVoucher);
-        remainingVoucher -= itemVoucherPaid;
-        var itemRemainderPaid = itemTotal - itemVoucherPaid;
+        var lineVoucherAllocation = 0;
+        var lineCreditCardAllocation = 0;
         
-        // Set payment breakdown fields
-        item.voucherAmountPaid = itemVoucherPaid;
+        if (totalVoucherApplied > 0 && orderTotal > 0) {
+          // Allocate voucher proportionally to line items (for display only)
+          var voucherRatio = totalVoucherApplied / orderTotal;
+          lineVoucherAllocation = itemTotal * voucherRatio;
+        }
         
-        // Set remainder payment method (always Credit Card)
-        if (itemRemainderPaid > 0) {
-          item.creditCardAmountPaid = itemRemainderPaid;
-          item.payrollDeductionAmountPaid = 0;
-          // Update payment method to reflect the actual split
-          item.paymentMethod = itemVoucherPaid > 0 ? 'Mixed' : remainderPaymentMethod;
-        } else {
-          // Fully paid by voucher
-          item.creditCardAmountPaid = 0;
-          item.payrollDeductionAmountPaid = 0;
+        lineCreditCardAllocation = itemTotal - lineVoucherAllocation;
+        
+        // Set payment breakdown fields (for display and backward compatibility)
+        item.voucherAmountPaid = lineVoucherAllocation; // Line-item allocation (display only)
+        item.creditCardAmountPaid = lineCreditCardAllocation; // Line-item credit card allocation
+        
+        // Set payment method
+        // If voucherUsed is set in raw data, ensure we use voucher (never credit card only)
+        if (lineVoucherAllocation > 0 && lineCreditCardAllocation > 0) {
+          item.paymentMethod = 'Mixed';
+        } else if (lineVoucherAllocation > 0) {
           item.paymentMethod = 'Voucher';
+        } else if (firstItem.voucherUsed && totalVoucherApplied > 0) {
+          // If voucherUsed is set and order has vouchers but this line didn't get allocation,
+          // use Mixed to indicate voucher was used in the order
+          item.paymentMethod = 'Mixed';
+        } else if (firstItem.voucherUsed) {
+          // If voucherUsed is set but no vouchers were calculated, still show as Mixed
+          // (voucher was intended to be used)
+          item.paymentMethod = 'Mixed';
+        } else {
+          item.paymentMethod = 'Credit Card';
         }
       });
     });

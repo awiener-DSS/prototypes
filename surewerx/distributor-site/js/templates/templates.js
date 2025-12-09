@@ -1195,6 +1195,252 @@ var Templates = {
     });
   },
   
+  // Customer Form Single Page
+  customerFormSinglePage: function(formData, isEditMode) {
+    // Generate full customer URL with distributor slug for edit mode
+    var urlNote = '';
+    if (isEditMode) {
+      var distributorName = AppState.distributorName || 'Premier Distributor Co';
+      var distributorSlug = distributorName
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .replace(/^-|-$/g, '');
+      var fullCustomerUrl = 'www.surewerxdistributor.com/' + distributorSlug + '/' + Helpers.escapeHtml(formData.slug);
+      urlNote = '<p class="mb-0 mt-2"><small><strong>Note:</strong> The customer URL cannot be changed after creation.</small></p>';
+    }
+    
+    // Employee field config section
+    var fieldsDisabled = isEditMode ? 'disabled' : '';
+    var fieldsNote = isEditMode ? '<div class="alert alert-warning" style="margin-top: 10px; margin-bottom: 15px;"><strong>Note:</strong> Employee field configuration cannot be changed after customer creation.</div>' : '';
+    
+    // Terms section
+    var defaultTerms = 'Net 30 payment terms. Payment is due within 30 days of invoice date. Late payments may be subject to a 1.5% monthly interest charge. All sales are final unless otherwise specified in writing.';
+    var currentTerms = formData.termsAndConditions || '';
+    
+    // Logo section
+    var logoSection = '';
+    if (formData.logo) {
+      logoSection = '<div class="text-center">' +
+        '<div class="panel panel-default" style="display: inline-block; position: relative;">' +
+        '<div class="panel-body" style="padding: 20px;">' +
+        '<img src="' + formData.logo + '" alt="Customer logo" style="max-height: 200px; max-width: 100%;">' +
+        '</div>' +
+        '<button type="button" class="btn btn-danger btn-sm" id="remove-logo-btn" style="position: absolute; top: -10px; right: -10px; border-radius: 50%;">' +
+        '<span class="glyphicon glyphicon-remove"></span>' +
+        '</button>' +
+        '</div>' +
+        '<div class="mt-3">' +
+        '<label for="customer-logo-upload" class="btn btn-default">' +
+        '<span class="glyphicon glyphicon-upload"></span> Change Logo' +
+        '</label>' +
+        '<input type="file" id="customer-logo-upload" accept="image/*" style="display: none;">' +
+        '</div>' +
+        '</div>';
+    } else {
+      logoSection = '<div class="text-center">' +
+        '<div class="panel panel-default" id="upload-logo-area" style="display: inline-block; cursor: pointer; min-width: 400px;">' +
+        '<div class="panel-body" style="padding: 60px 40px;">' +
+        '<span class="glyphicon glyphicon-upload" style="font-size: 48px; color: #ccc; display: block; margin-bottom: 20px;"></span>' +
+        '<p>Click to upload logo</p>' +
+        '<p class="text-muted"><small>PNG, JPG up to 5MB</small></p>' +
+        '</div>' +
+        '</div>' +
+        '<input type="file" id="customer-logo-upload" accept="image/*" style="display: none;">' +
+        '</div>';
+    }
+    
+    return '<div>' +
+      Templates.header() +
+      '<div class="container-fluid" style="padding: 20px;">' +
+      '<div class="row">' +
+      '<div class="col-md-10 col-md-offset-1">' +
+      '<div class="mb-4">' +
+      '<button class="btn btn-default mb-3" id="cancel-customer-form">' +
+      '<span class="glyphicon glyphicon-chevron-left"></span> Back to Dashboard' +
+      '</button>' +
+      '<h2 class="mt-2">' + (isEditMode ? 'Edit Customer' : 'Create New Customer') + '</h2>' +
+      '<p class="text-muted">' +
+      (isEditMode ? 'Update customer information and configuration' : 'Enter all customer information below') +
+      '</p>' +
+      '</div>' +
+      '<form id="customer-form-single">' +
+      '<div class="panel panel-default">' +
+      '<div class="panel-body" style="padding: 40px;">' +
+      
+      // Basic Information Section
+      '<div class="form-section" style="margin-bottom: 40px;">' +
+      '<h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;">Basic Information</h3>' +
+      '<div class="row">' +
+      '<div class="col-md-8">' +
+      '<div class="form-group">' +
+      '<label>Customer Name *</label>' +
+      '<input type="text" class="form-control" id="customer-name" value="' + Helpers.escapeHtml(formData.name) + '" placeholder="e.g., ABC Construction Company">' +
+      '<small class="text-muted">This name will appear throughout the portal</small>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="row">' +
+      '<div class="col-md-8">' +
+      '<div class="alert alert-info">' +
+      '<p class="mb-0"><strong>Customer URL Preview:</strong></p>' +
+      '<p id="slug-preview" class="mb-0" style="font-size: 14px; margin-top: 5px;"></p>' +
+      (!isEditMode ? '<p class="mb-0 mt-2"><small><strong>Note:</strong> The URL slug is automatically generated from the customer name. This will be the URL employees use to access the portal.</small></p>' : urlNote) +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="row" style="margin-top: 20px;">' +
+      '<div class="col-md-8">' +
+      '<div class="form-group">' +
+      '<label>Distributor Customer ID</label>' +
+      '<input type="text" class="form-control" id="customer-distributor-customer-id" value="' + Helpers.escapeHtml(formData.distributorCustomerId || '') + '" placeholder="e.g., CUST-12345">' +
+      '<small class="text-muted">Optional identifier used by the distributor to track this customer</small>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '<div class="row" style="margin-top: 20px;">' +
+      '<div class="col-md-4">' +
+      '<div class="form-group">' +
+      '<label>Status *</label>' +
+      '<select class="form-control" id="customer-status">' +
+      '<option value="active"' + (formData.status === 'active' ? ' selected' : '') + '>Active</option>' +
+      '<option value="inactive"' + (formData.status === 'inactive' ? ' selected' : '') + '>Inactive</option>' +
+      '</select>' +
+      '<small class="text-muted">Inactive customers cannot be accessed by their employees</small>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      
+      // Key Account Manager Section
+      '<div class="form-section" style="margin-bottom: 40px;">' +
+      '<h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;">Key Account Manager</h3>' +
+      '<div class="row">' +
+      '<div class="col-md-8">' +
+      '<div class="form-group">' +
+      '<label>Name *</label>' +
+      '<input type="text" class="form-control" id="customer-key-account-manager-name" value="' + Helpers.escapeHtml((formData.keyAccountManager && formData.keyAccountManager.name) || '') + '" placeholder="e.g., John Smith">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label>Email *</label>' +
+      '<input type="email" class="form-control" id="customer-key-account-manager-email" value="' + Helpers.escapeHtml((formData.keyAccountManager && formData.keyAccountManager.email) || '') + '" placeholder="e.g., john.smith@example.com">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label>Phone *</label>' +
+      '<input type="tel" class="form-control" id="customer-key-account-manager-phone" value="' + Helpers.escapeHtml((formData.keyAccountManager && formData.keyAccountManager.phone) || '') + '" placeholder="e.g., (555) 123-4567">' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      
+      // Branding Section
+      '<div class="form-section" style="margin-bottom: 40px;">' +
+      '<h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;">Branding</h3>' +
+      '<p class="text-muted mb-4">Upload a logo to personalize the customer\'s experience (optional)</p>' +
+      logoSection +
+      '<div class="alert alert-info mt-4">' +
+      '<strong>Tip:</strong> Use a high-quality logo with a transparent background for the best results.' +
+      '</div>' +
+      '</div>' +
+      
+      // Employee Fields Section
+      '<div class="form-section" style="margin-bottom: 40px;">' +
+      '<h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;">Employee Information Requirements</h3>' +
+      '<p class="text-muted mb-4">Select which information will be required when adding employees</p>' +
+      '<div class="alert alert-info">' +
+      '<strong>Important:</strong> The fields you select here will be:<br>' +
+      '<ul class="mb-0 mt-2">' +
+      '<li>Required when adding employees to this customer</li>' +
+      '<li>Required for employees to sign into the portal</li>' +
+      '</ul>' +
+      '<p class="mt-2 mb-0">You must select at least one identifier field (Employee ID or Username) and one date field (Date of Birth or Start Date).</p>' +
+      '</div>' +
+      '<div class="panel panel-default">' +
+      '<div class="panel-body" style="background-color: #f9f9f9;">' +
+      fieldsNote +
+      '<h4>Identifier Fields</h4>' +
+      '<p class="text-muted">Select one method to uniquely identify employees (required)</p>' +
+      '<div class="radio">' +
+      '<label' + (isEditMode ? ' style="opacity: 0.6; cursor: not-allowed;"' : '') + '>' +
+      '<input type="radio" name="identifier-field" id="require-employee-id" value="employeeId" ' + (formData.employeeFieldConfig.requireEmployeeId ? 'checked' : '') + ' ' + fieldsDisabled + '> ' +
+      '<strong>Employee ID</strong> - Company-assigned employee identification number' +
+      '</label>' +
+      '</div>' +
+      '<div class="radio">' +
+      '<label' + (isEditMode ? ' style="opacity: 0.6; cursor: not-allowed;"' : '') + '>' +
+      '<input type="radio" name="identifier-field" id="require-username" value="username" ' + (formData.employeeFieldConfig.requireUsername ? 'checked' : '') + ' ' + fieldsDisabled + '> ' +
+      '<strong>Username</strong> - Unique username for system access' +
+      '</label>' +
+      '</div>' +
+      '<hr>' +
+      '<h4>Date Fields</h4>' +
+      '<p class="text-muted">Select one date field for employee records (required)</p>' +
+      '<div class="radio">' +
+      '<label' + (isEditMode ? ' style="opacity: 0.6; cursor: not-allowed;"' : '') + '>' +
+      '<input type="radio" name="date-field" id="require-dob" value="dob" ' + (formData.employeeFieldConfig.requireDateOfBirth ? 'checked' : '') + ' ' + fieldsDisabled + '> ' +
+      '<strong>Date of Birth</strong> - Employee\'s date of birth for verification' +
+      '</label>' +
+      '</div>' +
+      '<div class="radio">' +
+      '<label' + (isEditMode ? ' style="opacity: 0.6; cursor: not-allowed;"' : '') + '>' +
+      '<input type="radio" name="date-field" id="require-start-date" value="startDate" ' + (formData.employeeFieldConfig.requireStartDate ? 'checked' : '') + ' ' + fieldsDisabled + '> ' +
+      '<strong>Start Date</strong> - Employee\'s start date with the company' +
+      '</label>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      
+      // Terms & Conditions Section
+      '<div class="form-section" style="margin-bottom: 40px;">' +
+      '<h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0;">Terms & Conditions</h3>' +
+      '<p class="text-muted mb-4">Set the default terms and conditions for this customer. You can use the default terms or customize them.</p>' +
+      '<div class="panel panel-default">' +
+      '<div class="panel-heading">' +
+      '<h4 class="panel-title">Default Terms & Conditions</h4>' +
+      '</div>' +
+      '<div class="panel-body" style="background-color: #f9f9f9;">' +
+      '<p style="white-space: pre-wrap; line-height: 1.6;">' + Helpers.escapeHtml(defaultTerms) + '</p>' +
+      '<button type="button" class="btn btn-default btn-sm" id="use-default-terms-btn">' +
+      '<span class="glyphicon glyphicon-arrow-down"></span> Use Default Terms' +
+      '</button>' +
+      '</div>' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="terms-and-conditions">Custom Terms & Conditions (Optional)</label>' +
+      '<textarea class="form-control" id="terms-and-conditions" rows="8" placeholder="Enter custom terms and conditions, or leave blank to use default terms...">' + Helpers.escapeHtml(currentTerms) + '</textarea>' +
+      '<small class="text-muted">If you enter custom terms, they will override the default terms. Leave blank to use the default terms.</small>' +
+      '</div>' +
+      '<div class="alert alert-info">' +
+      '<strong>Note:</strong> These terms and conditions will be used for invoices and transactions for this customer.' +
+      '</div>' +
+      '</div>' +
+      
+      '</div>' + // panel-body
+      '<div class="panel-footer" style="padding: 20px; background-color: #f9f9f9;">' +
+      '<div class="row">' +
+      '<div class="col-sm-6">' +
+      '<button type="button" class="btn btn-default" id="cancel-customer-form">' +
+      '<span class="glyphicon glyphicon-remove"></span> Cancel' +
+      '</button>' +
+      '</div>' +
+      '<div class="col-sm-6 text-right">' +
+      '<button type="button" class="btn btn-success" id="save-customer-btn">' +
+      '<span class="glyphicon glyphicon-ok"></span> ' + (isEditMode ? 'Save Changes' : 'Create Customer') +
+      '</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' + // panel-footer
+      '</div>' + // panel
+      '</form>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+  },
+  
   // Customer Form Wizard
   customerFormWizard: function(currentStep, formData, isEditMode) {
     // Payment methods step removed - always default to Credit Card
@@ -1567,5 +1813,67 @@ var Templates = {
       '</div>';
     
     return html;
+  },
+  
+  // Customer creation acknowledgment modal
+  showCustomerCreationAcknowledgment: function(onAcknowledge, onCancel) {
+    var modalHtml = '<div class="modal fade" id="customer-creation-acknowledgment-modal" tabindex="-1" data-backdrop="static" data-keyboard="false">' +
+      '<div class="modal-dialog modal-md">' +
+      '<div class="modal-content">' +
+      '<div class="modal-header" style="background-color: #337ab7; border-bottom: 1px solid #2e6da4;">' +
+      '<h4 class="modal-title" style="color: #ffffff !important; font-weight: bold;">' +
+      '<span class="glyphicon glyphicon-info-sign"></span> Important Information' +
+      '</h4>' +
+      '</div>' +
+      '<div class="modal-body">' +
+      '<div class="alert alert-warning">' +
+      '<p><strong>Please note:</strong> The following information cannot be changed after customer creation:</p>' +
+      '<ul style="margin-top: 10px; margin-bottom: 0;">' +
+      '<li><strong>Customer URL:</strong> The customer site URL (slug) is permanent and cannot be modified after creation.</li>' +
+      '<li><strong>Employee Information Requirements:</strong> The employee identifier configuration (Employee ID or Username) and date field configuration (Date of Birth or Start Date) cannot be changed after creation.</li>' +
+      '</ul>' +
+      '</div>' +
+      '<p class="text-muted">These settings are locked to ensure login stability and data consistency for employees.</p>' +
+      '<p class="text-muted"><strong>Please review your information carefully before proceeding.</strong></p>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button type="button" class="btn btn-default" id="cancel-customer-creation-btn">' +
+      '<span class="glyphicon glyphicon-arrow-left"></span> Go Back' +
+      '</button>' +
+      '<button type="button" class="btn btn-primary" id="acknowledge-customer-creation-btn">' +
+      '<span class="glyphicon glyphicon-ok"></span> I Understand, Create Customer' +
+      '</button>' +
+      '</div>' +
+      '</div>' +
+      '</div>' +
+      '</div>';
+    
+    // Remove any existing modal
+    $('#customer-creation-acknowledgment-modal').remove();
+    $('body').append(modalHtml);
+    $('#customer-creation-acknowledgment-modal').modal('show');
+    
+    // Handle acknowledgment button click
+    $(document).off('click', '#acknowledge-customer-creation-btn');
+    $(document).on('click', '#acknowledge-customer-creation-btn', function() {
+      $('#customer-creation-acknowledgment-modal').modal('hide');
+      if (onAcknowledge && typeof onAcknowledge === 'function') {
+        onAcknowledge();
+      }
+    });
+    
+    // Handle cancel button click
+    $(document).off('click', '#cancel-customer-creation-btn');
+    $(document).on('click', '#cancel-customer-creation-btn', function() {
+      $('#customer-creation-acknowledgment-modal').modal('hide');
+      if (onCancel && typeof onCancel === 'function') {
+        onCancel();
+      }
+    });
+    
+    // Clean up on modal close
+    $('#customer-creation-acknowledgment-modal').on('hidden.bs.modal', function() {
+      $(this).remove();
+    });
   }
 };

@@ -7,6 +7,7 @@ var CustomerReportingComponent = {
     dateTo: '',
     orderNumber: '',
     locationId: 'all',
+    departmentId: 'all',
     employee: '',
     employeeName: '',
     status: [] // Array of selected statuses
@@ -54,8 +55,8 @@ var CustomerReportingComponent = {
       '</div>' +
       '<div class="col-md-4 text-right">' +
       '<button class="btn btn-success" id="export-csv-btn">' +
-      '<span class="glyphicon glyphicon-download-alt"></span> Export Report' +
-      '</button>' +
+        '<span class="glyphicon glyphicon-download-alt"></span> Export Report' +
+        '</button>' +
       '</div>' +
       '</div>' +
       
@@ -89,17 +90,30 @@ var CustomerReportingComponent = {
     });
     
     // Allow Enter key to trigger search on filter inputs (except employee typeahead)
-    $(document).on('keypress', '#filter-date-from, #filter-date-to, #filter-location-id, #filter-order-number', function(e) {
+    $(document).on('keypress', '#filter-date-from, #filter-date-to, #filter-location-id, #filter-department-id, #filter-order-number', function(e) {
       if (e.which === 13) { // Enter key
         e.preventDefault();
         $('#search-transactions-btn').click();
       }
     });
     
-    // Update employee typeahead when location ID changes
+    // Update department filter when location changes
     $(document).on('change', '#filter-location-id', function() {
+      // Reset department filter when location changes
+      self.filters.departmentId = 'all';
+      self.updateDepartmentFilter();
       self.updateEmployeeTypeahead();
       // Reset employee input when location ID changes
+      self.filters.employee = '';
+      self.filters.employeeName = '';
+      $('#filter-employee').val('');
+    });
+    
+    // Update employee typeahead when department changes
+    $(document).on('change', '#filter-department-id', function() {
+      self.filters.departmentId = $(this).val();
+      self.updateEmployeeTypeahead();
+      // Reset employee input when department changes
       self.filters.employee = '';
       self.filters.employeeName = '';
       $('#filter-employee').val('');
@@ -183,8 +197,9 @@ var CustomerReportingComponent = {
       }
     });
     
-    // Initialize location ID and employee filters
+    // Initialize location, department, and employee filters
     this.updateLocationIdFilter();
+    this.updateDepartmentFilter();
     this.updateEmployeeTypeahead();
   },
   
@@ -229,22 +244,118 @@ var CustomerReportingComponent = {
   
   updateLocationIdFilter: function() {
     var locationIdSelect = $('#filter-location-id');
-    locationIdSelect.html('<option value="all">All Location IDs</option>');
+    locationIdSelect.html('<option value="all">All Locations</option>');
     
-    if (this.partner && this.partner.groups) {
-      // Get unique location IDs
-      var locationIds = [];
-      this.partner.groups.forEach(function(group) {
-        if (group.locationId && locationIds.indexOf(group.locationId) === -1) {
-          locationIds.push(group.locationId);
+    if (this.partner) {
+      // Try new structure first (locations with departments)
+      if (this.partner.locations && this.partner.locations.length > 0) {
+        // Get unique locations and build display names
+        var locationMap = new Map();
+        this.partner.locations.forEach(function(location) {
+          if (location.locationId) {
+            // Build display name: "Location ID - City, State" or just "Location ID"
+            var displayName = location.locationId;
+            if (location.city || location.state) {
+              var cityState = [];
+              if (location.city) cityState.push(location.city);
+              if (location.state) cityState.push(location.state);
+              if (cityState.length > 0) {
+                displayName += ' - ' + cityState.join(', ');
+              }
+            }
+            locationMap.set(location.locationId, displayName);
+          }
+        });
+        
+        // Sort by location ID
+        var sortedLocations = Array.from(locationMap.entries()).sort(function(a, b) {
+          return a[0].localeCompare(b[0]);
+        });
+        
+        sortedLocations.forEach(function(entry) {
+          var locationId = entry[0];
+          var displayName = entry[1];
+          var selected = this.filters.locationId === locationId ? ' selected' : '';
+          locationIdSelect.append('<option value="' + Helpers.escapeHtml(locationId) + '"' + selected + '>' + Helpers.escapeHtml(displayName) + '</option>');
+        }.bind(this));
+      } else if (this.partner.groups) {
+        // Fallback to old groups structure
+        // Get unique location IDs
+        var locationIds = [];
+        this.partner.groups.forEach(function(group) {
+          if (group.locationId && locationIds.indexOf(group.locationId) === -1) {
+            locationIds.push(group.locationId);
+          }
+        });
+        locationIds.sort();
+        
+        locationIds.forEach(function(locationId) {
+          var selected = this.filters.locationId === locationId ? ' selected' : '';
+          locationIdSelect.append('<option value="' + Helpers.escapeHtml(locationId) + '"' + selected + '>' + Helpers.escapeHtml(locationId) + '</option>');
+        }.bind(this));
+      }
+    }
+  },
+  
+  updateDepartmentFilter: function() {
+    var departmentSelect = $('#filter-department-id');
+    var selectedLocationId = $('#filter-location-id').val();
+    
+    // Disable department filter if no specific location is selected
+    if (!selectedLocationId || selectedLocationId === 'all') {
+      departmentSelect.html('<option value="all">Select a location first</option>');
+      departmentSelect.prop('disabled', true);
+      this.filters.departmentId = 'all';
+      return;
+    }
+    
+    // Enable department filter and populate with departments for selected location
+    departmentSelect.prop('disabled', false);
+    departmentSelect.html('<option value="all">All Departments</option>');
+    
+    if (this.partner) {
+      // Try new structure first (locations with departments)
+      if (this.partner.locations && this.partner.locations.length > 0) {
+        // Find the selected location
+        var selectedLocation = this.partner.locations.find(function(loc) {
+          return loc.locationId === selectedLocationId;
+        });
+        
+        if (selectedLocation && selectedLocation.departments && selectedLocation.departments.length > 0) {
+          // Get departments for this location
+          var departments = selectedLocation.departments.slice(); // Copy array
+          
+          // Sort departments by name
+          departments.sort(function(a, b) {
+            return a.name.localeCompare(b.name);
+          });
+          
+          // Add departments to dropdown
+          departments.forEach(function(dept) {
+            var selected = this.filters.departmentId === dept.id ? ' selected' : '';
+            departmentSelect.append('<option value="' + Helpers.escapeHtml(dept.id) + '"' + selected + '>' + Helpers.escapeHtml(dept.name) + '</option>');
+          }.bind(this));
         }
-      });
-      locationIds.sort();
-      
-      locationIds.forEach(function(locationId) {
-        var selected = this.filters.locationId === locationId ? ' selected' : '';
-        locationIdSelect.append('<option value="' + Helpers.escapeHtml(locationId) + '"' + selected + '>' + Helpers.escapeHtml(locationId) + '</option>');
-      }.bind(this));
+      } else if (this.partner.groups) {
+        // Fallback to old groups structure
+        // Filter groups by selected location ID
+        var groupsForLocation = this.partner.groups.filter(function(group) {
+          return group.locationId === selectedLocationId && group.name;
+        });
+        
+        if (groupsForLocation.length > 0) {
+          // Sort groups by name
+          groupsForLocation.sort(function(a, b) {
+            return a.name.localeCompare(b.name);
+          });
+          
+          // Add groups to dropdown
+          groupsForLocation.forEach(function(group) {
+            var selected = this.filters.departmentId === group.id ? ' selected' : '';
+            departmentSelect.append('<option value="' + Helpers.escapeHtml(group.id) + '"' + selected + '>' + Helpers.escapeHtml(group.name) + '</option>');
+          }.bind(this));
+        }
+      }
     }
   },
   
@@ -254,64 +365,99 @@ var CustomerReportingComponent = {
     // Get the current value from the dropdown, not from filters (which may not be updated yet)
     var selectedLocationId = $('#filter-location-id').val();
     
-    if (selectedLocationId && selectedLocationId !== 'all') {
-      // Find all groups with the selected location ID
-      var groupsWithLocationId = this.partner.groups.filter(function(g) {
-        return g.locationId === selectedLocationId;
+    // Always enable the employee input
+    employeeInput.prop('disabled', false);
+    
+    var selectedDepartmentId = $('#filter-department-id').val();
+    var locationEmployees = [];
+    
+    // Try new structure first (locations with departments)
+    if (this.partner.locations && this.partner.locations.length > 0 && this.partner.employees) {
+      if (selectedDepartmentId && selectedDepartmentId !== 'all') {
+        // Filter by specific department
+        locationEmployees = this.partner.employees.filter(function(emp) {
+          return emp.departmentId === selectedDepartmentId;
+        });
+      } else if (selectedLocationId && selectedLocationId !== 'all') {
+        // Filter by location (all departments in that location)
+        var selectedLocation = this.partner.locations.find(function(loc) {
+          return loc.locationId === selectedLocationId;
+        });
+        
+        if (selectedLocation && selectedLocation.departments) {
+          var departmentIds = selectedLocation.departments.map(function(dept) { return dept.id; });
+          locationEmployees = this.partner.employees.filter(function(emp) {
+            return emp.locationId === selectedLocation.id && departmentIds.indexOf(emp.departmentId) !== -1;
+          });
+        }
+      } else {
+        // Show all employees
+        locationEmployees = this.partner.employees;
+      }
+    } else if (this.partner.groups && this.partner.employees) {
+      // Fallback to old groups structure
+      if (selectedDepartmentId && selectedDepartmentId !== 'all') {
+        // Filter by specific group/department
+        locationEmployees = this.partner.employees.filter(function(emp) {
+          return emp.groupId === selectedDepartmentId;
+        });
+      } else if (selectedLocationId && selectedLocationId !== 'all') {
+        // Filter by location (all groups with that location ID)
+        var groupsWithLocationId = this.partner.groups.filter(function(g) {
+          return g.locationId === selectedLocationId;
+        });
+        
+        if (groupsWithLocationId.length > 0) {
+          var groupIds = groupsWithLocationId.map(function(g) { return g.id; });
+          locationEmployees = this.partner.employees.filter(function(emp) {
+            return groupIds.indexOf(emp.groupId) !== -1;
+          });
+        }
+      } else {
+        // Show all employees
+        locationEmployees = this.partner.employees;
+      }
+    }
+    
+    // Process employees (whether filtered or all)
+    if (locationEmployees.length > 0) {
+      // Create a map of unique employees by id first
+      var uniqueEmployeesByIdMap = new Map();
+      locationEmployees.forEach(function(emp) {
+        var key = emp.id;
+        if (!uniqueEmployeesByIdMap.has(key)) {
+          uniqueEmployeesByIdMap.set(key, emp);
+        }
       });
       
-      if (groupsWithLocationId.length > 0 && this.partner.employees) {
-        // Get all group IDs with this location ID
-        var groupIds = groupsWithLocationId.map(function(g) { return g.id; });
-        
-        // Filter employees by groups with the selected location ID
-        var locationEmployees = this.partner.employees.filter(function(emp) {
-          return groupIds.indexOf(emp.groupId) !== -1;
-        });
-        
-        // Create a map of unique employees by id first
-        var uniqueEmployeesByIdMap = new Map();
-        locationEmployees.forEach(function(emp) {
-          var key = emp.id;
-          if (!uniqueEmployeesByIdMap.has(key)) {
-            uniqueEmployeesByIdMap.set(key, emp);
-          }
-        });
-        
-        // Then deduplicate by name to ensure same name doesn't appear multiple times
-        var uniqueEmployeesByNameMap = new Map();
-        uniqueEmployeesByIdMap.forEach(function(emp) {
-          var empName = (emp.firstName && emp.lastName ? emp.firstName + ' ' + emp.lastName : emp.name || 'Unknown').toLowerCase();
-          if (!uniqueEmployeesByNameMap.has(empName)) {
-            uniqueEmployeesByNameMap.set(empName, emp);
-          }
-        });
-        
-        // Convert map values to array and sort by name
-        var uniqueEmployees = Array.from(uniqueEmployeesByNameMap.values());
-        uniqueEmployees.sort(function(a, b) {
-          var nameA = (a.firstName && a.lastName ? a.firstName + ' ' + a.lastName : a.name || '').toLowerCase();
-          var nameB = (b.firstName && b.lastName ? b.firstName + ' ' + b.lastName : b.name || '').toLowerCase();
-          return nameA.localeCompare(nameB);
-        });
-        
-        // Store available employees with their keys and names
-        this.availableEmployees = uniqueEmployees.map(function(emp) {
-          var empName = emp.firstName && emp.lastName ? emp.firstName + ' ' + emp.lastName : emp.name || 'Unknown';
-          var empKey = emp.id;
-          return {
-            key: empKey,
-            name: empName,
-            original: emp
-          };
-        });
-      }
-      employeeInput.prop('disabled', false);
+      // Then deduplicate by name to ensure same name doesn't appear multiple times
+      var uniqueEmployeesByNameMap = new Map();
+      uniqueEmployeesByIdMap.forEach(function(emp) {
+        var empName = (emp.firstName && emp.lastName ? emp.firstName + ' ' + emp.lastName : emp.name || 'Unknown').toLowerCase();
+        if (!uniqueEmployeesByNameMap.has(empName)) {
+          uniqueEmployeesByNameMap.set(empName, emp);
+        }
+      });
+      
+      // Convert map values to array and sort by name
+      var uniqueEmployees = Array.from(uniqueEmployeesByNameMap.values());
+      uniqueEmployees.sort(function(a, b) {
+        var nameA = (a.firstName && a.lastName ? a.firstName + ' ' + a.lastName : a.name || '').toLowerCase();
+        var nameB = (b.firstName && b.lastName ? b.firstName + ' ' + b.lastName : b.name || '').toLowerCase();
+        return nameA.localeCompare(nameB);
+      });
+      
+      // Store available employees with their keys and names
+      this.availableEmployees = uniqueEmployees.map(function(emp) {
+        var empName = emp.firstName && emp.lastName ? emp.firstName + ' ' + emp.lastName : emp.name || 'Unknown';
+        var empKey = emp.id;
+        return {
+          key: empKey,
+          name: empName,
+          original: emp
+        };
+      });
     } else {
-      employeeInput.prop('disabled', true);
-      this.filters.employee = '';
-      this.filters.employeeName = '';
-      employeeInput.val('');
       this.availableEmployees = [];
     }
   },
@@ -380,9 +526,17 @@ var CustomerReportingComponent = {
       '<div class="row" style="margin-bottom: 8px; margin-left: 0; margin-right: 0;">' +
       '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
-      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Location ID</label>' +
+      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Location Name</label>' +
       '<select class="form-control" id="filter-location-id" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
-      '<option value="all">All Location IDs</option>' +
+      '<option value="all">All Locations</option>' +
+      '</select>' +
+      '</div>' +
+      '</div>' +
+      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
+      '<div class="form-group" style="margin-bottom: 8px;">' +
+      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Department Name</label>' +
+      '<select class="form-control" id="filter-department-id" disabled style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
+      '<option value="all">Select a location first</option>' +
       '</select>' +
       '</div>' +
       '</div>' +
@@ -390,11 +544,13 @@ var CustomerReportingComponent = {
       '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Employee</label>' +
       '<div class="employee-typeahead-container" style="position: relative;">' +
-      '<input type="text" class="form-control" id="filter-employee" placeholder="Search employees..." disabled autocomplete="off" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
+      '<input type="text" class="form-control" id="filter-employee" placeholder="Search employees..." autocomplete="off" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '<div id="employee-typeahead-results" class="employee-typeahead-results" style="display: none;"></div>' +
       '</div>' +
       '</div>' +
       '</div>' +
+      // Row 2: Status, Order Number, Date Range
+      '<div class="row" style="margin-bottom: 8px; margin-left: 0; margin-right: 0;">' +
       '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Status</label>' +
@@ -420,8 +576,6 @@ var CustomerReportingComponent = {
       '</div>' +
       '</div>' +
       '</div>' +
-      '</div>' +
-      '<div class="row" style="margin-bottom: 8px; margin-left: 0; margin-right: 0;">' +
       '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
       '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Order #</label>' +
@@ -430,14 +584,12 @@ var CustomerReportingComponent = {
       '</div>' +
       '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
       '<div class="form-group" style="margin-bottom: 8px;">' +
-      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date From</label>' +
-      '<input type="date" class="form-control" id="filter-date-from" value="' + Helpers.escapeHtml(this.filters.dateFrom || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
+      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date Range</label>' +
+      '<div style="display: flex; gap: 8px; align-items: center; width: 90%; box-sizing: border-box;">' +
+      '<input type="date" class="form-control" id="filter-date-from" value="' + Helpers.escapeHtml(this.filters.dateFrom || '') + '" style="height: 32px; font-size: 13px; flex: 1;">' +
+      '<span style="color: #6b7280; font-size: 13px; white-space: nowrap;">to</span>' +
+      '<input type="date" class="form-control" id="filter-date-to" value="' + Helpers.escapeHtml(this.filters.dateTo || '') + '" style="height: 32px; font-size: 13px; flex: 1;">' +
       '</div>' +
-      '</div>' +
-      '<div class="col-md-4" style="padding-left: 10px; padding-right: 10px;">' +
-      '<div class="form-group" style="margin-bottom: 8px;">' +
-      '<label style="font-size: 12px; margin-bottom: 4px; font-weight: 600;">Date To</label>' +
-      '<input type="date" class="form-control" id="filter-date-to" value="' + Helpers.escapeHtml(this.filters.dateTo || '') + '" style="height: 32px; font-size: 13px; width: 90%; box-sizing: border-box;">' +
       '</div>' +
       '</div>' +
       '</div>' +
@@ -549,7 +701,7 @@ var CustomerReportingComponent = {
           // Always create the div structure (matches distributor reporting exactly)
           userGroupInfo = '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #6b7280; margin-top: 6px; line-height: 1.8;">';
           if (group.locationId) {
-            userGroupInfo += '<span style="margin-right: 4px;"><strong style="color: #374151;">Location ID:</strong> ' + Helpers.escapeHtml(group.locationId) + '</span>';
+            userGroupInfo += '<span style="margin-right: 4px;"><strong style="color: #374151;">Location Name:</strong> ' + Helpers.escapeHtml(group.locationId) + '</span>';
           }
           if (group.location) {
             userGroupInfo += '<span style="margin-right: 4px;"><strong style="color: #374151;">Location:</strong> ' + Helpers.escapeHtml(group.location) + '</span>';
@@ -602,22 +754,270 @@ var CustomerReportingComponent = {
         shippingInfo += '</div>';
       }
       
-      // Calculate remaining balance: Grand Total - Vouchers Refunded
+      // Calculate order-level voucher totals and payment breakdown (per requirements)
+      var orderVoucherTotals = firstItem.orderVoucherTotals || {};
+      var totalVoucherApplied = firstItem.totalVoucherApplied || 0;
+      
+      // Check for any vouchers specified in voucherUsed that aren't already in orderVoucherTotals
+      // This handles cases where enrichTransactions missed some vouchers
+      if (this.partner && this.partner.vouchers) {
+        var partner = this.partner; // Store in local variable for scope
+        // Collect all unique voucher names from all line items
+        var voucherNamesToProcess = [];
+        orderItems.forEach(function(item) {
+          if (item.voucherUsed && voucherNamesToProcess.indexOf(item.voucherUsed) === -1) {
+            voucherNamesToProcess.push(item.voucherUsed);
+          }
+        });
+        
+        // Process each voucher found in the order that isn't already in orderVoucherTotals
+        voucherNamesToProcess.forEach(function(voucherName) {
+          // Skip if this voucher is already in orderVoucherTotals
+          if (orderVoucherTotals[voucherName]) {
+            return;
+          }
+          
+          var voucher = partner.vouchers.find(function(v) {
+            return v.name === voucherName || (v.name && v.name.toLowerCase().trim() === voucherName.toLowerCase().trim());
+          });
+          
+          if (voucher && voucher.isActive) {
+            // Sum qualifying line items for this voucher
+            // Only include items that have this voucher in their voucherUsed field
+            var voucherLineTotal = 0;
+            orderItems.forEach(function(item) {
+              // Only process items that are assigned to this voucher
+              if (item.voucherUsed === voucherName && item.surewerxPartNumber) {
+                var product = AppState.products.find(function(p) {
+                  return p.surewerxSku === item.surewerxPartNumber;
+                });
+                if (product && voucher.productIds && voucher.productIds.indexOf(product.id) !== -1) {
+                  voucherLineTotal += item.totalPrice;
+                }
+              }
+            });
+            
+            // If no products matched but voucherUsed is set, apply voucher to items assigned to it
+            if (voucherLineTotal === 0) {
+              var itemsForThisVoucher = orderItems.filter(function(item) {
+                return item.voucherUsed === voucherName;
+              });
+              var totalForThisVoucher = itemsForThisVoucher.reduce(function(sum, item) {
+                return sum + item.totalPrice;
+              }, 0);
+              
+              if (totalForThisVoucher > 0) {
+                var voucherLimit = voucher.defaultAmount || 0;
+                voucherLineTotal = Math.min(totalForThisVoucher, voucherLimit);
+              }
+            }
+            
+            if (voucherLineTotal > 0) {
+              var voucherLimit = voucher.defaultAmount || 0;
+              var voucherAmountUsed = Math.min(voucherLineTotal, voucherLimit);
+              orderVoucherTotals[voucherName] = voucherAmountUsed;
+              totalVoucherApplied += voucherAmountUsed;
+            }
+          }
+        });
+      }
+      
+      var orderRemainingBalance = firstItem.remainingBalance !== undefined ? firstItem.remainingBalance : (grandTotal - totalVoucherApplied);
+      var orderCreditCardPayment = firstItem.creditCardPayment !== undefined ? firstItem.creditCardPayment : (orderRemainingBalance > 0 ? orderRemainingBalance : 0);
+      
+      // Get voucher details (limit and remaining balance) for each voucher
+      var voucherDetails = {};
+      if (this.partner && this.partner.vouchers && Object.keys(orderVoucherTotals).length > 0) {
+        for (var voucherName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(voucherName)) {
+            var voucher = this.partner.vouchers.find(function(v) {
+              return v.name === voucherName || (v.name && v.name.toLowerCase().trim() === voucherName.toLowerCase().trim());
+            });
+            if (voucher) {
+              var voucherLimit = voucher.defaultAmount || 0;
+              var voucherAmountApplied = orderVoucherTotals[voucherName]; // Amount used/applied for this voucher
+              // Remaining balance = voucher limit minus voucher amount applied
+              var voucherRemainingBalance = Math.max(0, voucherLimit - voucherAmountApplied);
+              voucherDetails[voucherName] = {
+                limit: voucherLimit,
+                total: voucherAmountApplied,
+                remainingBalance: voucherRemainingBalance
+              };
+            }
+          }
+        }
+      }
+      
+      // Calculate refunds (voucher refunds vs credit card refunds)
+      var totalVoucherRefunded = 0;
+      var totalCreditCardCollection = 0; // Sum of all exceeded amounts (refund > voucher allocation per line)
       var totalRefunded = 0;
+      
+      // Track refunds per voucher
+      var voucherRefundTotals = {};
+      if (orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+        for (var vName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(vName)) {
+            voucherRefundTotals[vName] = 0;
+          }
+        }
+      }
+      
       orderItems.forEach(function(item) {
         if (item.refundedAmount && item.refundedAmount > 0) {
           totalRefunded += item.refundedAmount;
+          
+          // Determine the actual voucher amount allocated to this line item
+          // If the line item is eligible for a voucher, use the voucher amount from orderVoucherTotals
+          // Cap it at the line item's total price (can't allocate more voucher than the item costs)
+          var lineVoucherAllocation = 0;
+          if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name (exact or case-insensitive)
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
+              // Use the voucher amount from orderVoucherTotals, but cap at the line item's total price
+              // Since vouchers are applied at order level, we need to determine how much of the voucher
+              // was effectively allocated to this line. Use the minimum of voucher amount and line total.
+              lineVoucherAllocation = Math.min(orderVoucherTotals[matchingVoucherName], item.totalPrice);
+            }
+          }
+          
+          // If no voucher allocation found, fall back to proportional allocation
+          if (lineVoucherAllocation === 0 && totalVoucherApplied > 0 && orderTotal > 0) {
+            var voucherRatio = totalVoucherApplied / orderTotal;
+            lineVoucherAllocation = item.totalPrice * voucherRatio;
+          }
+          
+          // Calculate how much of this refund exceeds the voucher allocation for this line
+          if (item.refundedAmount > lineVoucherAllocation) {
+            // This line's refund exceeded its voucher portion - track the excess
+            var exceededAmount = item.refundedAmount - lineVoucherAllocation;
+            totalCreditCardCollection += exceededAmount;
+          }
+          
+          // Determine voucher refund amount (up to the line's voucher allocation)
+          var lineVoucherRefund = Math.min(item.refundedAmount, lineVoucherAllocation);
+          totalVoucherRefunded += lineVoucherRefund;
+          
+          // Allocate voucher refund to the specific voucher this line item is eligible for
+          if (lineVoucherRefund > 0 && item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName) {
+              // Allocate the full line voucher refund to this specific voucher
+              voucherRefundTotals[matchingVoucherName] = (voucherRefundTotals[matchingVoucherName] || 0) + lineVoucherRefund;
+            } else {
+              // Fall back to proportional allocation if no matching voucher found
+              if (totalVoucherApplied > 0) {
+                for (var vName in orderVoucherTotals) {
+                  if (orderVoucherTotals.hasOwnProperty(vName)) {
+                    var voucherRatio = orderVoucherTotals[vName] / totalVoucherApplied;
+                    var voucherRefundAmount = lineVoucherRefund * voucherRatio;
+                    voucherRefundTotals[vName] = (voucherRefundTotals[vName] || 0) + voucherRefundAmount;
+                  }
+                }
+              }
+            }
+          }
         }
       });
-      var remainingBalance = grandTotal - totalRefunded;
-      var remainingBalanceDisplay = '';
-      // Show remaining balance calculation if vouchers were refunded (even if remaining balance = 0)
-      // Don't show if no vouchers were refunded
+      
+      // Round voucher refund totals to avoid floating point issues
+      for (var vName in voucherRefundTotals) {
+        if (voucherRefundTotals.hasOwnProperty(vName)) {
+          voucherRefundTotals[vName] = Math.round(voucherRefundTotals[vName] * 100) / 100;
+        }
+      }
+      
+      // Calculate remaining balance: Only show if refund was made AND refund exceeded voucher amount
+      // Remaining balance = excess refund amount (refund - voucher applied)
+      var calculatedRemainingBalance = 0;
+      if (totalRefunded > 0 && totalRefunded > totalVoucherApplied) {
+        calculatedRemainingBalance = totalRefunded - totalVoucherApplied;
+      }
+      
+      // Build payment breakdown display
+      var paymentBreakdownDisplay = '';
+      // Show payment breakdown if there are vouchers OR credit card payment OR if voucher totals exist
+      if (totalVoucherApplied > 0 || orderCreditCardPayment > 0 || Object.keys(orderVoucherTotals).length > 0) {
+        paymentBreakdownDisplay = '<div style="font-size: 12px; color: #374151; margin-top: 6px; line-height: 1.8; padding: 8px; background-color: #f9fafb; border-radius: 4px;">';
+        
+        // Show credit card payment first (only if no refund or refund didn't exceed voucher)
+        if (orderCreditCardPayment > 0 && calculatedRemainingBalance === 0) {
+          paymentBreakdownDisplay += '<div style="margin-bottom: 8px;">';
+          paymentBreakdownDisplay += '<strong style="color: #2563eb;">Paid by Credit Card:</strong> ' + Helpers.formatCurrency(orderCreditCardPayment);
+          paymentBreakdownDisplay += '</div>';
+        }
+        
+        // Show voucher breakdown with individual vouchers
+        if (Object.keys(orderVoucherTotals).length > 0) {
+          paymentBreakdownDisplay += '<div>';
+          paymentBreakdownDisplay += '<strong style="color: #059669;">Paid by Voucher:</strong> ' + Helpers.formatCurrency(totalVoucherApplied) + '<br>';
+          paymentBreakdownDisplay += '<div style="margin-top: 4px; margin-left: 10px;">';
+          for (var voucherName in orderVoucherTotals) {
+            if (orderVoucherTotals.hasOwnProperty(voucherName)) {
+              var voucherDetail = voucherDetails[voucherName];
+              var voucherAmount = voucherDetail ? voucherDetail.total : orderVoucherTotals[voucherName];
+              paymentBreakdownDisplay += '<span>• <strong>' + Helpers.escapeHtml(voucherName) + '</strong>: ' + Helpers.formatCurrency(voucherAmount);
+              if (voucherDetail && voucherDetail.remainingBalance > 0) {
+                paymentBreakdownDisplay += ' (Remaining: ' + Helpers.formatCurrency(voucherDetail.remainingBalance) + ')';
+              }
+              paymentBreakdownDisplay += '</span><br>';
+            }
+          }
+          paymentBreakdownDisplay += '</div>';
+          paymentBreakdownDisplay += '</div>';
+        } else if (totalVoucherApplied > 0) {
+          paymentBreakdownDisplay += '<div>';
+          paymentBreakdownDisplay += '<strong style="color: #059669;">Paid by Voucher:</strong> ' + Helpers.formatCurrency(totalVoucherApplied);
+          paymentBreakdownDisplay += '</div>';
+        }
+        
+        paymentBreakdownDisplay += '</div>';
+      }
+      
+      // Build refund breakdown display
+      var refundBreakdownDisplay = '';
       if (totalRefunded > 0) {
-        var calculationDisplay = '<strong>Grand Total:</strong> ' + Helpers.formatCurrency(grandTotal) + ' - <strong>Vouchers Refunded:</strong> ' + Helpers.formatCurrency(totalRefunded);
-        remainingBalanceDisplay = '<div style="display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; color: #dc2626; margin-top: 6px; line-height: 1.8; font-weight: 600;">' +
-          '<span style="margin-right: 4px;">' + calculationDisplay + ' = <strong>Remaining Balance:</strong> ' + Helpers.formatCurrency(remainingBalance) + '</span>' +
-          '</div>';
+        refundBreakdownDisplay = '<div style="font-size: 12px; color: #dc2626; margin-top: 6px; line-height: 1.8; padding: 8px; background-color: #fef2f2; border-radius: 4px;">';
+        
+        // Voucher Amount Refunded: Show each voucher name and amount
+        refundBreakdownDisplay += '<div style="margin-bottom: 8px;">';
+        refundBreakdownDisplay += '<strong>Voucher Amount Refunded:</strong><br>';
+        if (Object.keys(voucherRefundTotals).length > 0) {
+          var hasVoucherRefunds = false;
+          for (var vName in voucherRefundTotals) {
+            if (voucherRefundTotals.hasOwnProperty(vName) && voucherRefundTotals[vName] > 0) {
+              refundBreakdownDisplay += '<span style="margin-left: 10px;">• ' + Helpers.escapeHtml(vName) + ': ' + Helpers.formatCurrency(voucherRefundTotals[vName]) + '</span><br>';
+              hasVoucherRefunds = true;
+            }
+          }
+          if (!hasVoucherRefunds) {
+            refundBreakdownDisplay += '<span style="margin-left: 10px; color: #6b7280;">No voucher refunds</span><br>';
+          }
+        } else if (totalVoucherRefunded > 0) {
+          refundBreakdownDisplay += '<span style="margin-left: 10px;">' + Helpers.formatCurrency(totalVoucherRefunded) + '</span><br>';
+        } else {
+          refundBreakdownDisplay += '<span style="margin-left: 10px; color: #6b7280;">No voucher refunds</span><br>';
+        }
+        refundBreakdownDisplay += '</div>';
+        
+        // Amount to be Collected from Credit Card
+        refundBreakdownDisplay += '<div style="font-weight: 700; color: #991b1b; margin-bottom: 8px;">';
+        refundBreakdownDisplay += '<strong>Amount to be Collected from Credit Card:</strong> ' + Helpers.formatCurrency(totalCreditCardCollection);
+        refundBreakdownDisplay += '</div>';
+        
+        refundBreakdownDisplay += '</div>';
       }
       
       return '<div class="transaction-order" style="margin-bottom: 16px;">' +
@@ -633,7 +1033,8 @@ var CustomerReportingComponent = {
         userGroupInfo +
         shippingAddressDisplay +
         shippingInfo +
-        remainingBalanceDisplay +
+        paymentBreakdownDisplay +
+        refundBreakdownDisplay +
         '</div>' +
         '<div style="text-align: right; flex-shrink: 0;">' +
         '<div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Order Total</div>' +
@@ -665,14 +1066,63 @@ var CustomerReportingComponent = {
             (item.distributorPartNumber ? '<span><strong>Dist. SKU:</strong> ' + Helpers.escapeHtml(item.distributorPartNumber) + '</span>' : '') +
             '<span><strong>Qty:</strong> ' + item.quantity + '</span>' +
             '<span><strong>Unit Price:</strong> ' + Helpers.formatCurrency(item.unitPrice) + '</span>' +
+            // Show voucher name if eligible (line-item level)
+            (item.voucherEligible && item.eligibleVoucherName ?
+              '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.escapeHtml(item.eligibleVoucherName) + '</span>' : '') +
             '</div>' +
             '<div style="display: inline-flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
-            ((item.voucherAmountPaid > 0 && item.voucherUsed) ?
-              '<span><strong style="color: #059669;">Voucher (' + Helpers.escapeHtml(item.voucherUsed) + '):</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' :
-              (item.voucherAmountPaid > 0 ?
-                '<span><strong style="color: #059669;">Voucher:</strong> ' + Helpers.formatCurrency(item.voucherAmountPaid) + '</span>' : '')) +
-            (item.creditCardAmountPaid > 0 ?
-              '<span><strong style="color: #2563eb;">Credit Card:</strong> ' + Helpers.formatCurrency(item.creditCardAmountPaid) + '</span>' : '') +
+            // Show voucher name if this item was paid by voucher
+            // If order has voucher applied (totalVoucherApplied > 0) and item has a voucher name
+            // Match voucher name case-insensitively or if item qualifies for any voucher on the order
+            (function() {
+              // Show voucher if order has vouchers applied
+              if (totalVoucherApplied > 0 || Object.keys(orderVoucherTotals).length > 0) {
+                // Try to find voucher name from various sources
+                var voucherName = item.eligibleVoucherName || item.voucherUsed || firstItem.voucherUsed;
+                
+                if (voucherName) {
+                  // Find matching voucher name (exact or case-insensitive)
+                  var matchingVoucherName = orderVoucherTotals[voucherName] ? voucherName :
+                    Object.keys(orderVoucherTotals).find(function(vName) {
+                      if (!vName || !voucherName) return false;
+                      return vName.toLowerCase().trim() === voucherName.toLowerCase().trim();
+                    });
+                  
+                  // If no exact match but we have a voucher name, use it
+                  if (!matchingVoucherName && voucherName) {
+                    matchingVoucherName = voucherName;
+                  }
+                  
+                  // If still no match but order has vouchers, use the first voucher name
+                  if (!matchingVoucherName && Object.keys(orderVoucherTotals).length > 0) {
+                    matchingVoucherName = Object.keys(orderVoucherTotals)[0];
+                  }
+                  
+                  if (matchingVoucherName) {
+                    // Show voucher name and amount paid by voucher for this line
+                    var voucherAmount = item.voucherAmountPaid || 0;
+                    var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(matchingVoucherName);
+                    if (voucherAmount > 0) {
+                      displayText += ' (' + Helpers.formatCurrency(voucherAmount) + ')';
+                    }
+                    displayText += '</span>';
+                    return displayText;
+                  }
+                } else if (Object.keys(orderVoucherTotals).length > 0) {
+                  // Fallback: show first voucher if no specific voucher name found
+                  var firstVoucherName = Object.keys(orderVoucherTotals)[0];
+                  var voucherAmount = item.voucherAmountPaid || 0;
+                  var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(firstVoucherName);
+                  if (voucherAmount > 0) {
+                    displayText += ' (' + Helpers.formatCurrency(voucherAmount) + ')';
+                  }
+                  displayText += '</span>';
+                  return displayText;
+                }
+              }
+              return '';
+            })() +
+            // Only show refunded amount at line level (voucher calculations are at order level only)
             (item.refundedAmount && item.refundedAmount > 0 ?
               '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' : '') +
             '</div>' +
@@ -727,25 +1177,82 @@ var CustomerReportingComponent = {
     
     // Then apply other filters
     return partnerTransactions.filter(function(t) {
-      // Location ID filter
+      // Location filter
       if (filters.locationId !== 'all') {
-        // Find all groups with the selected location ID
-        var groupsWithLocationId = self.partner.groups.filter(function(g) {
-          return g.locationId === filters.locationId;
-        });
-        if (groupsWithLocationId.length === 0) {
-          return false;
+        var matchesLocation = false;
+        
+        // Try new structure first (locations with departments)
+        if (self.partner.locations && self.partner.locations.length > 0) {
+          // Find the location with matching locationId
+          var selectedLocation = self.partner.locations.find(function(loc) {
+            return loc.locationId === filters.locationId;
+          });
+          
+          if (selectedLocation && selectedLocation.departments) {
+            // Get all department names in this location
+            var departmentNames = selectedLocation.departments.map(function(dept) { return dept.name; });
+            // Check if transaction's employee group matches any department in this location
+            matchesLocation = departmentNames.indexOf(t.employeeGroup) !== -1;
+          }
+        } else if (self.partner.groups) {
+          // Fallback to old groups structure
+          // Find all groups with the selected location ID
+          var groupsWithLocationId = self.partner.groups.filter(function(g) {
+            return g.locationId === filters.locationId;
+          });
+          if (groupsWithLocationId.length > 0) {
+            // Check if transaction's employee group matches any group with this location ID
+            var groupNames = groupsWithLocationId.map(function(g) { return g.name; });
+            matchesLocation = groupNames.indexOf(t.employeeGroup) !== -1;
+          }
         }
-        // Check if transaction's employee group matches any group with this location ID
-        var groupNames = groupsWithLocationId.map(function(g) { return g.name; });
-        if (groupNames.indexOf(t.employeeGroup) === -1) {
+        
+        if (!matchesLocation) {
           return false;
         }
       }
       
-      // Employee filter (only applies if location ID is selected and employee is specified)
+      // Department filter
+      if (filters.departmentId !== 'all') {
+        var matchesDepartment = false;
+        
+        // Try new structure first (locations with departments)
+        if (self.partner.locations && self.partner.locations.length > 0) {
+          // Find the department with matching ID
+          var selectedDepartment = null;
+          self.partner.locations.forEach(function(loc) {
+            if (loc.departments) {
+              var dept = loc.departments.find(function(d) { return d.id === filters.departmentId; });
+              if (dept) {
+                selectedDepartment = dept;
+              }
+            }
+          });
+          
+          if (selectedDepartment) {
+            // Check if transaction's employee group matches the selected department name
+            matchesDepartment = t.employeeGroup === selectedDepartment.name;
+          }
+        } else if (self.partner.groups) {
+          // Fallback to old groups structure
+          var selectedGroup = self.partner.groups.find(function(g) {
+            return g.id === filters.departmentId;
+          });
+          
+          if (selectedGroup) {
+            // Check if transaction's employee group matches the selected group name
+            matchesDepartment = t.employeeGroup === selectedGroup.name;
+          }
+        }
+        
+        if (!matchesDepartment) {
+          return false;
+        }
+      }
+      
+      // Employee filter (applies regardless of location ID selection)
       // Match by employee name only, since email is not required
-      if (filters.locationId !== 'all' && filters.employee && filters.employee.trim() !== '' && filters.employeeName) {
+      if (filters.employee && filters.employee.trim() !== '' && filters.employeeName) {
         if (!t.employeeName || t.employeeName.toLowerCase() !== filters.employeeName.toLowerCase()) {
           return false;
         }
@@ -818,6 +1325,7 @@ var CustomerReportingComponent = {
       this.filters.dateTo = dateTo;
     }
     this.filters.locationId = $('#filter-location-id').val();
+    this.filters.departmentId = $('#filter-department-id').val();
     // Employee is already set when selected from typeahead
     if (!this.filters.employee || this.filters.employee === '') {
       var typedValue = $('#filter-employee').val().trim();
@@ -907,6 +1415,7 @@ var CustomerReportingComponent = {
       dateTo: '',
       orderNumber: '',
       locationId: 'all',
+      departmentId: 'all',
       employee: '',
       employeeName: '',
       status: []
@@ -917,9 +1426,11 @@ var CustomerReportingComponent = {
     $('#filter-order-number').val('');
     $('#filter-location-id').val('all');
     $('#filter-employee').val('');
+    $('#filter-department-id').val('all');
     
-    // Update location ID and employee filters
+    // Update location, department, and employee filters
     this.updateLocationIdFilter();
+    this.updateDepartmentFilter();
     this.updateEmployeeTypeahead();
     this.hideEmployeeTypeahead();
     
@@ -1032,17 +1543,146 @@ var CustomerReportingComponent = {
         }
       }
       
-      orderItems.forEach(function(item) {
-        // Calculate order total only from items with Shipped or Processing status
-        var orderTotal = orderItems.reduce(function(sum, i) {
-          if (i.lineStatus === 'Shipped' || i.lineStatus === 'Processing') {
-            return sum + i.totalPrice;
+      // Calculate order totals once (before loop)
+      var orderTotal = orderItems.reduce(function(sum, i) {
+        if (i.lineStatus === 'Shipped' || i.lineStatus === 'Processing') {
+          return sum + i.totalPrice;
+        }
+        return sum;
+      }, 0);
+      var shippingCost = firstItem.shippingCost || 0;
+      var grandTotal = orderTotal + shippingCost;
+      
+      // Get order-level voucher information (from first item, same for all items in order)
+      var orderVoucherTotals = firstItem.orderVoucherTotals || {};
+      var totalVoucherApplied = firstItem.totalVoucherApplied || 0;
+      var orderRemainingBalance = firstItem.remainingBalance !== undefined ? firstItem.remainingBalance : (grandTotal - totalVoucherApplied);
+      var orderCreditCardPayment = firstItem.creditCardPayment !== undefined ? firstItem.creditCardPayment : (orderRemainingBalance > 0 ? orderRemainingBalance : 0);
+      
+      // Calculate refunds (voucher refunds vs credit card refunds)
+      var totalVoucherRefunded = 0;
+      var totalCreditCardCollection = 0; // Sum of all exceeded amounts (refund > voucher allocation per line)
+      var totalRefunded = 0;
+      
+      // Track refunds per voucher
+      var voucherRefundTotals = {};
+      if (orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+        for (var vName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(vName)) {
+            voucherRefundTotals[vName] = 0;
           }
-          return sum;
-        }, 0);
-        var shippingCost = item.shippingCost || 0;
-        var grandTotal = orderTotal + shippingCost;
-        
+        }
+      }
+      
+      orderItems.forEach(function(item) {
+        if (item.refundedAmount && item.refundedAmount > 0) {
+          totalRefunded += item.refundedAmount;
+          
+          // Determine the actual voucher amount allocated to this line item
+          // If the line item is eligible for a voucher, use the voucher amount from orderVoucherTotals
+          // Cap it at the line item's total price (can't allocate more voucher than the item costs)
+          var lineVoucherAllocation = 0;
+          if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name (exact or case-insensitive)
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
+              // Use the voucher amount from orderVoucherTotals, but cap at the line item's total price
+              // Since vouchers are applied at order level, we need to determine how much of the voucher
+              // was effectively allocated to this line. Use the minimum of voucher amount and line total.
+              lineVoucherAllocation = Math.min(orderVoucherTotals[matchingVoucherName], item.totalPrice);
+            }
+          }
+          
+          // If no voucher allocation found, fall back to proportional allocation
+          if (lineVoucherAllocation === 0 && totalVoucherApplied > 0 && orderTotal > 0) {
+            var voucherRatio = totalVoucherApplied / orderTotal;
+            lineVoucherAllocation = item.totalPrice * voucherRatio;
+          }
+          
+          // Calculate how much of this refund exceeds the voucher allocation for this line
+          if (item.refundedAmount > lineVoucherAllocation) {
+            // This line's refund exceeded its voucher portion - track the excess
+            var exceededAmount = item.refundedAmount - lineVoucherAllocation;
+            totalCreditCardCollection += exceededAmount;
+          }
+          
+          // Determine voucher refund amount (up to the line's voucher allocation)
+          var lineVoucherRefund = Math.min(item.refundedAmount, lineVoucherAllocation);
+          totalVoucherRefunded += lineVoucherRefund;
+          
+          // Allocate voucher refund to the specific voucher this line item is eligible for
+          if (lineVoucherRefund > 0 && item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+            // Find matching voucher name
+            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+              Object.keys(orderVoucherTotals).find(function(vName) {
+                if (!vName || !item.eligibleVoucherName) return false;
+                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+              });
+            
+            if (matchingVoucherName) {
+              // Allocate the full line voucher refund to this specific voucher
+              voucherRefundTotals[matchingVoucherName] = (voucherRefundTotals[matchingVoucherName] || 0) + lineVoucherRefund;
+            } else {
+              // Fall back to proportional allocation if no matching voucher found
+              if (totalVoucherApplied > 0) {
+                for (var vName in orderVoucherTotals) {
+                  if (orderVoucherTotals.hasOwnProperty(vName)) {
+                    var voucherRatio = orderVoucherTotals[vName] / totalVoucherApplied;
+                    var voucherRefundAmount = lineVoucherRefund * voucherRatio;
+                    voucherRefundTotals[vName] = (voucherRefundTotals[vName] || 0) + voucherRefundAmount;
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      // Round voucher refund totals to avoid floating point issues
+      for (var vName in voucherRefundTotals) {
+        if (voucherRefundTotals.hasOwnProperty(vName)) {
+          voucherRefundTotals[vName] = Math.round(voucherRefundTotals[vName] * 100) / 100;
+        }
+      }
+      
+      // Calculate remaining balance: Only show if refund was made AND refund exceeded voucher amount
+      var calculatedRemainingBalance = 0;
+      if (totalRefunded > 0 && totalRefunded > totalVoucherApplied) {
+        calculatedRemainingBalance = totalRefunded - totalVoucherApplied;
+      }
+      
+      // Build voucher totals string (per voucher)
+      var voucherTotalsStr = '';
+      if (Object.keys(orderVoucherTotals).length > 0) {
+        var voucherParts = [];
+        for (var vName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(vName)) {
+            voucherParts.push(vName + ': ' + Helpers.formatCurrency(orderVoucherTotals[vName]));
+          }
+        }
+        voucherTotalsStr = voucherParts.join('; ');
+      } else if (totalVoucherApplied > 0) {
+        voucherTotalsStr = 'Total: ' + Helpers.formatCurrency(totalVoucherApplied);
+      }
+      
+      // Build voucher refund totals string (per voucher)
+      var voucherRefundTotalsStr = '';
+      if (Object.keys(voucherRefundTotals).length > 0) {
+        var voucherRefundParts = [];
+        for (var vName in voucherRefundTotals) {
+          if (voucherRefundTotals.hasOwnProperty(vName) && voucherRefundTotals[vName] > 0) {
+            voucherRefundParts.push(vName + ': ' + Helpers.formatCurrency(voucherRefundTotals[vName]));
+          }
+        }
+        voucherRefundTotalsStr = voucherRefundParts.length > 0 ? voucherRefundParts.join('; ') : '';
+      }
+      
+      orderItems.forEach(function(item) {
         // Find the product to check for distributor SKU
         var product = AppState.products.find(function(p) {
           return p.surewerxSku === item.surewerxPartNumber;
@@ -1050,8 +1690,26 @@ var CustomerReportingComponent = {
         var customSku = product && product.customSku ? product.customSku : '';
         
         var csvRow = {
+          // Order level transactional information
           'Order #': item.orderId,
           'Date Ordered': Helpers.formatDate(item.dateOrdered),
+          'Shipping Address': (item.shippingAddress || '').replace(/<br>/g, ', '),
+          'Shipping Carrier': item.shippingCarrier || '',
+          'Shipping Method': item.shippingMethod || '',
+          'Tracking Number': item.trackingNumber || '',
+          'Shipping Cost': shippingCost,
+          'Order Total': orderTotal,
+          'Grand Total': grandTotal,
+          // Order-level voucher totals (per voucher)
+          'Voucher Totals (Order Level)': voucherTotalsStr,
+          'Total Voucher Applied': totalVoucherApplied,
+          'Remaining Balance': calculatedRemainingBalance > 0 ? calculatedRemainingBalance.toFixed(2) : '',
+          'Credit Card Payment': calculatedRemainingBalance === 0 ? orderCreditCardPayment.toFixed(2) : '',
+          // Refund information
+          'Voucher Amount Refunded': voucherRefundTotalsStr,
+          'Amount to be Collected from Credit Card': totalCreditCardCollection > 0 ? totalCreditCardCollection.toFixed(2) : '',
+          'Total Refunded': totalRefunded > 0 ? totalRefunded.toFixed(2) : '',
+          // Customer information
           'Employee Name': item.employeeName,
           'User Group': item.employeeGroup,
           'Location ID': locationId,
@@ -1061,23 +1719,21 @@ var CustomerReportingComponent = {
           'City': addressCity,
           'State': addressState,
           'Zip': addressZip,
+          // SKU information
           'Product Name': item.productName,
           'SureWerx SKU': item.surewerxPartNumber,
           'Distributor SKU': customSku,
+          // Item level transactional information
           'Quantity': item.quantity,
           'Unit Price': item.unitPrice,
           'Line Total': item.totalPrice,
           'Line Status': item.lineStatus,
-          'Voucher Used': item.voucherUsed || '',
-          'Voucher Amount': item.voucherAmountPaid || 0,
-          'Credit Card Amount': item.creditCardAmountPaid || 0,
-          'Shipping Address': (item.shippingAddress || '').replace(/<br>/g, ', '),
-          'Shipping Carrier': item.shippingCarrier || '',
-          'Shipping Method': item.shippingMethod || '',
-          'Tracking Number': item.trackingNumber || '',
-          'Shipping Cost': shippingCost,
-          'Order Total': orderTotal,
-          'Grand Total': grandTotal
+          'Voucher Name': item.voucherEligible && item.eligibleVoucherName ? item.eligibleVoucherName : '',
+          // Invoice columns
+          'Invoice #': item.invoiceNumber || '',
+          'Invoice Date': item.invoiceDate ? Helpers.formatDate(item.invoiceDate) : '',
+          'Invoice Due Date': item.invoiceDueDate ? Helpers.formatDate(item.invoiceDueDate) : '',
+          'Invoice Terms': item.terms || ''
         };
         
         // Add employee identifier (Employee ID or Username) based on customer configuration

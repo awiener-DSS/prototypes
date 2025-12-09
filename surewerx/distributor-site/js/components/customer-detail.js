@@ -942,6 +942,7 @@ var CustomerDetailComponent = {
           '<th>Location Address</th>' +
           '<th>City</th>' +
           '<th>State</th>' +
+          '<th>Products</th>' +
           '<th style="width: 200px;">Actions</th>' +
           '</tr>' +
           '</thead>' +
@@ -951,12 +952,16 @@ var CustomerDetailComponent = {
           var department = item.department;
           var location = item.location;
           
+          // Count products assigned to this department
+          var productCount = (department.productIds && Array.isArray(department.productIds)) ? department.productIds.length : 0;
+          
           html += '<tr class="selectable-row" data-department-id="' + department.id + '" data-location-id="' + location.id + '" style="cursor: pointer;">' +
             '<td><strong>' + Helpers.escapeHtml(department.name || 'Unnamed Department') + '</strong></td>' +
             '<td>' + Helpers.escapeHtml(location.locationId || '') + '</td>' +
             '<td>' + Helpers.escapeHtml(location.address || '') + '</td>' +
             '<td>' + Helpers.escapeHtml(location.city || '') + '</td>' +
             '<td>' + Helpers.escapeHtml(location.state || '') + '</td>' +
+            '<td>' + productCount + ' product' + (productCount !== 1 ? 's' : '') + '</td>' +
             '<td>' +
             '<button type="button" class="btn btn-xs btn-default edit-department-name-btn" data-department-id="' + department.id + '" data-location-id="' + location.id + '" title="Edit Department">' +
             '<span class="glyphicon glyphicon-pencil"></span>' +
@@ -1049,6 +1054,20 @@ var CustomerDetailComponent = {
       '</select>' +
       '<p class="help-block">Assign this location to a distributor branch</p>' +
       '</div>' +
+      '<hr>' +
+      '<h5 style="margin-bottom: 15px;">Contact Information (Optional)</h5>' +
+      '<div class="form-group">' +
+      '<label for="modal-location-contact-name">Contact Name</label>' +
+      '<input type="text" class="form-control" id="modal-location-contact-name" value="' + (location ? Helpers.escapeHtml(location.contactName || '') : '') + '" placeholder="Enter contact name">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="modal-location-contact-email">Contact Email</label>' +
+      '<input type="email" class="form-control" id="modal-location-contact-email" value="' + (location ? Helpers.escapeHtml(location.contactEmail || '') : '') + '" placeholder="Enter contact email">' +
+      '</div>' +
+      '<div class="form-group">' +
+      '<label for="modal-location-contact-phone">Contact Phone</label>' +
+      '<input type="tel" class="form-control" id="modal-location-contact-phone" value="' + (location ? Helpers.escapeHtml(location.contactPhone || '') : '') + '" placeholder="Enter contact phone">' +
+      '</div>' +
       '</div>' +
       '<div class="modal-footer">' +
       '<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>' +
@@ -1069,11 +1088,14 @@ var CustomerDetailComponent = {
       var city = $('#modal-location-city').val();
       var state = $('#modal-location-state').val();
       var distributorBranchId = $('#modal-distributor-branch').val() || null;
+      var contactName = $('#modal-location-contact-name').val().trim() || null;
+      var contactEmail = $('#modal-location-contact-email').val().trim() || null;
+      var contactPhone = $('#modal-location-contact-phone').val().trim() || null;
       
       if (isEdit) {
-        self.handleUpdateLocation(locationId, locationIdValue, address, city, state, distributorBranchId);
+        self.handleUpdateLocation(locationId, locationIdValue, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone);
       } else {
-        self.handleAddLocation(locationIdValue, address, city, state, distributorBranchId);
+        self.handleAddLocation(locationIdValue, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone);
       }
       
       $('#location-modal').modal('hide');
@@ -1088,7 +1110,7 @@ var CustomerDetailComponent = {
     $('#location-modal').modal('show');
   },
   
-  handleAddLocation: function(locationId, address, city, state, distributorBranchId) {
+  handleAddLocation: function(locationId, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone) {
     if (!locationId || !address || !city || !state) {
       Helpers.showAlert('Please fill in all required fields', 'warning');
       return;
@@ -1104,6 +1126,9 @@ var CustomerDetailComponent = {
       city: city.trim(),
       state: state.trim(),
       distributorBranchId: distributorBranchId || null,
+      contactName: contactName || null,
+      contactEmail: contactEmail || null,
+      contactPhone: contactPhone || null,
       departments: []
     };
     
@@ -1117,7 +1142,7 @@ var CustomerDetailComponent = {
     this.renderTabContent('locations');
   },
   
-  handleUpdateLocation: function(locationId, locationIdValue, address, city, state, distributorBranchId) {
+  handleUpdateLocation: function(locationId, locationIdValue, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone) {
     if (!locationIdValue || !address || !city || !state) {
       Helpers.showAlert('Please fill in all required fields', 'warning');
       return;
@@ -1133,6 +1158,9 @@ var CustomerDetailComponent = {
       location.city = city.trim();
       location.state = state.trim();
       location.distributorBranchId = distributorBranchId || null;
+      location.contactName = contactName || null;
+      location.contactEmail = contactEmail || null;
+      location.contactPhone = contactPhone || null;
       
       AppState.updateCustomer(this.customerId, { locations: customer.locations });
       Helpers.showAlert('Location updated successfully', 'success');

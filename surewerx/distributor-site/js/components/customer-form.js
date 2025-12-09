@@ -11,6 +11,12 @@ var CustomerFormComponent = {
     slug: '',
     status: 'active',
     logo: null,
+    distributorCustomerId: '',
+    keyAccountManager: {
+      name: '',
+      email: '',
+      phone: ''
+    },
     employeeFieldConfig: {
       requireEmployeeId: true,
       requireUsername: false,
@@ -30,11 +36,25 @@ var CustomerFormComponent = {
       // Payment methods always default to Credit Card only
       var paymentMethods = ['Credit Card'];
       
+      // Handle keyAccountManager - could be old format (string) or new format (object)
+      var keyAccountManager = customer.keyAccountManager || { name: '', email: '', phone: '' };
+      if (typeof keyAccountManager === 'string') {
+        // Migrate old string format to new object format
+        keyAccountManager = { name: keyAccountManager, email: '', phone: '' };
+      }
+      
+      // Format phone number if it exists and isn't already formatted
+      if (keyAccountManager.phone && !/^\(\d{3}\)\d{3}-\d{4}$/.test(keyAccountManager.phone)) {
+        keyAccountManager.phone = this.formatPhoneNumber(keyAccountManager.phone);
+      }
+      
       this.formData = {
         name: customer.name,
         slug: customer.slug,
         status: customer.status,
         logo: customer.logoUrl || null,
+        distributorCustomerId: customer.distributorCustomerId || '',
+        keyAccountManager: keyAccountManager,
         employeeFieldConfig: customer.employeeFieldConfig,
         paymentMethods: paymentMethods,
         termsAndConditions: customer.termsAndConditions || ''
@@ -53,6 +73,12 @@ var CustomerFormComponent = {
       slug: '',
       status: 'active',
       logo: null,
+      distributorCustomerId: '',
+      keyAccountManager: {
+        name: '',
+        email: '',
+        phone: ''
+      },
       employeeFieldConfig: {
         requireEmployeeId: true,
         requireUsername: false,
@@ -65,11 +91,9 @@ var CustomerFormComponent = {
   },
   
   render: function() {
-    $('#app-container').html(Templates.customerFormWizard(this.currentStep, this.formData, this.isEditMode));
-    // Always update slug preview after rendering step 1
-    if (this.currentStep === 1) {
-      this.updateSlugPreview();
-    }
+    // Use single-page form for both create and edit modes
+    $('#app-container').html(Templates.customerFormSinglePage(this.formData, this.isEditMode));
+    this.updateSlugPreview();
   },
   
   attachEvents: function() {
@@ -77,10 +101,12 @@ var CustomerFormComponent = {
     
     // Remove all existing event handlers first to prevent duplicates
     $(document).off('click', '#cancel-customer-form');
-    $(document).off('click', '#next-step-btn');
-    $(document).off('click', '#back-step-btn');
     $(document).off('input change', '#customer-name');
     $(document).off('change', '#customer-status');
+    $(document).off('input', '#customer-distributor-customer-id');
+    $(document).off('input', '#customer-key-account-manager-name');
+    $(document).off('input', '#customer-key-account-manager-email');
+    $(document).off('input', '#customer-key-account-manager-phone');
     $(document).off('change', '#customer-logo-upload');
     $(document).off('click', '#remove-logo-btn');
     $(document).off('click', '#upload-logo-area');
@@ -98,20 +124,6 @@ var CustomerFormComponent = {
       App.navigate('dashboard');
     });
     
-    // Next button
-    $(document).on('click', '#next-step-btn', function() {
-      if (self.validateStep(self.currentStep)) {
-        self.currentStep++;
-        self.render();
-      }
-    });
-    
-    // Back button
-    $(document).on('click', '#back-step-btn', function() {
-      self.currentStep--;
-      self.render();
-    });
-    
     // Form field changes
     $(document).on('input change', '#customer-name', function() {
       self.formData.name = $(this).val();
@@ -123,6 +135,53 @@ var CustomerFormComponent = {
     
     $(document).on('change', '#customer-status', function() {
       self.formData.status = $(this).val();
+    });
+    
+    $(document).on('input', '#customer-distributor-customer-id', function() {
+      self.formData.distributorCustomerId = $(this).val();
+    });
+    
+    $(document).on('input', '#customer-key-account-manager-name', function() {
+      self.formData.keyAccountManager.name = $(this).val();
+    });
+    
+    $(document).on('input', '#customer-key-account-manager-email', function() {
+      self.formData.keyAccountManager.email = $(this).val();
+    });
+    
+    $(document).on('input', '#customer-key-account-manager-phone', function() {
+      var phoneValue = $(this).val();
+      var cursorPosition = this.selectionStart;
+      var digitsBeforeCursor = phoneValue.substring(0, cursorPosition).replace(/\D/g, '').length;
+      var formatted = self.formatPhoneNumber(phoneValue);
+      
+      // Set the formatted value
+      $(this).val(formatted);
+      self.formData.keyAccountManager.phone = formatted;
+      
+      // Calculate new cursor position based on number of digits before cursor
+      var newCursorPosition = 0;
+      var digitCount = 0;
+      for (var i = 0; i < formatted.length; i++) {
+        if (/\d/.test(formatted[i])) {
+          digitCount++;
+          if (digitCount > digitsBeforeCursor) {
+            newCursorPosition = i;
+            break;
+          }
+        }
+        if (digitCount === digitsBeforeCursor) {
+          newCursorPosition = i + 1;
+        }
+      }
+      if (newCursorPosition === 0 && digitsBeforeCursor > 0) {
+        newCursorPosition = formatted.length;
+      }
+      
+      // Set cursor position after a brief delay to ensure the value is set
+      setTimeout(function() {
+        this.setSelectionRange(newCursorPosition, newCursorPosition);
+      }.bind(this), 0);
     });
     
     // Logo upload
@@ -208,22 +267,6 @@ var CustomerFormComponent = {
     $(document).on('click', '#save-customer-btn', function() {
       self.handleSave();
     });
-    
-    // Step indicator click (only works in edit mode)
-    $(document).on('click', '.wizard-step-clickable', function() {
-      if (self.isEditMode) {
-        var stepId = parseInt($(this).data('step-id'));
-        if (stepId && stepId !== self.currentStep) {
-          self.jumpToStep(stepId);
-        }
-      }
-    });
-  },
-  
-  jumpToStep: function(step) {
-    // In edit mode, allow jumping to any step without validation
-    this.currentStep = step;
-    this.render();
   },
   
   generateSlug: function(text) {
@@ -234,6 +277,27 @@ var CustomerFormComponent = {
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
       .replace(/^-|-$/g, '');
+  },
+  
+  formatPhoneNumber: function(value) {
+    // Remove all non-digit characters
+    var digits = value.replace(/\D/g, '');
+    
+    // Limit to 10 digits
+    if (digits.length > 10) {
+      digits = digits.substring(0, 10);
+    }
+    
+    // Format as (XXX)XXX-XXXX
+    if (digits.length === 0) {
+      return '';
+    } else if (digits.length <= 3) {
+      return '(' + digits;
+    } else if (digits.length <= 6) {
+      return '(' + digits.substring(0, 3) + ')' + digits.substring(3);
+    } else {
+      return '(' + digits.substring(0, 3) + ')' + digits.substring(3, 6) + '-' + digits.substring(6);
+    }
   },
   
   updateSlugPreview: function() {
@@ -272,6 +336,26 @@ var CustomerFormComponent = {
       case 1:
         if (!this.formData.name.trim()) {
           Helpers.showAlert('Please enter a customer name', 'danger', '#next-step-btn');
+          return false;
+        }
+        // Validate key account manager fields (all mandatory)
+        if (!this.formData.keyAccountManager.name.trim()) {
+          Helpers.showAlert('Please enter the key account manager name', 'danger', '#next-step-btn');
+          return false;
+        }
+        if (!this.formData.keyAccountManager.email.trim()) {
+          Helpers.showAlert('Please enter the key account manager email', 'danger', '#next-step-btn');
+          return false;
+        }
+        // Basic email validation
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(this.formData.keyAccountManager.email.trim())) {
+          Helpers.showAlert('Please enter a valid email address for the key account manager', 'danger', '#next-step-btn');
+          return false;
+        }
+        var phoneDigits = this.formData.keyAccountManager.phone.replace(/\D/g, '');
+        if (phoneDigits.length !== 10) {
+          Helpers.showAlert('Please enter a valid 10-digit phone number', 'danger', '#next-step-btn');
           return false;
         }
         // Auto-generate slug from name if not in edit mode
@@ -325,9 +409,16 @@ var CustomerFormComponent = {
   },
   
   handleSave: function() {
-    // Always validate step 1 (name is required)
+    // Validate all required fields for both create and edit modes
+    // Validate step 1 fields (name, key account manager)
     if (!this.validateStep(1)) {
       return;
+    }
+    // For create mode, also validate employee field config
+    if (!this.isEditMode) {
+      if (!this.validateStep(3)) {
+        return;
+      }
     }
     
     // Ensure payment methods default to Credit Card if not set
@@ -351,6 +442,12 @@ var CustomerFormComponent = {
         name: this.formData.name.trim(),
         status: this.formData.status,
         logoUrl: this.formData.logo,
+        distributorCustomerId: this.formData.distributorCustomerId.trim(),
+        keyAccountManager: {
+          name: this.formData.keyAccountManager.name.trim(),
+          email: this.formData.keyAccountManager.email.trim(),
+          phone: this.formData.keyAccountManager.phone.trim()
+        },
         employeeFieldConfig: employeeFieldConfig,
         paymentMethods: this.formData.paymentMethods,
         termsAndConditions: this.formData.termsAndConditions.trim()
@@ -358,46 +455,56 @@ var CustomerFormComponent = {
       
       Helpers.showAlert('Customer updated successfully', 'success');
     } else {
-      // Create new customer
-      var newCustomer = {
-        id: Helpers.generateId(),
-        name: this.formData.name.trim(),
-        slug: this.formData.slug.trim(),
-        industry: 'General', // Default industry
-        status: this.formData.status,
-        logoUrl: this.formData.logo,
-        employeeCount: 0,
-        activeVouchers: 0,
-        monthlySpend: 0,
-        totalBudget: 0,
-        paymentMethods: this.formData.paymentMethods,
-        employeeFieldConfig: this.formData.employeeFieldConfig,
-        termsAndConditions: this.formData.termsAndConditions.trim() || this.defaultTermsAndConditions,
-        employees: [],
-        groups: [],
-        vouchers: [],
-      availableProducts: AppState.products.slice(),
-      distributorId: AppState.getCurrentDistributorId() // Assign to current distributor
-      };
-      
-      AppState.customers.push(newCustomer);
-      AppState.saveCustomers();
-      Helpers.showAlert('Customer created successfully', 'success');
-      
-      // Ensure the customer is saved before navigating
-      // Use setTimeout to ensure localStorage write is complete
+      // Show acknowledgment modal BEFORE creating customer
       var self = this;
-      setTimeout(function() {
-        // Verify partner exists before navigating
-        var savedCustomer = AppState.getCustomerById(newCustomer.id);
-        if (savedCustomer) {
-          App.navigate('customer-detail', { customerId: newCustomer.id });
-        } else {
-          // If customer not found, reload and try again
-          console.error('Customer not found after save, reloading...');
-          window.location.reload();
-        }
-      }, 100);
+      Templates.showCustomerCreationAcknowledgment(function() {
+        // User acknowledged - now create the customer
+        var newCustomer = {
+          id: Helpers.generateId(),
+          name: self.formData.name.trim(),
+          slug: self.formData.slug.trim(),
+          industry: 'General', // Default industry
+          status: self.formData.status,
+          logoUrl: self.formData.logo,
+          distributorCustomerId: self.formData.distributorCustomerId.trim(),
+          keyAccountManager: {
+            name: self.formData.keyAccountManager.name.trim(),
+            email: self.formData.keyAccountManager.email.trim(),
+            phone: self.formData.keyAccountManager.phone.trim()
+          },
+          employeeCount: 0,
+          activeVouchers: 0,
+          monthlySpend: 0,
+          totalBudget: 0,
+          paymentMethods: self.formData.paymentMethods,
+          employeeFieldConfig: self.formData.employeeFieldConfig,
+          termsAndConditions: self.formData.termsAndConditions.trim() || self.defaultTermsAndConditions,
+          employees: [],
+          groups: [],
+          vouchers: [],
+          availableProducts: AppState.products.slice(),
+          distributorId: AppState.getCurrentDistributorId() // Assign to current distributor
+        };
+        
+        AppState.customers.push(newCustomer);
+        AppState.saveCustomers();
+        Helpers.showAlert('Customer created successfully', 'success');
+        
+        // Navigate to customer detail page
+        setTimeout(function() {
+          // Verify customer exists before navigating
+          var savedCustomer = AppState.getCustomerById(newCustomer.id);
+          if (savedCustomer) {
+            App.navigate('customer-detail', { customerId: newCustomer.id });
+          } else {
+            // If customer not found, reload and try again
+            console.error('Customer not found after save, reloading...');
+            window.location.reload();
+          }
+        }, 100);
+      }, function() {
+        // User cancelled - stay on form (do nothing, modal will close)
+      });
       return;
     }
     

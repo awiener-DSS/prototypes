@@ -1805,10 +1805,8 @@ var CustomerReportingComponent = {
           'Product Name': item.productName,
           
           // Line Level Transactional Information (24-31)
-          'Distributor Price': distributorPrice.toFixed(2),
           'Customer Price': item.unitPrice.toFixed(2),
           'Quantity': item.quantity,
-          'Distributor Line Total': distributorLineTotal.toFixed(2),
           'Line Total': item.totalPrice.toFixed(2),
           'Voucher Name': item.voucherUsed || item.eligibleVoucherName || '',
           'Line Status': item.lineStatus,
@@ -1823,7 +1821,6 @@ var CustomerReportingComponent = {
           
           // Return Level Transaction Information (37-42)
           'Voucher Refund Amount': voucherRefundAmount,
-          'Distributor Refund Amount': distributorRefundAmount,
           'Credit Card Refund Amount': totalCreditCardCollection > 0 ? totalCreditCardCollection.toFixed(2) : '',
           'Return Reference Number': returnReferenceNumber,
           'Credit Invoice Number': creditInvoiceNumber,

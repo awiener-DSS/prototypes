@@ -404,6 +404,7 @@ var AppState = {
         logoUrl: 'images/Boeing_full_logo..png',
         status: 'active',
         distributorId: 'd1', // Fastenal
+        distributorCustomerId: 'FAST-BOEING-001',
         employeeCount: 45,
         activeVouchers: 2, // Will be recalculated from vouchers array
         monthlySpend: 12450.00,
@@ -419,6 +420,8 @@ var AppState = {
           {
             id: 'emp1',
             name: 'John Smith',
+            firstName: 'John',
+            lastName: 'Smith',
             email: 'john.smith@boeing.com',
             employeeId: 'EMP-001',
             username: 'jsmith',
@@ -436,6 +439,8 @@ var AppState = {
           {
             id: 'emp2',
             name: 'Sarah Johnson',
+            firstName: 'Sarah',
+            lastName: 'Johnson',
             email: 'sarah.johnson@boeing.com',
             employeeId: 'EMP-002',
             username: 'sjohnson',
@@ -977,6 +982,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiMxNmEzNGEiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPk08L3RleHQ+PC9zdmc+',
         status: 'active',
         distributorId: 'd1', // Fastenal
+        distributorCustomerId: 'FAST-MFGCORP-002',
         employeeCount: 78,
         activeVouchers: 5,
         monthlySpend: 23800.00,
@@ -1564,6 +1570,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNmNTllMGIiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkM8L3RleHQ+PC9zdmc+',
         status: 'active',
         distributorId: 'd2', // Grainger
+        distributorCustomerId: 'GRG-CONST-003',
         employeeCount: 62,
         activeVouchers: 4,
         monthlySpend: 18900.00,
@@ -1635,6 +1642,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNlNzM0ZjMiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkg8L3RleHQ+PC9zdmc+',
         status: 'active',
         distributorId: 'd2', // Grainger
+        distributorCustomerId: 'GRG-HEALTH-004',
         employeeCount: 120,
         activeVouchers: 6,
         monthlySpend: 15200.00,
@@ -1742,6 +1750,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiNmZmMxMDciLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkU8L3RleHQ+PC9zdmc+',
         status: 'active',
         distributorId: 'd3', // MSC Industrial Supply
+        distributorCustomerId: 'MSC-ENERGY-005',
         employeeCount: 95,
         activeVouchers: 4,
         monthlySpend: 22100.00,
@@ -1859,6 +1868,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiM0M2U1YjUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkw8L3RleHQ+PC9zdmc+',
         status: 'active',
         distributorId: 'd3', // MSC Industrial Supply
+        distributorCustomerId: 'MSC-LOGISTICS-006',
         employeeCount: 150,
         activeVouchers: 7,
         monthlySpend: 28900.00,
@@ -2847,6 +2857,13 @@ var AppState = {
       // First, ensure all existing employees have at least one identifier and one date
       if (customer.employees && customer.employees.length > 0) {
         customer.employees.forEach(function(emp) {
+          // Parse firstName and lastName from name if they don't exist
+          if ((!emp.firstName || !emp.lastName) && emp.name) {
+            var nameParts = emp.name.split(' ');
+            emp.firstName = nameParts[0] || '';
+            emp.lastName = nameParts.slice(1).join(' ') || '';
+          }
+          
           // Ensure at least one identifier (Employee ID or Username)
           if (!emp.employeeId && !emp.username) {
             // Prefer username (from email) if available, otherwise generate employee ID

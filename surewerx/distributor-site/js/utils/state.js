@@ -938,7 +938,7 @@ var AppState = {
             id: 'v1',
             name: 'Monthly Safety Allowance',
             description: 'Standard monthly safety equipment allowance',
-            defaultAmount: 150.00,
+            defaultAmount: 50.00,
             startDate: '2024-01-01',
             endDate: '2024-12-31',
             isActive: true,
@@ -953,7 +953,7 @@ var AppState = {
             id: 'v2',
             name: 'Quarterly PPE Budget',
             description: 'Quarterly personal protective equipment budget',
-            defaultAmount: 300.00,
+            defaultAmount: 75.00,
             startDate: '2024-01-01',
             endDate: '2024-12-31',
             isActive: true,
@@ -1026,7 +1026,7 @@ var AppState = {
             id: 'v3',
             name: 'Safety Equipment Fund',
             description: 'Monthly safety equipment fund for production staff',
-            defaultAmount: 100.00,
+            defaultAmount: 60.00,
             startDate: '2024-01-01',
             endDate: '2024-12-31',
             isActive: true,
@@ -1040,7 +1040,7 @@ var AppState = {
             id: 'v4',
             name: 'Maintenance PPE Budget',
             description: 'Quarterly PPE budget for maintenance team',
-            defaultAmount: 150.00,
+            defaultAmount: 80.00,
             startDate: '2024-01-01',
             endDate: '2024-12-31',
             isActive: true,
@@ -1598,7 +1598,7 @@ var AppState = {
             id: 'v5',
             name: 'PPE Allowance',
             description: 'Monthly PPE allowance for site workers',
-            defaultAmount: 200.00,
+            defaultAmount: 40.00,
             startDate: '2024-01-01',
             endDate: '2024-12-31',
             isActive: true,
@@ -1612,7 +1612,7 @@ var AppState = {
             id: 'v6',
             name: 'Construction Safety Equipment',
             description: 'Quarterly safety equipment budget',
-            defaultAmount: 250.00,
+            defaultAmount: 100.00,
             startDate: '2024-01-01',
             endDate: '2024-12-31',
             isActive: true,
@@ -2306,6 +2306,22 @@ var AppState = {
           // Always update distributorId if missing (to ensure customers are associated with distributors)
           if (!existingCustomer.distributorId && newCustomer.distributorId) {
             existingCustomer.distributorId = newCustomer.distributorId;
+          }
+          
+          // Always update voucher productIds to keep them in sync with source data
+          // This ensures that changes to voucher eligibility are applied even when vouchers exist
+          if (existingCustomer.vouchers && existingCustomer.vouchers.length > 0 && 
+              newCustomer.vouchers && newCustomer.vouchers.length > 0) {
+            existingCustomer.vouchers.forEach(function(existingVoucher) {
+              var sourceVoucher = newCustomer.vouchers.find(function(v) { return v.id === existingVoucher.id; });
+              if (sourceVoucher && sourceVoucher.productIds) {
+                // Always update productIds from source to ensure they stay in sync
+                existingVoucher.productIds = sourceVoucher.productIds;
+                // Also update other key fields that might have changed
+                existingVoucher.defaultAmount = sourceVoucher.defaultAmount;
+                existingVoucher.isActive = sourceVoucher.isActive;
+              }
+            });
           }
           
           // Only update if the customer has no employees, groups, or vouchers (to preserve user-created data)
@@ -3255,6 +3271,9 @@ var AppState = {
       return;
     }
     
+    // Store reference to AppState for use in closures
+    var self = this;
+    
     // Group transactions by orderId
     var orderGroups = {};
     this.transactions.forEach(function(t) {
@@ -3299,8 +3318,8 @@ var AppState = {
       
       // Get customer to determine available payment methods for remainder
       var customer = null;
-      if (this.customers && Array.isArray(this.customers)) {
-        customer = this.customers.find(function(p) { return p.name === firstItem.customerName; });
+      if (self.customers && Array.isArray(self.customers)) {
+        customer = self.customers.find(function(p) { return p.name === firstItem.customerName; });
       }
       var customerPaymentMethods = customer && customer.paymentMethods ? customer.paymentMethods : ['Credit Card'];
       
@@ -3315,8 +3334,19 @@ var AppState = {
       
       // Get customer to check voucher eligibility
       var customer = null;
-      if (this.customers && Array.isArray(this.customers)) {
-        customer = this.customers.find(function(p) { return p.name === firstItem.customerName; });
+      if (self.customers && Array.isArray(self.customers)) {
+        customer = self.customers.find(function(p) { return p.name === firstItem.customerName; });
+      }
+      
+      // Debug logging for order ORD-2024-001
+      if (orderId === 'ORD-2024-001') {
+        console.log('ORD-2024-001 Customer Lookup:', {
+          customerName: firstItem.customerName,
+          hasCustomersArray: !!(self.customers && Array.isArray(self.customers)),
+          customersCount: self.customers ? self.customers.length : 0,
+          customerFound: !!customer,
+          availableCustomerNames: self.customers ? self.customers.map(function(c) { return c.name; }) : []
+        });
       }
       
       // First pass: Determine voucher eligibility for each line item and group by voucher
@@ -3328,6 +3358,17 @@ var AppState = {
         var voucherEligible = false;
         var eligibleVoucherName = null;
         
+        // Debug logging for order ORD-2024-001
+        if (orderId === 'ORD-2024-001') {
+          console.log('ORD-2024-001 Starting Item Check:', {
+            sku: item.surewerxPartNumber,
+            hasCustomer: !!customer,
+            hasVouchers: !!(customer && customer.vouchers),
+            vouchersCount: customer && customer.vouchers ? customer.vouchers.length : 0,
+            hasSku: !!item.surewerxPartNumber
+          });
+        }
+        
         if (customer && customer.vouchers && item.surewerxPartNumber) {
           // Find active vouchers for this customer
           var activeVouchers = customer.vouchers.filter(function(v) {
@@ -3335,16 +3376,49 @@ var AppState = {
           });
           
           // Check if this SKU is in any voucher's product list
-          var product = AppState.products.find(function(p) {
+          var product = self.products.find(function(p) {
             return p.surewerxSku === item.surewerxPartNumber;
           });
           
+          // Debug logging for order ORD-2024-001
+          if (orderId === 'ORD-2024-001') {
+            console.log('ORD-2024-001 Product Lookup:', {
+              sku: item.surewerxPartNumber,
+              productFound: !!product,
+              allProductsCount: self.products ? self.products.length : 0
+            });
+          }
+          
           if (product) {
+            // Debug logging for order ORD-2024-001
+            if (orderId === 'ORD-2024-001') {
+              console.log('ORD-2024-001 Product Found:', {
+                sku: item.surewerxPartNumber,
+                productId: product.id,
+                productName: product.name,
+                voucherUsed: item.voucherUsed,
+                activeVouchersCount: activeVouchers.length
+              });
+            }
+            
             // If voucherUsed is specified in the transaction, prioritize that voucher
             if (item.voucherUsed) {
               var specifiedVoucher = activeVouchers.find(function(v) {
                 return v.name === item.voucherUsed || (v.name && v.name.toLowerCase().trim() === item.voucherUsed.toLowerCase().trim());
               });
+              
+              // Debug logging for order ORD-2024-001
+              if (orderId === 'ORD-2024-001') {
+                console.log('ORD-2024-001 Specified Voucher:', {
+                  sku: item.surewerxPartNumber,
+                  voucherUsed: item.voucherUsed,
+                  specifiedVoucher: specifiedVoucher ? {
+                    name: specifiedVoucher.name,
+                    productIds: specifiedVoucher.productIds,
+                    hasProductId: specifiedVoucher.productIds && specifiedVoucher.productIds.indexOf(product.id) !== -1
+                  } : null
+                });
+              }
               
               if (specifiedVoucher && specifiedVoucher.productIds && specifiedVoucher.productIds.indexOf(product.id) !== -1) {
                 voucherEligible = true;
@@ -3361,7 +3435,9 @@ var AppState = {
               }
             } else {
               // If no voucherUsed specified, check if product ID is in any voucher's productIds
-              activeVouchers.forEach(function(voucher) {
+              // Apply to the FIRST matching voucher only (don't double-count across multiple vouchers)
+              for (var i = 0; i < activeVouchers.length; i++) {
+                var voucher = activeVouchers[i];
                 if (voucher.productIds && voucher.productIds.indexOf(product.id) !== -1) {
                   voucherEligible = true;
                   eligibleVoucherName = voucher.name;
@@ -3374,8 +3450,11 @@ var AppState = {
                   
                   // Add this line item's total to the voucher's line total
                   voucherLineTotals[voucher.name] += item.totalPrice;
+                  
+                  // Only apply to first matching voucher, then stop
+                  break;
                 }
-              });
+              }
             }
           }
         }
@@ -3383,6 +3462,18 @@ var AppState = {
         // Store eligibility for later use
         item.voucherEligible = voucherEligible;
         item.eligibleVoucherName = eligibleVoucherName || item.voucherUsed || firstItem.voucherUsed || null;
+        
+        // Debug logging for order ORD-2024-001
+        if (orderId === 'ORD-2024-001') {
+          console.log('ORD-2024-001 Item Processing:', {
+            sku: item.surewerxPartNumber,
+            voucherUsed: item.voucherUsed,
+            voucherEligible: voucherEligible,
+            eligibleVoucherName: item.eligibleVoucherName,
+            totalPrice: item.totalPrice,
+            voucherLineTotals: JSON.parse(JSON.stringify(voucherLineTotals))
+          });
+        }
       });
       
       // Calculate order-level voucher totals (capped at voucher limits)
@@ -3397,6 +3488,17 @@ var AppState = {
           
           orderVoucherTotals[voucherName] = voucherAmountUsed;
           totalVoucherApplied += voucherAmountUsed;
+          
+          // Debug logging for order ORD-2024-001
+          if (orderId === 'ORD-2024-001') {
+            console.log('ORD-2024-001 Voucher Calc:', {
+              voucherName: voucherName,
+              voucherLineTotal: voucherLineTotal,
+              voucherLimit: voucherLimit,
+              voucherAmountUsed: voucherAmountUsed,
+              totalVoucherApplied: totalVoucherApplied
+            });
+          }
         }
       }
       
@@ -3429,7 +3531,7 @@ var AppState = {
             orderItems.forEach(function(item) {
               // Only process items that are assigned to this voucher
               if (item.voucherUsed === voucherName && item.surewerxPartNumber) {
-                var product = AppState.products.find(function(p) {
+                var product = self.products.find(function(p) {
                   return p.surewerxSku === item.surewerxPartNumber;
                 });
                 if (product && voucher.productIds && voucher.productIds.indexOf(product.id) !== -1) {

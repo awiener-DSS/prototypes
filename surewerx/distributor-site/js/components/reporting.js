@@ -769,31 +769,10 @@ var ReportingComponent = {
         });
       }
       
-      var orderRemainingBalance = firstItem.remainingBalance !== undefined ? firstItem.remainingBalance : (grandTotal - totalVoucherApplied);
-      var orderCreditCardPayment = firstItem.creditCardPayment !== undefined ? firstItem.creditCardPayment : (orderRemainingBalance > 0 ? orderRemainingBalance : 0);
-      
-      // Get voucher details (limit and remaining balance) for each voucher
-      var voucherDetails = {};
-      if (partner && partner.vouchers && Object.keys(orderVoucherTotals).length > 0) {
-        for (var voucherName in orderVoucherTotals) {
-          if (orderVoucherTotals.hasOwnProperty(voucherName)) {
-            var voucher = partner.vouchers.find(function(v) {
-              return v.name === voucherName || (v.name && v.name.toLowerCase().trim() === voucherName.toLowerCase().trim());
-            });
-            if (voucher) {
-              var voucherLimit = voucher.defaultAmount || 0;
-              var voucherAmountApplied = orderVoucherTotals[voucherName]; // Amount used/applied for this voucher
-              // Remaining balance = voucher limit minus voucher amount applied
-              var voucherRemainingBalance = Math.max(0, voucherLimit - voucherAmountApplied);
-              voucherDetails[voucherName] = {
-                limit: voucherLimit,
-                total: voucherAmountApplied,
-                remainingBalance: voucherRemainingBalance
-              };
-            }
-          }
-        }
-      }
+      // Always recalculate remaining balance and credit card payment based on current totalVoucherApplied
+      // (totalVoucherApplied may have been updated by the fallback logic above)
+      var orderRemainingBalance = grandTotal - totalVoucherApplied;
+      var orderCreditCardPayment = orderRemainingBalance > 0 ? orderRemainingBalance : 0;
       
       // Calculate refunds (voucher refunds vs credit card refunds) - voucher first priority
       var totalVoucherRefunded = 0;
@@ -891,6 +870,33 @@ var ReportingComponent = {
         }
       }
       
+      // Get voucher details (limit and remaining balance) for each voucher
+      // This is calculated AFTER refunds so it can account for refunded amounts
+      var voucherDetails = {};
+      if (partner && partner.vouchers && Object.keys(orderVoucherTotals).length > 0) {
+        for (var voucherName in orderVoucherTotals) {
+          if (orderVoucherTotals.hasOwnProperty(voucherName)) {
+            var voucher = partner.vouchers.find(function(v) {
+              return v.name === voucherName || (v.name && v.name.toLowerCase().trim() === voucherName.toLowerCase().trim());
+            });
+            if (voucher) {
+              var voucherLimit = voucher.defaultAmount || 0;
+              var voucherOriginalApplied = orderVoucherTotals[voucherName]; // Original amount used/applied for this voucher
+              var voucherRefundAmount = voucherRefundTotals[voucherName] || 0; // Amount refunded for this voucher
+              // Net voucher applied = original applied - refunded amount
+              var voucherNetApplied = voucherOriginalApplied - voucherRefundAmount;
+              // Remaining balance = voucher limit minus net voucher applied
+              var voucherRemainingBalance = Math.max(0, voucherLimit - voucherNetApplied);
+              voucherDetails[voucherName] = {
+                limit: voucherLimit,
+                total: voucherNetApplied,
+                remainingBalance: voucherRemainingBalance
+              };
+            }
+          }
+        }
+      }
+      
       // Calculate remaining balance: Only show if refund was made AND refund exceeded voucher amount
       // Remaining balance = excess refund amount (refund - voucher applied)
       var calculatedRemainingBalance = 0;
@@ -904,8 +910,9 @@ var ReportingComponent = {
       if (totalVoucherApplied > 0 || orderCreditCardPayment > 0 || Object.keys(orderVoucherTotals).length > 0) {
         paymentBreakdownDisplay = '<div style="font-size: 12px; color: #374151; margin-top: 6px; line-height: 1.8; padding: 8px; background-color: #f9fafb; border-radius: 4px;">';
         
-        // Show credit card payment first (only if no refund or refund didn't exceed voucher)
-        if (orderCreditCardPayment > 0 && calculatedRemainingBalance === 0) {
+        // Show credit card payment first if there was any credit card payment
+        // Credit card payment = Grand Total - Total Voucher Applied (if positive)
+        if (orderCreditCardPayment > 0) {
           paymentBreakdownDisplay += '<div style="margin-bottom: 8px;">';
           paymentBreakdownDisplay += '<strong style="color: #2563eb;">Paid by Credit Card:</strong> ' + Helpers.formatCurrency(orderCreditCardPayment);
           paymentBreakdownDisplay += '</div>';
@@ -921,7 +928,7 @@ var ReportingComponent = {
               var voucherDetail = voucherDetails[voucherName];
               var voucherAmount = voucherDetail ? voucherDetail.total : orderVoucherTotals[voucherName];
               paymentBreakdownDisplay += '<span>• <strong>' + Helpers.escapeHtml(voucherName) + '</strong>: ' + Helpers.formatCurrency(voucherAmount);
-              if (voucherDetail && voucherDetail.remainingBalance > 0) {
+              if (voucherDetail && voucherDetail.remainingBalance !== undefined) {
                 paymentBreakdownDisplay += ' (Remaining: ' + Helpers.formatCurrency(voucherDetail.remainingBalance) + ')';
               }
               paymentBreakdownDisplay += '</span><br>';
@@ -1090,24 +1097,14 @@ var ReportingComponent = {
                   }
                   
                   if (matchingVoucherName) {
-                    // Show voucher name and amount paid by voucher for this line
-                    var voucherAmount = item.voucherAmountPaid || 0;
-                    var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(matchingVoucherName);
-                    if (voucherAmount > 0) {
-                      displayText += ' (' + Helpers.formatCurrency(voucherAmount) + ')';
-                    }
-                    displayText += '</span>';
+                    // Show voucher name only (no amount at line level)
+                    var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(matchingVoucherName) + '</span>';
                     return displayText;
                   }
                 } else if (Object.keys(orderVoucherTotals).length > 0) {
                   // Fallback: show first voucher if no specific voucher name found
                   var firstVoucherName = Object.keys(orderVoucherTotals)[0];
-                  var voucherAmount = item.voucherAmountPaid || 0;
-                  var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(firstVoucherName);
-                  if (voucherAmount > 0) {
-                    displayText += ' (' + Helpers.formatCurrency(voucherAmount) + ')';
-                  }
-                  displayText += '</span>';
+                  var displayText = '<span style="color: #059669; font-weight: 600;">' + Helpers.escapeHtml(firstVoucherName) + '</span>';
                   return displayText;
                 }
               }
@@ -1894,8 +1891,9 @@ var ReportingComponent = {
       // Get order-level voucher information (from first item, same for all items in order)
       var orderVoucherTotals = firstItem.orderVoucherTotals || {};
       var totalVoucherApplied = firstItem.totalVoucherApplied || 0;
-      var orderRemainingBalance = firstItem.remainingBalance !== undefined ? firstItem.remainingBalance : (grandTotal - totalVoucherApplied);
-      var orderCreditCardPayment = firstItem.creditCardPayment !== undefined ? firstItem.creditCardPayment : (orderRemainingBalance > 0 ? orderRemainingBalance : 0);
+      // Always calculate remaining balance and credit card payment from voucher totals
+      var orderRemainingBalance = grandTotal - totalVoucherApplied;
+      var orderCreditCardPayment = orderRemainingBalance > 0 ? orderRemainingBalance : 0;
       
       // Calculate refunds (voucher refunds vs credit card refunds) - voucher first priority
       var totalVoucherRefunded = 0;

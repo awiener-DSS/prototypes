@@ -2424,6 +2424,9 @@ var AppState = {
         }
       });
       
+      // Populate locations from groups for all customers
+      this.populateLocationsFromGroups();
+      
       // Initialize branch locations for distributors if not already set (needed for location assignment)
       if (!this.branchLocations || this.branchLocations.length === 0) {
         this.branchLocations = [
@@ -2847,6 +2850,78 @@ var AppState = {
       { id: 't217', orderId: 'ORD-2024-136', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Face Shield - Full Coverage', surewerxPartNumber: 'SWX-FS-001', distributorPartNumber: '', quantity: 3, unitPrice: 28.99, totalPrice: 86.97, distributorCost: 21.00, dateOrdered: '2024-11-05', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 86.97, lineStatus: 'Shipped', paymentMethod: 'Voucher' },
       { id: 't218', orderId: 'ORD-2024-136', employeeName: 'Emily Davis', employeeEmail: 'emily.davis@boeing.com', employeeGroup: 'Safety Team', customerName: 'Boeing', productName: 'Welding Gloves - Heavy Duty', surewerxPartNumber: 'SWX-WG-002', distributorPartNumber: '', quantity: 2, unitPrice: 28.99, totalPrice: 57.98, distributorCost: 22.00, dateOrdered: '2024-11-05', voucherUsed: 'Quarterly PPE Budget', voucherAmount: 57.98, lineStatus: 'Shipped', paymentMethod: 'Voucher' }
     ];
+  },
+  
+  // Populate locations from groups
+  populateLocationsFromGroups: function() {
+    this.customers.forEach(function(customer) {
+      // Initialize locations array if it doesn't exist
+      if (!customer.locations) {
+        customer.locations = [];
+      }
+      
+      // Get unique locationIds from groups
+      if (customer.groups && customer.groups.length > 0) {
+        var locationMap = {}; // Map of locationId -> location data
+        
+        customer.groups.forEach(function(group) {
+          if (group.locationId && !locationMap[group.locationId]) {
+            // This is a new unique location
+            locationMap[group.locationId] = {
+              name: group.location || '',
+              locationId: group.locationId,
+              address: group.addressLine1 || '',
+              city: group.addressCity || '',
+              state: group.addressState || '',
+              zip: group.addressZip || '',
+              distributorBranchId: group.distributorBranchId || null
+            };
+          }
+        });
+        
+        // Update or add locations based on locationMap
+        Object.keys(locationMap).forEach(function(locationId) {
+          var locationData = locationMap[locationId];
+          var existingLocation = customer.locations.find(function(l) { return l.locationId === locationId; });
+          
+          if (existingLocation) {
+            // Update existing location with group data if fields are missing
+            if (!existingLocation.name && locationData.name) {
+              existingLocation.name = locationData.name;
+            }
+            if (!existingLocation.address && locationData.address) {
+              existingLocation.address = locationData.address;
+            }
+            if (!existingLocation.city && locationData.city) {
+              existingLocation.city = locationData.city;
+            }
+            if (!existingLocation.state && locationData.state) {
+              existingLocation.state = locationData.state;
+            }
+            if (!existingLocation.zip && locationData.zip) {
+              existingLocation.zip = locationData.zip;
+            }
+          } else {
+            // Create new location
+            var newLocation = {
+              id: Helpers.generateId(),
+              name: locationData.name,
+              locationId: locationData.locationId,
+              address: locationData.address,
+              city: locationData.city,
+              state: locationData.state,
+              zip: locationData.zip,
+              distributorBranchId: locationData.distributorBranchId,
+              contactName: null,
+              contactEmail: null,
+              contactPhone: null,
+              departments: []
+            };
+            customer.locations.push(newLocation);
+          }
+        });
+      }
+    });
   },
   
   // Populate employees from transactions

@@ -748,8 +748,8 @@ var CustomerDetailComponent = {
       '<div class="mb-4" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">' +
       '<div style="display: flex; align-items: center; gap: 10px; flex: 1; min-width: 300px;">' +
       '<label for="location-filter" style="margin: 0; font-weight: 500; white-space: nowrap;">Filter by Location:</label>' +
-      '<div style="position: relative; flex: 1; max-width: 400px;">' +
-      '<input type="text" class="form-control" id="location-filter" placeholder="Search by location ID, address, city, state, or branch..." value="' + Helpers.escapeHtml(self.locationFilter || '') + '" autocomplete="off">' +
+      '<div style="position: relative; flex: 1; max-width: 600px;">' +
+      '<input type="text" class="form-control" id="location-filter" placeholder="Search by name, location ID, address, city, state, zip, or branch..." value="' + Helpers.escapeHtml(self.locationFilter || '') + '" autocomplete="off">' +
       '<span class="glyphicon glyphicon-search" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #999; pointer-events: none;"></span>' +
       '</div>' +
       (this.locationFilter ? 
@@ -767,10 +767,12 @@ var CustomerDetailComponent = {
     if (this.locationFilter) {
       var searchTerm = this.locationFilter.toLowerCase();
       filteredLocations = locations.filter(function(loc) {
+        var locationName = (loc.name || '').toLowerCase();
         var locationId = (loc.locationId || '').toLowerCase();
         var address = (loc.address || '').toLowerCase();
         var city = (loc.city || '').toLowerCase();
         var state = (loc.state || '').toLowerCase();
+        var zip = (loc.zip || '').toLowerCase();
         
         // Also search by distributor branch name
         var branchName = 'Not Assigned';
@@ -782,10 +784,12 @@ var CustomerDetailComponent = {
         }
         branchName = branchName.toLowerCase();
         
-        return locationId.indexOf(searchTerm) > -1 ||
+        return locationName.indexOf(searchTerm) > -1 ||
+               locationId.indexOf(searchTerm) > -1 ||
                address.indexOf(searchTerm) > -1 ||
                city.indexOf(searchTerm) > -1 ||
                state.indexOf(searchTerm) > -1 ||
+               zip.indexOf(searchTerm) > -1 ||
                branchName.indexOf(searchTerm) > -1;
       });
     }
@@ -801,10 +805,8 @@ var CustomerDetailComponent = {
         '<table class="table table-striped table-bordered">' +
         '<thead>' +
         '<tr>' +
-        '<th>Location ID</th>' +
+        '<th>Location</th>' +
         '<th>Address</th>' +
-        '<th>City</th>' +
-        '<th>State</th>' +
         '<th>Distributor Branch</th>' +
         '<th>Departments</th>' +
         '<th style="width: 120px;">Actions</th>' +
@@ -816,20 +818,57 @@ var CustomerDetailComponent = {
         // Count departments in this location
         var departmentCount = (location.departments || []).length;
         
-        // Get distributor branch name
+        // Get distributor branch address
         var branchName = 'Not Assigned';
         if (location.distributorBranchId) {
           var branch = distributorBranches.find(function(b) { return b.id === location.distributorBranchId; });
           if (branch) {
-            branchName = branch.branchId + ' - ' + branch.branchAddress;
+            branchName = branch.branchAddress;
           }
         }
         
+        // Combine address, city, state, and zip into a single formatted string
+        var fullAddress = '';
+        var addressParts = [];
+        
+        if (location.address) {
+          addressParts.push(Helpers.escapeHtml(location.address));
+        }
+        
+        if (location.city || location.state || location.zip) {
+          var cityStateZip = '';
+          var cszParts = [];
+          if (location.city) cszParts.push(Helpers.escapeHtml(location.city));
+          if (location.state) {
+            var stateZip = Helpers.escapeHtml(location.state);
+            if (location.zip) {
+              stateZip += ' ' + Helpers.escapeHtml(location.zip);
+            }
+            cszParts.push(stateZip);
+          } else if (location.zip) {
+            cszParts.push(Helpers.escapeHtml(location.zip));
+          }
+          cityStateZip = cszParts.join(', ');
+          if (cityStateZip) {
+            addressParts.push(cityStateZip);
+          }
+        }
+        
+        fullAddress = addressParts.join(', ');
+        
+        // Combine location ID and name in format "ID - Name"
+        var locationDisplay = '';
+        if (location.locationId && location.name) {
+          locationDisplay = Helpers.escapeHtml(location.locationId) + ' - ' + Helpers.escapeHtml(location.name);
+        } else if (location.locationId) {
+          locationDisplay = Helpers.escapeHtml(location.locationId);
+        } else if (location.name) {
+          locationDisplay = Helpers.escapeHtml(location.name);
+        }
+        
         html += '<tr class="location-row selectable-row" data-location-id="' + location.id + '" style="cursor: pointer;">' +
-          '<td><strong>' + Helpers.escapeHtml(location.locationId || '') + '</strong></td>' +
-          '<td>' + Helpers.escapeHtml(location.address || '') + '</td>' +
-          '<td>' + Helpers.escapeHtml(location.city || '') + '</td>' +
-          '<td>' + Helpers.escapeHtml(location.state || '') + '</td>' +
+          '<td><strong>' + locationDisplay + '</strong></td>' +
+          '<td>' + fullAddress + '</td>' +
           '<td>' + Helpers.escapeHtml(branchName) + '</td>' +
           '<td>' + departmentCount + ' department' + (departmentCount !== 1 ? 's' : '') + '</td>' +
           '<td>' +
@@ -1026,6 +1065,10 @@ var CustomerDetailComponent = {
       '<form id="location-form">' +
       '<div class="modal-body">' +
       '<div class="form-group">' +
+      '<label for="modal-location-name">Location Name *</label>' +
+      '<input type="text" class="form-control" id="modal-location-name" value="' + (location ? Helpers.escapeHtml(location.name || '') : '') + '" placeholder="Enter location name" required>' +
+      '</div>' +
+      '<div class="form-group">' +
       '<label for="modal-location-id">Location ID *</label>' +
       '<input type="text" class="form-control" id="modal-location-id" value="' + (location ? Helpers.escapeHtml(location.locationId || '') : '') + '" placeholder="Enter location ID" required>' +
       '</div>' +
@@ -1034,16 +1077,22 @@ var CustomerDetailComponent = {
       '<input type="text" class="form-control" id="modal-location-address" value="' + (location ? Helpers.escapeHtml(location.address || '') : '') + '" placeholder="Enter address" required>' +
       '</div>' +
       '<div class="row">' +
-      '<div class="col-md-6">' +
+      '<div class="col-md-4">' +
       '<div class="form-group">' +
       '<label for="modal-location-city">City *</label>' +
       '<input type="text" class="form-control" id="modal-location-city" value="' + (location ? Helpers.escapeHtml(location.city || '') : '') + '" placeholder="Enter city" required>' +
       '</div>' +
       '</div>' +
-      '<div class="col-md-6">' +
+      '<div class="col-md-4">' +
       '<div class="form-group">' +
       '<label for="modal-location-state">State *</label>' +
       '<input type="text" class="form-control" id="modal-location-state" value="' + (location ? Helpers.escapeHtml(location.state || '') : '') + '" placeholder="Enter state" required>' +
+      '</div>' +
+      '</div>' +
+      '<div class="col-md-4">' +
+      '<div class="form-group">' +
+      '<label for="modal-location-zip">Zip Code *</label>' +
+      '<input type="text" class="form-control" id="modal-location-zip" value="' + (location ? Helpers.escapeHtml(location.zip || '') : '') + '" placeholder="Enter zip code" required>' +
       '</div>' +
       '</div>' +
       '</div>' +
@@ -1083,19 +1132,21 @@ var CustomerDetailComponent = {
     // Handle form submit
     $(document).off('submit', '#location-form').on('submit', '#location-form', function(e) {
       e.preventDefault();
+      var locationName = $('#modal-location-name').val();
       var locationIdValue = $('#modal-location-id').val();
       var address = $('#modal-location-address').val();
       var city = $('#modal-location-city').val();
       var state = $('#modal-location-state').val();
+      var zip = $('#modal-location-zip').val();
       var distributorBranchId = $('#modal-distributor-branch').val() || null;
       var contactName = $('#modal-location-contact-name').val().trim() || null;
       var contactEmail = $('#modal-location-contact-email').val().trim() || null;
       var contactPhone = $('#modal-location-contact-phone').val().trim() || null;
       
       if (isEdit) {
-        self.handleUpdateLocation(locationId, locationIdValue, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone);
+        self.handleUpdateLocation(locationId, locationName, locationIdValue, address, city, state, zip, distributorBranchId, contactName, contactEmail, contactPhone);
       } else {
-        self.handleAddLocation(locationIdValue, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone);
+        self.handleAddLocation(locationName, locationIdValue, address, city, state, zip, distributorBranchId, contactName, contactEmail, contactPhone);
       }
       
       $('#location-modal').modal('hide');
@@ -1110,8 +1161,8 @@ var CustomerDetailComponent = {
     $('#location-modal').modal('show');
   },
   
-  handleAddLocation: function(locationId, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone) {
-    if (!locationId || !address || !city || !state) {
+  handleAddLocation: function(locationName, locationId, address, city, state, zip, distributorBranchId, contactName, contactEmail, contactPhone) {
+    if (!locationName || !locationId || !address || !city || !state || !zip) {
       Helpers.showAlert('Please fill in all required fields', 'warning');
       return;
     }
@@ -1121,10 +1172,12 @@ var CustomerDetailComponent = {
     
     var newLocation = {
       id: Helpers.generateId(),
+      name: locationName.trim(),
       locationId: locationId.trim(),
       address: address.trim(),
       city: city.trim(),
       state: state.trim(),
+      zip: zip.trim(),
       distributorBranchId: distributorBranchId || null,
       contactName: contactName || null,
       contactEmail: contactEmail || null,
@@ -1142,8 +1195,8 @@ var CustomerDetailComponent = {
     this.renderTabContent('locations');
   },
   
-  handleUpdateLocation: function(locationId, locationIdValue, address, city, state, distributorBranchId, contactName, contactEmail, contactPhone) {
-    if (!locationIdValue || !address || !city || !state) {
+  handleUpdateLocation: function(locationId, locationName, locationIdValue, address, city, state, zip, distributorBranchId, contactName, contactEmail, contactPhone) {
+    if (!locationName || !locationIdValue || !address || !city || !state || !zip) {
       Helpers.showAlert('Please fill in all required fields', 'warning');
       return;
     }
@@ -1153,10 +1206,12 @@ var CustomerDetailComponent = {
     
     var location = (customer.locations || []).find(function(l) { return l.id === locationId; });
     if (location) {
+      location.name = locationName.trim();
       location.locationId = locationIdValue.trim();
       location.address = address.trim();
       location.city = city.trim();
       location.state = state.trim();
+      location.zip = zip.trim();
       location.distributorBranchId = distributorBranchId || null;
       location.contactName = contactName || null;
       location.contactEmail = contactEmail || null;

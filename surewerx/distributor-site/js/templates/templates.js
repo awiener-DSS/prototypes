@@ -1294,9 +1294,9 @@ var Templates = {
       '<div class="row" style="margin-top: 20px;">' +
       '<div class="col-md-8">' +
       '<div class="form-group">' +
-      '<label>Distributor Customer ID</label>' +
-      '<input type="text" class="form-control" id="customer-distributor-customer-id" value="' + Helpers.escapeHtml(formData.distributorCustomerId || '') + '" placeholder="e.g., CUST-12345">' +
-      '<small class="text-muted">Optional identifier used by the distributor to track this customer</small>' +
+      '<label>Distributor Customer ID *</label>' +
+      '<input type="text" class="form-control" id="customer-distributor-customer-id" value="' + Helpers.escapeHtml(formData.distributorCustomerId || '') + '" placeholder="e.g., CUST-12345" required>' +
+      '<small class="text-muted">Unique identifier used by the distributor to track this customer</small>' +
       '</div>' +
       '</div>' +
       '</div>' +

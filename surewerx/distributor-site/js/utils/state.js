@@ -1069,6 +1069,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiM0Mjg1RjQiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE4IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlRNPC90ZXh0Pjwvc3ZnPg==',
         status: 'active',
         distributorId: 'd1', // Fastenal
+        distributorCustomerId: 'FAST-TECHMFG-009',
         employeeCount: 85,
         activeVouchers: 4,
         monthlySpend: 18900.00,
@@ -2007,6 +2008,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiM4YjVjZjYiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkY8L3RleHQ+PC9zdmc+',
         status: 'active',
         distributorId: 'd4', // Motion Industries
+        distributorCustomerId: 'MOT-FOODPROC-007',
         employeeCount: 200,
         activeVouchers: 8,
         monthlySpend: 31200.00,
@@ -2142,6 +2144,7 @@ var AppState = {
         logoUrl: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IiM2NzI4NzciLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjIwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkE8L3RleHQ+PC9zdmc+',
         status: 'active',
         distributorId: 'd4', // Motion Industries
+        distributorCustomerId: 'MOT-AUTOPARTS-008',
         employeeCount: 175,
         activeVouchers: 5,
         monthlySpend: 26700.00,
@@ -2316,6 +2319,11 @@ var AppState = {
           // Always update distributorId if missing (to ensure customers are associated with distributors)
           if (!existingCustomer.distributorId && newCustomer.distributorId) {
             existingCustomer.distributorId = newCustomer.distributorId;
+          }
+          
+          // Always update distributorCustomerId to keep it in sync with source data
+          if (newCustomer.distributorCustomerId) {
+            existingCustomer.distributorCustomerId = newCustomer.distributorCustomerId;
           }
           
           // Always update voucher productIds to keep them in sync with source data

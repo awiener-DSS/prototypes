@@ -985,9 +985,16 @@ var ReportingComponent = {
         }
         refundBreakdownDisplay += '</div>';
         
-        // Amount to be Collected from Credit Card
+        // Amount to be Refunded to Credit Card
         refundBreakdownDisplay += '<div style="font-weight: 700; color: #991b1b; margin-bottom: 8px;">';
-        refundBreakdownDisplay += '<strong>Amount to be Collected from Credit Card:</strong> ' + Helpers.formatCurrency(totalCreditCardCollection);
+        refundBreakdownDisplay += '<strong>Amount to be Refunded to Credit Card:</strong> ' + Helpers.formatCurrency(totalCreditCardCollection);
+        refundBreakdownDisplay += '</div>';
+        
+        // Actual Amount Refunded
+        var actualCreditCardRefund = firstItem.actualCreditCardRefund || 0;
+        var refundColor = (Math.abs(actualCreditCardRefund - totalCreditCardCollection) < 0.01) ? '#059669' : '#6b7280';
+        refundBreakdownDisplay += '<div style="font-weight: 700; color: ' + refundColor + '; margin-bottom: 8px;">';
+        refundBreakdownDisplay += '<strong>Actual Amount Refunded:</strong> ' + Helpers.formatCurrency(actualCreditCardRefund);
         refundBreakdownDisplay += '</div>';
         
         refundBreakdownDisplay += '</div>';
@@ -2127,10 +2134,13 @@ var ReportingComponent = {
           'Line Total': item.totalPrice.toFixed(2),
           'Voucher Name': item.voucherUsed || item.eligibleVoucherName || '',
           'Line Status': item.lineStatus,
+          'Shipping Carrier': item.shippingCarrier || '',
+          'Shipping Method': item.shippingMethod || '',
           'Tracking Number': item.trackingNumber || '',
           
           // Order Level Transactional Information (32-36)
           'Order ID': item.orderId,
+          'Order Date': Helpers.formatDate(item.dateOrdered) || '',
           'Total Voucher Amount Applied': totalVoucherApplied.toFixed(2),
           'Cash Payment': orderCreditCardPayment.toFixed(2),
           'Payment Method': item.paymentMethod || '',
@@ -2140,9 +2150,11 @@ var ReportingComponent = {
           'Voucher Refund Amount': voucherRefundAmount,
           'Distributor Refund Amount': distributorRefundAmount,
           'Credit Card Refund Amount': totalCreditCardCollection > 0 ? totalCreditCardCollection.toFixed(2) : '',
+          'Actual Amount Refunded': item.actualCreditCardRefund ? item.actualCreditCardRefund.toFixed(2) : '0.00',
           'Return Reference Number': returnReferenceNumber,
           'Credit Invoice Number': creditInvoiceNumber,
-          'Credit Invoice Date': creditInvoiceDate
+          'Credit Invoice Date': creditInvoiceDate,
+          'PO Number': 'VOUC-' + Math.floor(Math.random() * 900000 + 100000)
         };
         
         csvData.push(csvRow);

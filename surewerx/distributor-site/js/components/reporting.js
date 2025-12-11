@@ -2062,69 +2062,186 @@ var ReportingComponent = {
           creditInvoiceDate = randomDate.toISOString().split('T')[0];
         }
         
-        // Build CSV row according to specification
-        var csvRow = {
-          // Invoice Information (1-2)
-          'Invoice Number': item.invoiceNumber || '',
-          'Invoice Date': Helpers.formatDate(item.invoiceDate) || '',
-          
-          // Distributor / Customer Information (3-12)
-          'Distributor Customer Number': distributorCustomerNumber,
-          'Distributor Branch Code': distributorBranchCode,
-          'Customer Name': item.partnerName || item.customerName || '',
-          'Location ID': locationId,
-          'Location Name': locationName,
-          'Department': department,
-          'Department Address Line 1': addressLine1,
-          'Department City': addressCity,
-          'Department State': addressState,
-          'Department Zip': addressZip,
-          
-          // Employee Information (13-20)
-          'Employee ID': employeeId,
-          'Employee Username': employeeUsername,
-          'Employee First Name': employeeFirstName,
-          'Employee Last Name': employeeLastName,
-          'Shipping Line 1': shippingLine1,
-          'Shipping City': shippingCity,
-          'Shipping State': shippingState,
-          'Shipping Zip': shippingZip,
-          
-          // SKU Information (21-23)
-          'SureWerx SKU': item.surewerxPartNumber,
-          'Distributor SKU': distributorSku,
-          'Product Name': item.productName,
-          
-          // Line Level Transactional Information (24-31)
-          'Distributor Price': distributorPrice.toFixed(2),
-          'Customer Price': item.unitPrice.toFixed(2),
-          'Quantity': item.quantity,
-          'Distributor Line Total': distributorLineTotal.toFixed(2),
-          'Line Total': item.totalPrice.toFixed(2),
-          'Voucher Name': item.voucherUsed || item.eligibleVoucherName || '',
-          'Line Status': item.lineStatus,
-          'Shipping Carrier': item.shippingCarrier || '',
-          'Shipping Method': item.shippingMethod || '',
-          'Tracking Number': item.trackingNumber || '',
-          
-          // Order Level Transactional Information (32-36)
-          'Order ID': item.orderId,
-          'Order Date': Helpers.formatDate(item.dateOrdered) || '',
-          'Total Voucher Amount Applied': totalVoucherApplied.toFixed(2),
-          'Cash Payment': orderCreditCardPayment.toFixed(2),
-          'Payment Method': item.paymentMethod || '',
-          'Voucher Names': voucherNamesList,
-          
-          // Return Level Transaction Information (37-42)
-          'Voucher Refund Amount': voucherRefundAmount,
-          'Distributor Refund Amount': distributorRefundAmount,
-          'Credit Card Refund Amount': totalCreditCardCollection > 0 ? totalCreditCardCollection.toFixed(2) : '',
-          'Actual Amount Refunded': item.actualCreditCardRefund ? item.actualCreditCardRefund.toFixed(2) : '0.00',
-          'Return Reference Number': returnReferenceNumber,
-          'Credit Invoice Number': creditInvoiceNumber,
-          'Credit Invoice Date': creditInvoiceDate,
-          'PO Number': 'VOUC-' + Math.floor(Math.random() * 900000 + 100000)
-        };
+        // Determine payment method based on voucher and credit card usage
+        var paymentMethod = '';
+        if (totalVoucherApplied > 0 && orderCreditCardPayment > 0) {
+          paymentMethod = 'Voucher, Credit Card';
+        } else if (totalVoucherApplied > 0) {
+          paymentMethod = 'Voucher';
+        } else if (orderCreditCardPayment > 0) {
+          paymentMethod = 'Credit Card';
+        }
+        
+        // Calculate line-level refund amounts for voucher and distributor
+        var lineVoucherRefundAmount = '';
+        var lineDistributorRefundAmount = '';
+        var lineCashRefundAmount = '';
+        
+        if (voucherRefundAmount) {
+          lineVoucherRefundAmount = voucherRefundAmount;
+          // Calculate distributor refund based on distributor cost
+          if (lineRefundedQty > 0) {
+            lineDistributorRefundAmount = (distributorPrice * lineRefundedQty).toFixed(2);
+          }
+        }
+        
+        // Cash refund amount - portion that exceeds voucher coverage
+        if (item.refundedAmount && item.refundedAmount > 0) {
+          var lineVoucherAllocation = lineVoucherApplied ? parseFloat(lineVoucherApplied) : 0;
+          if (item.refundedAmount > lineVoucherAllocation) {
+            lineCashRefundAmount = (item.refundedAmount - lineVoucherAllocation).toFixed(2);
+          }
+        }
+        
+        // Build CSV row according to specification in exact order (1-49)
+        var csvRow = {};
+        
+        // 1. Distributor Branch Code
+        csvRow['Distributor Branch Code'] = distributorBranchCode;
+        
+        // 2. Distributor Customer Number
+        csvRow['Distributor Customer Number'] = distributorCustomerNumber;
+        
+        // 3. Customer Name
+        csvRow['Customer Name'] = item.partnerName || item.customerName || '';
+        
+        // 4. Location ID
+        csvRow['Location ID'] = locationId;
+        
+        // 5. Location Name
+        csvRow['Location Name'] = locationName;
+        
+        // 6. Department
+        csvRow['Department'] = department;
+        
+        // 7. Location Address
+        csvRow['Location Address'] = addressLine1;
+        
+        // 8. Location City
+        csvRow['Location City'] = addressCity;
+        
+        // 9. Location State
+        csvRow['Location State'] = addressState;
+        
+        // 10. Location Zip
+        csvRow['Location Zip'] = addressZip;
+        
+        // 11. Order Date
+        csvRow['Order Date'] = Helpers.formatDate(item.dateOrdered) || '';
+        
+        // 12. Order ID
+        csvRow['Order ID'] = item.orderId;
+        
+        // 13. PO Number (VOUC- + Intershop ID)
+        csvRow['PO Number'] = 'VOUC-' + item.orderId;
+        
+        // 14. Invoice Date
+        csvRow['Invoice Date'] = Helpers.formatDate(item.invoiceDate) || '';
+        
+        // 15. Invoice Number
+        csvRow['Invoice Number'] = item.invoiceNumber || '';
+        
+        // 16. Employee ID
+        csvRow['Employee ID'] = employeeId;
+        
+        // 17. Employee Username
+        csvRow['Employee Username'] = employeeUsername;
+        
+        // 18. Employee First Name
+        csvRow['Employee First Name'] = employeeFirstName;
+        
+        // 19. Employee Last Name
+        csvRow['Employee Last Name'] = employeeLastName;
+        
+        // 20. Shipping Address
+        csvRow['Shipping Address'] = shippingLine1;
+        
+        // 21. Shipping City
+        csvRow['Shipping City'] = shippingCity;
+        
+        // 22. Shipping State
+        csvRow['Shipping State'] = shippingState;
+        
+        // 23. Shipping Zip
+        csvRow['Shipping Zip'] = shippingZip;
+        
+        // 24. Payment Method
+        csvRow['Payment Method'] = paymentMethod;
+        
+        // 25. Total Voucher Amount Applied
+        csvRow['Total Voucher Amount Applied'] = totalVoucherApplied.toFixed(2);
+        
+        // 26. Voucher Amount Applied (line-level)
+        csvRow['Voucher Amount Applied'] = lineVoucherApplied;
+        
+        // 27. Total Voucher Names (comma-separated list)
+        csvRow['Total Voucher Names'] = voucherNamesList;
+        
+        // 28. Expedited Shipping Cost
+        csvRow['Expedited Shipping Cost'] = expeditedShippingCost;
+        
+        // 29. Total Cash Payment (includes shipping)
+        csvRow['Total Cash Payment'] = orderCreditCardPayment.toFixed(2);
+        
+        // 30. SureWerx SKU
+        csvRow['SureWerx SKU'] = item.surewerxPartNumber;
+        
+        // 31. Distributor SKU
+        csvRow['Distributor SKU'] = distributorSku;
+        
+        // 32. Product Name
+        csvRow['Product Name'] = item.productName;
+        
+        // 33. Distributor Price (unit cost)
+        csvRow['Distributor Price'] = distributorPrice.toFixed(2);
+        
+        // 34. Customer Price (unit price)
+        csvRow['Customer Price'] = item.unitPrice.toFixed(2);
+        
+        // 35. Quantity
+        csvRow['Quantity'] = item.quantity;
+        
+        // 36. Distributor Line Total
+        csvRow['Distributor Line Total'] = distributorLineTotal.toFixed(2);
+        
+        // 37. Line Total
+        csvRow['Line Total'] = item.totalPrice.toFixed(2);
+        
+        // 38. Voucher Name (line-level)
+        csvRow['Voucher Name'] = item.voucherUsed || item.eligibleVoucherName || '';
+        
+        // 39. Line Status
+        csvRow['Line Status'] = item.lineStatus;
+        
+        // 40. Shipping Carrier
+        csvRow['Shipping Carrier'] = item.shippingCarrier || '';
+        
+        // 41. Shipping Method
+        csvRow['Shipping Method'] = item.shippingMethod || '';
+        
+        // 42. Tracking Number
+        csvRow['Tracking Number'] = item.trackingNumber || '';
+        
+        // 43. Return: Reference Number
+        csvRow['Return: Reference Number'] = returnReferenceNumber;
+        
+        // 44. Return: Voucher Refund Amount
+        csvRow['Return: Voucher Refund Amount'] = lineVoucherRefundAmount;
+        
+        // 45. Return: Distributor Refund Amount
+        csvRow['Return: Distributor Refund Amount'] = lineDistributorRefundAmount;
+        
+        // 46. Return: Cash Refund Amount (CC)
+        csvRow['Return: Cash Refund Amount (CC)'] = lineCashRefundAmount;
+        
+        // 47. Return: Actual Cash Refund Amount (CC)
+        csvRow['Return: Actual Cash Refund Amount (CC)'] = item.actualCreditCardRefund ? item.actualCreditCardRefund.toFixed(2) : '';
+        
+        // 48. Return: Credit Invoice Date
+        csvRow['Return: Credit Invoice Date'] = creditInvoiceDate;
+        
+        // 49. Return: Credit Invoice Number
+        csvRow['Return: Credit Invoice Number'] = creditInvoiceNumber;
         
         csvData.push(csvRow);
       });

@@ -42,10 +42,10 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
     '<input type="date" class="form-control" id="edit-employee-start-date" value="' + (employee.startDate || '') + '"' + (partner.employeeFieldConfig.requireStartDate ? ' required' : '') + '>' +
     '</div>';
   
-  // Department (always shown)
+  // Department (always shown, but disabled for editing)
   modalHtml += '<div class="form-group">' +
-    '<label>Department *</label>' +
-    '<select class="form-control" id="edit-employee-department" required>' +
+    '<label>Department</label>' +
+    '<select class="form-control" id="edit-employee-department" disabled>' +
     (function() {
       var options = '';
       var currentDepartmentId = employee.departmentId || employee.groupId; // Support both
@@ -56,20 +56,9 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
         partner.locations.forEach(function(loc) {
           if (loc.departments && loc.departments.length > 0) {
             loc.departments.forEach(function(dept) {
-              var deptVouchers = partner.vouchers.filter(function(v) {
-                if (v.departmentId === dept.id) {
-                  if (loc.id && v.locationId) {
-                    return v.locationId === loc.id;
-                  }
-                  return !loc.id && !v.locationId;
-                }
-                return false;
-              });
-              var totalAmount = deptVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
               var selected = (dept.id === currentDepartmentId && loc.id === currentLocationId) ? ' selected' : '';
               options += '<option value="' + dept.id + '" data-location-id="' + loc.id + '"' + selected + '>' +
                 Helpers.escapeHtml(loc.locationId || 'Unnamed') + ' - ' + Helpers.escapeHtml(dept.name) +
-                ' - $' + totalAmount.toFixed(2) + ' (' + deptVouchers.length + ' vouchers)' +
                 '</option>';
             });
           }
@@ -80,7 +69,7 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
       return options;
     })() +
     '</select>' +
-    '<p class="help-block">Select the department for this employee</p>' +
+    '<p class="help-block"><small class="text-muted">Department changes must be done through the "Change Department" feature on the Employees tab</small></p>' +
     '</div>';
   
   // Notes (always shown)
@@ -106,12 +95,11 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
     
     var firstName = $('#edit-employee-first-name').val();
     var lastName = $('#edit-employee-last-name').val();
-    var newDepartmentId = $('#edit-employee-department').val();
-    var selectedOption = $('#edit-employee-department option:selected');
-    var newLocationId = selectedOption.data('location-id');
     
-    var oldDepartmentId = employee.departmentId || employee.groupId;
-    var oldLocationId = employee.locationId;
+    // Department cannot be changed through edit - use "Change Department" feature instead
+    // Keep the existing department and location values
+    var keepDepartmentId = employee.departmentId || employee.groupId;
+    var keepLocationId = employee.locationId;
     
     // Get all identifier fields (both required and optional)
     var employeeId = $('#edit-employee-id').val().trim() || undefined;
@@ -127,37 +115,14 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
       username: username,
       dateOfBirth: dateOfBirth,
       startDate: startDate,
-      departmentId: newDepartmentId,
-      locationId: newLocationId || null,
+      departmentId: keepDepartmentId,
+      locationId: keepLocationId || null,
       // Keep groupId for backward compatibility
       notes: $('#edit-employee-notes').val() || ''
     };
     
-    // If department changed, update voucher balances
-    if (newDepartmentId !== oldDepartmentId || newLocationId !== oldLocationId) {
-      var deptVouchers = partner.vouchers.filter(function(v) {
-        if (v.departmentId === newDepartmentId) {
-          if (newLocationId && v.locationId) {
-            return v.locationId === newLocationId;
-          }
-          return !newLocationId && !v.locationId;
-        }
-        return false;
-      });
-      
-      var totalBalance = deptVouchers.reduce(function(sum, v) { return sum + v.defaultAmount; }, 0);
-      var voucherBalances = deptVouchers.map(function(v) {
-        return {
-          voucherId: v.id,
-          remainingAmount: v.defaultAmount
-        };
-      });
-      var voucherExpiry = deptVouchers.length > 0 ? deptVouchers[0].endDate : '';
-      
-      updatedEmployeeData.voucherBalances = voucherBalances;
-      updatedEmployeeData.remainingBalance = totalBalance;
-      updatedEmployeeData.voucherExpiry = voucherExpiry;
-    }
+    // Department changes are not allowed through edit modal
+    // Voucher balances remain unchanged
     
     console.log('Updating employee with data:', updatedEmployeeData);
     

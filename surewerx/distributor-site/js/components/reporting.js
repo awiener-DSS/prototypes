@@ -791,91 +791,60 @@ var ReportingComponent = {
         }
       }
       
+      // Group refunded items by their eligible voucher
+      var refundsByVoucher = {}; // { voucherName: totalRefundAmount }
+      
       orderItems.forEach(function(item) {
         if (item.refundedAmount && item.refundedAmount > 0) {
           totalRefunded += item.refundedAmount;
           hasRefunds = true;
           
-          // Determine the actual voucher amount allocated to this line item
-          // When multiple items qualify for the same voucher and the total exceeds the limit,
-          // we need to proportionally allocate the capped voucher amount across qualifying items
-          var lineVoucherAllocation = 0;
-          if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
-            // Find matching voucher name (exact or case-insensitive)
-            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
-              Object.keys(orderVoucherTotals).find(function(vName) {
-                if (!vName || !item.eligibleVoucherName) return false;
-                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
-              });
-            
-            if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
-              // Get the total amount applied from this voucher (already capped at voucher limit)
-              var voucherAppliedAmount = orderVoucherTotals[matchingVoucherName];
-              
-              // Calculate the sum of all line items that qualified for this voucher
-              var voucherQualifyingTotal = orderItems.reduce(function(sum, orderItem) {
-                if (orderItem.eligibleVoucherName === matchingVoucherName ||
-                    (orderItem.eligibleVoucherName && matchingVoucherName && 
-                     orderItem.eligibleVoucherName.toLowerCase().trim() === matchingVoucherName.toLowerCase().trim())) {
-                  return sum + orderItem.totalPrice;
-                }
-                return sum;
-              }, 0);
-              
-              // Proportionally allocate the voucher amount to this line item
-              // Allocation = (line item total / qualifying total) * voucher applied amount
-              if (voucherQualifyingTotal > 0) {
-                lineVoucherAllocation = (item.totalPrice / voucherQualifyingTotal) * voucherAppliedAmount;
-              }
+          // Determine which voucher this item qualified for
+          var voucherName = item.eligibleVoucherName || item.voucherUsed;
+          if (voucherName) {
+            // Normalize voucher name (case-insensitive matching)
+            var matchingVoucherName = null;
+            if (orderVoucherTotals) {
+              matchingVoucherName = orderVoucherTotals[voucherName] ? voucherName :
+                Object.keys(orderVoucherTotals).find(function(vName) {
+                  if (!vName || !voucherName) return false;
+                  return vName.toLowerCase().trim() === voucherName.toLowerCase().trim();
+                });
             }
-          }
-          
-          // If no voucher allocation found, fall back to proportional allocation across all vouchers
-          if (lineVoucherAllocation === 0 && totalVoucherApplied > 0 && orderTotal > 0) {
-            var voucherRatio = totalVoucherApplied / orderTotal;
-            lineVoucherAllocation = item.totalPrice * voucherRatio;
-          }
-          
-          // Calculate how much of this refund exceeds the voucher allocation for this line
-          if (item.refundedAmount > lineVoucherAllocation) {
-            // This line's refund exceeded its voucher portion - track the excess
-            var exceededAmount = item.refundedAmount - lineVoucherAllocation;
-            totalCreditCardCollection += exceededAmount;
-          }
-          
-          // Determine voucher refund amount (up to the line's voucher allocation)
-          var lineVoucherRefund = Math.min(item.refundedAmount, lineVoucherAllocation);
-          totalVoucherRefunded += lineVoucherRefund;
-          
-          // Allocate voucher refund to the specific voucher this line item is eligible for
-          if (lineVoucherRefund > 0 && item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
-            // Find matching voucher name
-            var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
-              Object.keys(orderVoucherTotals).find(function(vName) {
-                if (!vName || !item.eligibleVoucherName) return false;
-                return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
-              });
             
             if (matchingVoucherName) {
-              // Allocate the full line voucher refund to this specific voucher
-              voucherRefundTotals[matchingVoucherName] = (voucherRefundTotals[matchingVoucherName] || 0) + lineVoucherRefund;
-            } else {
-              // Fall back to proportional allocation if no matching voucher found
-              if (totalVoucherApplied > 0) {
-                for (var vName in orderVoucherTotals) {
-                  if (orderVoucherTotals.hasOwnProperty(vName)) {
-                    var voucherRatio = orderVoucherTotals[vName] / totalVoucherApplied;
-                    var voucherRefundAmount = lineVoucherRefund * voucherRatio;
-                    voucherRefundTotals[vName] = (voucherRefundTotals[vName] || 0) + voucherRefundAmount;
-                  }
-                }
-              }
+              refundsByVoucher[matchingVoucherName] = (refundsByVoucher[matchingVoucherName] || 0) + item.refundedAmount;
             }
           }
         } else {
           allItemsRefunded = false;
         }
       });
+      
+      // Per-voucher refund calculation:
+      // For each voucher, refund up to what that voucher actually paid during purchase
+      // Any excess goes to credit card
+      if (totalRefunded > 0) {
+        // Process each voucher's refunds
+        for (var voucherName in refundsByVoucher) {
+          if (refundsByVoucher.hasOwnProperty(voucherName)) {
+            var voucherRefundAmount = refundsByVoucher[voucherName];
+            var voucherActuallyPaid = orderVoucherTotals[voucherName] || 0;
+            
+            // Refund to voucher up to what it actually paid
+            var refundToVoucher = Math.min(voucherRefundAmount, voucherActuallyPaid);
+            var refundToCC = Math.max(0, voucherRefundAmount - voucherActuallyPaid);
+            
+            voucherRefundTotals[voucherName] = Math.round(refundToVoucher * 100) / 100;
+            totalVoucherRefunded += refundToVoucher;
+            totalCreditCardCollection += refundToCC;
+          }
+        }
+        
+        // Round totals
+        totalVoucherRefunded = Math.round(totalVoucherRefunded * 100) / 100;
+        totalCreditCardCollection = Math.round(totalCreditCardCollection * 100) / 100;
+      }
       
       // Round voucher refund totals to avoid floating point issues
       for (var vName in voucherRefundTotals) {

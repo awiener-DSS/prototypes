@@ -2037,6 +2037,36 @@ var ReportingComponent = {
         var distributorPrice = item.distributorCost || 0;
         var distributorLineTotal = distributorPrice * item.quantity;
         
+        // Calculate line-level voucher amount applied (Field 26)
+        var lineVoucherApplied = '';
+        if (item.eligibleVoucherName && orderVoucherTotals && Object.keys(orderVoucherTotals).length > 0) {
+          var matchingVoucherName = orderVoucherTotals[item.eligibleVoucherName] ? item.eligibleVoucherName :
+            Object.keys(orderVoucherTotals).find(function(vName) {
+              if (!vName || !item.eligibleVoucherName) return false;
+              return vName.toLowerCase().trim() === item.eligibleVoucherName.toLowerCase().trim();
+            });
+          
+          if (matchingVoucherName && orderVoucherTotals[matchingVoucherName]) {
+            var voucherAppliedAmount = orderVoucherTotals[matchingVoucherName];
+            var voucherQualifyingTotal = orderItems.reduce(function(sum, orderItem) {
+              if (orderItem.eligibleVoucherName === matchingVoucherName ||
+                  (orderItem.eligibleVoucherName && matchingVoucherName && 
+                   orderItem.eligibleVoucherName.toLowerCase().trim() === matchingVoucherName.toLowerCase().trim())) {
+                return sum + orderItem.totalPrice;
+              }
+              return sum;
+            }, 0);
+            
+            if (voucherQualifyingTotal > 0) {
+              var lineVoucherAllocation = (item.totalPrice / voucherQualifyingTotal) * voucherAppliedAmount;
+              lineVoucherApplied = lineVoucherAllocation.toFixed(2);
+            }
+          }
+        }
+        
+        // Calculate expedited shipping cost (only on first item)
+        var expeditedShippingCost = shippingCost > 0 && orderItems.indexOf(item) === 0 ? shippingCost.toFixed(2) : '';
+        
         // Calculate line-level refund amounts
         var lineRefundedQty = item.refundedQuantity || 0;
         // Fallback: if refundedQuantity not set but refundedAmount exists, calculate from amount

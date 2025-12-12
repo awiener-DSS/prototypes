@@ -3438,17 +3438,6 @@ var AppState = {
         customer = self.customers.find(function(p) { return p.name === firstItem.customerName; });
       }
       
-      // Debug logging for order ORD-2024-001
-      if (orderId === 'ORD-2024-001') {
-        console.log('ORD-2024-001 Customer Lookup:', {
-          customerName: firstItem.customerName,
-          hasCustomersArray: !!(self.customers && Array.isArray(self.customers)),
-          customersCount: self.customers ? self.customers.length : 0,
-          customerFound: !!customer,
-          availableCustomerNames: self.customers ? self.customers.map(function(c) { return c.name; }) : []
-        });
-      }
-      
       // First pass: Determine voucher eligibility for each line item and group by voucher
       var voucherLineTotals = {}; // { voucherName: sum of qualifying line item totals }
       var voucherLimits = {}; // { voucherName: voucher limit (defaultAmount) }
@@ -3457,17 +3446,6 @@ var AppState = {
         // Determine voucher eligibility at line-item (SKU) level
         var voucherEligible = false;
         var eligibleVoucherName = null;
-        
-        // Debug logging for order ORD-2024-001
-        if (orderId === 'ORD-2024-001') {
-          console.log('ORD-2024-001 Starting Item Check:', {
-            sku: item.surewerxPartNumber,
-            hasCustomer: !!customer,
-            hasVouchers: !!(customer && customer.vouchers),
-            vouchersCount: customer && customer.vouchers ? customer.vouchers.length : 0,
-            hasSku: !!item.surewerxPartNumber
-          });
-        }
         
         if (customer && customer.vouchers && item.surewerxPartNumber) {
           // Find active vouchers for this customer
@@ -3480,45 +3458,12 @@ var AppState = {
             return p.surewerxSku === item.surewerxPartNumber;
           });
           
-          // Debug logging for order ORD-2024-001
-          if (orderId === 'ORD-2024-001') {
-            console.log('ORD-2024-001 Product Lookup:', {
-              sku: item.surewerxPartNumber,
-              productFound: !!product,
-              allProductsCount: self.products ? self.products.length : 0
-            });
-          }
-          
           if (product) {
-            // Debug logging for order ORD-2024-001
-            if (orderId === 'ORD-2024-001') {
-              console.log('ORD-2024-001 Product Found:', {
-                sku: item.surewerxPartNumber,
-                productId: product.id,
-                productName: product.name,
-                voucherUsed: item.voucherUsed,
-                activeVouchersCount: activeVouchers.length
-              });
-            }
-            
             // If voucherUsed is specified in the transaction, prioritize that voucher
             if (item.voucherUsed) {
               var specifiedVoucher = activeVouchers.find(function(v) {
                 return v.name === item.voucherUsed || (v.name && v.name.toLowerCase().trim() === item.voucherUsed.toLowerCase().trim());
               });
-              
-              // Debug logging for order ORD-2024-001
-              if (orderId === 'ORD-2024-001') {
-                console.log('ORD-2024-001 Specified Voucher:', {
-                  sku: item.surewerxPartNumber,
-                  voucherUsed: item.voucherUsed,
-                  specifiedVoucher: specifiedVoucher ? {
-                    name: specifiedVoucher.name,
-                    productIds: specifiedVoucher.productIds,
-                    hasProductId: specifiedVoucher.productIds && specifiedVoucher.productIds.indexOf(product.id) !== -1
-                  } : null
-                });
-              }
               
               if (specifiedVoucher && specifiedVoucher.productIds && specifiedVoucher.productIds.indexOf(product.id) !== -1) {
                 voucherEligible = true;
@@ -3562,18 +3507,6 @@ var AppState = {
         // Store eligibility for later use
         item.voucherEligible = voucherEligible;
         item.eligibleVoucherName = eligibleVoucherName || item.voucherUsed || firstItem.voucherUsed || null;
-        
-        // Debug logging for order ORD-2024-001
-        if (orderId === 'ORD-2024-001') {
-          console.log('ORD-2024-001 Item Processing:', {
-            sku: item.surewerxPartNumber,
-            voucherUsed: item.voucherUsed,
-            voucherEligible: voucherEligible,
-            eligibleVoucherName: item.eligibleVoucherName,
-            totalPrice: item.totalPrice,
-            voucherLineTotals: JSON.parse(JSON.stringify(voucherLineTotals))
-          });
-        }
       });
       
       // Calculate order-level voucher totals (capped at voucher limits)
@@ -3588,17 +3521,6 @@ var AppState = {
           
           orderVoucherTotals[voucherName] = voucherAmountUsed;
           totalVoucherApplied += voucherAmountUsed;
-          
-          // Debug logging for order ORD-2024-001
-          if (orderId === 'ORD-2024-001') {
-            console.log('ORD-2024-001 Voucher Calc:', {
-              voucherName: voucherName,
-              voucherLineTotal: voucherLineTotal,
-              voucherLimit: voucherLimit,
-              voucherAmountUsed: voucherAmountUsed,
-              totalVoucherApplied: totalVoucherApplied
-            });
-          }
         }
       }
       

@@ -108,7 +108,6 @@ var HeaderComponent = {
       // If distributors aren't loaded yet, try to get them
       if (typeof AppState.initializeData === 'function') {
         // Distributors should already be initialized, but just in case
-        console.log('Distributors not found, checking AppState...');
       }
     }
     
@@ -122,8 +121,6 @@ var HeaderComponent = {
     }).sort(function(a, b) {
       return a.name.localeCompare(b.name);
     });
-    
-    console.log('Initialized distributor typeahead with', this.availableDistributors.length, 'distributors');
   },
   
   showAllDistributors: function() {
@@ -131,7 +128,6 @@ var HeaderComponent = {
     var resultsContainer = $('#distributor-typeahead-results');
     
     if (!resultsContainer.length) {
-      console.log('Distributor typeahead results container not found');
       return; // Container doesn't exist yet
     }
     
@@ -166,7 +162,6 @@ var HeaderComponent = {
       'visibility': 'visible',
       'opacity': '1'
     });
-    console.log('Showing', distributorsToShow.length, 'distributors in dropdown');
   },
   
   showDistributorSuggestions: function(query) {

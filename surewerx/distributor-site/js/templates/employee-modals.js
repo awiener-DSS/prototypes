@@ -1,9 +1,6 @@
 // Extended employee modal templates
 
 Templates.showEditEmployeeModal = function(partner, employee, customerId) {
-  console.log('Edit Employee Modal - Partner Config:', partner.employeeFieldConfig);
-  console.log('Edit Employee Modal - Employee Data:', employee);
-  
   var modalHtml = '<div class="modal fade" id="edit-employee-modal" tabindex="-1">' +
     '<div class="modal-dialog">' +
     '<div class="modal-content">' +
@@ -123,8 +120,6 @@ Templates.showEditEmployeeModal = function(partner, employee, customerId) {
     
     // Department changes are not allowed through edit modal
     // Voucher balances remain unchanged
-    
-    console.log('Updating employee with data:', updatedEmployeeData);
     
     // Update employee
     var updatedEmployees = partner.employees.map(function(e) {

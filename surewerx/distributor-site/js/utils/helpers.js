@@ -199,8 +199,6 @@ var Helpers = {
       return;
     }
     
-    console.log('ExcelJS library loaded successfully');
-    
     // Get headers from first object
     var headers = Object.keys(data[0]);
     
@@ -284,7 +282,6 @@ var Helpers = {
     
     // Write file
     workbook.xlsx.writeBuffer().then(function(buffer) {
-      console.log('Excel buffer created, size:', buffer.byteLength);
       var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       var link = document.createElement('a');
       var url = URL.createObjectURL(blob);

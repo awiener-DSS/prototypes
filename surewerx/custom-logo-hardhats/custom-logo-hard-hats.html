@@ -338,6 +338,17 @@
               </tr>
             </table>
           </div>
+
+          <!-- Comments Box (demo only) -->
+          <div id="summaryCommentsBox" style="margin-top: 15px; display: none;">
+            <label for="summaryComments" class="control-label custom-logo-label" style="font-weight: 700;">
+              Comments:
+            </label>
+            <textarea id="summaryComments"
+                      class="form-control input-sm"
+                      rows="3"
+                      style="resize: vertical;"></textarea>
+          </div>
           
           <!-- Add to Quote Button -->
           <div id="addToQuoteButtonContainer" style="margin-top: 15px; display: none;">
@@ -871,8 +882,9 @@
           
           $('#selectionSummaryBody').html(summaryHtml);
           
-          // Show the pricing box and Add to Quote button
+          // Show the pricing box, comments box, and Add to Quote button
           $('#summaryPricingBox').show();
+          $('#summaryCommentsBox').show();
           $('#addToQuoteButtonContainer').show();
           
           // Calculate pricing for the summary

@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Custom Logo Printing – XS2-500 Safety Helmet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 3.4.1 CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- SureWerx theme (for typography / colors) -->
+    <link rel="stylesheet" href="./SureWerx Connect CA_files/swrx-ca.theme.min.css">
+
+    <!-- Custom CSS for this prototype -->
+    <link rel="stylesheet" type="text/css" href="custom-logo-hard-hats.css">
+
+    <!-- jQuery 3.6.0 (local copy from captured site) -->
+    <script src="./SureWerx Connect CA_files/jquery-3.6.0.min.js"></script>
+
+    <!-- Bootstrap 3.4.1 JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- jsPDF for Preview Quote PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  </head>
+  <body class="custom-logo-body">
+    <!-- Configurator view (product/logo selection) -->
+    <div id="customLogoConfiguratorView">
+    <div class="container-fluid custom-logo-container">
+      <div class="row">
+        <!-- Left: Helmet illustration -->
+        <div class="col-sm-3 custom-logo-illustration-col">
+          <div class="custom-logo-illustration-panel">
+            <div class="custom-logo-illustration-title">Helmet</div>
+            <div class="custom-logo-illustration-images">
+              <img src="images/22104.avif"
+                   alt="Helmet logo locations"
+                   class="img-responsive custom-logo-illustration-img">
+            </div>
+          </div>
+        </div>
+
+        <!-- Middle: Step 1 form -->
+        <div class="col-sm-6 custom-logo-form-col">
+          <h2 class="custom-logo-product-name">
+            XS2-500 Type 2 Safety Helmet – Non-Vented – Black
+          </h2>
+
+          <div class="custom-logo-section-heading">Logo Location:</div>
+
+          <form class="custom-logo-form" autocomplete="off">
+            <!-- Location 1: Front -->
+            <div class="custom-logo-position-group" data-location="1">
+              <div class="custom-logo-position-label">
+                <span class="custom-logo-position-index">1.</span>
+                <span class="custom-logo-position-name">Front</span>
+              </div>
+              <div class="custom-logo-file-info" style="display:none;">
+                <span class="custom-logo-file-name"></span>
+                <button type="button"
+                        class="btn btn-link btn-xs custom-logo-trash-button"
+                        title="Remove logo">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </button>
+              </div>
+              <div class="row custom-logo-dimensions-row">
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Width (Max 4")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="width"
+                         data-max="4">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Height (Max 4.3")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="height"
+                         data-max="4.3">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-2 custom-logo-upload-col">
+                  <button type="button"
+                          class="btn btn-link custom-logo-upload-button"
+                          data-toggle="modal"
+                          data-target="#addLogoModal">
+                    <span class="glyphicon glyphicon-cloud-upload"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="custom-logo-color-row">
+                <label class="control-label custom-logo-label">
+                  Number of colors for this logo:
+                </label>
+                <select class="form-control input-sm custom-logo-color-select">
+                  <option selected disabled></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Location 2: Back -->
+            <div class="custom-logo-position-group" data-location="2">
+              <div class="custom-logo-position-label">
+                <span class="custom-logo-position-index">2.</span>
+                <span class="custom-logo-position-name">Back</span>
+              </div>
+              <div class="custom-logo-file-info" style="display:none;">
+                <span class="custom-logo-file-name"></span>
+                <button type="button"
+                        class="btn btn-link btn-xs custom-logo-trash-button"
+                        title="Remove logo">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </button>
+              </div>
+              <div class="row custom-logo-dimensions-row">
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Width (Max 5")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="width"
+                         data-max="5">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Height (Max 7")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="height"
+                         data-max="7">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-2 custom-logo-upload-col">
+                  <button type="button"
+                          class="btn btn-link custom-logo-upload-button"
+                          data-toggle="modal"
+                          data-target="#addLogoModal">
+                    <span class="glyphicon glyphicon-cloud-upload"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="custom-logo-color-row">
+                <label class="control-label custom-logo-label">
+                  Number of colors for this logo:
+                </label>
+                <select class="form-control input-sm custom-logo-color-select">
+                  <option selected disabled></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Location 3: Left Side -->
+            <div class="custom-logo-position-group" data-location="3">
+              <div class="custom-logo-position-label">
+                <span class="custom-logo-position-index">3.</span>
+                <span class="custom-logo-position-name">Left Side</span>
+              </div>
+              <div class="custom-logo-file-info" style="display:none;">
+                <span class="custom-logo-file-name"></span>
+                <button type="button"
+                        class="btn btn-link btn-xs custom-logo-trash-button"
+                        title="Remove logo">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </button>
+              </div>
+              <div class="row custom-logo-dimensions-row">
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Width (Max 4")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="width"
+                         data-max="4">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Height (Max 7")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="height"
+                         data-max="7">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-2 custom-logo-upload-col">
+                  <button type="button"
+                          class="btn btn-link custom-logo-upload-button"
+                          data-toggle="modal"
+                          data-target="#addLogoModal">
+                    <span class="glyphicon glyphicon-cloud-upload"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="custom-logo-color-row">
+                <label class="control-label custom-logo-label">
+                  Number of colors for this logo:
+                </label>
+                <select class="form-control input-sm custom-logo-color-select">
+                  <option selected disabled></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Location 4: Right Side -->
+            <div class="custom-logo-position-group" data-location="4">
+              <div class="custom-logo-position-label">
+                <span class="custom-logo-position-index">4.</span>
+                <span class="custom-logo-position-name">Right Side</span>
+              </div>
+              <div class="custom-logo-file-info" style="display:none;">
+                <span class="custom-logo-file-name"></span>
+                <button type="button"
+                        class="btn btn-link btn-xs custom-logo-trash-button"
+                        title="Remove logo">
+                  <span class="glyphicon glyphicon-trash"></span>
+                </button>
+              </div>
+              <div class="row custom-logo-dimensions-row">
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Width (Max 5")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="width"
+                         data-max="5">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-5">
+                  <label class="control-label custom-logo-label">
+                    <span class="text-danger">*</span> Height (Max 7")
+                  </label>
+                  <input type="text"
+                         class="form-control input-sm custom-logo-dimension-input"
+                         data-dimension="height"
+                         data-max="7">
+                  <div class="custom-logo-dim-error text-danger" style="display:none;"></div>
+                </div>
+                <div class="col-xs-2 custom-logo-upload-col">
+                  <button type="button"
+                          class="btn btn-link custom-logo-upload-button"
+                          data-toggle="modal"
+                          data-target="#addLogoModal">
+                    <span class="glyphicon glyphicon-cloud-upload"></span>
+                  </button>
+                </div>
+              </div>
+              <div class="custom-logo-color-row">
+                <label class="control-label custom-logo-label">
+                  Number of colors for this logo:
+                </label>
+                <select class="form-control input-sm custom-logo-color-select">
+                  <option selected disabled></option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Overall color count -->
+            <div class="custom-logo-logo-type-group">
+              <label class="control-label custom-logo-label">
+                How many unique colors exist across all your uploaded logos?
+              </label>
+              <select class="form-control input-sm" id="uniqueColorsSelect">
+                <option selected disabled></option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+
+            <div class="custom-logo-actions">
+              <button type="button" class="btn btn-primary custom-logo-confirm-btn" id="confirmLogoBtn" disabled>
+                CONFIRM LOGO PLACEMENT
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right: Selection Summary column -->
+        <div class="col-sm-3 custom-logo-summary-col">
+          <div class="custom-logo-summary-panel">
+            <div class="custom-logo-summary-header">Selection Summary:</div>
+            <div class="custom-logo-summary-body" id="selectionSummaryBody">
+              <p class="text-muted">Selections will appear here once logo locations are configured.</p>
+            </div>
+          </div>
+
+          <!-- Pricing Summary Box -->
+          <div id="summaryPricingBox" style="margin-top: 20px; display: none; background-color: #F5F5F5; border: 1px solid #E0E0E0; border-radius: 4px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr style="margin-bottom: 12px;">
+                <td style="padding: 8px 0; text-align: left; font-weight: 700; color: #000000; font-size: 15px;">Helmet Price</td>
+                <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #D64227; font-size: 15px;" id="summaryHelmetPrice">$23.97</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; text-align: left; font-weight: 700; color: #000000; font-size: 15px;">Printing Price</td>
+                <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #D64227; font-size: 15px;" id="summaryPrintingPrice">$0.00</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; text-align: left; font-weight: 700; color: #000000; font-size: 15px;">Total Price / Unit</td>
+                <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #D64227; font-size: 15px;" id="summaryTotalPricePerUnit">$0.00</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; text-align: left; font-weight: 700; color: #000000; font-size: 15px;">Total Cost</td>
+                <td style="padding: 8px 0; text-align: right; font-weight: 700; color: #D64227; font-size: 15px;" id="summaryTotalCost">$0.00</td>
+              </tr>
+            </table>
+          </div>
+
+          <!-- Comments Box (demo only) -->
+          <div id="summaryCommentsBox" style="margin-top: 15px; display: none;">
+            <label for="summaryComments" class="control-label custom-logo-label" style="font-weight: 700;">
+              Comments:
+            </label>
+            <textarea id="summaryComments"
+                      class="form-control input-sm"
+                      rows="3"
+                      style="resize: vertical;"></textarea>
+          </div>
+          
+          <!-- Add to Quote Button -->
+          <div id="addToQuoteButtonContainer" style="margin-top: 15px; display: none;">
+            <button type="button" class="btn btn-primary custom-logo-confirm-btn" id="addToQuoteBtn" style="width: 100%;">
+              ADD TO QUOTE
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo Pricing Section (Full Width) -->
+      <div class="row" style="margin-top: 30px;">
+        <div class="col-xs-12">
+          <div class="demo-pricing-panel" style="width: 100%;">
+            <h4>Demo Pricing</h4>
+            <div class="demo-pricing-totals">
+              <!-- Table 1 -->
+              <div style="margin-bottom: 15px;">
+                <div style="margin-top: 6px;">
+                  <table class="table table-condensed" id="demoCostPerUnitTable" style="font-size: 12px; margin-bottom: 0;">
+                    <thead>
+                      <tr>
+                        <th>Logo Location Name</th>
+                        <th>Cost</th>
+                        <th>Code</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody id="demoCostPerUnitBody">
+                      <!-- Populated by JavaScript -->
+                    </tbody>
+                  </table>
+                  <div style="margin-top: 8px;">
+                    <strong>Logo Location Sub-Total:</strong>
+                    <span id="demoLocationSubTotal">$0.00</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Table 2 -->
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <div style="margin-top: 6px;">
+                  <table class="table table-condensed" id="demoHandlingSetupTable" style="font-size: 12px; margin-bottom: 0;">
+                    <thead>
+                      <tr>
+                        <th>Handling + Setup Section</th>
+                        <th>Cost</th>
+                        <th>Code</th>
+                      </tr>
+                    </thead>
+                    <tbody id="demoHandlingSetupBody">
+                      <!-- Populated by JavaScript -->
+                    </tbody>
+                  </table>
+                  <div style="margin-top: 8px;">
+                    <div style="margin-bottom: 4px;">
+                      <strong>Handling:</strong>
+                      <span id="demoHandlingSubtotal">$0.00</span>
+                    </div>
+                    <div>
+                      <strong>Setup:</strong>
+                      <span id="demoSetupSubtotal">$0.00</span>
+                    </div>
+                    <div>
+                      <strong>Setup / Unit:</strong>
+                      <span id="demoSetupPerUnit">$0.00</span>
+                    </div>
+                    <div id="demoSetupMath" style="font-size: 11px; color: #666; margin-left: 10px; margin-top: 2px;"></div>
+                    <div style="margin-top: 4px;">
+                      <strong>Handling + Setup:</strong>
+                      <span id="demoHandlingSetupPerUnit">$0.00</span>
+                    </div>
+                    <div id="demoHandlingSetupPerUnitMath" style="font-size: 11px; color: #666; margin-left: 10px; margin-top: 2px;"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <div><strong>Total Printing / Unit:</strong> <span id="demoTotalPrinting">$0.00</span></div>
+                <div id="demoTotalPrintingMath" style="font-size: 11px; color: #666; margin-left: 10px; margin-top: 2px;"></div>
+              </div>
+              
+              <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #ddd;">
+                <div><strong>Product Price:</strong> <span id="demoProductPrice">$23.97</span></div>
+                <div style="margin-top: 8px;"><strong>Total Cost / Helmet:</strong> <span id="demoTotalHelmet">$0.00</span></div>
+                <div id="demoTotalHelmetMath" style="font-size: 11px; color: #666; margin-left: 10px; margin-top: 2px;"></div>
+                <div style="margin-top: 4px;"><strong>Total Cost:</strong> <span id="demoTotalCostOverall">$0.00</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo Pricing Table (Full Width) -->
+      <div class="row" style="margin-top: 30px;">
+        <div class="col-xs-12">
+          <div class="demo-pricing-panel" style="width: 100%;">
+            <h4>Demo Pricing Table</h4>
+            <div style="overflow-x: auto;">
+              <table class="table table-bordered table-condensed" id="demoPricingTable" style="font-size: 11px; margin-bottom: 0; width: 100%;">
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th># of Units Min</th>
+                    <th># of Units Max</th>
+                    <th># of Colors</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody id="demoPricingTableBody">
+                  <!-- Will be populated by JavaScript -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /#customLogoConfiguratorView -->
+
+    <!-- Custom Logo Quotes view (after Add to Quote) -->
+    <div id="customLogoQuoteView" class="custom-logo-quote-view" style="display: none;">
+      <div class="custom-logo-quote-header">
+        <h1 class="custom-logo-quote-title">Custom Logo Quotes</h1>
+      </div>
+      <div class="custom-logo-quote-layout">
+        <aside class="custom-logo-quote-sidebar">
+          <div class="custom-logo-quote-user">
+            <div class="custom-logo-quote-user-name">Adam Wiener</div>
+            <div class="custom-logo-quote-user-account">STAFF TOOL SALES - ON</div>
+            <div class="custom-logo-quote-user-role">Buyer</div>
+          </div>
+          <nav class="custom-logo-quote-nav">
+            <a href="#" class="custom-logo-quote-nav-link">Logout</a>
+            <a href="#" class="custom-logo-quote-nav-link"><span class="glyphicon glyphicon-shopping-cart"></span> Purchases</a>
+            <a href="#" class="custom-logo-quote-nav-link">Order History</a>
+            <a href="#" class="custom-logo-quote-nav-link">Order Templates</a>
+            <a href="#" class="custom-logo-quote-nav-link"><span class="glyphicon glyphicon-user"></span> Profile</a>
+            <a href="#" class="custom-logo-quote-nav-link"><span class="glyphicon glyphicon-warning-sign"></span> Report a Shortage or Shipping Error</a>
+            <a href="#" class="custom-logo-quote-nav-link active"><span class="glyphicon glyphicon-apple"></span> Custom Logo Quotes</a>
+          </nav>
+          <div class="custom-logo-quote-back">
+            <a href="#" id="customLogoQuoteBackToConfig">← Back to product</a>
+          </div>
+        </aside>
+        <main class="custom-logo-quote-main">
+          <div class="row">
+            <div class="col-md-6">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">QUOTE INFORMATION</h3>
+                <div class="form-horizontal">
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Quote Number</label>
+                    <div class="col-sm-8"><p class="form-control-static" id="quoteQuoteNumber">CLA00002468</p></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Status</label>
+                    <div class="col-sm-8"><p class="form-control-static" id="quoteStatus">Not Submitted</p></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label"><span class="text-danger">*</span> Quote Name</label>
+                    <div class="col-sm-8"><input type="text" class="form-control input-sm" id="quoteQuoteName" value="6680 - surewerx" placeholder="Quote Name"></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label"><span class="text-danger">*</span> Logo Brand Name</label>
+                    <div class="col-sm-8"><input type="text" class="form-control input-sm" id="quoteLogoBrandName" value="6680 - surewerx" placeholder="Logo Brand Name"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <div class="col-md-6">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">CONTACT</h3>
+                <div class="form-horizontal">
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Contact Person/Email</label>
+                    <div class="col-sm-8"><p class="form-control-static">Adam Wiener - awiener@dss-partners.com</p></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Distributor Name</label>
+                    <div class="col-sm-8">
+                      <select class="form-control input-sm" id="quoteDistributorName">
+                        <option>STAFF TOOL SALES - ON - 123 TEST, TEST</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label"><span class="text-danger">*</span> Distributor Email</label>
+                    <div class="col-sm-8"><input type="email" class="form-control input-sm" id="quoteDistributorEmail" value="slandry@surewerx.com"></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Phone #</label>
+                    <div class="col-sm-8"><input type="tel" class="form-control input-sm" id="quotePhone" placeholder=""></div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+                      <button type="button" class="btn btn-primary custom-logo-quote-btn" id="quoteSaveQuoteBtn">SAVE QUOTE</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <section class="custom-logo-quote-section custom-logo-quote-important-note">
+            <h3 class="custom-logo-quote-section-title">IMPORTANT NOTE</h3>
+            <div class="row">
+              <div class="col-md-4">
+                <h4>Next Steps:</h4>
+                <ul>
+                  <li>You can expect Entripy (our decorator partner) to email you with a proof within 1 business day</li>
+                  <li>Entripy will provide a visual proof with your logo(s) and selected garment(s). We require a proof approval from you in order to proceed with the order</li>
+                  <li>In parallel, our team will create custom logo part numbers that can be referred to for future orders and for confirming available inventory</li>
+                  <li>We will be providing you the logo part numbers along with expected due dates for your purchase order</li>
+                  <li>A unique quote number will also be generated when you proceed with order. Please include this in your purchase order for reference purposes</li>
+                </ul>
+              </div>
+              <div class="col-md-4">
+                <h4>Shipping:</h4>
+                <ul>
+                  <li>Please indicate the modes of transport on your logo purchase order according to the following information:</li>
+                  <li>Orders of $1500 or above will be shipped Prepaid from the decorator to the distributor or end-user.</li>
+                  <li>Orders below $1500 will be shipped Prepaid &amp; Charge from the decorator to the distributor or end-user.</li>
+                </ul>
+              </div>
+              <div class="col-md-4">
+                <h4>Proceed With Quote:</h4>
+                <ul>
+                  <li>Please save order for future reference if there isnt the intention to place a purchase order</li>
+                  <li>This quote is valid for 30 days</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <div class="row">
+            <div class="col-md-7">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">PRODUCT DETAILS</h3>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-condensed" id="quoteProductDetailsTable">
+                    <thead>
+                      <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="quoteProductDetailsBody">
+                      <!-- Populated when Add to Quote is clicked -->
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+            <div class="col-md-5">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">QUOTE SUMMARY</h3>
+                <div class="custom-logo-quote-summary">
+                  <div class="custom-logo-quote-summary-row">
+                    <span>Decorating Costs:</span>
+                    <span id="quoteDecoratingCosts" class="text-right">$0.00</span>
+                  </div>
+                  <div class="custom-logo-quote-summary-row">
+                    <span>Quote Total:</span>
+                    <span id="quoteTotal" class="text-right">$0.00</span>
+                  </div>
+                  <div style="margin-top: 15px;">
+                    <button type="button" class="btn btn-primary custom-logo-quote-btn btn-block" id="quotePreviewBtn">PREVIEW QUOTE</button>
+                    <p class="help-block" style="margin-top: 8px; font-size: 12px;">Note : Clicking on Preview Quote will not submit the quote</p>
+                    <button type="button" class="btn btn-primary custom-logo-quote-btn btn-block" id="quoteResubmitBtn">SUBMIT QUOTE</button>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div><!-- /#customLogoQuoteView -->
+
+    <!-- Add Your Logo Modal -->
+    <div id="addLogoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addLogoModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content custom-logo-modal">
+          <div class="modal-header custom-logo-modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title custom-logo-modal-title" id="addLogoModalLabel">Add Your Logo</h4>
+          </div>
+          <div class="modal-body custom-logo-modal-body">
+            <input type="file"
+                   id="logoFileInput"
+                   accept=".pdf,.ai,.eps,.png"
+                   style="display:none;">
+            <p class="custom-logo-modal-instructions">
+              Please make sure your image is in one of the below formats:<br>
+              <strong>.pdf, .ai, .eps, .png</strong>
+            </p>
+
+            <div class="text-center custom-logo-modal-upload-primary">
+              <button type="button" class="btn btn-warning custom-logo-primary-upload-btn">
+                <span class="glyphicon glyphicon-cloud-upload"></span>
+                &nbsp;UPDATE YOUR LOGO
+              </button>
+              <div class="custom-logo-modal-max-size">
+                Maximum file size: 2.4MB
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer custom-logo-modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary">Save Logo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function ($) {
+        var currentLogoLocation = null;
+        
+        // Embedded calculation data (from Calculation.xlsx) - New format with codes
+        var calculationData = [["Code","# of Units Min","# of Units Max","# of Colors","Price","Description"],["CPP021",20,59,1,4.76,"1 Color - 20 - 59 Units"],["CPP022",20,59,2,7.279999999999999,"2 Color - 20 - 59 Units"],["CPP023",20,59,3,8.469999999999999,"3 Color - 20 - 59 Units"],["CPP024",20,59,4,11.339999999999998,"4 Color - 20 - 59 Units"],["CPP025",20,59,5,12.6,"5 Color - 20 - 59 Units"],["CPP026",20,59,6,14.559999999999999,"6 Color - 20 - 59 Units"],["CPP061",60,99,1,2.8,"1 Color - 60 - 99 Units"],["CPP062",60,99,2,4.409999999999999,"2 Color - 60 - 99 Units"],["CPP063",60,99,3,6.16,"3 Color - 60 - 99 Units"],["CPP064",60,99,4,8.12,"4 Color - 60 - 99 Units"],["CPP065",60,99,5,9.73,"5 Color - 60 - 99 Units"],["CPP066",60,99,6,11.899999999999999,"6 Color - 60 - 99 Units"],["CPP101",100,299,1,1.9599999999999997,"1 Color - 100 - 299 Units"],["CPP102",100,299,2,3.15,"2 Color - 100 - 299 Units"],["CPP103",100,299,3,4.409999999999999,"3 Color - 100 - 299 Units"],["CPP104",100,299,4,5.8100000000000005,"4 Color - 100 - 299 Units"],["CPP105",100,299,5,6.789999999999999,"5 Color - 100 - 299 Units"],["CPP106",100,299,6,8.399999999999999,"6 Color - 100 - 299 Units"],["CPP301",399,499,1,1.75,"1 Color - 399 - 499 Units"],["CPP302",399,499,2,2.8,"2 Color - 399 - 499 Units"],["CPP303",399,499,3,4.13,"3 Color - 399 - 499 Units"],["CPP304",399,499,4,5.53,"4 Color - 399 - 499 Units"],["CPP305",399,499,5,6.58,"5 Color - 399 - 499 Units"],["CPP306",399,499,6,8.12,"6 Color - 399 - 499 Units"],["CPP501",500,999,1,1.4,"1 Color - 500 - 999 Units"],["CPP502",500,999,2,2.59,"2 Color - 500 - 999 Units"],["CPP503",500,999,3,3.9199999999999995,"3 Color - 500 - 999 Units"],["CPP504",500,999,4,5.18,"4 Color - 500 - 999 Units"],["CPP505",500,999,5,6.4399999999999995,"5 Color - 500 - 999 Units"],["CPP506",500,999,6,7.9799999999999995,"6 Color - 500 - 999 Units"],["CPP111",1000,1999,1,1.3299999999999998,"1 Color - 1000 - 1999 Units"],["CPP112",1000,1999,2,2.2399999999999998,"2 Color - 1000 - 1999 Units"],["CPP113",1000,1999,3,3.5,"3 Color - 1000 - 1999 Units"],["CPP114",1000,1999,4,4.619999999999999,"4 Color - 1000 - 1999 Units"],["CPP115",1000,1999,5,5.739999999999999,"5 Color - 1000 - 1999 Units"],["CPP116",1000,1999,6,7.069999999999999,"6 Color - 1000 - 1999 Units"],["CPP211",2000,3499,1,1.26,"1 Color - 2000 - 3499 Units"],["CPP212",2000,3499,2,2.17,"2 Color - 2000 - 3499 Units"],["CPP213",2000,3499,3,3.36,"3 Color - 2000 - 3499 Units"],["CPP214",2000,3499,4,4.55,"4 Color - 2000 - 3499 Units"],["CPP215",2000,3499,5,5.669999999999999,"5 Color - 2000 - 3499 Units"],["CPP216",2000,3499,6,6.789999999999999,"6 Color - 2000 - 3499 Units"],["CPP351",3500,"-",1,1.1199999999999999,"1 Color - 3500+ Units"],["CPP352",3500,"-",2,2.0999999999999996,"2 Color - 3500+ Units"],["CPP353",3500,"-",3,3.15,"3 Color - 3500+ Units"],["CPP354",3500,"-",4,4.27,"4 Color - 3500+ Units"],["CPP355",3500,"-",5,5.319999999999999,"5 Color - 3500+ Units"],["CPP356",3500,"-",6,6.4399999999999995,"6 Color - 3500+ Units"],["CPPH",null,null,null,0.85,"Handling"],["CPPS1C",null,null,null,75,"1st Setup Color"],["CPPSAC",null,null,null,45,"Set-up/colour"]];
+
+        // Format number as currency for display
+        function formatCurrencyInput(val) {
+          if (val === null || val === undefined || isNaN(val)) {
+            return '';
+          }
+          return '$' + parseFloat(val).toFixed(2);
+        }
+
+        // Parse currency string to number
+        function parseCurrencyInput(val) {
+          if (!val) return 0;
+          // Remove $ and commas, then parse
+          var cleaned = val.toString().replace(/[$,]/g, '');
+          return parseFloat(cleaned) || 0;
+        }
+
+        // Render the pricing table (read-only) - shows all data from calculation
+        function renderPricingTable() {
+          var tbody = $('#demoPricingTableBody');
+          tbody.empty();
+          
+          // Skip header row (index 0), render data rows
+          for (var i = 1; i < calculationData.length; i++) {
+            var row = calculationData[i];
+            var tr = $('<tr></tr>');
+            
+            // Code
+            tr.append('<td>' + (row[0] || '') + '</td>');
+            
+            // Min Units
+            tr.append('<td>' + (row[1] !== null ? row[1] : '-') + '</td>');
+            
+            // Max Units
+            var maxUnitsValue = row[2] === '-' || row[2] === null ? '-' : row[2];
+            tr.append('<td>' + maxUnitsValue + '</td>');
+            
+            // # of Colors
+            tr.append('<td>' + (row[3] !== null ? row[3] : '-') + '</td>');
+            
+            // Price - format as currency
+            var priceValue = formatCurrencyInput(row[4]);
+            tr.append('<td>' + priceValue + '</td>');
+            
+            // Description
+            tr.append('<td>' + (row[5] || '') + '</td>');
+            
+            tbody.append(tr);
+          }
+        }
+
+
+        // Track which logo location opened the modal
+        $('.custom-logo-upload-button').on('click', function () {
+          var group = $(this).closest('.custom-logo-position-group');
+          currentLogoLocation = group.data('location');
+          $('#addLogoModal').data('location', currentLogoLocation);
+        });
+
+        // Trigger hidden file input when clicking UPDATE YOUR LOGO
+        $('.custom-logo-primary-upload-btn').on('click', function () {
+          $('#logoFileInput').val('');
+          $('#logoFileInput').click();
+        });
+
+        // Handle file selection and basic extension validation
+        $('#logoFileInput').on('change', function () {
+          var file = this.files && this.files[0];
+          if (!file) {
+            return;
+          }
+
+          var name = file.name || '';
+          var ext = name.split('.').pop().toLowerCase();
+          var allowed = ['pdf', 'ai', 'eps', 'png'];
+
+          if ($.inArray(ext, allowed) === -1) {
+            alert('Please select a .pdf, .ai, .eps, or .png file.');
+            $(this).val('');
+            return;
+          }
+
+          var loc = $('#addLogoModal').data('location');
+          if (loc) {
+            var row = $('.custom-logo-position-group[data-location=\"' + loc + '\"]');
+            row.find('.custom-logo-file-name').text(name);
+            row.find('.custom-logo-file-info').show();
+            updateUniqueColors();
+            checkConfirmButtonState();
+            recalcDemoPricing();
+          }
+
+          $('#addLogoModal').modal('hide');
+        });
+
+        // Remove uploaded logo for a given location
+        $(document).on('click', '.custom-logo-trash-button', function () {
+          var row = $(this).closest('.custom-logo-position-group');
+          row.find('.custom-logo-file-name').text('');
+          row.find('.custom-logo-file-info').hide();
+          row.find('.custom-logo-color-select').val('').prop('selectedIndex', 0);
+          $('#logoFileInput').val('');
+          updateUniqueColors();
+          checkConfirmButtonState();
+          recalcDemoPricing();
+        });
+
+        // Validate width/height against max values on blur/change
+        $(document).on('blur change', '.custom-logo-dimension-input', function () {
+          var $input = $(this);
+          var max = parseFloat($input.data('max'));
+          var valueStr = $.trim($input.val());
+          var $error = $input.next('.custom-logo-dim-error');
+
+          if (!valueStr) {
+            $error.hide();
+            return;
+          }
+
+          var value = parseFloat(valueStr);
+          if (isNaN(value)) {
+            $error.text('Please enter a numeric value.').show();
+            return;
+          }
+
+          if (!isNaN(max) && value > max) {
+            $error.text('Maximum allowed is ' + max + '\".').show();
+          } else {
+            $error.hide();
+          }
+          checkConfirmButtonState();
+        });
+
+        // Get the maximum number of colors selected for any logo location
+        function getMaxPerLocationColors() {
+          var maxPerLocationColors = 0;
+          $('.custom-logo-position-group').each(function () {
+            var $group = $(this);
+            var hasFile = $group.find('.custom-logo-file-info').is(':visible');
+            
+            if (hasFile) {
+              var perLocationColors = parseInt($group.find('.custom-logo-color-select').val(), 10);
+              if (!isNaN(perLocationColors) && perLocationColors > maxPerLocationColors) {
+                maxPerLocationColors = perLocationColors;
+              }
+            }
+          });
+          return maxPerLocationColors;
+        }
+
+        // Update unique colors dropdown options visibility based on max per-location colors
+        function updateUniqueColorsOptions() {
+          var maxPerLocationColors = getMaxPerLocationColors();
+          var $select = $('#uniqueColorsSelect');
+          
+          // Show/hide options based on max
+          $select.find('option').each(function () {
+            var $option = $(this);
+            var optionValue = parseInt($option.val(), 10);
+            
+            // Always show the empty/default option
+            if (!$option.val() || $option.prop('disabled')) {
+              return;
+            }
+            
+            // If no logos are uploaded, show all options
+            // Otherwise, hide options that are less than the max
+            if (maxPerLocationColors === 0) {
+              $option.show();
+            } else if (optionValue < maxPerLocationColors) {
+              $option.hide();
+            } else {
+              $option.show();
+            }
+          });
+        }
+
+        // Automatically update unique colors to be the max per-location colors
+        function updateUniqueColors() {
+          var maxPerLocationColors = getMaxPerLocationColors();
+          
+          // Update option visibility first
+          updateUniqueColorsOptions();
+          
+          // Always set unique colors to the max when per-location colors change
+          if (maxPerLocationColors > 0) {
+            $('#uniqueColorsSelect').val(maxPerLocationColors);
+          }
+        }
+
+        // Check if Confirm button should be enabled
+        function checkConfirmButtonState() {
+          var hasLogo = false;
+          var allValid = true;
+
+          // Check each location
+          $('.custom-logo-position-group').each(function () {
+            var $group = $(this);
+            var hasFile = $group.find('.custom-logo-file-info').is(':visible');
+            
+            if (hasFile) {
+              hasLogo = true;
+              
+              // Check width and height are filled
+              var width = $.trim($group.find('input[data-dimension="width"]').val());
+              var height = $.trim($group.find('input[data-dimension="height"]').val());
+              
+              if (!width || !height) {
+                allValid = false;
+                return false;
+              }
+              
+              // Check for validation errors
+              if ($group.find('.custom-logo-dim-error:visible').length > 0) {
+                allValid = false;
+                return false;
+              }
+              
+              // Check per-location color dropdown is selected
+              var colorVal = $group.find('.custom-logo-color-select').val();
+              if (!colorVal) {
+                allValid = false;
+                return false;
+              }
+            }
+          });
+
+          // Check global unique colors dropdown
+          var uniqueColors = $('#uniqueColorsSelect').val();
+          if (!uniqueColors) {
+            allValid = false;
+          }
+
+          // Enable button only if at least one logo and all required fields are valid
+          $('#confirmLogoBtn').prop('disabled', !(hasLogo && allValid));
+        }
+
+        // Check on dimension input changes
+        $(document).on('input change', '.custom-logo-dimension-input', function () {
+          checkConfirmButtonState();
+        });
+
+        // Check on per-location color dropdown changes
+        $(document).on('change', '.custom-logo-color-select', function () {
+          updateUniqueColors();
+          checkConfirmButtonState();
+        });
+
+        // Check on unique colors dropdown changes
+        $(document).on('change', '#uniqueColorsSelect', function () {
+          // Ensure unique colors is at least the max per-location colors
+          var maxPerLocationColors = getMaxPerLocationColors();
+          var selectedUniqueColors = parseInt($(this).val(), 10);
+          
+          if (maxPerLocationColors > 0 && (!isNaN(selectedUniqueColors) && selectedUniqueColors < maxPerLocationColors)) {
+            $(this).val(maxPerLocationColors);
+          }
+          
+          checkConfirmButtonState();
+        });
+
+        // Store saved selections for Edit functionality
+        var savedSelections = {};
+
+        // Handle Confirm Logo Placement button click
+        $('#confirmLogoBtn').on('click', function () {
+          var skuName = 'XS2-500 Type 2 Safety Helmet – Non-Vented – Black';
+          
+          // Store all current selections before clearing
+          savedSelections = {
+            locations: {},
+            uniqueColors: $('#uniqueColorsSelect').val() || ''
+          };
+          
+          // Collect all logo location selections and store them
+          var locationNames = {
+            '1': 'Front',
+            '2': 'Back',
+            '3': 'Left Side',
+            '4': 'Right Side'
+          };
+          
+          var locationIndex = 1;
+          $('.custom-logo-position-group').each(function () {
+            var $group = $(this);
+            var loc = $group.data('location');
+            var hasFile = $group.find('.custom-logo-file-info').is(':visible');
+            
+            if (hasFile) {
+              var fileName = $group.find('.custom-logo-file-name').text();
+              var width = $group.find('input[data-dimension="width"]').val();
+              var height = $group.find('input[data-dimension="height"]').val();
+              var numColors = $group.find('.custom-logo-color-select').val();
+              
+              // Store this location's data
+              savedSelections.locations[loc] = {
+                fileName: fileName,
+                width: width,
+                height: height,
+                numColors: numColors,
+                locationIndex: locationIndex,
+                locationName: locationNames[loc]
+              };
+              
+              locationIndex++;
+            }
+          });
+          
+          // Build complete summary HTML
+          var summaryHtml = '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">';
+          summaryHtml += '<div class="custom-logo-summary-sku" style="margin-bottom: 0;">';
+          summaryHtml += '<strong>' + skuName + '</strong>';
+          summaryHtml += '</div>';
+          summaryHtml += '<div>';
+          summaryHtml += '<a href="#" class="custom-logo-summary-edit-all" style="text-decoration: underline; font-size: 12px; color: #333;">Edit</a>';
+          summaryHtml += '</div>';
+          summaryHtml += '</div>';
+          
+          // Sort locations by locationIndex to maintain order
+          var sortedLocations = [];
+          for (var loc in savedSelections.locations) {
+            sortedLocations.push({
+              loc: loc,
+              data: savedSelections.locations[loc]
+            });
+          }
+          sortedLocations.sort(function(a, b) {
+            return a.data.locationIndex - b.data.locationIndex;
+          });
+          
+          // Build summary HTML for each location
+          for (var i = 0; i < sortedLocations.length; i++) {
+            var loc = sortedLocations[i].loc;
+            var locData = sortedLocations[i].data;
+            
+            summaryHtml += '<div class="custom-logo-summary-location" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;">';
+            
+            // Location number and name
+            summaryHtml += '<div style="margin-bottom: 4px;">';
+            summaryHtml += '<div style="font-size: 13px;">' + locData.locationIndex + '. ' + locData.locationName + '</div>';
+            summaryHtml += '</div>';
+            
+            // Dimensions
+            summaryHtml += '<div style="margin-bottom: 2px; font-size: 13px;">Width: ' + locData.width + '", Height: ' + locData.height + '"</div>';
+            
+            // Uploaded file
+            summaryHtml += '<div style="margin-bottom: 2px; font-size: 13px;">' + locData.fileName + '</div>';
+            
+            // Number of colors
+            summaryHtml += '<div style="margin-bottom: 2px; font-size: 13px;"><strong>Colors:</strong> ' + locData.numColors + '</div>';
+            
+            summaryHtml += '</div>';
+          }
+          
+          // Add unique colors
+          if (savedSelections.uniqueColors) {
+            summaryHtml += '<div class="custom-logo-summary-unique" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e5e5e5;">';
+            summaryHtml += '<strong>Unique Colors:</strong> ' + savedSelections.uniqueColors;
+            summaryHtml += '</div>';
+          }
+          
+          summaryHtml += '<div class="custom-logo-summary-qty" style="margin-top: 12px;">';
+          summaryHtml += '<label class="control-label custom-logo-label" style="display: block; margin-bottom: 4px;">Quantity:</label>';
+          summaryHtml += '<input type="number" class="form-control input-sm" id="summaryQuantity" value="20" min="20" style="max-width: 100px;">';
+          summaryHtml += '<div style="font-size: 11px; color: #666; margin-top: 4px;">Minimum order quantity: 20 units</div>';
+          summaryHtml += '</div>';
+          
+          $('#selectionSummaryBody').html(summaryHtml);
+          
+          // Show the pricing box, comments box, and Add to Quote button
+          $('#summaryPricingBox').show();
+          $('#summaryCommentsBox').show();
+          $('#addToQuoteButtonContainer').show();
+          
+          // Calculate pricing for the summary
+          recalcDemoPricing();
+          
+          // Clear all form inputs
+          $('.custom-logo-position-group').each(function () {
+            var $group = $(this);
+            $group.find('.custom-logo-file-name').text('');
+            $group.find('.custom-logo-file-info').hide();
+            $group.find('input[data-dimension="width"]').val('');
+            $group.find('input[data-dimension="height"]').val('');
+            $group.find('.custom-logo-dim-error').hide();
+            $group.find('.custom-logo-color-select').val('').prop('selectedIndex', 0);
+          });
+          
+          $('#uniqueColorsSelect').val('').prop('selectedIndex', 0);
+          $('#logoFileInput').val('');
+          
+          // Reset unique colors options to show all options
+          updateUniqueColorsOptions();
+          
+          // Disable confirm button after clearing
+          $('#confirmLogoBtn').prop('disabled', true);
+          
+          // Update demo pricing when quantity changes
+          $('#summaryQuantity').on('change', function () {
+            var qty = parseInt($(this).val(), 10) || 0;
+            if (qty < 20) {
+              $(this).val(20);
+            }
+            recalcDemoPricing();
+          });
+          
+          // Handle Edit All link click - restore all logo locations
+          $(document).off('click', '.custom-logo-summary-edit-all').on('click', '.custom-logo-summary-edit-all', function (e) {
+            e.preventDefault();
+            
+            // Restore all locations
+            for (var loc in savedSelections.locations) {
+              var locData = savedSelections.locations[loc];
+              var $group = $('.custom-logo-position-group[data-location="' + loc + '"]');
+              
+              // Restore values
+              $group.find('.custom-logo-file-name').text(locData.fileName);
+              $group.find('.custom-logo-file-info').show();
+              $group.find('input[data-dimension="width"]').val(locData.width);
+              $group.find('input[data-dimension="height"]').val(locData.height);
+              $group.find('.custom-logo-color-select').val(locData.numColors);
+              
+              // Hide any validation errors
+              $group.find('.custom-logo-dim-error').hide();
+            }
+            
+            // Restore unique colors
+            if (savedSelections.uniqueColors) {
+              $('#uniqueColorsSelect').val(savedSelections.uniqueColors);
+            }
+            
+            // Re-enable confirm button
+            checkConfirmButtonState();
+          });
+        });
+
+        // Add to Quote: show Custom Logo Quotes view and populate from current selection
+        $('#addToQuoteBtn').on('click', function () {
+          var productName = 'XS2-500 Type 2 Safety Helmet – Non-Vented – Black';
+          var priceStr = $('#summaryTotalPricePerUnit').text().trim() || '$0.00';
+          var totalStr = $('#summaryTotalCost').text().trim() || '$0.00';
+          var qty = parseInt($('#summaryQuantity').val(), 10) || 0;
+          var decoratingStr = $('#summaryPrintingPrice').text().trim() || '$0.00';
+          var decoratingNum = parseFloat(decoratingStr.replace(/[$,]/g, '')) || 0;
+          var decoratingTotal = (decoratingNum * qty);
+          var decoratingTotalStr = '$' + (isNaN(decoratingTotal) ? '0.00' : decoratingTotal.toFixed(2));
+          var commentsRaw = ($('#summaryComments').val() || '').trim();
+          var commentsEscaped = commentsRaw
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\n/g, '<br>');
+
+          $('#quoteProductDetailsBody').empty();
+          $('#quoteProductDetailsBody').append(
+            '<tr>' +
+              '<td>' + productName + '</td>' +
+              '<td>' + priceStr + '</td>' +
+              '<td>' + qty + '</td>' +
+              '<td>' +
+                '<button type="button" class="btn btn-link btn-xs" title="Edit"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                '<button type="button" class="btn btn-link btn-xs" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>' +
+              '</td>' +
+            '</tr>' +
+            (commentsRaw ? '<tr class="quote-product-comments-row"><td colspan="4" class="quote-product-comments-cell"><strong>Comments:</strong> ' + commentsEscaped + '</td></tr>' : '')
+          );
+          $('#quoteDecoratingCosts').text(decoratingTotalStr);
+          $('#quoteTotal').text(totalStr);
+
+          $('#customLogoConfiguratorView').hide();
+          $('#customLogoQuoteView').show();
+        });
+
+        // Back to product: return to configurator view
+        $('#customLogoQuoteBackToConfig').on('click', function (e) {
+          e.preventDefault();
+          $('#customLogoQuoteView').hide();
+          $('#customLogoConfiguratorView').show();
+        });
+
+        // Preview Quote: generate PDF with Customer/Distributor/Helmet fields, Logo Pricing (Demo Pricing values only), Important Note
+        $('#quotePreviewBtn').on('click', function () {
+          var JsPDF = window.jspdf && window.jspdf.jsPDF;
+          if (!JsPDF) {
+            alert('PDF library not loaded.');
+            return;
+          }
+          var doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          var pageW = doc.internal.pageSize.getWidth();
+          var y = 12;
+          var margin = 14;
+          var col1 = margin;
+          var fontNorm = 10;
+          var fontSmall = 9;
+
+          // ---- Title ----
+          doc.setFontSize(16);
+          doc.setFont(undefined, 'bold');
+          doc.text('Custom Logo Quote', pageW / 2, y, { align: 'center' });
+          y += 12;
+
+          // ---- Customer Name, Distributor Name, Helmet Model, Helmet Color, Product Number, Distributor Product Price, Order Quantity ----
+          doc.setFontSize(fontNorm);
+          doc.setFont(undefined, 'normal');
+          doc.text('Customer Name: Adam Wiener', col1, y);
+          y += 6;
+          var distName = $('#quoteDistributorName').find('option:selected').text() || $('#quoteDistributorName').val() || '';
+          doc.text('Distributor Name: ' + distName, col1, y);
+          y += 6;
+          doc.text('Helmet Model: XS2-500 Type 2 Safety Helmet – Non-Vented – Black', col1, y);
+          y += 6;
+          doc.text('Helmet Color: Black', col1, y);
+          y += 6;
+          doc.text('Product Number: XS2-500', col1, y);
+          y += 6;
+          var distributorProductPrice = $('#demoProductPrice').text().trim() || '$23.97';
+          doc.text('Distributor Product Price: ' + distributorProductPrice, col1, y);
+          y += 6;
+          var orderQty = $('#summaryQuantity').val() || $('#quoteProductDetailsBody tr:not(.quote-product-comments-row)').first().find('td').eq(2).text() || '0';
+          doc.text('Order Quantity: ' + orderQty, col1, y);
+          y += 10;
+
+          // ---- Comments (if entered) – before Logo Pricing ----
+          var commentsHtml = $('#quoteProductDetailsBody tr.quote-product-comments-row').first().find('.quote-product-comments-cell').html() || '';
+          var commentsText = (commentsHtml.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/^\s*Comments:\s*/i, '').trim()) || ($('#summaryComments').val() || '').trim();
+          if (commentsText) {
+            doc.setFont(undefined, 'bold');
+            doc.text('Comments:', col1, y);
+            y += 6;
+            doc.setFont(undefined, 'normal');
+            var commentLines = doc.splitTextToSize(commentsText, pageW - 2 * margin - 4);
+            commentLines.forEach(function (line) {
+              doc.text(line, col1, y);
+              y += 5;
+            });
+            y += 8;
+          }
+
+          // ---- Logo Pricing (same info as Demo Pricing section, values only – no math/calculation text) ----
+          doc.setFont(undefined, 'bold');
+          doc.text('Logo Pricing:', col1, y);
+          y += 6;
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(fontSmall);
+
+          // Logo Location table (Name, Cost, Code, Description) + Sub-Total
+          var logoLocationRows = [];
+          $('#demoCostPerUnitBody tr').each(function () {
+            var cells = $(this).find('td');
+            if (cells.length >= 4) {
+              logoLocationRows.push([
+                (cells.eq(0).text() || '').trim(),
+                (cells.eq(1).text() || '').trim(),
+                (cells.eq(2).text() || '').trim(),
+                (cells.eq(3).text() || '').trim()
+              ]);
+            }
+          });
+          if (logoLocationRows.length) {
+            doc.autoTable({
+              startY: y,
+              head: [['Logo Location Name', 'Cost', 'Code', 'Description']],
+              body: logoLocationRows,
+              theme: 'grid',
+              headStyles: { fillColor: [240, 240, 240], fontStyle: 'bold', fontSize: fontSmall },
+              bodyStyles: { fontSize: fontSmall },
+              margin: { left: col1 },
+              columnStyles: { 0: { cellWidth: 45 }, 1: { cellWidth: 22 }, 2: { cellWidth: 28 }, 3: { cellWidth: 55 } }
+            });
+            y = doc.lastAutoTable.finalY + 4;
+          }
+          var locationSubTotal = $('#demoLocationSubTotal').text().trim() || '$0.00';
+          doc.text('Logo Location Sub-Total: ' + locationSubTotal, col1, y);
+          y += 8;
+
+          // Handling + Setup table + Handling:, Setup:, Setup/Unit:, Handling + Setup: (values only)
+          var handlingSetupRows = [];
+          $('#demoHandlingSetupBody tr').each(function () {
+            var cells = $(this).find('td');
+            if (cells.length >= 3) {
+              handlingSetupRows.push([
+                (cells.eq(0).text() || '').trim(),
+                (cells.eq(1).text() || '').trim(),
+                (cells.eq(2).text() || '').trim()
+              ]);
+            }
+          });
+          if (handlingSetupRows.length) {
+            doc.autoTable({
+              startY: y,
+              head: [['Handling + Setup Section', 'Cost', 'Code']],
+              body: handlingSetupRows,
+              theme: 'grid',
+              headStyles: { fillColor: [240, 240, 240], fontStyle: 'bold', fontSize: fontSmall },
+              bodyStyles: { fontSize: fontSmall },
+              margin: { left: col1 },
+              columnStyles: { 0: { cellWidth: 80 }, 1: { cellWidth: 25 }, 2: { cellWidth: 45 } }
+            });
+            y = doc.lastAutoTable.finalY + 4;
+          }
+          doc.text('Handling: ' + ($('#demoHandlingSubtotal').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Setup: ' + ($('#demoSetupSubtotal').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Setup / Unit: ' + ($('#demoSetupPerUnit').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Handling + Setup: ' + ($('#demoHandlingSetupPerUnit').text().trim() || '$0.00'), col1, y);
+          y += 8;
+
+          doc.text('Total Printing / Unit: ' + ($('#demoTotalPrinting').text().trim() || '$0.00'), col1, y);
+          y += 6;
+          doc.text('Product Price: ' + ($('#demoProductPrice').text().trim() || '$23.97'), col1, y);
+          y += 5;
+          doc.text('Total Cost / Helmet: ' + ($('#demoTotalHelmet').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Total Cost: ' + ($('#demoTotalCostOverall').text().trim() || '$0.00'), col1, y);
+          y += 12;
+          doc.setFontSize(fontNorm);
+
+          // ---- Important Note ----
+          doc.setFont(undefined, 'bold');
+          doc.text('Important Note:', col1, y);
+          y += 6;
+          doc.setFont(undefined, 'bold');
+          doc.setFontSize(fontSmall);
+          doc.text('Next Steps', col1, y);
+          y += 5;
+          doc.setFont(undefined, 'normal');
+          var nextSteps = [
+            'You can expect Entripy (our decorator partner) to email you with a proof within 1 business day',
+            'Entripy will provide a visual proof with your logo(s) and selected garment(s). We require a proof approval from you in order to proceed with the order',
+            'In parallel, our team will create custom logo part numbers that can be referred to for future orders and for confirming available inventory',
+            'We will be providing you the logo part numbers along with expected due dates for your purchase order',
+            'A unique quote number will also be generated when you proceed with order. Please include this in your purchase order for reference purposes'
+          ];
+          nextSteps.forEach(function (line) {
+            var lines = doc.splitTextToSize(line, pageW - 2 * margin - 4);
+            lines.forEach(function (l) { doc.text(l, col1 + 4, y); y += 4; });
+            y += 2;
+          });
+          y += 2;
+          doc.setFont(undefined, 'bold');
+          doc.text('Shipping:', col1, y);
+          y += 5;
+          doc.setFont(undefined, 'normal');
+          doc.text('Please indicate the modes of transport on your logo purchase order according to the following information:', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 6;
+          doc.text('Orders of $1500 or above will be shipped Prepaid from the decorator to the distributor or end-user.', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 5;
+          doc.text('Orders below $1500 will be shipped Prepaid & Charge from the decorator to the distributor or end-user.', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 8;
+          doc.setFont(undefined, 'bold');
+          doc.text('Proceed With Quote:', col1, y);
+          y += 5;
+          doc.setFont(undefined, 'normal');
+          doc.text('Please save order for future reference if there isnt the intention to place a purchase order', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 5;
+          doc.text('This quote is valid for 30 days', col1 + 4, y);
+
+          // Output and open in new tab
+          try {
+            var blob = doc.output('blob');
+            var url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+          } catch (err) {
+            alert('Could not generate PDF: ' + (err.message || err));
+          }
+        });
+
+        // Initial check
+        checkConfirmButtonState();
+
+        // Demo-only pricing calculation (not for FRD)
+        function formatCurrency(val) {
+          return '$' + (isNaN(val) ? '0.00' : val.toFixed(2));
+        }
+
+        // Look up price, code, and description from new calculation data based on quantity and number of colors
+        function lookupPrice(quantity, numColors) {
+          if (!calculationData || !quantity || quantity < 1 || !numColors || numColors < 1 || numColors > 6) {
+            return { price: 0, code: '', description: '' };
+          }
+
+          // Find matching row: quantity between min/max and matching # of colors
+          for (var i = 1; i < calculationData.length; i++) {
+            var row = calculationData[i];
+            var code = row[0];
+            var minUnits = row[1];
+            var maxUnits = row[2];
+            var colors = row[3];
+            var price = row[4];
+            var description = row[5];
+            
+            // Check if this is a color pricing row (not handling/setup)
+            if (colors === null) continue;
+            
+            // Check if colors match
+            if (colors !== numColors) continue;
+            
+            // Check if quantity is in range
+            var inRange = false;
+            if (maxUnits === '-' || maxUnits === null) {
+              inRange = quantity >= minUnits;
+            } else {
+              inRange = quantity >= minUnits && quantity <= maxUnits;
+            }
+            
+            if (inRange) {
+              return {
+                price: price && !isNaN(price) ? price : 0,
+                code: code || '',
+                description: description || ''
+              };
+            }
+          }
+          
+          return { price: 0, code: '', description: '' };
+        }
+
+        // Look up handling and setup values (and codes) from new calculation data
+        function lookupHandlingSetup() {
+          var handling = 0;
+          var handlingCode = '';
+          var firstColorSetup = 0;
+          var firstColorSetupCode = '';
+          var setupPerColor = 0;
+          var setupPerColorCode = '';
+          
+          // Find special rows by code
+          for (var i = 1; i < calculationData.length; i++) {
+            var row = calculationData[i];
+            var code = row[0];
+            var price = row[4];
+            
+            if (code === 'CPPH') {
+              handling = price && !isNaN(price) ? price : 0;
+              handlingCode = code;
+            } else if (code === 'CPPS1C') {
+              firstColorSetup = price && !isNaN(price) ? price : 0;
+              firstColorSetupCode = code;
+            } else if (code === 'CPPSAC') {
+              setupPerColor = price && !isNaN(price) ? price : 0;
+              setupPerColorCode = code;
+            }
+          }
+          
+          return {
+            handling: handling,
+            firstColorSetup: firstColorSetup,
+            setupPerColor: setupPerColor,
+            handlingCode: handlingCode,
+            firstColorSetupCode: firstColorSetupCode,
+            setupPerColorCode: setupPerColorCode
+          };
+        }
+
+        function recalcDemoPricing() {
+          if (!calculationData) {
+            return; // Wait for data to load
+          }
+
+          var qty = parseInt($('#summaryQuantity').val(), 10) || 0;
+          var costPerUnitBody = $('#demoCostPerUnitBody');
+          var handlingSetupBody = $('#demoHandlingSetupBody');
+          costPerUnitBody.empty();
+          handlingSetupBody.empty();
+          
+          var productPrice = 23.97;
+          
+          if (qty === 0) {
+            // Tables remain empty when no quantity
+            $('#demoLocationSubTotal').text(formatCurrency(0));
+            $('#demoHandlingSubtotal').text(formatCurrency(0));
+            $('#demoSetupSubtotal').text(formatCurrency(0));
+            $('#demoTotalCostMath').html('');
+            $('#demoHandlingSetupPerUnit').text(formatCurrency(0));
+            $('#demoHandlingSetupPerUnitMath').html('');
+            $('#demoTotalPrinting').text(formatCurrency(0));
+            $('#demoTotalPrintingMath').html('');
+            $('#demoProductPrice').text(formatCurrency(productPrice));
+            var totalHelmetRounded = Math.round(productPrice * 100) / 100;
+            $('#demoTotalHelmet').text(formatCurrency(totalHelmetRounded));
+            $('#demoTotalHelmetMath').html('Product Price (' + formatCurrency(productPrice) + ') = ' + formatCurrency(totalHelmetRounded) + ' (rounded to hundredth)');
+            
+            // Update summary pricing box
+            $('#summaryHelmetPrice').text(formatCurrency(productPrice));
+            $('#summaryPrintingPrice').text(formatCurrency(0));
+            $('#summaryTotalPricePerUnit').text(formatCurrency(totalHelmetRounded));
+            return;
+          }
+          
+          if (qty < 20) {
+            // Tables remain empty when below MOQ
+            $('#demoLocationSubTotal').text(formatCurrency(0));
+            $('#demoHandlingSubtotal').text(formatCurrency(0));
+            $('#demoSetupSubtotal').text(formatCurrency(0));
+            $('#demoTotalCostMath').html('');
+            $('#demoHandlingSetupPerUnit').text(formatCurrency(0));
+            $('#demoHandlingSetupPerUnitMath').html('');
+            $('#demoTotalPrinting').text(formatCurrency(0));
+            $('#demoTotalPrintingMath').html('');
+            $('#demoProductPrice').text(formatCurrency(productPrice));
+            var totalHelmetRounded = Math.round(productPrice * 100) / 100;
+            $('#demoTotalHelmet').text(formatCurrency(totalHelmetRounded));
+            $('#demoTotalHelmetMath').html('Product Price (' + formatCurrency(productPrice) + ') = ' + formatCurrency(totalHelmetRounded) + ' (rounded to hundredth)');
+            
+            // Update summary pricing box
+            $('#summaryHelmetPrice').text(formatCurrency(productPrice));
+            $('#summaryPrintingPrice').text(formatCurrency(0));
+            $('#summaryTotalPricePerUnit').text(formatCurrency(totalHelmetRounded));
+            return;
+          }
+
+          var locationNames = {
+            '1': 'Front',
+            '2': 'Back',
+            '3': 'Left Side',
+            '4': 'Right Side'
+          };
+
+          var subTotal = 0;
+
+          // Calculate price for each logo location
+          // Use savedSelections if available (after Confirm), otherwise check form state
+          if (typeof savedSelections !== 'undefined' && savedSelections.locations && Object.keys(savedSelections.locations).length > 0) {
+            // Use saved selections (after Confirm button clicked)
+            for (var loc in savedSelections.locations) {
+              var locData = savedSelections.locations[loc];
+              var numColors = parseInt(locData.numColors, 10);
+              
+              if (!isNaN(numColors) && numColors > 0) {
+                var lookup = lookupPrice(qty, numColors);
+                subTotal += lookup.price;
+                
+                var trSaved = $('<tr></tr>');
+                trSaved.append('<td>' + locData.locationName + '</td>');
+                trSaved.append('<td>' + formatCurrency(lookup.price) + '</td>');
+                trSaved.append('<td>' + (lookup.code || '') + '</td>');
+                trSaved.append('<td>' + (lookup.description || '') + '</td>');
+                costPerUnitBody.append(trSaved);
+              }
+            }
+          } else {
+            // Check form state (before Confirm button clicked)
+            $('.custom-logo-position-group').each(function () {
+              var $group = $(this);
+              var loc = $group.data('location');
+              var hasFile = $group.find('.custom-logo-file-info').is(':visible');
+              
+              if (hasFile) {
+                var numColors = parseInt($group.find('.custom-logo-color-select').val(), 10);
+                
+                if (!isNaN(numColors) && numColors > 0) {
+                  var lookup = lookupPrice(qty, numColors);
+                  subTotal += lookup.price;
+                  
+                  var trForm = $('<tr></tr>');
+                  trForm.append('<td>' + locationNames[loc] + '</td>');
+                  trForm.append('<td>' + formatCurrency(lookup.price) + '</td>');
+                  trForm.append('<td>' + (lookup.code || '') + '</td>');
+                  trForm.append('<td>' + (lookup.description || '') + '</td>');
+                  costPerUnitBody.append(trForm);
+                }
+              }
+            });
+          }
+
+          // Get unique colors
+          var uniqueColors = 0;
+          if (typeof savedSelections !== 'undefined' && savedSelections.uniqueColors) {
+            uniqueColors = parseInt(savedSelections.uniqueColors, 10);
+          } else {
+            uniqueColors = parseInt($('#uniqueColorsSelect').val(), 10) || 0;
+          }
+
+          var setupValues = lookupHandlingSetup();
+          
+          // Calculate Total Cost: (1st color setup * 1) + (# of unique colors - 1) * Set-Up/Color
+          var totalCost = 0;
+          var totalCostMath = '';
+          
+          if (uniqueColors > 0) {
+            var firstColorSetup = setupValues.firstColorSetup;
+            var setupPerColor = setupValues.setupPerColor;
+            var colorsMinusOne = uniqueColors - 1;
+            var setupPerColorTotal = colorsMinusOne * setupPerColor;
+            
+            // Total cost = (1st color setup * 1) + (# of unique colors - 1) * Set-Up/Color
+            totalCost = (firstColorSetup * 1) + setupPerColorTotal;
+            
+            // Build math breakdown (include codes)
+            if (colorsMinusOne > 0) {
+              totalCostMath = '(1st Color Setup (' + formatCurrency(firstColorSetup) + (setupValues.firstColorSetupCode ? ' [' + setupValues.firstColorSetupCode + ']' : '') + ') × 1)';
+              totalCostMath += ' + (' + uniqueColors + ' total colors - 1) × Set-up/Color (' + formatCurrency(setupPerColor) + (setupValues.setupPerColorCode ? ' [' + setupValues.setupPerColorCode + ']' : '') + ')';
+              totalCostMath += ' = ' + formatCurrency(firstColorSetup) + ' + ' + formatCurrency(setupPerColorTotal);
+              totalCostMath += ' = ' + formatCurrency(totalCost);
+            } else {
+              totalCostMath = '(1st Color Setup (' + formatCurrency(firstColorSetup) + (setupValues.firstColorSetupCode ? ' [' + setupValues.firstColorSetupCode + ']' : '') + ') × 1) = ' + formatCurrency(totalCost);
+            }
+          }
+
+          // Populate Handling + Setup table and calculate Handling + Setup Cost per unit
+          var handling = setupValues.handling;
+          var handlingSetupPerUnit = 0;
+          var handlingSetupPerUnitMath = '';
+          
+          // Table 2 rows
+          var trHandling = $('<tr></tr>');
+          trHandling.append('<td>Handling</td>');
+          trHandling.append('<td>' + formatCurrency(handling) + '</td>');
+          trHandling.append('<td>' + (setupValues.handlingCode || '') + '</td>');
+          handlingSetupBody.append(trHandling);
+
+          var trFirstSetup = $('<tr></tr>');
+          trFirstSetup.append('<td>1st Color Setup</td>');
+          trFirstSetup.append('<td>' + formatCurrency(setupValues.firstColorSetup) + '</td>');
+          trFirstSetup.append('<td>' + (setupValues.firstColorSetupCode || '') + '</td>');
+          handlingSetupBody.append(trFirstSetup);
+
+          // One row for each additional color beyond the first
+          var additionalColors = Math.max(0, uniqueColors - 1);
+          for (var i = 0; i < additionalColors; i++) {
+            var trPerColor = $('<tr></tr>');
+            trPerColor.append('<td>Set-up / Color</td>');
+            trPerColor.append('<td>' + formatCurrency(setupValues.setupPerColor) + '</td>');
+            trPerColor.append('<td>' + (setupValues.setupPerColorCode || '') + '</td>');
+            handlingSetupBody.append(trPerColor);
+          }
+          
+          // Setup subtotal is the total setup cost (1st Color Setup + remaining Set-up / Color)
+          var setupSubtotal = totalCost;
+          var setupPerUnitDisplay = 0;
+          if (qty > 0) {
+            setupPerUnitDisplay = setupSubtotal / qty;
+          }
+
+          // Handling + Setup per unit = Setup / Unit + Handling
+          handlingSetupPerUnit = setupPerUnitDisplay + handling;
+          if (qty > 0 || handling > 0) {
+            handlingSetupPerUnitMath = '(Setup / Unit (' + formatCurrency(setupPerUnitDisplay) + ') + Handling (' + formatCurrency(handling) + ')) = ' + formatCurrency(handlingSetupPerUnit);
+          }
+
+          // Calculate Total Printing / Unit: (Logo Location Sub-Total + Handling + Setup) × 1.1
+          var totalPrintingBase = subTotal + handlingSetupPerUnit;
+          var totalPrinting = totalPrintingBase * 1.1;
+          var totalPrintingMath = '(Logo Location Sub-Total (' + formatCurrency(subTotal) + ') + Handling + Setup (' + formatCurrency(handlingSetupPerUnit) + '))';
+          totalPrintingMath += ' = ' + formatCurrency(totalPrintingBase) + ' × 1.1 = ' + formatCurrency(totalPrinting);
+
+          // Calculate Total Cost / Helmet: Product Price + Total Printing / Unit (rounded to 2 decimal places)
+          var totalHelmetUnrounded = productPrice + totalPrinting;
+          var totalHelmet = Math.round(totalHelmetUnrounded * 100) / 100;
+          var totalHelmetMath = 'Product Price (' + formatCurrency(productPrice) + ') + Total Printing / Unit (' + formatCurrency(totalPrinting) + ')';
+          totalHelmetMath += ' = ' + formatCurrency(totalHelmetUnrounded) + ' (rounded to hundredth) = ' + formatCurrency(totalHelmet);
+
+          // Subtotals and display
+          var handlingSubtotal = handling;
+          var setupMath = '';
+          if (uniqueColors > 0) {
+            setupMath = '(1st Color Setup (' + formatCurrency(setupValues.firstColorSetup) + ')';
+            if (additionalColors > 0) {
+              setupMath += ' + ' + additionalColors + ' × Set-up/Color (' + formatCurrency(setupValues.setupPerColor) + ')';
+            }
+            setupMath += ') = ' + formatCurrency(setupSubtotal);
+            if (qty > 0) {
+              setupMath += '; Setup / Unit = ' + formatCurrency(setupPerUnitDisplay);
+            }
+          }
+          $('#demoLocationSubTotal').text(formatCurrency(subTotal));
+          $('#demoHandlingSubtotal').text(formatCurrency(handlingSubtotal));
+          $('#demoSetupSubtotal').text(formatCurrency(setupSubtotal));
+          $('#demoSetupPerUnit').text(formatCurrency(setupPerUnitDisplay));
+          $('#demoSetupMath').html(setupMath || '');
+          $('#demoHandlingSetupPerUnit').text(formatCurrency(handlingSetupPerUnit));
+          $('#demoHandlingSetupPerUnitMath').html(handlingSetupPerUnitMath || '');
+          $('#demoTotalPrinting').text(formatCurrency(totalPrinting));
+          $('#demoTotalPrintingMath').html(totalPrintingMath || '');
+          $('#demoProductPrice').text(formatCurrency(productPrice));
+          $('#demoTotalHelmet').text(formatCurrency(totalHelmet));
+          $('#demoTotalHelmetMath').html(totalHelmetMath || '');
+          var totalCostOverall = totalHelmet * qty;
+          $('#demoTotalCostOverall').text(formatCurrency(totalCostOverall));
+          
+          // Update summary pricing box
+          $('#summaryHelmetPrice').text(formatCurrency(productPrice));
+          $('#summaryPrintingPrice').text(formatCurrency(totalPrinting));
+          $('#summaryTotalPricePerUnit').text(formatCurrency(totalHelmet));
+          $('#summaryTotalCost').text(formatCurrency(totalCostOverall));
+        }
+
+        // Recalculate pricing when quantity changes
+        $(document).on('change', '#summaryQuantity', function () {
+          var qty = parseInt($(this).val(), 10) || 0;
+          if (qty < 20) {
+            $(this).val(20);
+          }
+          recalcDemoPricing();
+        });
+
+        // Recalculate pricing when per-location colors change
+        $(document).on('change', '.custom-logo-color-select', function () {
+          recalcDemoPricing();
+        });
+
+        // Initialize: Render the pricing table on page load
+        $(document).ready(function() {
+          renderPricingTable();
+        });
+      })(jQuery);
+    </script>
+  </body>
+</html>

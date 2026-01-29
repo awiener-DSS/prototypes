@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<!-- saved from url=(0060)https://connect.surewerx.com/en-ca/cla-product/view/V1120470 -->
+<html class="js no-touchevents" lang="en"><plasmo-csui><template shadowrootmode="open"><style>*,:before,:after{box-sizing:border-box}.overlay-container{background:#102239e6;flex-direction:column;justify-content:flex-start;align-items:center;width:100vw;height:100vh;display:flex;position:fixed}.overlay-progress{flex-direction:column;justify-content:center;align-items:center;gap:16px;display:flex}.overlay-progress-status{flex-direction:column;justify-content:center;display:flex}.overlay-progress-text{color:#fff;text-align:center;letter-spacing:-.4px;font-family:Kodchasan,serif;font-size:20px;font-style:normal;font-weight:700;line-height:normal}.overlay-progress-bar{position:relative}.overlay-progress-logo{position:absolute;top:0;left:0;transform:translate(13px,13px)}.overlay-complete-save-button{background:#8243ea;border:0;border-radius:60px;justify-content:center;align-items:center;gap:8px;padding:10px 20px;display:inline-flex}.overlay-complete-save-button:active,.overlay-complete-save-button:hover{background:#6635b8}.overlay-complete-save-button-text{color:#fff;text-align:center;letter-spacing:-.32px;font-family:Kodchasan,serif;font-size:16px;font-style:normal;font-weight:700;line-height:20px}.overlay-complete{flex-direction:column;align-items:center;gap:64px;width:1064px;max-width:80%;padding-top:24px;display:flex}.overlay-complete-logo{flex-direction:column;align-items:center;gap:12px;display:flex}.overlay-complete-logo-img{width:80px;height:80px}.overlay-complete-logo-subtext{color:#fff;text-align:center;letter-spacing:-.4px;font-family:Kodchasan,serif;font-size:20px;font-style:normal;font-weight:700;line-height:normal}.overlay-complete-save{flex-direction:column;justify-content:flex-start;align-items:start;gap:40px;width:100%;max-width:420px;display:flex}.overlay-complete-save-location{flex-direction:column;gap:8px;width:100%;display:flex}.overlay-complete-save-location-title{color:#fff;letter-spacing:-.28px;margin-left:16px;font-family:Kodchasan,serif;font-size:14px;font-style:normal;font-weight:700;line-height:normal}.overlay-complete-save-location-subtext{color:#fff;letter-spacing:-.24px;margin-left:16px;font-family:Kodchasan,serif;font-size:12px;font-style:normal;font-weight:500;line-height:normal}.overlay-complete-image-container{background-color:#fff;border-radius:10px;width:400px;height:220px;max-height:220px;display:flex;overflow:hidden;box-shadow:0 8px 20px #00000026}.overlay-complete-image{max-width:100%;margin:auto}.overlay-error{flex-direction:column;justify-content:center;align-items:center;gap:16px;max-width:400px;display:flex}.overlay-error-status{flex-direction:column;justify-content:center;gap:8px;display:flex}.overlay-error-logo{width:80px;height:80px}.overlay-error-text-title{color:#fff;text-align:center;letter-spacing:-.4px;font-family:Kodchasan,serif;font-size:20px;font-style:normal;font-weight:700;line-height:normal}.overlay-error-text-message{color:#fff;text-align:center;letter-spacing:-.24px;font-family:Kodchasan,serif;font-size:12px;font-style:normal;font-weight:500;line-height:normal}.overlay-error-actions{flex-direction:row;gap:8px;display:flex}.overlay-error-support-button{cursor:pointer;background:#fff;border:0;border-radius:60px;padding:10px 20px;text-decoration:none}.overlay-error-support-button-text{color:#102239;text-align:center;letter-spacing:-.32px;font-family:Kodchasan,serif;font-size:16px;font-style:normal;font-weight:700;line-height:20px}.overlay-close-button{position:fixed;top:20px;left:20px}.overlay-complete-save-error{background:#5a2636;border-radius:7px;margin-top:-22px;padding:10px 14px}.overlay-complete-save-error-text{color:#ff77b1;font-family:Kodchasan,serif;font-size:12px;font-style:normal;font-weight:400;line-height:normal}.overlay-complete-data{justify-content:center;align-items:center;gap:10vw;display:flex}.overlay-complete-info{flex-direction:column;justify-content:center;align-items:center;gap:14px;display:flex}.dropdown-wrapper{background:#fff;border-radius:8px}.dropdown-container{background:#fff;border-radius:8px;flex-direction:column;justify-content:space-between;align-items:center;gap:2px;width:100%;max-height:400px;display:flex;position:relative;overflow-y:auto}.dropdown-overlay{z-index:auto;width:100vw;height:100vh;position:fixed;top:0;left:0}.dropdown-open-container{z-index:200;background:#fff;border-radius:8px;width:100%;position:absolute;top:64px}.dropdown-item-container{cursor:pointer;background:#fff;align-items:center;gap:8px;width:100%;padding:8px 16px;display:flex}.dropdown-item-container:hover{background:#e8eaee}.dropdown-item-name{color:#102239;letter-spacing:-.32px;flex:1 0 0;font-family:Kodchasan,serif;font-size:16px;font-style:normal;font-weight:700;line-height:normal}.dropdown-create-container{align-items:center;gap:8px;width:100%;padding:8px 16px;display:flex;position:sticky;bottom:0}.dropdown-create-title{color:#10223966;letter-spacing:-.32px;flex:1 0 0;font-family:Kodchasan,serif;font-size:16px;font-style:normal;font-weight:700;line-height:normal}.dropdown-create-container-open{cursor:pointer;display:contents}.dropdown-create-container-close{display:contents}.dropdown-create-input{caret-color:#102239;color:#102239;letter-spacing:-.32px;background:0 0;border:0;outline:none;flex:1 0 0;font-family:Kodchasan,serif;font-size:16px;font-style:normal;font-weight:700;line-height:normal}.dropdown-create-input::placeholder{letter-spacing:-.32px;color:#10223933;font-family:Kodchasan,serif;font-size:16px;font-style:normal;font-weight:700;line-height:normal}.tags-dropdown-container{background:#fff;border-radius:8px;flex-direction:column;justify-content:space-between;align-items:center;gap:2px;width:100%;max-height:400px;display:flex;position:relative;overflow-y:visible}.tags-dropdown-dropdown{z-index:100;background-color:#fff;border-radius:8px;flex-direction:column;gap:14px;max-height:400px;padding:12px;display:flex;position:absolute;top:64px;overflow-y:scroll}.tags-dropdown-section{flex-direction:column;gap:14px;display:flex}.tags-dropdown-section-title{letter-spacing:-.32px;color:#00000080;font-family:Kodchasan,serif;font-size:11px;font-style:normal;font-weight:500;line-height:normal}.tags-dropdown-section-value{letter-spacing:-.32px;color:#000;border:1px solid #dfe1e6;border-radius:4px;padding:10px;font-family:Kodchasan,serif;font-size:13px;font-style:normal;font-weight:700;line-height:normal}.tags-dropdown-section-values{flex-wrap:wrap;gap:8px;display:flex}.tags-dropdown-overlay{z-index:10;width:100vw;height:100vh;position:fixed;top:0;left:0}.dropdown-summary-container{background:#fff;border-radius:8px;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:8px 16px;display:flex}.dropdown-summary-placeholder{letter-spacing:-.32px;color:#102239;font-family:Kodchasan,serif;font-size:16px;font-style:normal;font-weight:700;line-height:normal}.dropdown-summary-chips-container{flex-wrap:wrap;align-items:center;gap:8px;display:flex}.dropdown-summary-chip{letter-spacing:-.32px;color:#fff;background-color:#2f2f2f;border-radius:4px;padding:4px 8px;font-family:Kodchasan,serif;font-size:13px;font-style:normal;font-weight:700;line-height:normal}.loader-dots{justify-content:center;align-items:center;width:102.74px;height:20px;display:flex}.loader-dots span{background:#fff;border-radius:50%;width:10px;height:10px;margin:0 2px 0 0;transition:all 6s;animation:2s infinite wave;display:inline-block}.loader-dots span:first-child{animation-delay:0s}.loader-dots span:nth-child(2){animation-delay:.1s}.loader-dots span:nth-child(3){animation-delay:.2s}@keyframes wave{0%,40%,to{transform:translate(0)}10%{transform:translateY(-15px)}}</style><div id="plasmo-shadow-container" style="z-index: 2147483647; position: relative;"><div id="plasmo-overlay-0" class="plasmo-csui-container" style="display: flex; position: absolute; top: 0px; left: 0px;"></div></div></template></plasmo-csui><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!-- <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" /> -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/png" href="https://connect.surewerx.com/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/img/logo_is7.ico">
+<!-- Preload Adobe Font -->
+<link rel="stylesheet" href="./SureWerx Connect CA_files/qhr0ljm.css" as="style" onload="this.onload=null;this.rel=&#39;stylesheet&#39;">
+<!-- Preload Google Fonts -->
+
+
+<link rel="stylesheet" href="./SureWerx Connect CA_files/css2" as="style" onload="this.onload=null;this.rel=&#39;stylesheet&#39;"><meta name="robots" content="noindex,nofollow"><meta name="description" content="SureWerx Connect CA"><meta name="keywords" content="SureWerx Connect CA"><title>SureWerx Connect CA</title>
+
+
+
+
+
+<script async="" src="./SureWerx Connect CA_files/clarity.js"></script><script type="text/javascript" async="" src="./SureWerx Connect CA_files/js"></script><script async="" src="./SureWerx Connect CA_files/qxj934k0t8"></script><script type="text/javascript" async="" src="./SureWerx Connect CA_files/js(1)"></script><script async="" src="./SureWerx Connect CA_files/gtm.js"></script><script src="./SureWerx Connect CA_files/jquery-3.6.0.min.js"></script><script defer="" src="./SureWerx Connect CA_files/theme.min.js"></script>
+<script>
+$(document).ready(function(){
+(function($) {
+$.fn.bootstrapValidator.i18n.forbiddensymbols = $.extend($.fn.bootstrapValidator.i18n.forbiddensymbols || {}, {
+'default': 'Your input contains forbidden symbols.'
+});
+$.fn.bootstrapValidator.validators.forbiddensymbols = {
+enableByHtml5: function($field) {
+return (undefined !== $field.attr('forbiddensymbols'));
+},
+/**
+* Return true if and only if the input value is a valid name
+*
+* @param {BootstrapValidator} validator Validate plugin instance
+* @param {jQuery} $field Field element
+* @param {Object} [options]
+* @returns {Boolean}
+*/
+validate: function(validator, $field, options) {
+var value = $field.val();
+if (value === '') {
+return true;
+}
+var forbiddenSymbolsRegExp = /^[^\<\>\&\@\;\%\*\#\|\_\[\]\!\?\~\+\{\}\(\)\:]*$/;
+return forbiddenSymbolsRegExp.test(value);
+}
+};
+}(window.jQuery));
+});
+</script><script type="text/javascript">
+if (typeof RetailShop === 'undefined') {var RetailShop = {}};
+RetailShop.URLs = {};
+RetailShop.URLs.getProductComponents = "https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewProduct-RenderProductComponents?CatalogID=&CategoryName="; // additional params: SKU, cid, [cid, cid, ...]
+RetailShop.URLs.getRecommendedProducts = "https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewProductRecommendation-Start"; // params: SKU, ContextViewId
+RetailShop.URLs.getRecommendationSession = "https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewProductRecommendation-GetSessionData"; // no params
+RetailShop.URLs.loginPage = "https://connect.surewerx.com/en-ca/login";
+const REST_WEB_ADAPTER = '/INTERSHOP/rest'; 
+const CURRENT_DOMAIN = 'SUREWERX-SWC_CA-Site'; 
+const SERVER_GROUP = 'WFS'; 
+const LOCALE = 'en_US';
+</script><script src="./SureWerx Connect CA_files/jquery-ui.js" integrity="sha384-JPbtLYL10d/Z1crlc6GGGGM3PavCzzoUJ1UxH0bXHOfguWHQ6XAWrIzW+MBGGXe5" crossorigin="anonymous"></script><script defer="" src="./SureWerx Connect CA_files/extension_b2b.min.js"></script><script type="text/javascript">
+if (typeof RESTConfiguration === 'undefined')
+{
+var RESTConfiguration = {}
+RESTConfigurationClass = function() {
+var http = location.protocol.concat("//").concat(window.location.hostname);
+this.AuthenticationToken = null;
+this.BusinessPartnerNo = null;
+this.CustomerNo = null;
+this.Login = null;
+this.WebServerSecureURL = null;
+this.WebServerURL = null;
+this.URLMappingRESTWebadapter = null;
+this.URLMappingPipelineWebadapter = null;
+this.Domain = null;
+this.ServerGroup = null;
+this.URLIdentifier = null;
+this.LocaleID = null;
+this.CurrencyCode = null;
+this.CustomerTypeID = null;
+this.URLMappingStaticWebadapter = null;
+};
+RESTConfigurationClass.prototype = {
+get: function(index) {
+return this[index];
+},
+set: function(index, value) {
+this[index] = value;
+},
+getCurrentHost: function() {
+return window.location.origin;
+},
+getWebUrl: function() {
+return this.getCurrentHost() + this.URLMappingPipelineWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/' + this.LocaleID + '/' + this.URLIdentifier + '/' + this.CurrencyCode + '/';
+},
+getRESTUrl: function() {
+return this.getCurrentHost() + this.URLMappingRESTWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/' + this.URLIdentifier;
+},
+getBaseRESTUrl: function() {
+return this.getCurrentHost() + this.URLMappingRESTWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/-;loc=' + this.LocaleID + '/';
+},
+getStaticUrl: function() {
+return this.URLMappingStaticWebadapter + '/' + this.ServerGroup + '/' + this.Domain + '/' + this.URLIdentifier + '/-/' + this.LocaleID + '/';
+},
+getRESTClientHost: function() {
+return this.URLMappingRESTWebadapter + '/' + this.ServerGroup;
+},
+getRESTClientPrefix: function() {
+return this.Domain + '/' + this.URLIdentifier;
+},
+getAuthenticationToken: function() {
+return this.AuthenticationToken;
+},
+getCustomerUrlPart: function(accountAdmin) {
+if (this.CustomerTypeID === 'PRIVATE' || accountAdmin === true) {
+return 'customers/' + this.CustomerNo;
+}else{
+return 'customers/' + this.CustomerNo + '/users/' + this.Login;
+}
+},
+getLocale: function(rewrite) {
+if (typeof rewrite === 'undefined') {
+return this.LocaleID;
+}else{
+return this.LocaleID.replace('_','-');
+}
+},
+getLang: function() {
+return this.LocaleID.split('_')[0];
+},
+getLocalizationsUrl: function(id) {
+if (typeof id !== 'undefined' && typeof id === 'string') {
+return this.getStaticUrl() + 'js/localizations/' + id + '-' + RESTConfiguration.LocaleID + '.json'
+}
+return this.getStaticUrl() + 'js/localizations/'
+},
+getLocalizationProperties: function(topic, locale) {
+if (typeof locale === 'undefined') {
+var locale = this.getLocale();
+}
+var promise = $.getJSON(this.getWebUrl() + 'ViewLocalization-Get?topic='+topic+'&locale='+locale).then(function(data) {
+var localizationProperties = {};
+localizationProperties[RESTConfiguration.getLocale()] = data;
+return localizationProperties;
+});
+return promise;
+}
+};
+};
+RESTConfiguration = new RESTConfigurationClass();
+
+RESTConfiguration.set('AuthenticationToken', 'encryption0@PBEWithMD5AndTripleDES:CNMKI6yVSuE=|nDk3CTg7QLw6MxxflmNjelpTYPvXHk1+QQlcg/scTfMhcOajv7k8mWLfnU/EzS5h');
+
+RESTConfiguration.set('BusinessPartnerNo', 'awiener');
+
+RESTConfiguration.set('Login', 'awiener@dss-partners.com');
+
+RESTConfiguration.set('CustomerNo', '00Z934')
+
+RESTConfiguration.set('WebServerSecureURL', 'https://ish36-srwrxicmprod-lv.eastus2.cloudapp.azure.com:443')
+
+RESTConfiguration.set('WebServerURL', 'http://ish36-srwrxicmprod-lv.eastus2.cloudapp.azure.com:80')
+
+RESTConfiguration.set('URLMappingRESTWebadapter', '/INTERSHOP/rest')
+
+RESTConfiguration.set('URLMappingPipelineWebadapter', '/INTERSHOP/web')
+
+RESTConfiguration.set('Domain', 'SUREWERX-SWC_CA-Site')
+
+RESTConfiguration.set('ServerGroup', 'WFS')
+
+RESTConfiguration.set('URLIdentifier', '-')
+
+RESTConfiguration.set('LocaleID', 'en_US')
+
+RESTConfiguration.set('CurrencyCode', 'CAD')
+
+RESTConfiguration.set('CustomerTypeID', 'SMB')
+
+RESTConfiguration.set('URLMappingStaticWebadapter', '/INTERSHOP/static')
+
+RESTConfiguration.set("MoneyFormat", {
+
+"USD_MONEY_SHORT": { precision: 2, decimal: ".", thousand: ",", format: { pos: "%v", neg: "- %v" } },
+"CAD_MONEY_SHORT": { precision: 2, decimal: ".", thousand: ",", format: { pos: "%v", neg: "- %v" } },
+"CAD_MONEY_INPUT": { precision: 2, decimal: ".", thousand: ",", format: { pos: "%v", neg: "-%v" } },
+"USD_EURO_COMBINED": { precision: 2, decimal: ".", thousand: ",", format: { pos: "$ %v", neg: "$ - %v" } },
+"CAD_EURO_COMBINED": { precision: 2, decimal: ".", thousand: ",", format: { pos: "$ %v", neg: "$ - %v" } },
+"USD_EURO_LONG": { precision: 2, decimal: ".", thousand: ",", format: { pos: "$ %v", neg: "$ - %v" } },
+"USD_MONEY_INPUT": { precision: 2, decimal: ".", thousand: ",", format: { pos: "%v", neg: "-%v" } },
+"CAD_EURO_SHORT": { precision: 2, decimal: ".", thousand: ",", format: { pos: "%v", neg: "- %v" } },
+"USD_EURO_SHORT": { precision: 2, decimal: ".", thousand: ",", format: { pos: "%v", neg: "- %v" } },
+"CAD_EURO_LONG": { precision: 2, decimal: ".", thousand: ",", format: { pos: "$ %v", neg: "$ - %v" } },
+"USD_MONEY_LONG": { precision: 2, decimal: ".", thousand: ",", format: { pos: "$ %v", neg: "$ - %v" } },
+"CAD_MONEY_LONG": { precision: 2, decimal: ".", thousand: ",", format: { pos: "$ %v", neg: "$ - %v" } }
+});
+
+RESTConfiguration.set("DateFormat", {
+
+"DATE_INPUT": "MM/dd/yyyy"
+,
+"TIME_INPUT": "h:mm a"
+,
+"DATE_TIME_INPUT": "MM/dd/yyyy h:mm a"
+,
+"DATE_SHORT": "MM/dd/yy"
+,
+"DATE_TIME": "hh:mm:ss a"
+,
+"DATE_LONG": "MMM-dd-yyyy"
+
+});
+</script><link rel="stylesheet" type="text/css" media="all" href="./SureWerx Connect CA_files/swrx-ca.theme.min.css"><link rel="preload" href="https://connect.surewerx.com/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/fonts/roboto/roboto-bold-webfont.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="preload" href="https://connect.surewerx.com/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/fonts/roboto/robotocondensed-bold-webfont.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="preload" href="https://connect.surewerx.com/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/fonts/roboto/robotocondensed-regular-webfont.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="preload" href="https://connect.surewerx.com/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/fonts/roboto/roboto-regular-webfont.woff2" as="font" type="font/woff2" crossorigin="">
+<link rel="preload" href="https://connect.surewerx.com/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/fonts/glyphicons/glyphicons-halflings-regular.woff2" as="font" type="font/woff2" crossorigin=""><script type="text/javascript">
+window.cssDir = "/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/css/";
+window.imgDir = "/INTERSHOP/static/WFS/SUREWERX-SWC_CA-Site/-/-/en_US/images/";
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Google Tag Manager -->
+<script>
+var user_id="00Z934-awiener";
+
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MCNRRH74');</script>
+<!-- End Google Tag Manager --> <style id="fusion-selection-styles">
+  .fusion-element-highlight {
+    outline: 2px solid #6366f1 !important;
+    outline-style: solid !important;
+  }
+  
+  .fusion-element-selected {
+    outline: 5px solid #10b981 !important;
+    outline-style: solid !important;
+    outline-offset: 3px !important;
+    animation: fusion-selected-pulse 2s ease-in-out infinite !important;
+  }
+  
+  @keyframes fusion-selected-pulse {
+    0% { 
+      outline-color: #10b981 !important;
+      outline-width: 5px !important;
+      outline-offset: 3px !important;
+    }
+    50% { 
+      outline-color: #059669 !important;
+      outline-width: 6px !important;
+      outline-offset: 4px !important;
+    }
+    100% { 
+      outline-color: #10b981 !important;
+      outline-width: 5px !important;
+      outline-offset: 3px !important;
+    }
+  }
+  
+  .fusion-selection-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: rgba(0, 0, 0, 0.05) !important;
+    z-index: 2147483647 !important;
+    cursor: crosshair !important;
+    pointer-events: none !important;
+  }
+  
+  .fusion-selection-tooltip {
+    position: fixed !important;
+    background: #1f2937 !important;
+    color: white !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    z-index: 2147483648 !important;
+    pointer-events: none !important;
+    transform: translate(-50%, -100%) translateY(-10px) !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  }
+  
+  .fusion-selection-tooltip::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    border: 5px solid transparent !important;
+    border-top-color: #1f2937 !important;
+  }
+  
+  
+  @keyframes fusion-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes fusion-label-bounce {
+    0% { 
+      opacity: 0;
+      transform: translateY(-10px) scale(0.9);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(0) scale(1.05);
+    }
+    100% { 
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+</style></head>
+<body style="padding-top: 232.891px;" class=""><noscript>
+<iframe src="//www.googletagmanager.com/ns.html?id=GTM-MCNRRH74"
+height="0" width="0" style="display:none;visibility:hidden"></iframe>
+</noscript><noscript>
+<div class="system-notification">
+<div class="container">
+<div class="row">
+<div class="col-sm-12">
+<div class="system-notification-icon">
+<span class="glyphicon glyphicon-warning-sign"></span>
+</div>
+<div class="system-notification-text">
+<h2>It appears that your browser has JavaScript disabled.</h2>
+<p>This Website requires your browser to be JavaScript enabled.</p>
+<p>Please enable JavaScript and reload this page.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</noscript><div id="disabled-cookies-warning" style="display: none;">
+<div class="system-notification">
+<div class="container">
+<div class="row">
+<div class="col-sm-12">
+<div class="system-notification-icon">
+<span class="glyphicon glyphicon-warning-sign"></span>
+</div>
+<div class="system-notification-text">
+<h2>It appears that your browser has cookies disabled.</h2>
+<p>The website requires your browser to enable cookies in order to login.</p>
+<p>Please enable cookies and reload this page.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script type="text/javascript">
+(function cookieTest(){
+var name = 'cookie_test';
+if(location.protocol == 'https:') {
+document.cookie = name + '=; Secure; SameSite=None;';
+} else {
+document.cookie = name + '=;';
+}
+if (document.cookie.indexOf(name) == -1) {
+$('#disabled-cookies-warning').show();
+}
+document.cookie = name + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+})();
+</script>
+</div> 
+ 
+ 
+<header data-testing-id="page-header" class="top">
+
+
+
+
+<div id="header-container">
+<div class="header-ticker"></div>
+<div id="header" class="search-header">
+<div class="custom-header-wrapp">
+<div class="mobileHeader">
+<div class="visible-xs col-xs-12"><a rel="home" href="https://connect.surewerx.com/en-ca/"><img src="./SureWerx Connect CA_files/Connect_Logo_with_SW_RGB-2.avif" loading="lazy" alt="Logo"></a></div>
+</div>
+<div class="row custom-header-top">
+<div class="col-sm-2 col-md-2 col-xs-6 hidden-xs">
+<div class="mid-header"><a rel="home" href="https://connect.surewerx.com/en-ca/"><img src="./SureWerx Connect CA_files/Connect_Logo_with_SW_RGB-2.avif" loading="lazy" alt="Logo"></a></div>
+</div>
+<div class="visible-xs col-xs-3">
+<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#globalnav">
+<span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+</button>
+</div>
+<div class="col-sm-10 col-md-10 col-xs-9 headerRight">
+<div class="bottom-header header-search">
+
+
+
+
+<div id="" class="pull-left visible-lg popup-searchbox collapse"><form method="post" action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewUserSearch-Dispatch" name="UserSearch" class="searchCoBrowse"><input type="hidden" name="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645"><div class="form-group">
+<div class="input-group">
+<input type="text" class="form-control searchTermCoBrowse" name="SearchTerm" id="assignUser" value="" placeholder="Type an email to co-browse" size="35" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewUserSearch-Suggest">
+<div class="input-group-btn">
+<button class="btn btn-primary" type="submit" name="search" title="Search a user to co-rowse"><span class="glyphicon glyphicon-search"></span></button>
+</div>
+<ul class="search-suggest-results">
+</ul>
+</div>
+</div></form></div><div class="salerep_wrapp visible-lg pull-left">
+ 
+</div>
+
+
+
+
+<div id="ipad-sales-search-box" class="hidden-xs hidden-lg pull-left popup-searchbox collapse"><form method="post" action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewUserSearch-Dispatch" name="UserSearch" class="searchCoBrowse"><input type="hidden" name="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645"><div class="form-group">
+<div class="input-group">
+<input type="text" class="form-control searchTermCoBrowse" name="SearchTerm" id="assignUser" value="" placeholder="Type an email to co-browse" size="35" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewUserSearch-Suggest">
+<div class="input-group-btn">
+<button class="btn btn-primary" type="submit" name="search" title="Search a user to co-rowse"><span class="glyphicon glyphicon-search"></span></button>
+</div>
+<ul class="search-suggest-results">
+</ul>
+</div>
+</div></form></div><div id="ipad-search-box" class="search-container main-search-container ipad-search-box search-open hidden-lg hiddex-xs pull-left default-search-box collapse"><form method="GET" action="https://connect.surewerx.com/en-ca/search" role="search" class="search clearfix suggest" name="SearchBox_NoSearchResult"><input autocomplete="off" type="text" name="SearchTerm" class="form-control searchTerm" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=10" placeholder="Enter keywords to search...">
+<button class="btn-search btn" type="submit" name="search" title="Start search."><span class=""><i class="icon-search"></i></span></button>
+<span class="visible-xs close fa-cross">X</span>
+<input type="hidden" name="search" value="">
+<ul class="search-suggest-results">
+</ul></form></div>
+<div class="pull-right">
+<ul class="user-links">
+<div class="search-container header-search-container search-box collapse" id="header-searchbox"><form method="GET" action="https://connect.surewerx.com/en-ca/search" role="search" class="search clearfix suggest" name="SearchBox_Header"><input autocomplete="off" type="text" name="SearchTerm" class="form-control searchTerm" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=10" placeholder="Enter keywords to search...">
+<button class="btn-search btn" type="submit" name="search" title="Start search."><span class=""><i class="icon-search"></i></span></button>
+<span class="visible-xs close fa-cross">X</span>
+<input type="hidden" name="search" value="">
+<ul class="search-suggest-results">
+</ul></form></div>
+<li class="search-icon">
+<div class="search-icon">
+<a title="Search" data-toggle="collapse" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#header-searchbox" class="hidden-xs hidden-lg">
+<span class="head-search"><i class="glyphicon glyphicon-search"></i></span>
+</a>
+<a title="Search" data-toggle="collapse" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#header-searchbox-mobile" class="visible-xs">
+<span class="head-search"><i class="glyphicon glyphicon-search"></i></span>
+</a>
+</div>
+</li><li class="shipAddressli">
+<a title="Shipping Address" class="shipping-address-dropdown" id="ShippingAddressDropdown" data-testing-id="link-myaccount"><i class="fa fa-truck"></i></a>
+<input type="hidden" id="ShippingAddressDropdownUrl" data-href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewShippingAddressDropdownAjax-GetShippingAddress">
+<div id="ShippingDropDownDisplay" class="shippingDropdownFlyout collapse"></div></li><li class="hidden-lg hidden-xs ipad-sales-icon">
+<a data-toggle="collapse" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#ipad-sales-search-box">
+<span class="head-search"><img src="./SureWerx Connect CA_files/customer-care-white.png" loading="lazy"></span>
+</a>
+</li>
+<li class="visible-xs ipad-sales-icon">
+<a data-toggle="collapse" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#mobile-sales-search-box">
+<span class="head-search"><img src="./SureWerx Connect CA_files/customer-care-white.png" loading="lazy"></span>
+</a>
+</li><li class="hidden-xs login_status"><a title="My account" class="my-account-link" href="https://connect.surewerx.com/en-ca/account" data-testing-id="link-myaccount">
+<i class="glyphicon glyphicon-user"></i></a> 
+
+ 
+
+
+
+
+
+
+
+
+
+
+<span title="My Surewerx Team" class="hidden-xs team-drop-down"><i class="fas fa-users"></i>
+<span class="team-item-drop-down"><div class="team-dropdown-message"><strong>There are no sales representatives or credit specialists available for your customer account.</strong></div></span>
+</span><form method="post" action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewUserAccount-GetBillTo" name="PreferredAddressSelectionForm"><input type="hidden" name="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645"><input type="hidden" name="CustomerID" class="customerId" value="">
+<input type="submit" name="submit" value="Submit" class="customer-submit hide"></form></li>
+<li class=""><a title="Compare" class="compare-status hidden-xs" href="https://connect.surewerx.com/en-ca/product-compare" rel="nofollow">
+<span class="icon-sliders"></span>
+</a>
+<span class="compare-data" data-ajax-content="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewProductCompare-Status"><div id="compare-count" data-compare-ids="">
+<span>0</span>
+</div>
+<script type="text/javascript">Icsa.setCompareState();</script></span></li><li class="hidden-xs">
+<a title="Order Templates" href="https://connect.surewerx.com/en-ca/order-templates"><span class="head-wish"><i class="glyphicon glyphicon-heart"></i></span></a>
+</li> 
+<li>
+<div class="miniCartOuter" data-ajax-content="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewMiniCart-Status"><div class="quick-cart-link"><a title="Shopping Cart" class="shop-bag-link hidden-xs" data-toggle="collapse" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#miniCart"><span class="minicart-link"><i class="glyphicon glyphicon-shopping-cart"></i></span>
+<script>$('.mobile-cart-counter').html('<span class="cart-count">0</span>');</script>
+<span class="cart-count">0 </span>
+</a>
+<a title="Shopping Cart" class="visible-xs" href="https://connect.surewerx.com/en-ca/cart"><span class="minicart-link"><i class="glyphicon glyphicon-shopping-cart"></i></span>
+<script>$('.mobile-cart-counter').html('0');</script>
+<span class="cart-count">0 </span>
+</a> 
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="mini-cart-bg">
+<div class="mini-cart collapse" id="miniCart">
+<div class="block-content">
+<p class="min-cart-close"><a data-toggle="collapse" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#miniCart"> <span>Close</span></a></p><form method="post" action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewOnePageRegisteredCheckout-Dispatch" name="cartForm" class="bv-form"><input type="hidden" name="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645"><span class="empty-cart">Your cart is currently empty.</span></form></div>
+</div> 
+</div></div>
+<div class="last-added-product hide">
+<a class="product-title" href="http://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewProduct-Start?SKU=" title=""></a>
+</div></div>
+</li>
+<li>
+<div class="header-utility"><div class="language-switch">
+<a title="Select a Region" class="language-switch-link" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#languageSwitch" data-toggle="collapse" aria-expanded="true">
+<img src="./SureWerx Connect CA_files/canada-flag.jpg"> <i class="caret"></i> 
+</a><div id="languageSwitch" class="language-switch-container collapse" aria-expanded="true">
+<div class="language-switch-menu-container">
+<ul class="ul_language"><li><img src="./SureWerx Connect CA_files/canada-flag.jpg" loading="lazy"> Canada (English)</li>
+<li><a href="https://connect.surewerx.com/fr-ca/"><img src="./SureWerx Connect CA_files/canada-flag.jpg" loading="lazy"> Canada (French)</a></li>
+</ul>
+</div>
+</div></div></div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="header-ticker middle-slot visible-xs"></div><div class="visible-xs visible-sm visible-md salesperson-mobile">
+ 
+</div> 
+</div>
+<div class="gradient-border"></div>
+<div class="header-ticker middle-slot hidden-xs"></div>
+<div class="row">
+<div class="col-sm-12 col-md-12 top-header header-search-text">
+<div class="global-nav collapse navbar-collapse" id="globalnav">
+<div class="visible-xs mobile-search">
+<p class="text-right mobile-menu-close"><a data-toggle="collapse" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#globalnav">X</a></p><form method="GET" action="https://connect.surewerx.com/en-ca/search" role="search" class="search clearfix suggest" name="SearchBox_Header"><input autocomplete="off" type="text" name="SearchTerm" class="form-control searchTerm" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=10" placeholder="Enter keywords to search...">
+<button class="btn-search btn" type="submit" name="search" title="Start search."><span class=""><i class="icon-search"></i></span></button>
+<span class="visible-xs close fa-cross">X</span>
+<input type="hidden" name="search" value="">
+<ul class="search-suggest-results">
+</ul></form></div>
+<div class="main-navigation" role="navigation">
+<ul class="navbar-nav main-navigation-list"><li class="dropdown single-column">
+<a href="https://connect.surewerx.com/en-ca/content/cold-weather-essentials">❄️ Cold Weather Essentials</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu" style="border-width: 0px; height: 0px;"></ul></li><li class="dropdown single-column sub-menu-present">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/">Workwear</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu"><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/coveralls/">Coveralls</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/disposable-clothing/">Disposable Clothing</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/headwear/">Headwear</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/heating-cooling-products/">Heating and Cooling Apparel</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/hoodies/">Hoodies</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/jackets-and-coats/">Jackets and Coats</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/overalls/">Overalls</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/pants/">Pants</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/rainsuits/">Rainwear</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/safety-vests/">Safety Vests</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/sashes-gaiters-and-cuffs/">Sashes, Gaiters and Cuffs</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/shirts-and-tshirts/">Shirts and T-Shirts</a>
+</li></ul></li><li class="dropdown single-column sub-menu-present">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/">PPE</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu"><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/arc-flashand-fr/">Arc Flash and FR</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/eye-protection/">Eye Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/face-protection/">Face Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/fall-protection/">Fall Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/foot-protection/">Foot Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/hand-kneeand-elbow-protection/">Hand Knee and Elbow Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/head-protection/">Head Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/hearing-protection/">Hearing Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/heat-reflective/">Heat Reflective</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/respiratory-protection/">Respiratory Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/">Workwear</a>
+</li></ul></li><li class="dropdown single-column sub-menu-present">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/">Tools and Equipment</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu"><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/abrasives/">Abrasives</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/air-toolsand-air-line-components/">Air Tools and Air Line Components</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/drilling/">Drilling</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/fleetand-auto-maintenance/">Fleet and Auto Maintenance</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/hand-tools/">Hand Tools</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/hydraulic-cylindersand-pumps/">Hydraulic Cylinders and Pumps</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/liftingand-material-handling-equipment/">Lifting and Material Handling Equipment</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/lighting/">Lighting</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/lubrication/">Lubrication</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/master-tool-kits/">Master Tool Kits</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/powerand-shop-equipment/">Power and Shop Equipment</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/tools-equipment/threadingand-tapping/">Threading and Tapping</a>
+</li></ul></li><li class="dropdown single-column sub-menu-present">
+<a href="https://connect.surewerx.com/en-ca/shop/welding-safety-equipment/">Welding Safety and Equipment</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu"><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/welding-safety-equipment/welding-equipment/">Welding Equipment</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/welding-safety-equipment/welding-personal-protection-equipment/">Welding Personal Protection Equipment</a>
+</li></ul></li><li class="dropdown single-column sub-menu-present">
+<a href="https://connect.surewerx.com/en-ca/shop/worksite-safety/">Worksite Safety</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu"><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/worksite-safety/emergency-eyewash-shower-protection/">Emergency Eyewash Shower Protection</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/worksite-safety/worksiteand-traffic-safety/">Worksite and Traffic Safety</a>
+</li></ul></li><li class="dropdown single-column sub-menu-present">
+<a href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#">Brands</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu"><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DDueNorth&amp;SortingAttribute=default">DueNorth</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DITC&amp;SortingAttribute=default">ITC</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DJackson%2BSafety&amp;SortingAttribute=default">Jackson Safety</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DJET&amp;SortingAttribute=default">JET</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DK1%2BSeries&amp;SortingAttribute=default">K1</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DMEGAComfort&amp;SortingAttribute=default">MEGAComfort</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DNEOS%2BOvershoes&amp;SortingAttribute=default">NEOS</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DPeakWorks&amp;SortingAttribute=default">PeakWorks</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DPioneer&amp;SortingAttribute=default">Pioneer</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DSellstrom&amp;SortingAttribute=default">Sellstrom</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DStartech&amp;SortingAttribute=default">StarTech</a>
+</li><li class="main-navigation-level1-item">
+<a href="https://connect.surewerx.com/en-ca/shop/?SearchParameter=%26BrandName%3DStrongarm&amp;SortingAttribute=default">Strongarm</a>
+</li></ul></li>
+
+
+
+
+<li class="dropdown quickorderLink right-align">
+<a href="https://connect.surewerx.com/en-ca/quickorder">Quick Order</a>
+<a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon"></span></a>
+<ul class="category-level1 dropdown-menu topnav-quick-order hidden-xs">
+<a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon"></span></a><div class="clearfix" data-testing-id="page-quickorder">
+<div class="row">
+<div class="col-md-12 section"><form method="post" action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewQuickorder-Dispatch" name="quickorderForm"><input type="hidden" name="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645"><input type="hidden" id="Key">
+<input type="hidden" id="remove"> 
+<div class="list-body section"><div class="quick-orderdropdown-rows-container" data-row-count="7">
+<div class="list-item-row"><input type="hidden" id="jsonproductid">
+<div class="col-sm-9 list-item form-group ">
+<div class="quickorder-search-container-drop">
+<input type="text" id="quikOrderDrop_1" autocomplete="off" placeholder="Part #" name="SKU_1" skucount="1" value="" class="form-control search-dropdown quick-dropdown quickorderdrop-sku_1 quickorder-sku_1" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=5&amp;isQuickOrder=true">
+<ul class="search-suggest-results-drop" style="display: none;"></ul>
+</div></div>
+<div class="col-sm-3 list-item form-group ">
+<input type="number" placeholder="Qty" min="1" max="999999" qtycount="1" name="Quantity_1" value="" class="form-control quickdrop-order-quantity quickdrop-quantity quick-order-dropdown_1">
+<span class="group-btn">
+<button type="button" class="quick-order-dropdown-up-arrow quantity-right-plus fa-1x" data-quickdropdown="1" data-type="plus" data-field="">
+<i class="fas fa-sort-up"></i>
+</button>
+<button type="button" class="quick-order-dropdown-down-arrow quantity-left-minus fa-1x" data-quickdropdown="1" data-type="minus" data-field="">
+<i class="fas fa-sort-down"></i>
+</button>
+</span> 
+</div></div>
+<div class="list-item-row"><input type="hidden" id="jsonproductid">
+<div class="col-sm-9 list-item form-group ">
+<div class="quickorder-search-container-drop">
+<input type="text" id="quikOrderDrop_2" autocomplete="off" placeholder="Part #" name="SKU_2" skucount="2" value="" class="form-control search-dropdown quick-dropdown quickorderdrop-sku_2 quickorder-sku_2" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=5&amp;isQuickOrder=true">
+<ul class="search-suggest-results-drop" style="display: none;"></ul>
+</div></div>
+<div class="col-sm-3 list-item form-group ">
+<input type="number" placeholder="Qty" min="1" max="999999" qtycount="2" name="Quantity_2" value="" class="form-control quickdrop-order-quantity quickdrop-quantity quick-order-dropdown_2">
+<span class="group-btn">
+<button type="button" class="quick-order-dropdown-up-arrow quantity-right-plus fa-1x" data-quickdropdown="2" data-type="plus" data-field="">
+<i class="fas fa-sort-up"></i>
+</button>
+<button type="button" class="quick-order-dropdown-down-arrow quantity-left-minus fa-1x" data-quickdropdown="2" data-type="minus" data-field="">
+<i class="fas fa-sort-down"></i>
+</button>
+</span> 
+</div></div>
+<div class="list-item-row"><input type="hidden" id="jsonproductid">
+<div class="col-sm-9 list-item form-group ">
+<div class="quickorder-search-container-drop">
+<input type="text" id="quikOrderDrop_3" autocomplete="off" placeholder="Part #" name="SKU_3" skucount="3" value="" class="form-control search-dropdown quick-dropdown quickorderdrop-sku_3 quickorder-sku_3" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=5&amp;isQuickOrder=true">
+<ul class="search-suggest-results-drop" style="display: none;"></ul>
+</div></div>
+<div class="col-sm-3 list-item form-group ">
+<input type="number" placeholder="Qty" min="1" max="999999" qtycount="3" name="Quantity_3" value="" class="form-control quickdrop-order-quantity quickdrop-quantity quick-order-dropdown_3">
+<span class="group-btn">
+<button type="button" class="quick-order-dropdown-up-arrow quantity-right-plus fa-1x" data-quickdropdown="3" data-type="plus" data-field="">
+<i class="fas fa-sort-up"></i>
+</button>
+<button type="button" class="quick-order-dropdown-down-arrow quantity-left-minus fa-1x" data-quickdropdown="3" data-type="minus" data-field="">
+<i class="fas fa-sort-down"></i>
+</button>
+</span> 
+</div></div>
+<div class="list-item-row"><input type="hidden" id="jsonproductid">
+<div class="col-sm-9 list-item form-group ">
+<div class="quickorder-search-container-drop">
+<input type="text" id="quikOrderDrop_4" autocomplete="off" placeholder="Part #" name="SKU_4" skucount="4" value="" class="form-control search-dropdown quick-dropdown quickorderdrop-sku_4 quickorder-sku_4" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=5&amp;isQuickOrder=true">
+<ul class="search-suggest-results-drop" style="display: none;"></ul>
+</div></div>
+<div class="col-sm-3 list-item form-group ">
+<input type="number" placeholder="Qty" min="1" max="999999" qtycount="4" name="Quantity_4" value="" class="form-control quickdrop-order-quantity quickdrop-quantity quick-order-dropdown_4">
+<span class="group-btn">
+<button type="button" class="quick-order-dropdown-up-arrow quantity-right-plus fa-1x" data-quickdropdown="4" data-type="plus" data-field="">
+<i class="fas fa-sort-up"></i>
+</button>
+<button type="button" class="quick-order-dropdown-down-arrow quantity-left-minus fa-1x" data-quickdropdown="4" data-type="minus" data-field="">
+<i class="fas fa-sort-down"></i>
+</button>
+</span> 
+</div></div>
+<div class="list-item-row"><input type="hidden" id="jsonproductid">
+<div class="col-sm-9 list-item form-group ">
+<div class="quickorder-search-container-drop">
+<input type="text" id="quikOrderDrop_5" autocomplete="off" placeholder="Part #" name="SKU_5" skucount="5" value="" class="form-control search-dropdown quick-dropdown quickorderdrop-sku_5 quickorder-sku_5" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=5&amp;isQuickOrder=true">
+<ul class="search-suggest-results-drop" style="display: none;"></ul>
+</div></div>
+<div class="col-sm-3 list-item form-group ">
+<input type="number" placeholder="Qty" min="1" max="999999" qtycount="5" name="Quantity_5" value="" class="form-control quickdrop-order-quantity quickdrop-quantity quick-order-dropdown_5">
+<span class="group-btn">
+<button type="button" class="quick-order-dropdown-up-arrow quantity-right-plus fa-1x" data-quickdropdown="5" data-type="plus" data-field="">
+<i class="fas fa-sort-up"></i>
+</button>
+<button type="button" class="quick-order-dropdown-down-arrow quantity-left-minus fa-1x" data-quickdropdown="5" data-type="minus" data-field="">
+<i class="fas fa-sort-down"></i>
+</button>
+</span> 
+</div></div>
+<div class="list-item-row"><input type="hidden" id="jsonproductid">
+<div class="col-sm-9 list-item form-group ">
+<div class="quickorder-search-container-drop">
+<input type="text" id="quikOrderDrop_6" autocomplete="off" placeholder="Part #" name="SKU_6" skucount="6" value="" class="form-control search-dropdown quick-dropdown quickorderdrop-sku_6 quickorder-sku_6" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=5&amp;isQuickOrder=true">
+<ul class="search-suggest-results-drop" style="display: none;"></ul>
+</div></div>
+<div class="col-sm-3 list-item form-group ">
+<input type="number" placeholder="Qty" min="1" max="999999" qtycount="6" name="Quantity_6" value="" class="form-control quickdrop-order-quantity quickdrop-quantity quick-order-dropdown_6">
+<span class="group-btn">
+<button type="button" class="quick-order-dropdown-up-arrow quantity-right-plus fa-1x" data-quickdropdown="6" data-type="plus" data-field="">
+<i class="fas fa-sort-up"></i>
+</button>
+<button type="button" class="quick-order-dropdown-down-arrow quantity-left-minus fa-1x" data-quickdropdown="6" data-type="minus" data-field="">
+<i class="fas fa-sort-down"></i>
+</button>
+</span> 
+</div></div>
+<div class="list-item-row"><input type="hidden" id="jsonproductid">
+<div class="col-sm-9 list-item form-group ">
+<div class="quickorder-search-container-drop">
+<input type="text" id="quikOrderDrop_7" autocomplete="off" placeholder="Part #" name="SKU_7" skucount="7" value="" class="form-control search-dropdown quick-dropdown quickorderdrop-sku_7 quickorder-sku_7" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=5&amp;isQuickOrder=true">
+<ul class="search-suggest-results-drop" style="display: none;"></ul>
+</div></div>
+<div class="col-sm-3 list-item form-group ">
+<input type="number" placeholder="Qty" min="1" max="999999" qtycount="7" name="Quantity_7" value="" class="form-control quickdrop-order-quantity quickdrop-quantity quick-order-dropdown_7">
+<span class="group-btn">
+<button type="button" class="quick-order-dropdown-up-arrow quantity-right-plus fa-1x" data-quickdropdown="7" data-type="plus" data-field="">
+<i class="fas fa-sort-up"></i>
+</button>
+<button type="button" class="quick-order-dropdown-down-arrow quantity-left-minus fa-1x" data-quickdropdown="7" data-type="minus" data-field="">
+<i class="fas fa-sort-down"></i>
+</button>
+</span> 
+</div></div>
+</div><input type="hidden" id="quickOrderDropdown" name="quickOrderDropdown">
+</div>
+<div class="quick-bot-links">
+<button disabled="" type="submit" class="btn btn-primary" name="">Add More Part #s</button>
+</div>
+<div class="quick-bot-cart">
+<button disabled="" type="submit" class="btn btn-primary" name="addToCartPopup">Submit</button>
+</div></form></div>
+</div>
+</div>
+<input type="hidden" id="data-checkSKU-URL" target-url="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewQuickorder-GetProductAvailabilityStatus"></ul>
+</li><li class="dropdown single-column">
+<a href="https://connect.surewerx.com/en-ca/shop/?CustomLogoApparel=true" class="subcat-empty">Custom Logo</a></li><li class="dropdown single-column">
+<a href="https://connect.surewerx.com/en-ca/content/womens-wear">Women's wear</a><a class="dropdown-toggle visible-xs" data-toggle="dropdown"><span class="glyphicon glyphicon-plus"></span></a>
+<ul class="category-level1 single-column-menu dropdown-menu"></ul></li></ul>
+</div>
+<div class="visible-xs mobile-additional-links"><a id="mobilleTeamButtonLink">My Surewerx Team</a>
+<li class="mobilleTeamdropdown team-drop-down"><span class="team-item-drop-down"><div class="team-dropdown-message"><strong>There are no sales representatives or credit specialists available for your customer account.</strong></div></span></li><a class="my-account-link" href="https://connect.surewerx.com/en-ca/account" rel="nofollow" data-testing-id="link-myaccount">My Account</a>
+<a class="my-account-links my-account-login" href="https://connect.surewerx.com/en-ca/logout" rel="nofollow">Logout<span class="glyphicon glyphicon-log-out"></span></a><a href="https://connect.surewerx.com/en-ca/order-templates">Order Templates<span class="head-wish"><i class="glyphicon glyphicon-heart"></i></span></a><a class="compare-status" href="https://connect.surewerx.com/en-ca/product-compare" rel="nofollow">Compare<span class="icon-sliders"></span></a> 
+<div class="visible-xs mobile-language-switch"><div class="language-switch-menu-container">
+<ul class="ul_language" style="display: none;"><li><img src="./SureWerx Connect CA_files/canada-flag.jpg" loading="lazy"> Canada (English)</li>
+<li><a href="https://connect.surewerx.com/fr-ca/"><img src="./SureWerx Connect CA_files/canada-flag.jpg" loading="lazy"> Canada (French)</a></li>
+</ul>
+</div></div>
+</div>
+</div>
+</div>
+</div>
+<div class="header-ticker"></div>
+<div class="visible-xs mobile-search">
+<div class="search-container header-search-container search-box collapse " id="header-searchbox-mobile"><form method="GET" action="https://connect.surewerx.com/en-ca/search" role="search" class="search clearfix suggest" name="SearchBox_Header"><input autocomplete="off" type="text" name="SearchTerm" class="form-control searchTerm" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewSuggestSearch-Suggest?MaxAutoSuggestResults=10" placeholder="Enter keywords to search...">
+<button class="btn-search btn" type="submit" name="search" title="Start search."><span class=""><i class="icon-search"></i></span></button>
+<span class="visible-xs close fa-cross">X</span>
+<input type="hidden" name="search" value="">
+<ul class="search-suggest-results">
+</ul></form></div>
+<input type="hidden" id="placeholder" value="Enter keywords to search...">
+</div>
+
+
+
+
+<div id="mobile-sales-search-box" class="mobile-popupp-searchbox popup-searchbox collapse"><form method="post" action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewUserSearch-Dispatch" name="UserSearch" class="searchCoBrowse"><input type="hidden" name="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645"><div class="form-group">
+<div class="input-group">
+<input type="text" class="form-control searchTermCoBrowse" name="SearchTerm" id="assignUser" value="" placeholder="Type an email to co-browse" size="35" data-suggesturl="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewUserSearch-Suggest">
+<div class="input-group-btn">
+<button class="btn btn-primary" type="submit" name="search" title="Search a user to co-rowse"><span class="glyphicon glyphicon-search"></span></button>
+</div>
+<ul class="search-suggest-results"></ul>
+</div>
+</div></form></div></div>
+</div>
+</div>
+<div class="mobile-contact-popup" style="display: none; height: 837px;">
+<div class="contact-content mobile-contact-content">
+<div class="contact-us-value">
+<a id="get-contact-us-form" class="hide" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewContactUS-Start"></a>
+<div class="cc-header">
+<h3><i class="fas fa-question-circle"></i> Contact Us</h3>
+<span class="cc-close">X</span>
+</div>
+<div class="cc-content"><div class="contact-sales-form mobile-form"></div>
+</div>
+</div> 
+</div></div></header>
+<div class="wrapper static-wrap-hgt">
+<div role="main" class="container main-container">
+<div class="show-desktop">
+
+
+
+
+ 
+
+
+
+<script type="text/javascript">
+	var SYNCHRONIZER_TOKEN_NAME = 'SynchronizerToken';
+	var SYNCHRONIZER_TOKEN_VALUE = '3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645';
+</script><input type="hidden" id="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645">
+<input type="hidden" id="MasterProductSKU" value="V1120470">
+<input type="hidden" class="cla-variation-qty" value="">
+<input type="hidden" class="cla-quote-id" value="">
+<input type="hidden" class="cla-master-id" value="">
+<input type="hidden" class="cla-master-sku" value=""> 
+
+<div id="shipping-modal-content" class="modal fade cla-ship-address-modal-cont" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg dealer-sel">
+<div class="modal-content">
+<div class="modal-header">
+<h6>
+<strong>Select a Shipping Address</strong>
+</h6>
+</div>
+<div class="modal-body">
+<div class="dealer-list-selectable shipping-address-modal">
+<div id="myDropdown" class="dropdown-content">
+
+
+
+
+ 
+
+
+
+<script type="text/javascript">
+	var SYNCHRONIZER_TOKEN_NAME = 'SynchronizerToken';
+	var SYNCHRONIZER_TOKEN_VALUE = '3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645';
+</script><div class="shipAddrSearchBox">
+<input class="form-control" name="PreferredShipToAddressID" type="text" placeholder="Search" value="" id="ShippingAddressData">
+</div>
+<div id="dropdown-values" class="dropdown-values-data shipping-address-data-display"><div class="shippAddressLineItem visible-item">
+<a class="addressLink" id="" name="CLAShippingAddresChange" data-preferred-shipping-id="0i0KBwNFImkAAAGVxvl88z1d" data-action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-SetShippingAddress">STAFF TOOL SALES - ON, 123 TEST, TEST,
+ON N1C 1C3</a> 
+<a class="set-preferred-shipping-address-popup" name="CLASetUserDefaultAddress" id="" data-action="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-SetUserDefaultShippingAddress" data-preferred-shipping-id="0i0KBwNFImkAAAGVxvl88z1d" data-testing-id="set-default-shipping">Set Default</a>
+</div><div class="not-results-found" style="display: none">No Results Found</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="breadcrumbs row"><ol class="breadcrumbs-list"><li class="breadcrumbs-list breadcrumbs-list-home">
+<a class="breadcrumbs-list-link breadcrumbs-list-link-home" rel="home" href="https://connect.surewerx.com/en-ca/">Home</a><span class="breadcrumb-list-separator"></span></li><li class="breadcrumbs-list">
+<a class="breadcrumbs-list-link" href="https://connect.surewerx.com/en-ca/shop/">Shop</a><span class="breadcrumb-list-separator"></span></li><li class="breadcrumbs-list">
+<a class="breadcrumbs-list-link" href="https://connect.surewerx.com/en-ca/shop/ppe/">Personal Protective Equipment</a><span class="breadcrumb-list-separator"></span></li><li class="breadcrumbs-list">
+<a class="breadcrumbs-list-link" href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/">Workwear</a><span class="breadcrumb-list-separator"></span></li><li class="breadcrumbs-list">
+<a class="breadcrumbs-list-link" href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/jackets-and-coats/">Jackets and Coats</a><span class="breadcrumb-list-separator"></span></li><li class="breadcrumbs-list">
+<a class="breadcrumbs-list-link" href="https://connect.surewerx.com/en-ca/shop/ppe/workwear/jackets-and-coats/jackets-and-coats-hi-vis-waterproof-safety-parkas/">Hi-Vis Waterproof Safety Parkas</a><span class="breadcrumb-list-separator"></span></li><li class="breadcrumbs-list breadcrumbs-list-active">Hi-Vis Waterproof 7-in-1 Safety Parkas</li></ol></div>
+<div class="custom-logo custom-logo-apparel">
+<div class="row">
+<div class="col-md-4 col-sm-4 col-xs-12">
+ 
+<div class="garment-guide-img product-image-container">
+<img src="./SureWerx Connect CA_files/GarmentGuide_Jacket.avif" loading="lazy" onerror="this.onerror=null; this.src=&#39;https://media.surewerx.com/transform/acea1e06-209c-4969-b5cd-b9dc2f5499f4/ImageComingSoon&#39;;">
+</div></div>
+<div class="col-md-4 col-sm-4 col-xs-12">
+<div class="cla-form-container">
+<h1>Hi-Vis Waterproof 7-in-1 Safety Parkas</h1>
+
+
+
+
+ 
+
+
+
+<script type="text/javascript">
+	var SYNCHRONIZER_TOKEN_NAME = 'SynchronizerToken';
+	var SYNCHRONIZER_TOKEN_VALUE = '3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645';
+</script><input type="hidden" id="SynchronizerToken" value="3cb161949a81342d9dcbd8c5068a9558b5be03e00134ff5d9e1e75d1c9840645">
+<input type="hidden" id="CLAFileUploadRemoveURL" value="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLAFileUpload-DeleteLogoFile">
+<input type="hidden" id="CLARemoveLogoModalURL" value="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-RemoveLogoModal">
+<input type="hidden" id="LocalizedTextLabel" value="Text">
+<div class="logo-location-container" data-empty-error="Complete the logo location selection.">
+<div class="custom-logo-location">
+<label class="control-label">Logo Location:</label>
+<small class="logo-location-error text-danger"></small>
+<div class="CLA-location"><div class="location-item location-item-1" data-location-index="1" data-logo-empty-error="Upload the Logo File.">
+<input type="hidden" name="LogoLocationMaxHeight_1" class="logo-location-max-height logo-location-max-height-1" value="4.3">
+<input type="hidden" name="LogoLocationMaxWidth_1" class="logo-location-max-width logo-location-max-width-1" value="4">
+<input type="hidden" name="LogoLocationLinearInch_1" class="logo-location-linearinch logo-location-linearinch-1" value="">
+<input type="hidden" name="LogoLocationName_1" class="logo-location-name logo-location-name-1" value="1. Left Front Chest">
+<input type="hidden" name="LogoLocationNo_1" class="logo-location-no logo-location-no-1" value="1">
+<label><strong class="cla-form-heading">1. Left Front Chest</strong></label>
+<small class="logo-location-logo-error-1 text-danger"></small>
+<div class="logo-location-file logo-location-file-1"></div>
+<div class="row">
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Width(Max 4")</div>
+<input type="text" class="form-control logo-location-width logo-location-width-1" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="1" name="LogoLocationWidth_1" value="">
+<small class="logo-location-width-error-1 text-danger"></small>
+</div>
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Height(Max 4.3")</div>
+<input type="text" class="form-control logo-location-height logo-location-height-1" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="1" name="LogoLocationHeight_1" value="">
+<small class="logo-location-height-error-1 text-danger"></small>
+</div>
+<div class="col-sm-2">
+<div class="cla-upload-icon-wrapp">
+<a class="cla-upload-icon" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-ShowAddLogoModal?LocationIndex=1" data-dialog=""><i class="fas fa-cloud-upload-alt"></i></a>
+</div>
+</div>
+</div>
+</div><div class="location-item location-item-2" data-location-index="2" data-logo-empty-error="Upload the Logo File.">
+<input type="hidden" name="LogoLocationMaxHeight_2" class="logo-location-max-height logo-location-max-height-2" value="7">
+<input type="hidden" name="LogoLocationMaxWidth_2" class="logo-location-max-width logo-location-max-width-2" value="5">
+<input type="hidden" name="LogoLocationLinearInch_2" class="logo-location-linearinch logo-location-linearinch-2" value="">
+<input type="hidden" name="LogoLocationName_2" class="logo-location-name logo-location-name-2" value="2. Left Upper Sleeve">
+<input type="hidden" name="LogoLocationNo_2" class="logo-location-no logo-location-no-2" value="2">
+<label><strong class="cla-form-heading">2. Left Upper Sleeve</strong></label>
+<small class="logo-location-logo-error-2 text-danger"></small>
+<div class="logo-location-file logo-location-file-2"></div>
+<div class="row">
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Width(Max 5")</div>
+<input type="text" class="form-control logo-location-width logo-location-width-2" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="2" name="LogoLocationWidth_2" value="">
+<small class="logo-location-width-error-2 text-danger"></small>
+</div>
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Height(Max 7")</div>
+<input type="text" class="form-control logo-location-height logo-location-height-2" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="2" name="LogoLocationHeight_2" value="">
+<small class="logo-location-height-error-2 text-danger"></small>
+</div>
+<div class="col-sm-2">
+<div class="cla-upload-icon-wrapp">
+<a class="cla-upload-icon" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-ShowAddLogoModal?LocationIndex=2" data-dialog=""><i class="fas fa-cloud-upload-alt"></i></a>
+</div>
+</div>
+</div>
+</div><div class="location-item location-item-3" data-location-index="3" data-logo-empty-error="Upload the Logo File.">
+<input type="hidden" name="LogoLocationMaxHeight_3" class="logo-location-max-height logo-location-max-height-3" value="7">
+<input type="hidden" name="LogoLocationMaxWidth_3" class="logo-location-max-width logo-location-max-width-3" value="4">
+<input type="hidden" name="LogoLocationLinearInch_3" class="logo-location-linearinch logo-location-linearinch-3" value="">
+<input type="hidden" name="LogoLocationName_3" class="logo-location-name logo-location-name-3" value="3. Right Front Chest">
+<input type="hidden" name="LogoLocationNo_3" class="logo-location-no logo-location-no-3" value="3">
+<label><strong class="cla-form-heading">3. Right Front Chest</strong></label>
+<small class="logo-location-logo-error-3 text-danger"></small>
+<div class="logo-location-file logo-location-file-3"></div>
+<div class="row">
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Width(Max 4")</div>
+<input type="text" class="form-control logo-location-width logo-location-width-3" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="3" name="LogoLocationWidth_3" value="">
+<small class="logo-location-width-error-3 text-danger"></small>
+</div>
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Height(Max 7")</div>
+<input type="text" class="form-control logo-location-height logo-location-height-3" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="3" name="LogoLocationHeight_3" value="">
+<small class="logo-location-height-error-3 text-danger"></small>
+</div>
+<div class="col-sm-2">
+<div class="cla-upload-icon-wrapp">
+<a class="cla-upload-icon" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-ShowAddLogoModal?LocationIndex=3" data-dialog=""><i class="fas fa-cloud-upload-alt"></i></a>
+</div>
+</div>
+</div>
+</div><div class="location-item location-item-4" data-location-index="4" data-logo-empty-error="Upload the Logo File.">
+<input type="hidden" name="LogoLocationMaxHeight_4" class="logo-location-max-height logo-location-max-height-4" value="7">
+<input type="hidden" name="LogoLocationMaxWidth_4" class="logo-location-max-width logo-location-max-width-4" value="5">
+<input type="hidden" name="LogoLocationLinearInch_4" class="logo-location-linearinch logo-location-linearinch-4" value="">
+<input type="hidden" name="LogoLocationName_4" class="logo-location-name logo-location-name-4" value="4. Right Upper Sleeve">
+<input type="hidden" name="LogoLocationNo_4" class="logo-location-no logo-location-no-4" value="4">
+<label><strong class="cla-form-heading">4. Right Upper Sleeve</strong></label>
+<small class="logo-location-logo-error-4 text-danger"></small>
+<div class="logo-location-file logo-location-file-4"></div>
+<div class="row">
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Width(Max 5")</div>
+<input type="text" class="form-control logo-location-width logo-location-width-4" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="4" name="LogoLocationWidth_4" value="">
+<small class="logo-location-width-error-4 text-danger"></small>
+</div>
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Height(Max 7")</div>
+<input type="text" class="form-control logo-location-height logo-location-height-4" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="4" name="LogoLocationHeight_4" value="">
+<small class="logo-location-height-error-4 text-danger"></small>
+</div>
+<div class="col-sm-2">
+<div class="cla-upload-icon-wrapp">
+<a class="cla-upload-icon" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-ShowAddLogoModal?LocationIndex=4" data-dialog=""><i class="fas fa-cloud-upload-alt"></i></a>
+</div>
+</div>
+</div>
+</div><div class="location-item location-item-5" data-location-index="5" data-logo-empty-error="Upload the Logo File.">
+<input type="hidden" name="LogoLocationMaxHeight_5" class="logo-location-max-height logo-location-max-height-5" value="8">
+<input type="hidden" name="LogoLocationMaxWidth_5" class="logo-location-max-width logo-location-max-width-5" value="12">
+<input type="hidden" name="LogoLocationLinearInch_5" class="logo-location-linearinch logo-location-linearinch-5" value="">
+<input type="hidden" name="LogoLocationName_5" class="logo-location-name logo-location-name-5" value="5. Upper Back Near Neck">
+<input type="hidden" name="LogoLocationNo_5" class="logo-location-no logo-location-no-5" value="5">
+<label><strong class="cla-form-heading">5. Upper Back Near Neck</strong></label>
+<small class="logo-location-logo-error-5 text-danger"></small>
+<div class="logo-location-file logo-location-file-5"></div>
+<div class="row">
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Width(Max 12")</div>
+<input type="text" class="form-control logo-location-width logo-location-width-5" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="5" name="LogoLocationWidth_5" value="">
+<small class="logo-location-width-error-5 text-danger"></small>
+</div>
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Height(Max 8")</div>
+<input type="text" class="form-control logo-location-height logo-location-height-5" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="5" name="LogoLocationHeight_5" value="">
+<small class="logo-location-height-error-5 text-danger"></small>
+</div>
+<div class="col-sm-2">
+<div class="cla-upload-icon-wrapp">
+<a class="cla-upload-icon" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-ShowAddLogoModal?LocationIndex=5" data-dialog=""><i class="fas fa-cloud-upload-alt"></i></a>
+</div>
+</div>
+</div>
+</div><div class="location-item location-item-6" data-location-index="6" data-logo-empty-error="Upload the Logo File.">
+<input type="hidden" name="LogoLocationMaxHeight_6" class="logo-location-max-height logo-location-max-height-6" value="10">
+<input type="hidden" name="LogoLocationMaxWidth_6" class="logo-location-max-width logo-location-max-width-6" value="12">
+<input type="hidden" name="LogoLocationLinearInch_6" class="logo-location-linearinch logo-location-linearinch-6" value="">
+<input type="hidden" name="LogoLocationName_6" class="logo-location-name logo-location-name-6" value="6. Mid Back/In Triangle (Hi-Vis)">
+<input type="hidden" name="LogoLocationNo_6" class="logo-location-no logo-location-no-6" value="6">
+<label><strong class="cla-form-heading">6. Mid Back/In Triangle (Hi-Vis)</strong></label>
+<small class="logo-location-logo-error-6 text-danger"></small>
+<div class="logo-location-file logo-location-file-6"></div>
+<div class="row">
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Width(Max 12")</div>
+<input type="text" class="form-control logo-location-width logo-location-width-6" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="6" name="LogoLocationWidth_6" value="">
+<small class="logo-location-width-error-6 text-danger"></small>
+</div>
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Height(Max 10")</div>
+<input type="text" class="form-control logo-location-height logo-location-height-6" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="6" name="LogoLocationHeight_6" value="">
+<small class="logo-location-height-error-6 text-danger"></small>
+</div>
+<div class="col-sm-2">
+<div class="cla-upload-icon-wrapp">
+<a class="cla-upload-icon" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-ShowAddLogoModal?LocationIndex=6" data-dialog=""><i class="fas fa-cloud-upload-alt"></i></a>
+</div>
+</div>
+</div>
+</div><div class="location-item location-item-7" data-location-index="7" data-logo-empty-error="Upload the Logo File.">
+<input type="hidden" name="LogoLocationMaxHeight_7" class="logo-location-max-height logo-location-max-height-7" value="10">
+<input type="hidden" name="LogoLocationMaxWidth_7" class="logo-location-max-width logo-location-max-width-7" value="12">
+<input type="hidden" name="LogoLocationLinearInch_7" class="logo-location-linearinch logo-location-linearinch-7" value="">
+<input type="hidden" name="LogoLocationName_7" class="logo-location-name logo-location-name-7" value="7. Lower Back/Below Stripe (Hi-Vis)">
+<input type="hidden" name="LogoLocationNo_7" class="logo-location-no logo-location-no-7" value="7">
+<label><strong class="cla-form-heading">7. Lower Back/Below Stripe (Hi-Vis)</strong></label>
+<small class="logo-location-logo-error-7 text-danger"></small>
+<div class="logo-location-file logo-location-file-7"></div>
+<div class="row">
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Width(Max 12")</div>
+<input type="text" class="form-control logo-location-width logo-location-width-7" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="7" name="LogoLocationWidth_7" value="">
+<small class="logo-location-width-error-7 text-danger"></small>
+</div>
+<div class="col-sm-5">
+<div class="max-size"><span>*</span>Height(Max 10")</div>
+<input type="text" class="form-control logo-location-height logo-location-height-7" data-lessthan-message="The number is too low." data-greaterthan-message="The number is too high." data-empty-message="Complete this field." data-result="VALID" data-index="7" name="LogoLocationHeight_7" value="">
+<small class="logo-location-height-error-7 text-danger"></small>
+</div>
+<div class="col-sm-2">
+<div class="cla-upload-icon-wrapp">
+<a class="cla-upload-icon" href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-ShowAddLogoModal?LocationIndex=7" data-dialog=""><i class="fas fa-cloud-upload-alt"></i></a>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</div><input type="hidden" id="ScreenPrintMOQ" value="100">
+<input type="hidden" id="ScreenPrintOptionValue" value="Screen Print">
+<input type="hidden" id="ScreenPrintOption" value="Screen Print (MOQ - 100 units)"><div class="custom-logo-type">
+<div class="row">
+<div class="col-sm-4">
+<label class="control-label">Logo Type:</label>
+</div>
+<div class="col-sm-8">
+<select name="CLA_LogoType" id="CLALogoType" class="cla-logo-type form-control" data-result="VALID" data-empty-message="Complete this field." data-moq-message="The total quantity is below the MOQ. Please add more products." disabled="disabled">
+<option value="">Select an Option</option><option value="Embroidery" data-moq="12">Embroidery (MOQ - 12 units)
+</option><option value="Heat Transfer" data-moq="12">Heat Transfer (MOQ - 12 units)
+</option> 
+<option value="Screen Print" data-moq="100">Screen Print (MOQ - 100 units)
+</option></select>
+<small class="logo-type-option-error text-danger"></small>
+<input type="hidden" id="SelectedLogoType" value="">
+<input type="hidden" id="SelectedLogoTypeMOQ" value=""></div>
+<div class="col-sm-12"><p>Quoted price is indicative pricing as logo will be done to scale by our decorator based off logo width. </p></div>
+<div class="hide logo-type-color-sec"><div class="col-sm-12"><p class="logo-type-color-sec-price"><span>$38.50</span> PER COLOUR</p></div>
+<input type="hidden" value="38.5" class="cla-colour-charge">
+<div class="cla-color-type col-sm-12">
+<div class="color-name-label">
+<label class="control-label"> How many colors you want? </label>
+</div>
+<div class="color-type-dropdown">
+<select name="CLA_LogoTypeColor" id="CLALogoTypeColor" class="cla-logo-type-color form-control">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+</div> 
+</div>
+<div class="btn-wrapp cla-logo-button"><input type="button" data-href="https://connect.surewerx.com/INTERSHOP/web/WFS/SUREWERX-SWC_CA-Site/en_US/-/CAD/ViewCLA-AddLogoPlacement" value="Confirm Logo Placement" name="ConfirmLogoPlacement" class="btn btn-primary confirm-logo-placement" data-success-message="The logo locations has been added successfully." data-error-message="There is an error in the logo location. Please enter valid information."></div>
+<div><small class="logo-placement-error alert alert-danger hide">There is an error in the logo location. Please enter valid information.</small></div>
+</div><div class="col-md-4">
+<div id="cla-success-toast"></div>
+<div id="cla-error-toast"></div><div class="cla-selection-summary"><div class="cla-selection-summary-inner">
+<h4>Selection Summary:</h4>
+<div class="sel-logo-location-container">
+<div translate="no" class="master-item-json-str hide"></div>
+</div>
+</div>
+<div class="cost-summ-verbiage-sect"></div>
+</div></div>
+</div>
+</div>
+</div>
+<div class="cla-mobile-warning show-mobile">
+<p class="alert alert-warning">Custom Logo pages are not optimized for mobile devices. For the best experience, please use a desktop.</p>
+</div>
+<input type="hidden" id="sel-ship-addr-id" name="SelectedShipAddrId" value="0i0KBwNFImkAAAGVxvl88z1d">
+<script type="text/javascript">
+$(document).ready(function(){
+var value = $("#sel-ship-addr-id").val();
+CLA.ShowShipAddressPopUp(value);
+});
+</script></div>
+<div class="listscrolltop" style="display: none;">
+<a href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#" class="o-scroll-up" title="back to top">
+<i class="fa fa-angle-double-up"></i>
+</a>
+</div>
+</div>
+<footer data-testing-id="section-footer"> 
+<div class="clearfix"><div class="footer-bg-img">
+<div class="footer">
+<div class="container">
+<div class="footer-top">
+<div class="row">
+<div class="col-md-5 col-sm-4"><img class="footer-logo" src="./SureWerx Connect CA_files/logo-main.webp" alt="" width="210" height="80"></div>
+</div>
+</div>
+<!-- ✅ Four Styled Columns -->
+<div class="row footer-content"><!-- Column 1: Locations -->
+<div class="col-sm-6 col-md-3"><a class="visible-xs" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#GroupLocations" data-toggle="collapse">
+<h4 class="link-group-title">Locations<span class="glyphicon glyphicon-chevron-down link-group-icon"></span></h4>
+</a>
+<h4 class="hidden-xs">Locations</h4>
+<div id="GroupLocations" class="mobile-collapse link-group">
+<ul>
+<li><strong>Western Canada<br>Customer Service Centre</strong><br><a href="https://www.google.com/maps/place/SureWerx+-+Coquitlam/" target="_blank" rel="noopener"> <i class="fa fa-map-marker" style="margin-right: 7px;"></i>49 Schooner Street, Coquitlam, BC V3K 0BC </a><br><a href="tel:(800)472-7685"><i class="fa fa-phone" style="margin-right: 7px;"></i>(800)472-7685 (8am to 5pm PST)</a><br><a href="mailto:sales@surewerx.com"><i class="fa fa-envelope" style="margin-right: 7px;"></i>sales@surewerx.com</a></li>
+<li><strong>Eastern Canada<br>Customer Service Centre</strong><br><a href="https://www.google.com/maps/place/30+Hanlon+Creek+Boulevard,+Guelph" target="_blank" rel="noopener"> <i class="fa fa-map-marker" style="margin-right: 7px;"></i>30 Hanlon Creek Blvd, Guelph, Ontario N1C 0B2 </a><br><a href="tel:(800)387-3879"><i class="fa fa-phone" style="margin-right: 7px;"></i>(800)387-3879 (8am to 5pm EST)</a><br><a href="tel:(800)363-2885"><i class="fa fa-phone" style="margin-right: 7px;"></i>(800)363-2885 (8am to 5pm EST Quebec)</a><br><a href="mailto:surewerxod@surewerx.com"><i class="fa fa-envelope" style="margin-right: 7px;"></i>surewerxod@surewerx.com</a></li>
+</ul>
+</div>
+</div>
+<!-- Column 2: Helpful Links -->
+<div class="col-sm-6 col-md-3"><a class="visible-xs" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#GroupLinks" data-toggle="collapse">
+<h4 class="link-group-title">Helpful Links<span class="glyphicon glyphicon-chevron-down link-group-icon"></span></h4>
+</a>
+<h4 class="hidden-xs">Helpful Links</h4>
+<div id="GroupLinks" class="mobile-collapse link-group">
+<ul>
+<li><a href="https://media.surewerx.com/web/260076d9fd7ffcbb/downloads---canada/" target="_blank" rel="noopener">Downloads</a></li>
+<li><a href="https://media.surewerx.com/m/cd1eee5977579ce/original/SWC-Summer-2025-Promotion.pdf" target="_blank" rel="noopener">Seasonal Flyer</a></li>
+<li><a href="https://surewerx.com/content/find-service-centre" target="_blank" rel="noopener">Find a Service Centre</a></li>
+<li><a href="https://surewerx.com/content/parts-and-repairs" target="_blank" rel="noopener">Product Central</a></li>
+<li><a href="https://surewerx.com/content/for-distributors" target="_blank" rel="noopener">For Distributors</a></li>
+<li><a href="https://surewerx.com/content/canadian-services" target="_blank" rel="noopener">Services</a></li>
+<li><a href="https://surewerx.com/content/warranty-policies" target="_blank" rel="noopener">Warranty Policies</a></li>
+<li><a href="https://connect.surewerx.com/en-ca/shop/?Marketing=W" target="_blank" rel="noopener">NEW Product Solutions</a></li>
+</ul>
+</div>
+</div>
+<!-- Column 3: Getting Started -->
+<div class="col-sm-6 col-md-3"><a class="visible-xs" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#GroupConnect" data-toggle="collapse">
+<h4 class="link-group-title">Getting Started<span class="glyphicon glyphicon-chevron-down link-group-icon"></span></h4>
+</a>
+<h4 class="hidden-xs">Getting Started with Connect</h4>
+<div id="GroupConnect" class="mobile-collapse link-group">
+<ul>
+<li><a href="https://www.youtube.com/watch?v=dDrxxa2VIho" target="_blank" rel="noopener"> <i class="fa fa-play-circle" style="margin-right: 7px;"></i>How to Sign On to SureWerx Connect </a></li>
+</ul>
+</div>
+</div>
+<!-- Column 4: Legal & Policies -->
+<div class="col-sm-6 col-md-3"><a class="visible-xs" href="https://connect.surewerx.com/en-ca/cla-product/view/V1120470#GroupLegal" data-toggle="collapse">
+<h4 class="link-group-title">Legal &amp; Policies<span class="glyphicon glyphicon-chevron-down link-group-icon"></span></h4>
+</a>
+<h4 class="hidden-xs">Legal &amp; Policies</h4>
+<div id="GroupLegal" class="mobile-collapse link-group">
+<ul>
+<li><a href="https://media.surewerx.com/m/1da1958d56826b14/original/Connect-Privacy-Policy.docx" target="_blank" rel="noopener">Privacy Policy</a></li>
+<li><a href="https://media.surewerx.com/m/129edf10d421484b/original/Connect-Terms-Conditions.docx" target="_blank" rel="noopener">Terms &amp; Conditions</a></li>
+<li><a href="https://media.surewerx.com/m/61a9566305da6630/original/CASL-Canada-Only-Policy.docx" target="_blank" rel="noopener">CASL Policy</a></li>
+<!-- <li><a href="#" target="_blank">Return Policy</a></li> -->
+<li><a href="https://media.surewerx.com/m/417d360222a53710/original/SWC-Internet-Distributor-Reseller-Policy.pdf" target="_blank" rel="noopener">Internet Reseller Policy</a></li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Divider -->
+<div class="gradient-border">&nbsp;</div>
+<!-- Footer Bottom -->
+<div class="row">
+<div class="col-sm-6 copyright-content">SureWerx Inc. All Rights Reserved 2025</div>
+<div class="col-sm-6 text-right"><a href="https://media.surewerx.com/m/129edf10d421484b/original/Connect-Terms-Conditions.docx" target="_blank" rel="noopener">Terms &amp; Conditions</a></div>
+</div>
+</div>
+</div>
+</div></div><div class="loading-icon hide-page-block pdp-load-img hide">
+<div class="loading-bg">
+<div class="load-img"> 
+<img src="./SureWerx Connect CA_files/loader-1.gif" class="payment-load-gif"> 
+</div>
+</div>
+</div></footer>
+<input type="hidden" class="remote-addr" name="IPAddress" value="104.23.209.4">
+<script defer="" src="./SureWerx Connect CA_files/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;version&quot;:&quot;2024.11.0&quot;,&quot;token&quot;:&quot;73f54dc42ae1483faca327c729ead766&quot;,&quot;server_timing&quot;:{&quot;name&quot;:{&quot;cfCacheStatus&quot;:true,&quot;cfEdge&quot;:true,&quot;cfExtPri&quot;:true,&quot;cfL4&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfSpeedBrain&quot;:true},&quot;location_startswith&quot;:null}}" crossorigin="anonymous"></script>
+
+<script id="" text="" charset="" type="text/javascript" src="./SureWerx Connect CA_files/pa-67abb63e9bf37300120004c0.js"></script><script type="text/javascript" id="" charset="">(function(a,e,b,f,g,c,d){a[b]=a[b]||function(){(a[b].q=a[b].q||[]).push(arguments)};c=e.createElement(f);c.async=1;c.src="https://www.clarity.ms/tag/"+g+"?ref\x3dgtm2";d=e.getElementsByTagName(f)[0];d.parentNode.insertBefore(c,d)})(window,document,"clarity","script","qxj934k0t8");</script><script type="text/javascript" id="" charset="">(function(){var a=google_tag_manager["rm"]["200811209"](16),b=google_tag_manager["rm"]["200811209"](17);if(typeof clarity==="function"){if(a){var c=a.replace(/[^a-zA-Z0-9]/g,"");clarity("set","userId",c)}b&&clarity("set","language",b.toLowerCase());console.log("[Clarity] Sent userId:",a);console.log("[Clarity] Sent language:",b)}})();</script>
+<script type="text/javascript" id="" charset="">(function check(){try{document.querySelector(".suggest-details ul li")?(window.dataLayer=window.dataLayer||[],window.dataLayer.push({event:"suggest_impression_ready"})):setTimeout(check,250)}catch(a){}})();</script>
+<script type="text/javascript" id="" charset="">(function(){try{var b='input[name\x3d"SearchTerm"], input[name\x3d"searchTerm"], input.searchTerm, input.form-control.searchTerm',a=document.querySelector(b);a&&!a._swxStoreHooked&&(a._swxStoreHooked=!0,b=function(){try{var c=(a.value||"").trim();sessionStorage.setItem("last_search_term",c)}catch(d){}},a.addEventListener?(a.addEventListener("input",b,!1),a.addEventListener("change",b,!1),a.addEventListener("blur",b,!1)):a.attachEvent&&(a.attachEvent("onkeyup",b),a.attachEvent("onchange",b),a.attachEvent("onblur",
+b)),b())}catch(c){}})();</script>
+<script type="text/javascript" id="" charset="">(function(){function t(a){try{return document.querySelector(a)}catch(b){return null}}function w(a){try{return a.getBoundingClientRect()}catch(b){return{top:0,bottom:0,left:0,right:0}}}function n(a){try{(window.dataLayer=window.dataLayer||[]).push(a)}catch(b){}}function E(){var a=t(u);if(a&&a.value)return String(a.value).trim();try{for(var b=window.dataLayer||[],c=b.length-1;c>=0;c--){var d=b[c];if(d&&typeof d.search_term!=="undefined"&&d.search_term!==null)return String(d.search_term).trim()}}catch(e){}return""}
+function x(a){try{sessionStorage.setItem(y,String(a||""))}catch(b){}}function z(){var a=t(u);if(!a)return null;a=w(a);var b=[].slice.call(document.querySelectorAll('ul.search-suggest-results, .search-suggest-results, [role\x3d"listbox"], ul, div, section, nav, aside')),c=null,d=-1,e;for(e=0;e<b.length;e++){var f=b[e],p=a;if(f&&f.querySelector){var g=f.querySelector('li, [role\x3d"option"], .productName, .tt-suggestion, .autocomplete-item, [data-search-result], [data-search_result]');if(!g||f.closest&&
+f.closest('.carousel,.banner,.hero,[data-ride\x3d"carousel"],.enhanced-image,.enhanced-image-container'))g=-1;else{var k=w(f);g=Math.max(0,400-Math.abs(k.top-p.bottom))/100;p=k.top<=p.bottom&&k.bottom>=p.top?1:0;for(k=0;f&&f!==document.body;)k++,f=f.parentElement;f=k*.05;g=1+g+p-f}}else g=-1;g>d&&(d=g,c=b[e])}return d>2?c:null}function A(a){if(!a)return"";a=a.querySelectorAll('li a, li .productName, [data-search-result], [data-search_result], .tt-suggestion, .autocomplete-item, a[role\x3d"option"], [role\x3d"listbox"] [role\x3d"option"], li');
+var b=[],c;for(c=0;c<a.length;c++){var d=a[c];if(d&&d.offsetParent!==null){var e=(d&&d.textContent||"").replace(/\s+/g," ").trim();d=d.getAttribute&&d.getAttribute("href")||"";e&&b.push(e+"|"+d)}}if(!b.length)return"";b=a=b.slice(0,30).join("~~");c=5381;for(e=b.length;e;)c=c*33^b.charCodeAt(--e);b=(c>>>0).toString(36);return b+"|"+a}function F(){v&&clearTimeout(v);v=setTimeout(function(){if(l){var a=E(),b=A(l),c=!!a&&!!h&&a!==h,d=!!b&&b!==m;n({event:"search_refinement_debug",sr_prev_term:h,sr_current_term:a,
+sr_prev_sig:m,sr_new_sig:b,sr_term_changed:c,sr_suggestions_changed:d});if(!h&&a&&b){h=a;m=b;try{sessionStorage.setItem(q,b)}catch(e){}x(a)}else{if(c&&d&&b!==B){c=parseInt(sessionStorage.getItem(C)||"0",10);c=isNaN(c)?0:c;c+=1;try{sessionStorage.setItem(C,String(c))}catch(e){}n({event:"search_refinement",search_term_old:h,search_term_new:a,refinement_count:c,suggestions_changed:!0});B=b;h=a;x(a)}m=b;try{sessionStorage.setItem(q,b)}catch(e){}}}},G)}function D(a){if(a&&typeof MutationObserver!=="undefined"){if(r)try{r.disconnect()}catch(b){}l=
+a;m=a=A(l)||m;try{sessionStorage.setItem(q,a||"")}catch(b){}r=new MutationObserver(F);r.observe(l,{childList:!0,subtree:!0,characterData:!0,attributes:!0,attributeFilter:["src","href"]});n({event:"sr_attached"})}}function H(){var a=t(u);if(a){var b=z();b&&D(b);typeof MutationObserver!=="undefined"&&(b=new MutationObserver(function(){var c=z();c&&c!==l&&D(c)}),b.observe(document.body,{childList:!0,subtree:!0}));n({event:"sr_boot",input_found:!!a})}else n({event:"sr_no_input"})}var u='input[name\x3d"SearchTerm"],input[name\x3d"searchTerm"],input.searchTerm,input.form-control.searchTerm',
+C="swx_refine_count:"+location.pathname,y="swx_prev_autocomplete_term",q="swx_last_sig",G=120,l=null,r=null,v=null;try{var h=sessionStorage.getItem(y)||""}catch(a){h=""}var m=sessionStorage.getItem(q)||"",B="";try{H()}catch(a){}})();</script>
+<script type="text/javascript" id="" charset="">(function(){try{var n='input[name\x3d"SearchTerm"],input[name\x3d"searchTerm"],input.searchTerm,.searchTerm',c=null,e=null,l=null,g="",h="",m=function(){if(!e)return"";for(var a=[].slice.call(e.querySelectorAll('li,a,[role\x3d"option"],.autocomplete-item,.productName,[data-search-result]')),b="",d=0;d<a.length;d++){var f=a[d],p=(f.textContent||"").replace(/\s+/g," ").trim();f=f.getAttribute&&f.getAttribute("href")||"";b+=p+"|"+f+"~"}a=b;b=5381;for(d=0;d<a.length;d++)b=(b*33^a.charCodeAt(d))>>>0;return a=
+(b>>>0).toString(36)},k=function(a){try{(window.dataLayer=window.dataLayer||[]).push(a)}catch(b){}};try{c=document.querySelector(n)}catch(a){c=null}try{e=document.querySelector(".search-suggest-results")}catch(a){e=null}c&&e&&typeof window.MutationObserver!=="undefined"?(g=c&&c.value?String(c.value).trim():"",h=m(),l=new MutationObserver(function(){var a=c&&c.value?String(c.value).trim():"",b=m();k({event:"sr_ping",prev:g,cur:a,changed:b!==h});a&&(g=a);h=b}),l.observe(e,{childList:!0,subtree:!0,characterData:!0}),
+k({event:"sr_boot_ok"})):k({event:"sr_boot_err",msg:"missing input/list or MO"})}catch(a){try{(window.dataLayer=window.dataLayer||[]).push({event:"sr_boot_err",msg:String(a&&a.message||a)})}catch(b){}}})();</script>
+<script type="text/javascript" id="" charset="">(function(){function f(a){a&&a.indexOf(c)!==-1&&!l.has(a)&&(l.add(a),window.dataLayer=window.dataLayer||[],window.dataLayer.push({event:"pmc_image_seen",matched_url:a,page_location:location.href,sku:q}))}function m(a){return a?a.split(",").map(function(b){return(b.trim().split(/\s+/)[0]||"").trim()}).filter(Boolean):[]}function g(a){a&&(a.currentSrc&&a.currentSrc.indexOf(c)!==-1&&f(a.currentSrc),a.src&&a.src.indexOf(c)!==-1&&f(a.src),m(a.srcset).forEach(function(b){b.indexOf(c)!==-1&&f(b)}))}function h(a){a&&
+m(a.srcset).forEach(function(b){b.indexOf(c)!==-1&&f(b)})}function r(a){for(var b=[],d=/url\(\s*(['"]?)(.*?)\1\s*\)/gi,e;(e=d.exec(a||""))!==null;)e[2]&&b.push(e[2]);return b}function k(a){if(a&&a.nodeType===1){var b=getComputedStyle(a);["background-image","background"].forEach(function(d){r(b.getPropertyValue(d)).forEach(function(e){e.indexOf(c)!==-1&&f(e)})})}}function n(a){a&&(a.tagName==="IMG"&&g(a),a.tagName==="SOURCE"&&h(a),k(a),a.querySelectorAll&&(a.querySelectorAll("img").forEach(g),a.querySelectorAll("source").forEach(h),
+a.querySelectorAll("*").forEach(k)))}function p(){n(document)}var c="https://asset.productmarketingcloud.com/",l=new Set,q=google_tag_manager["rm"]["200811209"](18)||google_tag_manager["rm"]["200811209"](19)||"";document.readyState==="loading"?document.addEventListener("DOMContentLoaded",p):p();(new MutationObserver(function(a){a.forEach(function(b){b.type==="childList"?b.addedNodes&&b.addedNodes.forEach(function(d){d.nodeType===1&&n(d)}):b.type==="attributes"&&(b.target.tagName!=="IMG"||b.attributeName!=="src"&&b.attributeName!=="srcset"?
+b.target.tagName==="SOURCE"&&b.attributeName==="srcset"?h(b.target):b.attributeName==="style"&&k(b.target):g(b.target))})})).observe(document.documentElement,{subtree:!0,childList:!0,attributes:!0,attributeFilter:["src","srcset","style"]})})();</script>
+<script type="text/javascript" id="" charset="">(function(){function p(a){return Array.prototype.slice.call(a||[],0)}function y(a,c){return a&&(" "+a.className+" ").indexOf(" "+c+" ")>-1}function u(a){return!(!a||a.offsetParent===null)}function v(a){if(!a)return"";a=(a.textContent||a.innerText||"").replace(/[:]/g,"");return a=a.replace(/\s+/g," ").replace(/^\s+|\s+$/g,"")}function w(a){if(!a)return"";a=a.querySelector("h3");if(!a)return"";var c=a.querySelector("strong");return v(c||a)}function q(a,c){for(;a&&a.nodeType===1;){if(B.call(a,c))return a;
+a=a.parentElement}return null}function z(a){a=p(a.querySelectorAll("ul.filter-list"));for(var c=0;c<a.length;c++)if(!y(a[c],"selected-filter-list"))return a[c];return a.length?a[0]:null}function r(){for(var a=p(document.querySelectorAll("#filter-accordion .filter-group")),c=[],d=0;d<a.length;d++){var b=a[d];b.querySelector("h3")&&b.querySelector("ul.filter-list")&&c.push(b)}f=[];for(a=0;a<c.length;a++)f.push({el:c[a],name:w(c[a]),index1:a+1})}var m=Element.prototype,B=m.matches||m.msMatchesSelector||
+m.webkitMatchesSelector,f=[];r();m=document.querySelector("#filter-accordion");if(window.MutationObserver&&m){var C=new MutationObserver(function(){r()});C.observe(m,{childList:!0,subtree:!0})}document.addEventListener("click",function(a){var c=q(a.target,"a.filter-item-name");if(c){var d=q(c,".filter-group");if(d){r();a=null;var b;for(b=0;b<f.length;b++)if(f[b].el===d){a=f[b];break}var e=[];for(b=0;b<f.length;b++)u(f[b].el)&&e.push(f[b]);var k=null;for(b=0;b<e.length;b++)if(e[b].el===d){k=b+1;break}e=
+b=a&&a.name?a.name:w(d);var n=c.querySelector(".cname");n=v(n||c);a:{var l=c;if(d=z(d)){d=p(d.querySelectorAll(".filter-item a.filter-item-name"));for(var g=0;g<d.length;g++)if(d[g]===l){d=g+1;break a}}d=null}g=null;(l=c.parentElement||null)&&(g=l.querySelector(".filter-count strong"));l=g?parseInt((g.textContent||"").replace(/\D+/g,""),10):null;g=g?v(g):null;c=c.getAttribute("href")||"";a={event:"facet_select",facet_group:b,facet_key:e,facet_value:n,facet_position:d,facet_group_position:a?a.index1:
+null,facet_group_visible_position:k,facet_count:l,facet_count_label:g,facet_url:c};window.dataLayer=window.dataLayer||[];window.dataLayer.push(a)}}},!0);var x=null;document.addEventListener("input",function(a){var c=q(a.target,"input.filter-input");if(c){var d=q(c,".filter-group");d&&(x&&clearTimeout(x),x=setTimeout(function(){r();var b=null,e;for(e=0;e<f.length;e++)if(f[e].el===d){b=f[e];break}var k=[];for(e=0;e<f.length;e++)u(f[e].el)&&k.push(f[e]);var n=null;for(e=0;e<k.length;e++)if(k[e].el===
+d){n=e+1;break}k=e=b&&b.name?b.name:w(d);var l=c.value||"",g=l.length,h;if(h=z(d)){h=p(h.querySelectorAll(".filter-item"));for(var A=0,t=0;t<h.length;t++)!y(h[t],"filter-input-noresult")&&u(h[t])&&A++;h=A}else h=null;b={event:"facet_search",facet_group:e,facet_key:k,facet_search_term:l,facet_search_length:g,facet_results_count:h,facet_group_position:b?b.index1:null,facet_group_visible_position:n};window.dataLayer=window.dataLayer||[];window.dataLayer.push(b)},300))}},!0)})();</script>
+</body></html>

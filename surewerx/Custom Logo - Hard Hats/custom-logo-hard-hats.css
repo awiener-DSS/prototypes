@@ -1,0 +1,567 @@
+/* Custom Logo Hard Hats - Styling from reference images */
+/* References: Add Your Logo.png, custom-logo-step-1.png, logo-uploaded.png, pricing.jpg, summary-selection.png */
+
+/* ----- Page & Container ----- */
+.custom-logo-body {
+  background-color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.custom-logo-container {
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ----- Left: Illustration panel ----- */
+.custom-logo-illustration-col {
+  padding-right: 15px;
+}
+
+.custom-logo-illustration-panel {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.custom-logo-illustration-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.custom-logo-illustration-img {
+  width: 100%;
+  height: auto;
+}
+
+/* ----- Middle: Form ----- */
+.custom-logo-form-col {
+  padding: 0 15px;
+}
+
+.custom-logo-product-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.custom-logo-section-heading {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.custom-logo-form {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.custom-logo-position-group {
+  margin-bottom: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.custom-logo-position-group:last-of-type {
+  border-bottom: none;
+}
+
+.custom-logo-position-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.custom-logo-position-index {
+  display: inline-block;
+  width: 22px;
+}
+
+.custom-logo-position-name {
+  color: #333;
+}
+
+/* Uploaded file row - light grey box, file name + trash */
+.custom-logo-file-info {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-logo-file-name {
+  font-size: 13px;
+  color: #333;
+  flex: 1;
+}
+
+.custom-logo-trash-button {
+  color: #333;
+  padding: 0 0 0 10px;
+}
+
+.custom-logo-trash-button:hover {
+  color: #c9302c;
+}
+
+.custom-logo-dimensions-row {
+  margin-bottom: 8px;
+}
+
+.custom-logo-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+/* Required asterisk - orange per Add Your Logo.png */
+.custom-logo-label .text-danger {
+  color: #F2693F !important;
+}
+
+.custom-logo-dimension-input {
+  height: 34px;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.custom-logo-dim-error {
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.custom-logo-upload-col {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 0;
+}
+
+/* Upload icon - orange cloud per reference images */
+.custom-logo-upload-button {
+  font-size: 24px;
+  color: #F2693F;
+  padding: 0;
+  height: 34px;
+  display: flex;
+  align-items: center;
+}
+
+.custom-logo-upload-button:hover {
+  color: #e55a2a;
+}
+
+.custom-logo-color-row {
+  margin-top: 8px;
+}
+
+.custom-logo-color-select {
+  max-width: 200px;
+  height: 34px;
+  font-size: 13px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.custom-logo-logo-type-group {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 2px solid #e5e5e5;
+}
+
+.custom-logo-actions {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* Confirm button - orange rectangular per custom-logo-step-1.png, logo-uploaded.png */
+.custom-logo-confirm-btn {
+  background-color: #F2693F;
+  border-color: #F2693F;
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 28px;
+  font-size: 14px;
+  text-transform: uppercase;
+  border-radius: 4px;
+}
+
+.custom-logo-confirm-btn:hover,
+.custom-logo-confirm-btn:focus,
+.custom-logo-confirm-btn:active {
+  background-color: #e55a2a;
+  border-color: #e55a2a;
+  color: #fff;
+}
+
+.custom-logo-confirm-btn:disabled {
+  background-color: #ccc;
+  border-color: #ccc;
+  color: #fff;
+  cursor: not-allowed;
+}
+
+/* ----- Right: Selection Summary - per summary-selection.png ----- */
+.custom-logo-summary-col {
+  padding-left: 15px;
+}
+
+.custom-logo-summary-panel {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.custom-logo-summary-header {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.custom-logo-summary-body {
+  font-size: 13px;
+  color: #333;
+}
+
+.custom-logo-summary-sku {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+/* ----- Pricing summary box - per pricing.jpg ----- */
+#summaryPricingBox {
+  background-color: #f9f9f9 !important;
+  border: 1px solid #e0e0e0 !important;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+#summaryPricingBox td:first-child {
+  font-weight: 700;
+  color: #333 !important;
+}
+
+#summaryPricingBox td:last-child {
+  font-weight: 700;
+  color: #D64227 !important;
+  text-align: right;
+}
+
+/* ----- Modal: Add Your Logo - per Add Your Logo.png ----- */
+.custom-logo-modal-header {
+  background-color: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.custom-logo-modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+}
+
+.custom-logo-modal-body {
+  padding: 30px;
+}
+
+.custom-logo-modal-instructions {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.custom-logo-modal-upload-primary {
+  margin-top: 20px;
+}
+
+/* UPDATE YOUR LOGO button - orange per Add Your Logo.png */
+.custom-logo-primary-upload-btn {
+  background-color: #F2693F !important;
+  border-color: #F2693F !important;
+  color: #fff !important;
+  font-weight: 700;
+  padding: 12px 24px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.custom-logo-primary-upload-btn:hover,
+.custom-logo-primary-upload-btn:focus {
+  background-color: #e55a2a !important;
+  border-color: #e55a2a !important;
+  color: #fff !important;
+}
+
+.custom-logo-modal-max-size {
+  font-size: 12px;
+  color: #666;
+  margin-top: 10px;
+}
+
+.custom-logo-modal-footer {
+  background-color: #f9f9f9;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* ----- Demo Pricing panel - per pricing.jpg ----- */
+.demo-pricing-panel {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.demo-pricing-panel h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.demo-pricing-totals {
+  font-size: 13px;
+  color: #333;
+}
+
+.demo-pricing-totals strong {
+  color: #333;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 991px) {
+  .custom-logo-illustration-col,
+  .custom-logo-form-col,
+  .custom-logo-summary-col {
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .custom-logo-product-name {
+    font-size: 18px;
+  }
+}
+
+/* ----- Custom Logo Quotes view (my-account style) ----- */
+.custom-logo-quote-view {
+  min-height: 100vh;
+  background: #fff;
+}
+
+.custom-logo-quote-header {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.custom-logo-quote-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #000;
+}
+
+.custom-logo-quote-layout {
+  display: flex;
+  min-height: calc(100vh - 80px);
+}
+
+.custom-logo-quote-sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: #f5f5f5;
+  border-right: 1px solid #e0e0e0;
+  padding: 24px 16px;
+}
+
+.custom-logo-quote-user {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.custom-logo-quote-user-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #333;
+}
+
+.custom-logo-quote-user-account,
+.custom-logo-quote-user-role {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.custom-logo-quote-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.custom-logo-quote-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+}
+
+.custom-logo-quote-nav-link:hover {
+  background: #ebebeb;
+  color: #333;
+}
+
+.custom-logo-quote-nav-link.active {
+  font-weight: 700;
+  border-left-color: #D64227;
+  background: #fff;
+}
+
+.custom-logo-quote-back {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.custom-logo-quote-back a {
+  color: #D64227;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.custom-logo-quote-back a:hover {
+  text-decoration: underline;
+}
+
+.custom-logo-quote-main {
+  flex: 1;
+  padding: 24px 32px;
+  overflow-x: auto;
+}
+
+.custom-logo-quote-section {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.custom-logo-quote-section-title {
+  margin: 0 0 16px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.custom-logo-quote-section .form-group {
+  margin-bottom: 12px;
+}
+
+.custom-logo-quote-important-note {
+  background: #fff5f5 !important;
+  border-color: #f0d0d0 !important;
+}
+
+.custom-logo-quote-important-note h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.custom-logo-quote-important-note ul {
+  margin: 0 0 16px 0;
+  padding-left: 20px;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.custom-logo-quote-important-note ul:last-child {
+  margin-bottom: 0;
+}
+
+.custom-logo-quote-summary {
+  font-size: 14px;
+}
+
+.custom-logo-quote-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.custom-logo-quote-summary-row span:last-child {
+  font-weight: 700;
+  color: #D64227;
+}
+
+.custom-logo-quote-btn {
+  background-color: #D64227 !important;
+  border-color: #D64227 !important;
+  color: #fff !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.custom-logo-quote-btn:hover,
+.custom-logo-quote-btn:focus {
+  background-color: #c23820 !important;
+  border-color: #c23820 !important;
+  color: #fff !important;
+}
+
+#quoteProductDetailsTable th {
+  background: #f9f9f9;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Full-width row below each product for long comments */
+.quote-product-comments-row td {
+  background: #fafafa;
+  border-top: none;
+  padding: 10px 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: normal;
+  vertical-align: top;
+}
+
+.quote-product-comments-cell strong {
+  margin-right: 6px;
+}

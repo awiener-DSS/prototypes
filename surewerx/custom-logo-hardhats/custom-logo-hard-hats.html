@@ -19,8 +19,13 @@
 
     <!-- Bootstrap 3.4.1 JS -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- jsPDF for Preview Quote PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
   </head>
   <body class="custom-logo-body">
+    <!-- Configurator view (product/logo selection) -->
+    <div id="customLogoConfiguratorView">
     <div class="container-fluid custom-logo-container">
       <div class="row">
         <!-- Left: Helmet illustration -->
@@ -468,6 +473,168 @@
         </div>
       </div>
     </div>
+    </div><!-- /#customLogoConfiguratorView -->
+
+    <!-- Custom Logo Quotes view (after Add to Quote) -->
+    <div id="customLogoQuoteView" class="custom-logo-quote-view" style="display: none;">
+      <div class="custom-logo-quote-header">
+        <h1 class="custom-logo-quote-title">Custom Logo Quotes</h1>
+      </div>
+      <div class="custom-logo-quote-layout">
+        <aside class="custom-logo-quote-sidebar">
+          <div class="custom-logo-quote-user">
+            <div class="custom-logo-quote-user-name">Adam Wiener</div>
+            <div class="custom-logo-quote-user-account">STAFF TOOL SALES - ON</div>
+            <div class="custom-logo-quote-user-role">Buyer</div>
+          </div>
+          <nav class="custom-logo-quote-nav">
+            <a href="#" class="custom-logo-quote-nav-link">Logout</a>
+            <a href="#" class="custom-logo-quote-nav-link"><span class="glyphicon glyphicon-shopping-cart"></span> Purchases</a>
+            <a href="#" class="custom-logo-quote-nav-link">Order History</a>
+            <a href="#" class="custom-logo-quote-nav-link">Order Templates</a>
+            <a href="#" class="custom-logo-quote-nav-link"><span class="glyphicon glyphicon-user"></span> Profile</a>
+            <a href="#" class="custom-logo-quote-nav-link"><span class="glyphicon glyphicon-warning-sign"></span> Report a Shortage or Shipping Error</a>
+            <a href="#" class="custom-logo-quote-nav-link active"><span class="glyphicon glyphicon-apple"></span> Custom Logo Quotes</a>
+          </nav>
+          <div class="custom-logo-quote-back">
+            <a href="#" id="customLogoQuoteBackToConfig">← Back to product</a>
+          </div>
+        </aside>
+        <main class="custom-logo-quote-main">
+          <div class="row">
+            <div class="col-md-6">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">QUOTE INFORMATION</h3>
+                <div class="form-horizontal">
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Quote Number</label>
+                    <div class="col-sm-8"><p class="form-control-static" id="quoteQuoteNumber">CLA00002468</p></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Status</label>
+                    <div class="col-sm-8"><p class="form-control-static" id="quoteStatus">Not Submitted</p></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label"><span class="text-danger">*</span> Quote Name</label>
+                    <div class="col-sm-8"><input type="text" class="form-control input-sm" id="quoteQuoteName" value="6680 - surewerx" placeholder="Quote Name"></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label"><span class="text-danger">*</span> Logo Brand Name</label>
+                    <div class="col-sm-8"><input type="text" class="form-control input-sm" id="quoteLogoBrandName" value="6680 - surewerx" placeholder="Logo Brand Name"></div>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <div class="col-md-6">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">CONTACT</h3>
+                <div class="form-horizontal">
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Contact Person/Email</label>
+                    <div class="col-sm-8"><p class="form-control-static">Adam Wiener - awiener@dss-partners.com</p></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Distributor Name</label>
+                    <div class="col-sm-8">
+                      <select class="form-control input-sm" id="quoteDistributorName">
+                        <option>STAFF TOOL SALES - ON - 123 TEST, TEST</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label"><span class="text-danger">*</span> Distributor Email</label>
+                    <div class="col-sm-8"><input type="email" class="form-control input-sm" id="quoteDistributorEmail" value="slandry@surewerx.com"></div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-4 control-label">Phone #</label>
+                    <div class="col-sm-8"><input type="tel" class="form-control input-sm" id="quotePhone" placeholder=""></div>
+                  </div>
+                  <div class="form-group">
+                    <div class="col-sm-offset-4 col-sm-8">
+                      <button type="button" class="btn btn-primary custom-logo-quote-btn" id="quoteSaveQuoteBtn">SAVE QUOTE</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <section class="custom-logo-quote-section custom-logo-quote-important-note">
+            <h3 class="custom-logo-quote-section-title">IMPORTANT NOTE</h3>
+            <div class="row">
+              <div class="col-md-4">
+                <h4>Next Steps:</h4>
+                <ul>
+                  <li>You can expect Entripy (our decorator partner) to email you with a proof within 1 business day</li>
+                  <li>Entripy will provide a visual proof with your logo(s) and selected garment(s). We require a proof approval from you in order to proceed with the order</li>
+                  <li>In parallel, our team will create custom logo part numbers that can be referred to for future orders and for confirming available inventory</li>
+                  <li>We will be providing you the logo part numbers along with expected due dates for your purchase order</li>
+                  <li>A unique quote number will also be generated when you proceed with order. Please include this in your purchase order for reference purposes</li>
+                </ul>
+              </div>
+              <div class="col-md-4">
+                <h4>Shipping:</h4>
+                <ul>
+                  <li>Please indicate the modes of transport on your logo purchase order according to the following information:</li>
+                  <li>Orders of $1500 or above will be shipped Prepaid from the decorator to the distributor or end-user.</li>
+                  <li>Orders below $1500 will be shipped Prepaid &amp; Charge from the decorator to the distributor or end-user.</li>
+                </ul>
+              </div>
+              <div class="col-md-4">
+                <h4>Proceed With Quote:</h4>
+                <ul>
+                  <li>Please save order for future reference if there isnt the intention to place a purchase order</li>
+                  <li>This quote is valid for 30 days</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <div class="row">
+            <div class="col-md-7">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">PRODUCT DETAILS</h3>
+                <div class="table-responsive">
+                  <table class="table table-bordered table-condensed" id="quoteProductDetailsTable">
+                    <thead>
+                      <tr>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="quoteProductDetailsBody">
+                      <!-- Populated when Add to Quote is clicked -->
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+            <div class="col-md-5">
+              <section class="custom-logo-quote-section">
+                <h3 class="custom-logo-quote-section-title">QUOTE SUMMARY</h3>
+                <div class="custom-logo-quote-summary">
+                  <div class="custom-logo-quote-summary-row">
+                    <span>Decorating Costs:</span>
+                    <span id="quoteDecoratingCosts" class="text-right">$0.00</span>
+                  </div>
+                  <div class="custom-logo-quote-summary-row">
+                    <span>Quote Total:</span>
+                    <span id="quoteTotal" class="text-right">$0.00</span>
+                  </div>
+                  <div style="margin-top: 15px;">
+                    <button type="button" class="btn btn-primary custom-logo-quote-btn btn-block" id="quotePreviewBtn">PREVIEW QUOTE</button>
+                    <p class="help-block" style="margin-top: 8px; font-size: 12px;">Note : Clicking on Preview Quote will not submit the quote</p>
+                    <button type="button" class="btn btn-primary custom-logo-quote-btn btn-block" id="quoteResubmitBtn">SUBMIT QUOTE</button>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div><!-- /#customLogoQuoteView -->
 
     <!-- Add Your Logo Modal -->
     <div id="addLogoModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addLogoModalLabel">
@@ -947,6 +1114,239 @@
             // Re-enable confirm button
             checkConfirmButtonState();
           });
+        });
+
+        // Add to Quote: show Custom Logo Quotes view and populate from current selection
+        $('#addToQuoteBtn').on('click', function () {
+          var productName = 'XS2-500 Type 2 Safety Helmet – Non-Vented – Black';
+          var priceStr = $('#summaryTotalPricePerUnit').text().trim() || '$0.00';
+          var totalStr = $('#summaryTotalCost').text().trim() || '$0.00';
+          var qty = parseInt($('#summaryQuantity').val(), 10) || 0;
+          var decoratingStr = $('#summaryPrintingPrice').text().trim() || '$0.00';
+          var decoratingNum = parseFloat(decoratingStr.replace(/[$,]/g, '')) || 0;
+          var decoratingTotal = (decoratingNum * qty);
+          var decoratingTotalStr = '$' + (isNaN(decoratingTotal) ? '0.00' : decoratingTotal.toFixed(2));
+          var commentsRaw = ($('#summaryComments').val() || '').trim();
+          var commentsEscaped = commentsRaw
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\n/g, '<br>');
+
+          $('#quoteProductDetailsBody').empty();
+          $('#quoteProductDetailsBody').append(
+            '<tr>' +
+              '<td>' + productName + '</td>' +
+              '<td>' + priceStr + '</td>' +
+              '<td>' + qty + '</td>' +
+              '<td>' +
+                '<button type="button" class="btn btn-link btn-xs" title="Edit"><span class="glyphicon glyphicon-pencil"></span></button> ' +
+                '<button type="button" class="btn btn-link btn-xs" title="Delete"><span class="glyphicon glyphicon-remove"></span></button>' +
+              '</td>' +
+            '</tr>' +
+            (commentsRaw ? '<tr class="quote-product-comments-row"><td colspan="4" class="quote-product-comments-cell"><strong>Comments:</strong> ' + commentsEscaped + '</td></tr>' : '')
+          );
+          $('#quoteDecoratingCosts').text(decoratingTotalStr);
+          $('#quoteTotal').text(totalStr);
+
+          $('#customLogoConfiguratorView').hide();
+          $('#customLogoQuoteView').show();
+        });
+
+        // Back to product: return to configurator view
+        $('#customLogoQuoteBackToConfig').on('click', function (e) {
+          e.preventDefault();
+          $('#customLogoQuoteView').hide();
+          $('#customLogoConfiguratorView').show();
+        });
+
+        // Preview Quote: generate PDF with Customer/Distributor/Helmet fields, Logo Pricing (Demo Pricing values only), Important Note
+        $('#quotePreviewBtn').on('click', function () {
+          var JsPDF = window.jspdf && window.jspdf.jsPDF;
+          if (!JsPDF) {
+            alert('PDF library not loaded.');
+            return;
+          }
+          var doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          var pageW = doc.internal.pageSize.getWidth();
+          var y = 12;
+          var margin = 14;
+          var col1 = margin;
+          var fontNorm = 10;
+          var fontSmall = 9;
+
+          // ---- Title ----
+          doc.setFontSize(16);
+          doc.setFont(undefined, 'bold');
+          doc.text('Custom Logo Quote', pageW / 2, y, { align: 'center' });
+          y += 12;
+
+          // ---- Customer Name, Distributor Name, Helmet Model, Helmet Color, Product Number, Distributor Product Price, Order Quantity ----
+          doc.setFontSize(fontNorm);
+          doc.setFont(undefined, 'normal');
+          doc.text('Customer Name: Adam Wiener', col1, y);
+          y += 6;
+          var distName = $('#quoteDistributorName').find('option:selected').text() || $('#quoteDistributorName').val() || '';
+          doc.text('Distributor Name: ' + distName, col1, y);
+          y += 6;
+          doc.text('Helmet Model: XS2-500 Type 2 Safety Helmet – Non-Vented – Black', col1, y);
+          y += 6;
+          doc.text('Helmet Color: Black', col1, y);
+          y += 6;
+          doc.text('Product Number: XS2-500', col1, y);
+          y += 6;
+          var distributorProductPrice = $('#demoProductPrice').text().trim() || '$23.97';
+          doc.text('Distributor Product Price: ' + distributorProductPrice, col1, y);
+          y += 6;
+          var orderQty = $('#summaryQuantity').val() || $('#quoteProductDetailsBody tr:not(.quote-product-comments-row)').first().find('td').eq(2).text() || '0';
+          doc.text('Order Quantity: ' + orderQty, col1, y);
+          y += 10;
+
+          // ---- Comments (if entered) – before Logo Pricing ----
+          var commentsHtml = $('#quoteProductDetailsBody tr.quote-product-comments-row').first().find('.quote-product-comments-cell').html() || '';
+          var commentsText = (commentsHtml.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').replace(/^\s*Comments:\s*/i, '').trim()) || ($('#summaryComments').val() || '').trim();
+          if (commentsText) {
+            doc.setFont(undefined, 'bold');
+            doc.text('Comments:', col1, y);
+            y += 6;
+            doc.setFont(undefined, 'normal');
+            var commentLines = doc.splitTextToSize(commentsText, pageW - 2 * margin - 4);
+            commentLines.forEach(function (line) {
+              doc.text(line, col1, y);
+              y += 5;
+            });
+            y += 8;
+          }
+
+          // ---- Logo Pricing (same info as Demo Pricing section, values only – no math/calculation text) ----
+          doc.setFont(undefined, 'bold');
+          doc.text('Logo Pricing:', col1, y);
+          y += 6;
+          doc.setFont(undefined, 'normal');
+          doc.setFontSize(fontSmall);
+
+          // Logo Location table (Name, Cost, Code, Description) + Sub-Total
+          var logoLocationRows = [];
+          $('#demoCostPerUnitBody tr').each(function () {
+            var cells = $(this).find('td');
+            if (cells.length >= 4) {
+              logoLocationRows.push([
+                (cells.eq(0).text() || '').trim(),
+                (cells.eq(1).text() || '').trim(),
+                (cells.eq(2).text() || '').trim(),
+                (cells.eq(3).text() || '').trim()
+              ]);
+            }
+          });
+          if (logoLocationRows.length) {
+            doc.autoTable({
+              startY: y,
+              head: [['Logo Location Name', 'Cost', 'Code', 'Description']],
+              body: logoLocationRows,
+              theme: 'grid',
+              headStyles: { fillColor: [240, 240, 240], fontStyle: 'bold', fontSize: fontSmall },
+              bodyStyles: { fontSize: fontSmall },
+              margin: { left: col1 },
+              columnStyles: { 0: { cellWidth: 45 }, 1: { cellWidth: 22 }, 2: { cellWidth: 28 }, 3: { cellWidth: 55 } }
+            });
+            y = doc.lastAutoTable.finalY + 4;
+          }
+          var locationSubTotal = $('#demoLocationSubTotal').text().trim() || '$0.00';
+          doc.text('Logo Location Sub-Total: ' + locationSubTotal, col1, y);
+          y += 8;
+
+          // Handling + Setup table + Handling:, Setup:, Setup/Unit:, Handling + Setup: (values only)
+          var handlingSetupRows = [];
+          $('#demoHandlingSetupBody tr').each(function () {
+            var cells = $(this).find('td');
+            if (cells.length >= 3) {
+              handlingSetupRows.push([
+                (cells.eq(0).text() || '').trim(),
+                (cells.eq(1).text() || '').trim(),
+                (cells.eq(2).text() || '').trim()
+              ]);
+            }
+          });
+          if (handlingSetupRows.length) {
+            doc.autoTable({
+              startY: y,
+              head: [['Handling + Setup Section', 'Cost', 'Code']],
+              body: handlingSetupRows,
+              theme: 'grid',
+              headStyles: { fillColor: [240, 240, 240], fontStyle: 'bold', fontSize: fontSmall },
+              bodyStyles: { fontSize: fontSmall },
+              margin: { left: col1 },
+              columnStyles: { 0: { cellWidth: 80 }, 1: { cellWidth: 25 }, 2: { cellWidth: 45 } }
+            });
+            y = doc.lastAutoTable.finalY + 4;
+          }
+          doc.text('Handling: ' + ($('#demoHandlingSubtotal').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Setup: ' + ($('#demoSetupSubtotal').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Setup / Unit: ' + ($('#demoSetupPerUnit').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Handling + Setup: ' + ($('#demoHandlingSetupPerUnit').text().trim() || '$0.00'), col1, y);
+          y += 8;
+
+          doc.text('Total Printing / Unit: ' + ($('#demoTotalPrinting').text().trim() || '$0.00'), col1, y);
+          y += 6;
+          doc.text('Product Price: ' + ($('#demoProductPrice').text().trim() || '$23.97'), col1, y);
+          y += 5;
+          doc.text('Total Cost / Helmet: ' + ($('#demoTotalHelmet').text().trim() || '$0.00'), col1, y);
+          y += 5;
+          doc.text('Total Cost: ' + ($('#demoTotalCostOverall').text().trim() || '$0.00'), col1, y);
+          y += 12;
+          doc.setFontSize(fontNorm);
+
+          // ---- Important Note ----
+          doc.setFont(undefined, 'bold');
+          doc.text('Important Note:', col1, y);
+          y += 6;
+          doc.setFont(undefined, 'bold');
+          doc.setFontSize(fontSmall);
+          doc.text('Next Steps', col1, y);
+          y += 5;
+          doc.setFont(undefined, 'normal');
+          var nextSteps = [
+            'You can expect Entripy (our decorator partner) to email you with a proof within 1 business day',
+            'Entripy will provide a visual proof with your logo(s) and selected garment(s). We require a proof approval from you in order to proceed with the order',
+            'In parallel, our team will create custom logo part numbers that can be referred to for future orders and for confirming available inventory',
+            'We will be providing you the logo part numbers along with expected due dates for your purchase order',
+            'A unique quote number will also be generated when you proceed with order. Please include this in your purchase order for reference purposes'
+          ];
+          nextSteps.forEach(function (line) {
+            var lines = doc.splitTextToSize(line, pageW - 2 * margin - 4);
+            lines.forEach(function (l) { doc.text(l, col1 + 4, y); y += 4; });
+            y += 2;
+          });
+          y += 2;
+          doc.setFont(undefined, 'bold');
+          doc.text('Shipping:', col1, y);
+          y += 5;
+          doc.setFont(undefined, 'normal');
+          doc.text('Please indicate the modes of transport on your logo purchase order according to the following information:', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 6;
+          doc.text('Orders of $1500 or above will be shipped Prepaid from the decorator to the distributor or end-user.', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 5;
+          doc.text('Orders below $1500 will be shipped Prepaid & Charge from the decorator to the distributor or end-user.', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 8;
+          doc.setFont(undefined, 'bold');
+          doc.text('Proceed With Quote:', col1, y);
+          y += 5;
+          doc.setFont(undefined, 'normal');
+          doc.text('Please save order for future reference if there isnt the intention to place a purchase order', col1 + 4, y, { maxWidth: pageW - 2 * margin - 4 });
+          y += 5;
+          doc.text('This quote is valid for 30 days', col1 + 4, y);
+
+          // Output and open in new tab
+          try {
+            var blob = doc.output('blob');
+            var url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+          } catch (err) {
+            alert('Could not generate PDF: ' + (err.message || err));
+          }
         });
 
         // Initial check

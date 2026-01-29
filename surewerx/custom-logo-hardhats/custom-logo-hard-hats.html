@@ -1160,6 +1160,12 @@
           $('#customLogoConfiguratorView').show();
         });
 
+        // Submit Quote: update status and button state so post-submit screen matches local/Git
+        $('#quoteResubmitBtn').on('click', function () {
+          $('#quoteStatus').text('Submitted');
+          $(this).prop('disabled', true).addClass('disabled');
+        });
+
         // Preview Quote: generate PDF with Customer/Distributor/Helmet fields, Logo Pricing (Demo Pricing values only), Important Note
         $('#quotePreviewBtn').on('click', function () {
           var JsPDF = window.jspdf && window.jspdf.jsPDF;

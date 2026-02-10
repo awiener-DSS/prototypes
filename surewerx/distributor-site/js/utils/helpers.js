@@ -125,6 +125,8 @@ var Helpers = {
       'Shipped': 'status-shipped',
       'Cancelled': 'status-cancelled',
       'Returned': 'status-returned',
+      'Return Initiated': 'status-return-initiated',
+      'Refunded': 'status-returned',
       'Active': 'label-success',
       'Inactive': 'label-default'
     };

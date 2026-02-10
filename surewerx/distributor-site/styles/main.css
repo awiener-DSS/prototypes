@@ -981,6 +981,11 @@ h3 {
   color: #1f2937;
 }
 
+.status-badge.status-return-initiated {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
 /* Modal customizations */
 .modal-content {
   border-radius: 6px;

@@ -88,7 +88,40 @@ var CustomerReportingComponent = {
     $(document).on('click', '#search-transactions-btn', function() {
       self.performSearch();
     });
-    
+
+    // Returns (available to all user types including Customer)
+    $(document).on('click', '.return-order-btn', function(e) {
+      e.stopPropagation();
+      var orderId = $(this).data('order-id');
+      self.handleReturn(orderId);
+    });
+
+    // Generate shipping label from returns modal (Step 3)
+    $(document).on('click', '.return-info-print-label-btn', function(e) {
+      e.stopPropagation();
+      var orderId = $(this).data('order-id');
+      var rma = $(this).data('rma');
+      var product = $(this).data('product');
+      var sku = $(this).data('sku');
+      var qty = $(this).data('qty');
+      var shipTo = $(this).data('ship-to');
+      var labelWin = window.open('', 'ShippingLabel', 'width=600,height=700,scrollbars=yes');
+      if (labelWin) {
+        var labelHtml = '<!DOCTYPE html><html><head><title>Return Shipping Label - ' + (rma || '') + '</title></head><body style="font-family: sans-serif; padding: 20px;">' +
+          '<h2>Return Shipping Label</h2>' +
+          '<p><strong>RMA:</strong> ' + (rma || '') + '</p>' +
+          '<p><strong>Order:</strong> ' + (orderId || '') + '</p>' +
+          '<p><strong>Product:</strong> ' + (product || '') + ' (' + (sku || '') + ')</p>' +
+          '<p><strong>Qty:</strong> ' + (qty || '') + '</p>' +
+          '<p><strong>Ship to:</strong> ' + (shipTo || '') + '</p>' +
+          '<p style="margin-top: 30px; font-size: 12px; color: #6b7280;">Print this page to use as your return shipping label, or use the carrier portal to generate an official label.</p>' +
+          '<p><button onclick="window.print()">Print Label</button></p>' +
+          '</body></html>';
+        labelWin.document.write(labelHtml);
+        labelWin.document.close();
+      }
+    });
+
     // Allow Enter key to trigger search on filter inputs (except employee typeahead)
     $(document).on('keypress', '#filter-date-from, #filter-date-to, #filter-location-id, #filter-department-id, #filter-order-number', function(e) {
       if (e.which === 13) { // Enter key
@@ -233,7 +266,7 @@ var CustomerReportingComponent = {
   updateStatusFilterDropdown: function() {
     var self = this;
     var dropdown = $('#status-filter-dropdown');
-    dropdown.html(['Shipped', 'Processing', 'Refunded', 'Cancelled'].map(function(status) {
+    dropdown.html(['Shipped', 'Processing', 'Return Initiated', 'Refunded', 'Cancelled'].map(function(status) {
       var isSelected = self.filters.status.indexOf(status) !== -1;
       return '<div class="status-filter-option" data-status="' + Helpers.escapeHtml(status) + '" style="padding: 8px 12px; cursor: pointer; ' + (isSelected ? 'background-color: #e3f2fd;' : '') + '">' +
              (isSelected ? '<span style="color: #1976d2;">✓</span> ' : '') +
@@ -565,7 +598,7 @@ var CustomerReportingComponent = {
       }).join('') +
       '</div>' +
       '<div id="status-filter-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-top: none; z-index: 1000; max-height: 200px; overflow-y: auto; margin-top: -1px;">' +
-      ['Shipped', 'Processing', 'Refunded', 'Cancelled'].map(function(status) {
+      ['Shipped', 'Processing', 'Return Initiated', 'Refunded', 'Cancelled'].map(function(status) {
         var isSelected = self.filters.status.indexOf(status) !== -1;
         return '<div class="status-filter-option" data-status="' + Helpers.escapeHtml(status) + '" style="padding: 8px 12px; cursor: pointer; ' + (isSelected ? 'background-color: #e3f2fd;' : '') + '">' +
                (isSelected ? '<span style="color: #1976d2;">✓</span> ' : '') +
@@ -648,6 +681,7 @@ var CustomerReportingComponent = {
         }
         return sum;
       }, 0);
+      var hasReturnableLine = orderItems.some(function(item) { return item.lineStatus === 'Shipped'; });
       var shippingCost = firstItem.shippingCost || 0;
       var grandTotal = orderTotal + shippingCost;
       
@@ -1030,6 +1064,7 @@ var CustomerReportingComponent = {
         '<div style="font-size: 18px; font-weight: 600; color: #111827;">' + Helpers.formatCurrency(orderTotal) + '</div>' +
         (shippingCost > 0 ? '<div style="font-size: 11px; color: #6b7280; margin-top: 2px;">+ Shipping: ' + Helpers.formatCurrency(shippingCost) + '</div>' : '') +
         (shippingCost > 0 ? '<div style="font-size: 13px; font-weight: 600; color: #059669; margin-top: 4px; padding-top: 4px; border-top: 1px solid #d1d5db;">Total: ' + Helpers.formatCurrency(grandTotal) + '</div>' : '') +
+        (hasReturnableLine ? '<div style="margin-top: 8px;"><button class="btn btn-sm btn-warning return-order-btn" data-order-id="' + Helpers.escapeHtml(orderId) + '" style="font-size: 11px; padding: 4px 8px;">Returns</button></div>' : '') +
         '</div>' +
         '</div>' +
         '</div>' +
@@ -1061,8 +1096,10 @@ var CustomerReportingComponent = {
             '</div>' +
             (item.refundedAmount && item.refundedAmount > 0 ?
               '<div style="display: inline-flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
-              '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' +
+              '<span><strong style="color: #dc2626;">Returned:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' +
               '</div>' : '') +
+            (item.lineStatus === 'Return Initiated' && item.rmaNumber ?
+              '<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;"><span style="font-size: 11px; color: #6b7280;"><strong>RMA:</strong> ' + Helpers.escapeHtml(item.rmaNumber) + '</span></div>' : '') +
             // Invoice information at line item level
             ((item.invoiceNumber || item.invoiceDate || item.terms) ?
               '<div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
@@ -1378,6 +1415,260 @@ var CustomerReportingComponent = {
     // Re-render filters to clear status badges
     $('.filter-panel').replaceWith(this.renderFilters());
     this.attachEvents();
+  },
+
+  generateRMA: function() {
+    var now = new Date();
+    var dateStr = now.getFullYear() + '' + String(now.getMonth() + 1).padStart(2, '0') + '' + String(now.getDate()).padStart(2, '0');
+    var seq = String(Math.floor(1000 + Math.random() * 9000));
+    return 'RMA-' + dateStr + '-' + seq;
+  },
+
+  handleReturn: function(orderId) {
+    var self = this;
+    var allTransactions = AppState.transactions || [];
+    var orderTransactions = allTransactions.filter(function(t) { return t.orderId === orderId; });
+
+    if (!orderTransactions || orderTransactions.length === 0) {
+      Helpers.showAlert('Transaction not found', 'danger');
+      return;
+    }
+
+    if (AppState.enrichTransactions) {
+      AppState.enrichTransactions();
+      orderTransactions = AppState.transactions.filter(function(t) { return t.orderId === orderId; });
+    }
+
+    var returnableLines = orderTransactions.filter(function(t) { return t.lineStatus === 'Shipped'; });
+
+    if (!returnableLines || returnableLines.length === 0) {
+      Helpers.showAlert('No shipped line items available to return for this order.', 'warning');
+      return;
+    }
+
+    var scrollPosition = $(window).scrollTop();
+    var returnButton = $('.return-order-btn[data-order-id="' + orderId + '"]');
+    var orderElement = returnButton.closest('.transaction-order');
+    var orderElementOffset = orderElement.length > 0 ? orderElement.offset().top - $(window).scrollTop() : null;
+
+    var returnReasonCodes = [
+      'Size did not meet expectations',
+      'Item was uncomfortable to wear',
+      'Style did not meet expectations',
+      'Item arrived damaged',
+      'Item appears to be defective',
+      'Incorrect item was received',
+      'Item was missing from shipment',
+      'Other'
+    ];
+
+    var modalBodyHtml = '<p style="margin-bottom: 12px;">Select <strong>one</strong> line item to return. You must return the <strong>full quantity</strong> for that line.</p>';
+    modalBodyHtml += '<table class="table table-condensed table-bordered" style="font-size: 11px; margin-bottom: 12px;">' +
+      '<thead><tr>' +
+      '<th style="width: 40px; text-align: center;">Select</th>' +
+      '<th>SKU</th><th>Product</th>' +
+      '<th style="width: 80px; text-align: right;">Price</th>' +
+      '<th style="width: 60px; text-align: right;">Qty</th>' +
+      '</tr></thead><tbody>';
+
+    returnableLines.forEach(function(line, lineIdx) {
+      var totalQty = line.quantity || 0;
+      modalBodyHtml += '<tr>' +
+        '<td style="text-align: center; vertical-align: middle;">' +
+        '<input type="radio" name="return-line-radio" class="return-line-radio" value="' + lineIdx + '">' +
+        '</td>' +
+        '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '</td>' +
+        '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.productName || '') + '</td>' +
+        '<td style="text-align: right; vertical-align: middle;">' + Helpers.formatCurrency(line.totalPrice || 0) + '</td>' +
+        '<td style="text-align: right; vertical-align: middle;">' + totalQty + '</td>' +
+        '</tr>';
+    });
+    modalBodyHtml += '</tbody></table>';
+    modalBodyHtml += '<div style="margin-top: 16px;"><label class="control-label" style="display: block; margin-bottom: 6px; font-weight: 600;">Reason for return <span style="color: #dc2626;">*</span></label>';
+    modalBodyHtml += '<select id="return-reason-code" class="form-control" style="max-width: 400px;">' +
+      '<option value="">Select a reason...</option>';
+    returnReasonCodes.forEach(function(code) {
+      modalBodyHtml += '<option value="' + Helpers.escapeHtml(code) + '">' + Helpers.escapeHtml(code) + '</option>';
+    });
+    modalBodyHtml += '</select></div>';
+
+    var modalHtml = '<div class="modal fade" id="return-modal" tabindex="-1">' +
+      '<div class="modal-dialog" style="max-width: 700px;">' +
+      '<div class="modal-content">' +
+      '<div class="modal-header">' +
+      '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
+      '<h4 class="modal-title"><span class="glyphicon glyphicon-retweet text-warning"></span> Return Item</h4>' +
+      '</div>' +
+      '<div class="modal-body" style="max-height: 500px; overflow-y: auto;">' +
+      '<div id="return-step-1">' + modalBodyHtml + '</div>' +
+      '<div id="return-step-2" style="display: none;"></div>' +
+      '<div id="return-step-3" style="display: none;"></div>' +
+      '</div>' +
+      '<div class="modal-footer">' +
+      '<button type="button" class="btn btn-default" id="return-cancel-btn">Cancel</button>' +
+      '<button type="button" class="btn btn-primary" id="return-continue-btn">Continue</button>' +
+      '<button type="button" class="btn btn-warning" id="return-confirm-btn" style="display: none;">Confirm Return</button>' +
+      '<button type="button" class="btn btn-default" id="return-close-btn" style="display: none;">Close</button>' +
+      '</div>' +
+      '</div></div></div>';
+
+    $('#return-modal').remove();
+    $('body').append(modalHtml);
+    $('#return-modal').data('returnable-lines', returnableLines);
+    $('#return-modal').data('order-id', orderId);
+    $('#return-modal').modal('show');
+
+    function showStep2(selectedLine, reasonCode) {
+      var line = selectedLine;
+      var returnAmount = line.totalPrice || 0;
+      var step2Html = '<div style="margin-bottom: 12px;">' +
+        '<p style="font-weight: 600; margin-bottom: 10px;">Please confirm your return.</p>' +
+        '<table class="table table-condensed table-bordered" style="font-size: 12px;">' +
+        '<tr><th>SKU</th><td>' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '</td></tr>' +
+        '<tr><th>Product</th><td>' + Helpers.escapeHtml(line.productName || '') + '</td></tr>' +
+        '<tr><th>Quantity</th><td>' + (line.quantity || 0) + '</td></tr>' +
+        '<tr><th>Return amount</th><td>' + Helpers.formatCurrency(returnAmount) + '</td></tr>' +
+        '<tr><th>Reason</th><td>' + Helpers.escapeHtml(reasonCode || '') + '</td></tr>' +
+        '</table>' +
+        '</div>';
+      $('#return-step-2').html(step2Html).show();
+      $('#return-step-1').hide();
+      $('#return-step-3').hide();
+      $('#return-continue-btn').hide();
+      $('#return-confirm-btn').show();
+      $('#return-close-btn').hide();
+    }
+
+    function showStep3Informational(rmaNumber, selectedLine, orderId, shipTo) {
+      var line = selectedLine;
+      var returnAmount = line.totalPrice || 0;
+      var voucherPaid = line.voucherAmountPaid || 0;
+      var refundToVoucher = Math.min(returnAmount, voucherPaid);
+      var refundToCC = Math.round((returnAmount - refundToVoucher) * 100) / 100;
+      var voucherName = line.eligibleVoucherName || line.voucherUsed || '';
+      var breakdownHtml = '<div style="font-size: 12px; margin-top: 12px; padding: 12px; background-color: #f9fafb; border-radius: 4px;">' +
+        '<div style="font-weight: 600; margin-bottom: 8px;">Refund breakdown (freight is never refunded)</div>' +
+        '<div style="margin-bottom: 6px;"><strong>Credited to voucher (available now):</strong> ' + Helpers.formatCurrency(refundToVoucher) +
+        (voucherName ? ' &mdash; ' + Helpers.escapeHtml(voucherName) : '') + '</div>' +
+        '<div style="margin-bottom: 6px;"><strong>To credit card (once received in warehouse):</strong> ' + Helpers.formatCurrency(refundToCC) + '</div>' +
+        '<div style="font-size: 11px; color: #6b7280; margin-top: 8px;">Voucher funds will credit back to the voucher used at order placement and will be available right away. Freight is never refunded.</div>' +
+        '</div>';
+      var step3Html = '<div style="margin-bottom: 12px;">' +
+        '<p style="color: #059669; font-weight: 600; margin-bottom: 12px;">Return initiated successfully.</p>' +
+        '<div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">RMA: ' + Helpers.escapeHtml(rmaNumber) + '</div>' +
+        '<table class="table table-condensed table-bordered" style="font-size: 12px;">' +
+        '<tr><th>Product</th><td>' + Helpers.escapeHtml(line.productName || '') + '</td></tr>' +
+        '<tr><th>Quantity</th><td>' + (line.quantity || 0) + '</td></tr>' +
+        '<tr><th>Return amount</th><td>' + Helpers.formatCurrency(returnAmount) + '</td></tr>' +
+        '</table>' +
+        breakdownHtml +
+        '<div style="margin-top: 16px;">' +
+        '<button type="button" class="btn btn-primary return-info-print-label-btn" data-order-id="' + Helpers.escapeHtml(orderId || '') + '" data-rma="' + Helpers.escapeHtml(rmaNumber || '') + '" data-product="' + Helpers.escapeHtml(line.productName || '') + '" data-sku="' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '" data-qty="' + (line.quantity || 0) + '" data-ship-to="' + Helpers.escapeHtml(shipTo || '') + '">' +
+        '<span class="glyphicon glyphicon-print"></span> Generate Shipping Label</button>' +
+        '</div>' +
+        '</div>';
+      $('#return-step-3').html(step3Html).show();
+      $('#return-step-1').hide();
+      $('#return-step-2').hide();
+      $('#return-continue-btn').hide();
+      $('#return-confirm-btn').hide();
+      $('#return-close-btn').show();
+      $('#return-cancel-btn').hide();
+    }
+
+    $(document).off('click', '#return-continue-btn').on('click', '#return-continue-btn', function() {
+      var checked = $('.return-line-radio:checked');
+      if (!checked.length) {
+        Helpers.showAlert('Please select one line item to return.', 'warning');
+        return;
+      }
+      var reasonCode = $('#return-reason-code').val() || '';
+      if (!reasonCode.trim()) {
+        Helpers.showAlert('Please select a reason for return.', 'warning');
+        return;
+      }
+      var lineIdx = parseInt(checked.val(), 10);
+      var lines = $('#return-modal').data('returnable-lines') || [];
+      var selectedLine = lines[lineIdx];
+      if (!selectedLine) {
+        Helpers.showAlert('Invalid selection.', 'warning');
+        return;
+      }
+      $('#return-modal').data('selected-line', selectedLine);
+      $('#return-modal').data('reason-code', reasonCode);
+      showStep2(selectedLine, reasonCode);
+    });
+
+    $(document).off('click', '#return-confirm-btn').on('click', '#return-confirm-btn', function() {
+      var selectedLine = $('#return-modal').data('selected-line');
+      var reasonCode = $('#return-modal').data('reason-code');
+      var storedOrderId = $('#return-modal').data('order-id');
+      var rmaNumber = self.generateRMA();
+
+      var actualTransaction = allTransactions.find(function(t) {
+        return t.orderId === storedOrderId &&
+          t.surewerxPartNumber === selectedLine.surewerxPartNumber &&
+          t.quantity === selectedLine.quantity &&
+          t.totalPrice === selectedLine.totalPrice;
+      });
+
+      if (actualTransaction) {
+        actualTransaction.lineStatus = 'Return Initiated';
+        actualTransaction.refundedAmount = selectedLine.totalPrice || 0;
+        actualTransaction.refundedQuantity = selectedLine.quantity || 0;
+        actualTransaction.rmaNumber = rmaNumber;
+        actualTransaction.returnReasonCode = reasonCode;
+        var effectiveVoucher = (actualTransaction.voucherAmountPaid || 0) - (actualTransaction.refundedAmount || 0);
+        if (effectiveVoucher < 0) effectiveVoucher = 0;
+        actualTransaction.remainingBalance = actualTransaction.totalPrice - effectiveVoucher;
+      }
+
+      var userEmail = AppState.currentUser && AppState.currentUser.email ? AppState.currentUser.email : 'user@example.com';
+      if (typeof console !== 'undefined' && console.log) {
+        console.log('Return confirmation email would be sent to: ' + userEmail, {
+          rma: rmaNumber,
+          orderId: storedOrderId,
+          product: selectedLine.productName,
+          quantity: selectedLine.quantity,
+          returnAmount: selectedLine.totalPrice,
+          reasonCode: reasonCode
+        });
+      }
+
+      var firstItem = orderTransactions[0];
+      var shipTo = (firstItem.employeeName || '') + (firstItem.partnerName || firstItem.customerName ? ', ' + (firstItem.partnerName || firstItem.customerName) : '');
+      showStep3Informational(rmaNumber, selectedLine, storedOrderId, shipTo);
+    });
+
+    $(document).off('click', '#return-close-btn').on('click', '#return-close-btn', function() {
+      var storedOrderId = $('#return-modal').data('order-id');
+      $('#return-modal').modal('hide');
+      Helpers.showAlert('Return initiated. A confirmation email with return details has been sent.', 'success');
+      if (self.hasSearched) {
+        $('.panel-default').last().replaceWith(self.renderTransactions());
+        setTimeout(function() {
+          var newOrderElement = $('.transaction-order').filter(function() {
+            var orderHeader = $(this).find('.order-header');
+            return orderHeader.length > 0 && orderHeader.text().indexOf('Order #' + storedOrderId) !== -1;
+          }).first();
+          if (newOrderElement.length > 0) {
+            var newScrollPosition = newOrderElement.offset().top - (orderElementOffset || 0);
+            newScrollPosition = Math.max(0, newScrollPosition);
+            $('html, body').animate({ scrollTop: newScrollPosition }, 300);
+          } else {
+            $('html, body').animate({ scrollTop: scrollPosition }, 300);
+          }
+        }, 150);
+      }
+    });
+
+    $(document).off('click', '#return-cancel-btn').on('click', '#return-cancel-btn', function() {
+      $('#return-modal').modal('hide');
+    });
+
+    $('#return-modal').on('hidden.bs.modal', function() {
+      $(this).remove();
+    });
   },
   
   exportToCSV: function() {

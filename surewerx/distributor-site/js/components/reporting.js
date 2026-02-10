@@ -125,13 +125,39 @@ var ReportingComponent = {
       self.clearFilters();
     });
     
-    // Refund order (SureWerx only)
-    $(document).on('click', '.refund-order-btn', function(e) {
+    // Returns (available to all user types)
+    $(document).on('click', '.return-order-btn', function(e) {
       e.stopPropagation();
       var orderId = $(this).data('order-id');
-      self.handleRefund(orderId);
+      self.handleReturn(orderId);
     });
-    
+
+    // Generate shipping label from returns modal (Step 3)
+    $(document).on('click', '.return-info-print-label-btn', function(e) {
+      e.stopPropagation();
+      var orderId = $(this).data('order-id');
+      var rma = $(this).data('rma');
+      var product = $(this).data('product');
+      var sku = $(this).data('sku');
+      var qty = $(this).data('qty');
+      var shipTo = $(this).data('ship-to');
+      var labelWin = window.open('', 'ShippingLabel', 'width=600,height=700,scrollbars=yes');
+      if (labelWin) {
+        var labelHtml = '<!DOCTYPE html><html><head><title>Return Shipping Label - ' + (rma || '') + '</title></head><body style="font-family: sans-serif; padding: 20px;">' +
+          '<h2>Return Shipping Label</h2>' +
+          '<p><strong>RMA:</strong> ' + (rma || '') + '</p>' +
+          '<p><strong>Order:</strong> ' + (orderId || '') + '</p>' +
+          '<p><strong>Product:</strong> ' + (product || '') + ' (' + (sku || '') + ')</p>' +
+          '<p><strong>Qty:</strong> ' + (qty || '') + '</p>' +
+          '<p><strong>Ship to:</strong> ' + (shipTo || '') + '</p>' +
+          '<p style="margin-top: 30px; font-size: 12px; color: #6b7280;">Print this page to use as your return shipping label, or use the carrier portal to generate an official label.</p>' +
+          '<p><button onclick="window.print()">Print Label</button></p>' +
+          '</body></html>';
+        labelWin.document.write(labelHtml);
+        labelWin.document.close();
+      }
+    });
+
     // Status filter dropdown toggle
     $(document).on('click', '#status-filter-display', function(e) {
       e.stopPropagation();
@@ -209,7 +235,7 @@ var ReportingComponent = {
   updateStatusFilterDropdown: function() {
     var self = this;
     var dropdown = $('#status-filter-dropdown');
-    dropdown.html(['Shipped', 'Processing', 'Refunded', 'Cancelled'].map(function(status) {
+    dropdown.html(['Shipped', 'Processing', 'Return Initiated', 'Refunded', 'Cancelled'].map(function(status) {
       var isSelected = self.filters.status.indexOf(status) !== -1;
       return '<div class="status-filter-option" data-status="' + Helpers.escapeHtml(status) + '" style="padding: 8px 12px; cursor: pointer; ' + (isSelected ? 'background-color: #e3f2fd;' : '') + '">' +
              (isSelected ? '<span style="color: #1976d2;">✓</span> ' : '') +
@@ -533,7 +559,7 @@ var ReportingComponent = {
       }).join('') +
       '</div>' +
       '<div id="status-filter-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ccc; border-top: none; z-index: 1000; max-height: 200px; overflow-y: auto; margin-top: -1px;">' +
-      ['Shipped', 'Processing', 'Refunded', 'Cancelled'].map(function(status) {
+      ['Shipped', 'Processing', 'Return Initiated', 'Refunded', 'Cancelled'].map(function(status) {
         var isSelected = self.filters.status.indexOf(status) !== -1;
         return '<div class="status-filter-option" data-status="' + Helpers.escapeHtml(status) + '" style="padding: 8px 12px; cursor: pointer; ' + (isSelected ? 'background-color: #e3f2fd;' : '') + '">' +
                (isSelected ? '<span style="color: #1976d2;">✓</span> ' : '') +
@@ -616,7 +642,7 @@ var ReportingComponent = {
     var ordersHtml = Object.keys(orderGroups).map(function(orderId) {
       var orderItems = orderGroups[orderId];
       var firstItem = orderItems[0];
-      // Calculate order total only from items with Shipped or Processing status
+      // Calculate order total only from items with Shipped or Processing status (exclude Return Initiated)
       // Do not subtract refunded amounts - totals remain at original values
       var orderTotal = orderItems.reduce(function(sum, item) {
         if (item.lineStatus === 'Shipped' || item.lineStatus === 'Processing') {
@@ -624,6 +650,7 @@ var ReportingComponent = {
         }
         return sum;
       }, 0);
+      var hasReturnableLine = orderItems.some(function(item) { return item.lineStatus === 'Shipped'; });
       var shippingCost = firstItem.shippingCost || 0;
       var grandTotal = orderTotal + shippingCost;
       
@@ -1016,10 +1043,10 @@ var ReportingComponent = {
         '<div style="font-size: 18px; font-weight: 600; color: #111827;">' + Helpers.formatCurrency(orderTotal) + '</div>' +
         (shippingCost > 0 ? '<div style="font-size: 11px; color: #6b7280; margin-top: 2px;">+ Shipping: ' + Helpers.formatCurrency(shippingCost) + '</div>' : '') +
         (shippingCost > 0 ? '<div style="font-size: 13px; font-weight: 600; color: #059669; margin-top: 4px; padding-top: 4px; border-top: 1px solid #d1d5db;">Total: ' + Helpers.formatCurrency(grandTotal) + '</div>' : '') +
-        // Order-level refund button for SureWerx users only (if any voucher-applied lines exist and not all are fully refunded)
-        (AppState.currentUser && AppState.currentUser.role === 'SureWerx' && hasVoucherItems && !allVoucherItemsRefunded ?
+        // Order-level Returns button (available to all user types when there is a Shipped line to return)
+        (hasReturnableLine ?
           '<div style="margin-top: 8px;">' +
-          '<button class="btn btn-sm btn-warning refund-order-btn" data-order-id="' + Helpers.escapeHtml(orderId) + '" style="font-size: 11px; padding: 4px 8px;">Refund</button>' +
+          '<button class="btn btn-sm btn-warning return-order-btn" data-order-id="' + Helpers.escapeHtml(orderId) + '" style="font-size: 11px; padding: 4px 8px;">Returns</button>' +
           '</div>' : '') +
         '</div>' +
         '</div>' +
@@ -1058,8 +1085,10 @@ var ReportingComponent = {
             '</div>' +
             (item.refundedAmount && item.refundedAmount > 0 ?
               '<div style="display: inline-flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
-              '<span><strong style="color: #dc2626;">Refunded:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' +
+              '<span><strong style="color: #dc2626;">Returned:</strong> ' + Helpers.formatCurrency(item.refundedAmount) + '</span>' +
               '</div>' : '') +
+            (item.lineStatus === 'Return Initiated' && item.rmaNumber ?
+              '<div style="margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;"><span style="font-size: 11px; color: #6b7280;"><strong>RMA:</strong> ' + Helpers.escapeHtml(item.rmaNumber) + '</span></div>' : '') +
             // Shipping info at line item level
             ((item.shippingCarrier || item.shippingMethod || item.trackingNumber || (shippingCost > 0 && orderItems.indexOf(item) === 0)) ?
               '<div style="display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #6b7280; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f3f4f6;">' +
@@ -1341,392 +1370,258 @@ var ReportingComponent = {
     Helpers.showAlert('Filters cleared', 'success');
   },
   
-  handleRefund: function(orderId) {
+  generateRMA: function() {
+    var now = new Date();
+    var dateStr = now.getFullYear() + '' + String(now.getMonth() + 1).padStart(2, '0') + '' + String(now.getDate()).padStart(2, '0');
+    var seq = String(Math.floor(1000 + Math.random() * 9000));
+    return 'RMA-' + dateStr + '-' + seq;
+  },
+
+  handleReturn: function(orderId) {
     var self = this;
-    // Get ALL transactions from AppState (not filtered) to get fresh refund data
     var allTransactions = AppState.transactions || [];
     var orderTransactions = allTransactions.filter(function(t) { return t.orderId === orderId; });
-    
+
     if (!orderTransactions || orderTransactions.length === 0) {
       Helpers.showAlert('Transaction not found', 'danger');
       return;
     }
-    
-    // Re-enrich transactions to ensure we have latest data
+
     if (AppState.enrichTransactions) {
       AppState.enrichTransactions();
-      // Re-fetch after enrichment
       orderTransactions = AppState.transactions.filter(function(t) { return t.orderId === orderId; });
     }
-    
-    // Find all voucher-applied line items
-    // Check for voucherAmountPaid OR voucherUsed OR if order has vouchers
-    var voucherLines = orderTransactions.filter(function(t) {
-      return (t.voucherAmountPaid && t.voucherAmountPaid > 0) || t.voucherUsed || t.eligibleVoucherName;
-    });
-    
-    if (!voucherLines || voucherLines.length === 0) {
-      Helpers.showAlert('No voucher-applied line items available to refund for this order.', 'warning');
+
+    // Returnable = Shipped lines only (one item at a time, full quantity)
+    var returnableLines = orderTransactions.filter(function(t) { return t.lineStatus === 'Shipped'; });
+
+    if (!returnableLines || returnableLines.length === 0) {
+      Helpers.showAlert('No shipped line items available to return for this order.', 'warning');
       return;
     }
-    
-    // Store scroll position and element reference before showing modal
+
     var scrollPosition = $(window).scrollTop();
-    var refundButton = $('.refund-order-btn[data-order-id="' + orderId + '"]');
-    var orderElement = refundButton.closest('.transaction-order');
+    var returnButton = $('.return-order-btn[data-order-id="' + orderId + '"]');
+    var orderElement = returnButton.closest('.transaction-order');
     var orderElementOffset = orderElement.length > 0 ? orderElement.offset().top - $(window).scrollTop() : null;
-    
-    // Build refund modal with flat list of line items
-    var modalBodyHtml = '<p style="margin-bottom: 12px;">Select line items and quantities to refund. You can refund multiple items at once.</p>';
-    
+
+    var returnReasonCodes = [
+      'Size did not meet expectations',
+      'Item was uncomfortable to wear',
+      'Style did not meet expectations',
+      'Item arrived damaged',
+      'Item appears to be defective',
+      'Incorrect item was received',
+      'Item was missing from shipment',
+      'Other'
+    ];
+
+    // Step 1: Select single line + reason code
+    var modalBodyHtml = '<p style="margin-bottom: 12px;">Select <strong>one</strong> line item to return. You must return the <strong>full quantity</strong> for that line.</p>';
     modalBodyHtml += '<table class="table table-condensed table-bordered" style="font-size: 11px; margin-bottom: 12px;">' +
-      '<thead>' +
-      '<tr>' +
-      '<th style="width: 30px; text-align: center;">Select</th>' +
-      '<th>SKU</th>' +
-      '<th>Product</th>' +
+      '<thead><tr>' +
+      '<th style="width: 40px; text-align: center;">Select</th>' +
+      '<th>SKU</th><th>Product</th>' +
       '<th style="width: 80px; text-align: right;">Price</th>' +
       '<th style="width: 60px; text-align: right;">Qty</th>' +
-      '<th style="width: 100px; text-align: right;">Refunded</th>' +
-      '<th style="width: 100px; text-align: right;">Available</th>' +
-      '<th style="width: 80px; text-align: center;">Qty to Refund</th>' +
-      '</tr>' +
-      '</thead>' +
-      '<tbody>';
-    
-    voucherLines.forEach(function(line, lineIdx) {
+      '</tr></thead><tbody>';
+
+    returnableLines.forEach(function(line, lineIdx) {
       var totalQty = line.quantity || 0;
-      var alreadyRefunded = line.refundedAmount || 0;
-      var unitPrice = totalQty > 0 ? line.totalPrice / totalQty : 0;
-      // Calculate how many units have already been refunded
-      var alreadyRefundedQty = unitPrice > 0 ? Math.round((alreadyRefunded / unitPrice) * 100) / 100 : 0;
-      var remainingQty = totalQty - alreadyRefundedQty;
-      var remainingAmount = line.totalPrice - alreadyRefunded;
-      
-      // Disable if fully refunded
-      var isFullyRefunded = remainingQty <= 0 || remainingAmount <= 0;
-      var rowStyle = isFullyRefunded ? 'opacity: 0.5; background-color: #f9fafb;' : '';
-      var disabledAttr = isFullyRefunded ? 'disabled' : '';
-      var maxRefundQty = Math.floor(remainingQty);
-      
-      modalBodyHtml += '<tr style="' + rowStyle + '">' +
+      modalBodyHtml += '<tr>' +
         '<td style="text-align: center; vertical-align: middle;">' +
-        '<input type="checkbox" class="refund-line-checkbox" data-line-idx="' + lineIdx + '" ' + disabledAttr + '>' +
+        '<input type="radio" name="return-line-radio" class="return-line-radio" value="' + lineIdx + '">' +
         '</td>' +
         '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '</td>' +
         '<td style="vertical-align: middle;">' + Helpers.escapeHtml(line.productName || '') + '</td>' +
         '<td style="text-align: right; vertical-align: middle;">' + Helpers.formatCurrency(line.totalPrice || 0) + '</td>' +
         '<td style="text-align: right; vertical-align: middle;">' + totalQty + '</td>' +
-        '<td style="text-align: right; vertical-align: middle; color: ' + (alreadyRefunded > 0 ? '#dc2626' : '#6b7280') + ';">' + 
-          (alreadyRefunded > 0 ? Helpers.formatCurrency(alreadyRefunded) : '-') + 
-        '</td>' +
-        '<td style="text-align: right; vertical-align: middle; color: ' + (remainingAmount > 0 ? '#059669' : '#6b7280') + '; font-weight: ' + (remainingAmount > 0 ? '600' : '400') + ';">' + 
-          (remainingAmount > 0 ? Helpers.formatCurrency(remainingAmount) : '-') + 
-        '</td>' +
-        '<td style="text-align: center; vertical-align: middle;">' +
-        '<input type="number" class="form-control input-sm refund-qty-input" data-line-idx="' + lineIdx + '" min="1" max="' + maxRefundQty + '" value="1" style="width: 60px; padding: 2px 4px; font-size: 11px; height: 24px;" ' + disabledAttr + '>' +
-        '</td>' +
         '</tr>';
     });
-    
     modalBodyHtml += '</tbody></table>';
-    
-    modalBodyHtml += '<p style="font-size: 11px; color: #6b7280; margin-top: 12px;">Note: If the original voucher is no longer active, the employee will not be able to use this refunded voucher amount.</p>';
-    
-    var modalHtml = '<div class="modal fade" id="refund-quantity-modal" tabindex="-1">' +
-      '<div class="modal-dialog" style="max-width: 900px;">' +
+    modalBodyHtml += '<div style="margin-top: 16px;"><label class="control-label" style="display: block; margin-bottom: 6px; font-weight: 600;">Reason for return <span style="color: #dc2626;">*</span></label>';
+    modalBodyHtml += '<select id="return-reason-code" class="form-control" style="max-width: 400px;">' +
+      '<option value="">Select a reason...</option>';
+    returnReasonCodes.forEach(function(code) {
+      modalBodyHtml += '<option value="' + Helpers.escapeHtml(code) + '">' + Helpers.escapeHtml(code) + '</option>';
+    });
+    modalBodyHtml += '</select></div>';
+
+    var modalHtml = '<div class="modal fade" id="return-modal" tabindex="-1">' +
+      '<div class="modal-dialog" style="max-width: 700px;">' +
       '<div class="modal-content">' +
       '<div class="modal-header">' +
       '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-      '<h4 class="modal-title">' +
-      '<span class="glyphicon glyphicon-warning-sign text-warning"></span> Refund Order</h4>' +
+      '<h4 class="modal-title"><span class="glyphicon glyphicon-retweet text-warning"></span> Return Item</h4>' +
       '</div>' +
-      '<div class="modal-body" style="max-height: 600px; overflow-y: auto;">' +
-      modalBodyHtml +
+      '<div class="modal-body" style="max-height: 500px; overflow-y: auto;">' +
+      '<div id="return-step-1">' + modalBodyHtml + '</div>' +
+      '<div id="return-step-2" style="display: none;"></div>' +
+      '<div id="return-step-3" style="display: none;"></div>' +
       '</div>' +
       '<div class="modal-footer">' +
-      '<button type="button" class="btn btn-default" id="refund-quantity-cancel-btn">Cancel</button>' +
-      '<button type="button" class="btn btn-warning" id="refund-quantity-confirm-btn">Confirm Refund</button>' +
+      '<button type="button" class="btn btn-default" id="return-cancel-btn">Cancel</button>' +
+      '<button type="button" class="btn btn-primary" id="return-continue-btn">Continue</button>' +
+      '<button type="button" class="btn btn-warning" id="return-confirm-btn" style="display: none;">Confirm Return</button>' +
+      '<button type="button" class="btn btn-default" id="return-close-btn" style="display: none;">Close</button>' +
       '</div>' +
-      '</div>' +
-      '</div>' +
-      '</div>';
-    
-    // Remove any existing modal first
-    $('#refund-quantity-modal').remove();
-    
+      '</div></div></div>';
+
+    $('#return-modal').remove();
     $('body').append(modalHtml);
-    $('#refund-quantity-modal').modal('show');
-    
-    // Store voucher lines in modal data for use in confirm handler
-    $('#refund-quantity-modal').data('voucher-lines', voucherLines);
-    $('#refund-quantity-modal').data('order-id', orderId);
-    
-    // Handle confirm
-    $(document).off('click', '#refund-quantity-confirm-btn').on('click', '#refund-quantity-confirm-btn', function() {
-      // Get all selected checkboxes
-      var selectedCheckboxes = $('.refund-line-checkbox:checked');
-      if (!selectedCheckboxes.length) {
-        Helpers.showAlert('Please select at least one line item to refund.', 'warning');
-        return;
-      }
-      
-      // Get fresh data from AppState transactions (not stored groups which may be stale)
-      var allTransactions = AppState.transactions || [];
-      var orderTransactions = allTransactions.filter(function(t) { return t.orderId === orderId; });
-      
-      // Re-enrich to get latest data
-      if (AppState.enrichTransactions) {
-        AppState.enrichTransactions();
-        orderTransactions = AppState.transactions.filter(function(t) { return t.orderId === orderId; });
-      }
-      
-      // Get refundable voucher lines from modal data
-      var storedVoucherLines = $('#refund-quantity-modal').data('voucher-lines') || [];
-      
-      // Validate and collect refund items
-      var refundItems = [];
-      var hasError = false;
-      var errorMessage = '';
-      
-      selectedCheckboxes.each(function() {
-        var lineIdx = parseInt($(this).data('line-idx'), 10);
-        var qtyInput = $('.refund-qty-input[data-line-idx="' + lineIdx + '"]');
-        var qtyToRefund = parseInt(qtyInput.val(), 10);
-        
-        if (isNaN(lineIdx) || !storedVoucherLines[lineIdx]) {
-          hasError = true;
-          errorMessage = 'Invalid line selection.';
-          return false;
-        }
-        
-        var line = storedVoucherLines[lineIdx];
-        var totalQty = line.quantity || 0;
-        var alreadyRefunded = line.refundedAmount || 0;
-        var unitPrice = totalQty > 0 ? line.totalPrice / totalQty : 0;
-        var alreadyRefundedQty = unitPrice > 0 ? Math.round((alreadyRefunded / unitPrice) * 100) / 100 : 0;
-        var remainingQty = totalQty - alreadyRefundedQty;
-        var maxRefundQty = Math.floor(remainingQty);
-        
-        if (isNaN(qtyToRefund) || qtyToRefund <= 0) {
-          hasError = true;
-          errorMessage = 'Please enter a valid quantity for ' + (line.productName || line.surewerxPartNumber) + '.';
-          return false;
-        }
-        
-        if (qtyToRefund > maxRefundQty) {
-          hasError = true;
-          errorMessage = 'Quantity to refund for ' + (line.productName || line.surewerxPartNumber) + ' cannot exceed ' + maxRefundQty + '.';
-          return false;
-        }
-        
-        var refundAmount = Math.round(unitPrice * qtyToRefund * 100) / 100;
-        if (refundAmount <= 0) {
-          hasError = true;
-          errorMessage = 'Calculated refund amount is zero for ' + (line.productName || line.surewerxPartNumber) + '.';
-          return false;
-        }
-        
-        refundItems.push({
-          line: line,
-          qtyToRefund: qtyToRefund,
-          refundAmount: refundAmount
-        });
-      });
-      
-      if (hasError) {
-        Helpers.showAlert(errorMessage, 'warning');
-        return;
-      }
-      
-      if (refundItems.length === 0) {
-        Helpers.showAlert('No valid items to refund.', 'warning');
-        return;
-      }
-      
-      // Calculate total refund amount
-      var totalRefundAmount = refundItems.reduce(function(sum, item) {
-        return sum + item.refundAmount;
-      }, 0);
-      
-      // Build confirmation modal
-      var confirmBodyHtml = '<div style="margin-bottom: 20px;">' +
-        '<div style="padding: 12px; background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 4px; margin-bottom: 16px;">' +
-        '<div style="display: flex; align-items: flex-start; gap: 10px;">' +
-        '<span class="glyphicon glyphicon-warning-sign" style="color: #f59e0b; font-size: 20px; margin-top: 2px;"></span>' +
-        '<div style="flex: 1;">' +
-        '<div style="font-weight: 600; color: #92400e; margin-bottom: 6px;">Critical Warning</div>' +
-        '<ul style="margin: 0; padding-left: 18px; color: #92400e; font-size: 13px;">' +
-        '<li style="margin-bottom: 4px;"><strong>This action cannot be undone.</strong></li>' +
-        '<li style="margin-bottom: 4px;">Voucher amounts (if applicable) will be <strong>immediately available</strong> to the employee.</li>' +
-        '<li>Credit card refunds will be processed according to payment provider policies.</li>' +
-        '</ul>' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '<div style="font-size: 14px; font-weight: 600; margin-bottom: 12px;">Refund Summary:</div>' +
-        '<table class="table table-condensed table-bordered" style="font-size: 12px; margin-bottom: 12px;">' +
-        '<thead>' +
-        '<tr>' +
-        '<th>SKU</th>' +
-        '<th>Product</th>' +
-        '<th style="text-align: center;">Qty</th>' +
-        '<th style="text-align: right;">Amount</th>' +
-        '</tr>' +
-        '</thead>' +
-        '<tbody>';
-      
-      refundItems.forEach(function(item) {
-        confirmBodyHtml += '<tr>' +
-          '<td>' + Helpers.escapeHtml(item.line.surewerxPartNumber || '') + '</td>' +
-          '<td>' + Helpers.escapeHtml(item.line.productName || '') + '</td>' +
-          '<td style="text-align: center;">' + item.qtyToRefund + '</td>' +
-          '<td style="text-align: right;">' + Helpers.formatCurrency(item.refundAmount) + '</td>' +
-          '</tr>';
-      });
-      
-      confirmBodyHtml += '</tbody>' +
-        '<tfoot>' +
-        '<tr style="font-weight: 600; background-color: #f9fafb;">' +
-        '<td colspan="3" style="text-align: right;">Total Refund Amount:</td>' +
-        '<td style="text-align: right;">' + Helpers.formatCurrency(totalRefundAmount) + '</td>' +
-        '</tr>' +
-        '</tfoot>' +
+    $('#return-modal').data('returnable-lines', returnableLines);
+    $('#return-modal').data('order-id', orderId);
+    $('#return-modal').modal('show');
+
+    function showStep2(selectedLine, reasonCode) {
+      var line = selectedLine;
+      var returnAmount = line.totalPrice || 0;
+      var step2Html = '<div style="margin-bottom: 12px;">' +
+        '<p style="font-weight: 600; margin-bottom: 10px;">Please confirm your return.</p>' +
+        '<table class="table table-condensed table-bordered" style="font-size: 12px;">' +
+        '<tr><th>SKU</th><td>' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '</td></tr>' +
+        '<tr><th>Product</th><td>' + Helpers.escapeHtml(line.productName || '') + '</td></tr>' +
+        '<tr><th>Quantity</th><td>' + (line.quantity || 0) + '</td></tr>' +
+        '<tr><th>Return amount</th><td>' + Helpers.formatCurrency(returnAmount) + '</td></tr>' +
+        '<tr><th>Reason</th><td>' + Helpers.escapeHtml(reasonCode || '') + '</td></tr>' +
         '</table>' +
-        '<div style="font-size: 13px; color: #6b7280; margin-top: 12px;">Please confirm that you want to process this refund.</div>' +
         '</div>';
-      
-      var confirmModalHtml = '<div class="modal fade" id="refund-confirmation-modal" tabindex="-1">' +
-        '<div class="modal-dialog">' +
-        '<div class="modal-content">' +
-        '<div class="modal-header" style="background-color: #fef3c7; border-bottom: 2px solid #f59e0b;">' +
-        '<button type="button" class="close" data-dismiss="modal">&times;</button>' +
-        '<h4 class="modal-title">' +
-        '<span class="glyphicon glyphicon-warning-sign" style="color: #f59e0b;"></span> Confirm Refund</h4>' +
-        '</div>' +
-        '<div class="modal-body">' +
-        confirmBodyHtml +
-        '</div>' +
-        '<div class="modal-footer">' +
-        '<button type="button" class="btn btn-default" id="refund-final-cancel-btn">Cancel</button>' +
-        '<button type="button" class="btn btn-danger" id="refund-final-confirm-btn">Confirm Refund</button>' +
-        '</div>' +
-        '</div>' +
+      $('#return-step-2').html(step2Html).show();
+      $('#return-step-1').hide();
+      $('#return-step-3').hide();
+      $('#return-continue-btn').hide();
+      $('#return-confirm-btn').show();
+      $('#return-close-btn').hide();
+    }
+
+    function showStep3Informational(rmaNumber, selectedLine, orderId, shipTo) {
+      var line = selectedLine;
+      var returnAmount = line.totalPrice || 0;
+      var voucherPaid = line.voucherAmountPaid || 0;
+      var refundToVoucher = Math.min(returnAmount, voucherPaid);
+      var refundToCC = Math.round((returnAmount - refundToVoucher) * 100) / 100;
+      var voucherName = line.eligibleVoucherName || line.voucherUsed || '';
+      var breakdownHtml = '<div style="font-size: 12px; margin-top: 12px; padding: 12px; background-color: #f9fafb; border-radius: 4px;">' +
+        '<div style="font-weight: 600; margin-bottom: 8px;">Refund breakdown (freight is never refunded)</div>' +
+        '<div style="margin-bottom: 6px;"><strong>Credited to voucher (available now):</strong> ' + Helpers.formatCurrency(refundToVoucher) +
+        (voucherName ? ' &mdash; ' + Helpers.escapeHtml(voucherName) : '') + '</div>' +
+        '<div style="margin-bottom: 6px;"><strong>To credit card (once received in warehouse):</strong> ' + Helpers.formatCurrency(refundToCC) + '</div>' +
+        '<div style="font-size: 11px; color: #6b7280; margin-top: 8px;">Voucher funds will credit back to the voucher used at order placement and will be available right away. Freight is never refunded.</div>' +
+        '</div>';
+      var step3Html = '<div style="margin-bottom: 12px;">' +
+        '<p style="color: #059669; font-weight: 600; margin-bottom: 12px;">Return initiated successfully.</p>' +
+        '<div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">RMA: ' + Helpers.escapeHtml(rmaNumber) + '</div>' +
+        '<table class="table table-condensed table-bordered" style="font-size: 12px;">' +
+        '<tr><th>Product</th><td>' + Helpers.escapeHtml(line.productName || '') + '</td></tr>' +
+        '<tr><th>Quantity</th><td>' + (line.quantity || 0) + '</td></tr>' +
+        '<tr><th>Return amount</th><td>' + Helpers.formatCurrency(returnAmount) + '</td></tr>' +
+        '</table>' +
+        breakdownHtml +
+        '<div style="margin-top: 16px;">' +
+        '<button type="button" class="btn btn-primary return-info-print-label-btn" data-order-id="' + Helpers.escapeHtml(orderId || '') + '" data-rma="' + Helpers.escapeHtml(rmaNumber || '') + '" data-product="' + Helpers.escapeHtml(line.productName || '') + '" data-sku="' + Helpers.escapeHtml(line.surewerxPartNumber || '') + '" data-qty="' + (line.quantity || 0) + '" data-ship-to="' + Helpers.escapeHtml(shipTo || '') + '">' +
+        '<span class="glyphicon glyphicon-print"></span> Generate Shipping Label</button>' +
         '</div>' +
         '</div>';
-      
-      // Remove existing confirmation modal if present
-      $('#refund-confirmation-modal').remove();
-      
-      // Append and show confirmation modal
-      $('body').append(confirmModalHtml);
-      $('#refund-confirmation-modal').modal('show');
-      
-      // Store refund items for final confirmation
-      $('#refund-confirmation-modal').data('refund-items', refundItems);
-      $('#refund-confirmation-modal').data('order-id', orderId);
-      
-      // Handle final confirmation
-      $(document).off('click', '#refund-final-confirm-btn').on('click', '#refund-final-confirm-btn', function() {
-        var storedRefundItems = $('#refund-confirmation-modal').data('refund-items') || [];
-        var storedOrderId = $('#refund-confirmation-modal').data('order-id');
-        
-        // Process all refunds
-        var refundCount = 0;
-        storedRefundItems.forEach(function(item) {
-          var line = item.line;
-          var refundAmountForQty = item.refundAmount;
-          var qtyToRefund = item.qtyToRefund;
-          
-          // Find the actual transaction in AppState.transactions (not filtered) to update it
-          var actualTransaction = allTransactions.find(function(t) {
-            return t.orderId === storedOrderId && 
-                   t.surewerxPartNumber === line.surewerxPartNumber &&
-                   t.quantity === line.quantity &&
-                   t.totalPrice === line.totalPrice;
-          });
-          
-          if (actualTransaction) {
-            // Process refund - accumulate refunded amount and quantity
-            if (!actualTransaction.refundedAmount) {
-              actualTransaction.refundedAmount = 0;
-            }
-            if (!actualTransaction.refundedQuantity) {
-              actualTransaction.refundedQuantity = 0;
-            }
-            actualTransaction.refundedAmount += refundAmountForQty;
-            actualTransaction.refundedQuantity += qtyToRefund;
-            // Cap at line total (cannot refund more than the line item cost)
-            if (actualTransaction.refundedAmount > actualTransaction.totalPrice) {
-              actualTransaction.refundedAmount = actualTransaction.totalPrice;
-            }
-            // Cap at original quantity
-            if (actualTransaction.refundedQuantity > actualTransaction.quantity) {
-              actualTransaction.refundedQuantity = actualTransaction.quantity;
-            }
-            
-            // Calculate remaining balance on item
-            var effectiveVoucher = (actualTransaction.voucherAmountPaid || 0) - (actualTransaction.refundedAmount || 0);
-            if (effectiveVoucher < 0) effectiveVoucher = 0;
-            actualTransaction.remainingBalance = actualTransaction.totalPrice - effectiveVoucher;
-            
-            refundCount++;
-          }
+      $('#return-step-3').html(step3Html).show();
+      $('#return-step-1').hide();
+      $('#return-step-2').hide();
+      $('#return-continue-btn').hide();
+      $('#return-confirm-btn').hide();
+      $('#return-close-btn').show();
+      $('#return-cancel-btn').hide();
+    }
+
+    $(document).off('click', '#return-continue-btn').on('click', '#return-continue-btn', function() {
+      var checked = $('.return-line-radio:checked');
+      if (!checked.length) {
+        Helpers.showAlert('Please select one line item to return.', 'warning');
+        return;
+      }
+      var reasonCode = $('#return-reason-code').val() || '';
+      if (!reasonCode.trim()) {
+        Helpers.showAlert('Please select a reason for return.', 'warning');
+        return;
+      }
+      var lineIdx = parseInt(checked.val(), 10);
+      var lines = $('#return-modal').data('returnable-lines') || [];
+      var selectedLine = lines[lineIdx];
+      if (!selectedLine) {
+        Helpers.showAlert('Invalid selection.', 'warning');
+        return;
+      }
+      $('#return-modal').data('selected-line', selectedLine);
+      $('#return-modal').data('reason-code', reasonCode);
+      showStep2(selectedLine, reasonCode);
+    });
+
+    $(document).off('click', '#return-confirm-btn').on('click', '#return-confirm-btn', function() {
+      var selectedLine = $('#return-modal').data('selected-line');
+      var reasonCode = $('#return-modal').data('reason-code');
+      var storedOrderId = $('#return-modal').data('order-id');
+      var rmaNumber = self.generateRMA();
+
+      var actualTransaction = allTransactions.find(function(t) {
+        return t.orderId === storedOrderId &&
+          t.surewerxPartNumber === selectedLine.surewerxPartNumber &&
+          t.quantity === selectedLine.quantity &&
+          t.totalPrice === selectedLine.totalPrice;
+      });
+
+      if (actualTransaction) {
+        actualTransaction.lineStatus = 'Return Initiated';
+        actualTransaction.refundedAmount = selectedLine.totalPrice || 0;
+        actualTransaction.refundedQuantity = selectedLine.quantity || 0;
+        actualTransaction.rmaNumber = rmaNumber;
+        actualTransaction.returnReasonCode = reasonCode;
+        var effectiveVoucher = (actualTransaction.voucherAmountPaid || 0) - (actualTransaction.refundedAmount || 0);
+        if (effectiveVoucher < 0) effectiveVoucher = 0;
+        actualTransaction.remainingBalance = actualTransaction.totalPrice - effectiveVoucher;
+      }
+
+      var userEmail = AppState.currentUser && AppState.currentUser.email ? AppState.currentUser.email : 'user@example.com';
+      if (typeof console !== 'undefined' && console.log) {
+        console.log('Return confirmation email would be sent to: ' + userEmail, {
+          rma: rmaNumber,
+          orderId: storedOrderId,
+          product: selectedLine.productName,
+          quantity: selectedLine.quantity,
+          returnAmount: selectedLine.totalPrice,
+          reasonCode: reasonCode
         });
-        
-        $('#refund-confirmation-modal').modal('hide');
-        $('#refund-quantity-modal').modal('hide');
-        
-        // Re-render transactions to show updated state
-        if (self.hasSearched) {
-          $('.panel-default').last().replaceWith(self.renderTransactions());
-          Helpers.showAlert('Successfully processed ' + refundCount + ' refund' + (refundCount !== 1 ? 's' : ''), 'success');
-          
-          // Restore scroll position to show the refunded item
-          setTimeout(function() {
-            // Try to find the same order element after re-render
-            var newOrderElement = $('.transaction-order').filter(function() {
-              var orderHeader = $(this).find('.order-header');
-              return orderHeader.length > 0 && orderHeader.text().indexOf('Order #' + storedOrderId) !== -1;
-            }).first();
-            
-            if (newOrderElement.length > 0) {
-              // Calculate the new scroll position to show the order
-              var newScrollPosition = newOrderElement.offset().top - (orderElementOffset || 0);
-              // Ensure we don't scroll to negative position
-              newScrollPosition = Math.max(0, newScrollPosition);
-              
-              $('html, body').animate({
-                scrollTop: newScrollPosition
-              }, 300);
-            } else {
-              // Fallback: restore original scroll position
-              $('html, body').animate({
-                scrollTop: scrollPosition
-              }, 300);
-            }
-          }, 150);
-        }
-      });
-      
-      // Handle final cancel
-      $(document).off('click', '#refund-final-cancel-btn').on('click', '#refund-final-cancel-btn', function() {
-        $('#refund-confirmation-modal').modal('hide');
-      });
-      
-      // Cleanup confirmation modal on hide
-      $('#refund-confirmation-modal').on('hidden.bs.modal', function() {
-        $(this).remove();
-      });
+      }
+
+      var firstItem = orderTransactions[0];
+      var shipTo = (firstItem.employeeName || '') + (firstItem.partnerName || firstItem.customerName ? ', ' + (firstItem.partnerName || firstItem.customerName) : '');
+      showStep3Informational(rmaNumber, selectedLine, storedOrderId, shipTo);
     });
-    
-    // Handle cancel
-    $(document).off('click', '#refund-quantity-cancel-btn').on('click', '#refund-quantity-cancel-btn', function() {
-      $('#refund-quantity-modal').modal('hide');
+
+    $(document).off('click', '#return-close-btn').on('click', '#return-close-btn', function() {
+      var storedOrderId = $('#return-modal').data('order-id');
+      $('#return-modal').modal('hide');
+      Helpers.showAlert('Return initiated. A confirmation email with return details has been sent.', 'success');
+      if (self.hasSearched) {
+        $('.panel-default').last().replaceWith(self.renderTransactions());
+        setTimeout(function() {
+          var newOrderElement = $('.transaction-order').filter(function() {
+            var orderHeader = $(this).find('.order-header');
+            return orderHeader.length > 0 && orderHeader.text().indexOf('Order #' + storedOrderId) !== -1;
+          }).first();
+          if (newOrderElement.length > 0) {
+            var newScrollPosition = newOrderElement.offset().top - (orderElementOffset || 0);
+            newScrollPosition = Math.max(0, newScrollPosition);
+            $('html, body').animate({ scrollTop: newScrollPosition }, 300);
+          } else {
+            $('html, body').animate({ scrollTop: scrollPosition }, 300);
+          }
+        }, 150);
+      }
     });
-    
-    // Cleanup on hide
-    $('#refund-quantity-modal').on('hidden.bs.modal', function() {
+
+    $(document).off('click', '#return-cancel-btn').on('click', '#return-cancel-btn', function() {
+      $('#return-modal').modal('hide');
+    });
+
+    $('#return-modal').on('hidden.bs.modal', function() {
       $(this).remove();
     });
   },

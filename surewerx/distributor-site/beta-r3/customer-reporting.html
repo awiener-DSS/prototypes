@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <base href="/beta-r3/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Voucher Form - Voucher Portal</title>
+  <title>Reporting - Voucher Portal</title>
   
   <!-- Bootstrap 3.4.1 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
@@ -25,6 +26,7 @@
   <!-- Bootstrap 3.4.1 JavaScript -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
   
+  
   <!-- Application State & Utilities -->
   <script src="js/utils/helpers.js"></script>
   <script src="js/utils/state.js"></script>
@@ -37,7 +39,7 @@
   <!-- Components -->
   <script src="js/components/header.js"></script>
   <script src="js/components/back-to-top.js"></script>
-  <script src="js/components/voucher-form.js"></script>
+  <script src="js/components/customer-reporting.js"></script>
   
   <script>
     $(function() {
@@ -49,25 +51,20 @@
         return;
       }
       
-      // Get parameters from URL
-      var urlParams = new URLSearchParams(window.location.search);
-      var customerId = urlParams.get('customerId');
-      var voucherId = urlParams.get('voucherId');
-      
-      if (!customerId) {
-        window.location.href = 'dashboard.html';
-        return;
-      }
-      
-      // Partner users can only edit vouchers in their own partner
-      if (AppState.currentUser.role === 'Customer' && AppState.currentUser.customerId !== customerId) {
-        window.location.href = 'customer-detail.html?customerId=' + AppState.currentUser.customerId;
+      // Only customer users can access customer reporting
+      if (AppState.currentUser.role !== 'Customer') {
+        if (AppState.currentUser.role === 'Distributor' || AppState.currentUser.role === 'SureWerx') {
+          window.location.href = 'reporting.html';
+        } else {
+          window.location.href = 'login.html';
+        }
         return;
       }
       
       HeaderComponent.attachEvents();
-      VoucherFormComponent.init(customerId, voucherId);
+      CustomerReportingComponent.init();
     });
   </script>
 </body>
 </html>
+

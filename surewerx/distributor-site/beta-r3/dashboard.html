@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <base href="/beta-r3/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Product Management - Voucher Portal</title>
+  <title>Dashboard - Voucher Portal</title>
   
   <!-- Bootstrap 3.4.1 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
@@ -37,7 +38,8 @@
   <!-- Components -->
   <script src="js/components/header.js"></script>
   <script src="js/components/back-to-top.js"></script>
-  <script src="js/components/products.js"></script>
+  <script src="js/components/dashboard.js"></script>
+  <script src="js/components/customer-form.js"></script>
   
   <script>
     $(function() {
@@ -49,14 +51,14 @@
         return;
       }
       
-      // Only distributor users can access products
+      // Partner users cannot access dashboard
       if (AppState.currentUser.role === 'Customer') {
         window.location.href = 'customer-detail.html?customerId=' + AppState.currentUser.customerId;
         return;
       }
       
       HeaderComponent.attachEvents();
-      ProductsComponent.init();
+      DashboardComponent.init();
     });
   </script>
 </body>

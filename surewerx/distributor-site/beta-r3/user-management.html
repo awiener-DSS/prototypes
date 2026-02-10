@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <base href="/beta-r3/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Customer Detail - Voucher Portal</title>
+  <title>User Management - Voucher Portal</title>
   
   <!-- Bootstrap 3.4.1 CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
@@ -33,16 +34,11 @@
   
   <!-- Templates -->
   <script src="js/templates/templates.js"></script>
-  <script src="js/templates/employee-table-template.js"></script>
-  <script src="js/templates/employee-modals.js"></script>
   
   <!-- Components -->
   <script src="js/components/header.js"></script>
   <script src="js/components/back-to-top.js"></script>
-  <script src="js/components/customer-detail.js"></script>
-  <script src="js/components/customer-detail-enhanced.js"></script>
-  <script src="js/components/employee-table-enhanced.js"></script>
-  <script src="js/components/employee-bulk-import.js"></script>
+  <script src="js/components/user-management.js"></script>
   
   <script>
     $(function() {
@@ -54,35 +50,8 @@
         return;
       }
       
-      // Get customerId from URL parameter
-      var urlParams = new URLSearchParams(window.location.search);
-      var customerId = urlParams.get('customerId');
-      var tab = urlParams.get('tab') || 'locations';
-      
-      // Check if customerId is missing, null, empty, or the string "undefined"
-      if (!customerId || customerId === 'undefined' || customerId === 'null') {
-        // If user is a customer, redirect to their customer detail page
-        if (AppState.currentUser && AppState.currentUser.role === 'Customer' && AppState.currentUser.customerId) {
-          window.location.href = 'customer-detail.html?customerId=' + AppState.currentUser.customerId;
-          return;
-        }
-        // Otherwise redirect to dashboard or login
-        if (AppState.isLoggedIn) {
-          window.location.href = 'dashboard.html';
-        } else {
-          window.location.href = 'login.html';
-        }
-        return;
-      }
-      
-      // Partner users can only view their own partner
-      if (AppState.currentUser.role === 'Customer' && AppState.currentUser.customerId !== customerId) {
-        window.location.href = 'customer-detail.html?customerId=' + AppState.currentUser.customerId;
-        return;
-      }
-      
       HeaderComponent.attachEvents();
-      CustomerDetailComponent.init(customerId, tab);
+      UserManagementComponent.init();
     });
   </script>
 </body>

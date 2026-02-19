@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Order History</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    .page-loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #eef1f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .28s ease, visibility .28s ease;
+      opacity: 1;
+      visibility: visible;
+    }
+    .page-loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .page-loading-inner { text-align: center; }
+    .page-loading-circle {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: #131653;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 22px rgba(19, 22, 83, .22);
+    }
+    .page-loading-logo {
+      width: 170px;
+      max-width: 46vw;
+      margin: 0;
+      display: block;
+      animation: pageLogoPulse 1.2s ease-in-out infinite;
+    }
+    .page-loading-copy {
+      margin: 0;
+      color: #334155;
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+    @keyframes pageLogoPulse {
+      0% { transform: scale(1); opacity: .72; }
+      50% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: .72; }
+    }
+
+    body { background: #EAEDED; }
+    .history-page { margin: 12px 0 18px; }
+    .history-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .history-breadcrumb a { color: #007185; text-decoration: none; }
+    .history-breadcrumb a:hover,.history-breadcrumb a:focus { color: #005a6a; text-decoration: none; }
+    .history-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .history-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .history-subtitle { margin: 4px 0 12px; font-size: 14px; color: #565959; line-height: 1.35; }
+    .history-filters {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .history-filter-group label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: #565959;
+      font-weight: 500;
+    }
+    .history-filter-group .form-control {
+      height: 34px;
+      border-radius: 8px;
+      border-color: #c7ced4;
+      font-size: 13px;
+      color: #0f1111;
+      box-shadow: none;
+    }
+    .history-filter-group .form-control:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+    }
+    .history-count {
+      margin: 0 0 10px;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .history-order-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+    .history-order-head {
+      background: #f7f8f9;
+      border-bottom: 1px solid #d9dee2;
+      padding: 10px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .history-label {
+      display: block;
+      font-size: 11px;
+      color: #565959;
+      margin-bottom: 2px;
+      line-height: 1.2;
+      font-weight: 400;
+    }
+    .history-value {
+      display: block;
+      font-size: 13px;
+      color: #0f1111;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+    .history-status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+    .history-status.delivered { background: #eaf3ea; color: #22803b; }
+    .history-status.transit { background: #e7f1f7; color: #0b7796; }
+    .history-items { padding: 10px 14px 12px; }
+    .shipment-banner {
+      border: 1px solid #2e9d38;
+      background: #edf6ed;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #0f1111;
+      margin-bottom: 10px;
+    }
+    .shipment-banner.in-transit {
+      border-color: #2a9ec5;
+      background: #edf7fb;
+    }
+    .shipment-banner .glyphicon {
+      font-size: 12px;
+      margin-right: 5px;
+      color: #22803b;
+      top: 0;
+    }
+    .shipment-banner.in-transit .glyphicon { color: #0b7796; }
+    .history-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .history-item:last-child { margin-bottom: 0; }
+    .history-item img {
+      width: 74px;
+      height: 74px;
+      object-fit: cover;
+      border-radius: 7px;
+      background: #edf0f2;
+      border: 1px solid #d5d9d9;
+      flex: 0 0 auto;
+    }
+    .history-item-title {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+      color: #0f1111;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .history-item-title:hover,.history-item-title:focus { color: #0f1111; text-decoration: none; }
+    .history-item-meta { margin-top: 2px; font-size: 12px; color: #565959; line-height: 1.35; }
+    .history-config {
+      margin-top: 2px;
+      font-size: 11px;
+      color: #007185;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .history-config:hover,.history-config:focus { color: #c7511f; text-decoration: none; }
+    .history-order-foot {
+      border-top: 1px solid #eaeded;
+      margin-top: 10px;
+      padding-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .history-btn {
+      display: inline-block;
+      border: 1px solid #d5d9d9;
+      border-radius: 8px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 12px;
+      line-height: 1.25;
+      padding: 6px 12px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .history-btn:hover,.history-btn:focus { color: #0f1111; background: #f7f8f8; text-decoration: none; }
+    .history-btn.primary {
+      border-color: #fcd200;
+      background: #ffd814;
+    }
+    .history-btn.primary:hover,.history-btn.primary:focus {
+      border-color: #f2c200;
+      background: #f7ca00;
+      color: #0f1111;
+    }
+    @media (max-width: 1199px) {
+      .history-title { font-size: 30px; }
+      .history-subtitle { font-size: 14px; }
+      .history-filters { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 767px) {
+      .history-title { font-size: 28px; }
+      .history-subtitle { font-size: 13px; }
+      .history-order-head { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-loading-screen" id="pageLoadingScreen" aria-live="polite" aria-label="Loading order history">
+    <div class="page-loading-inner">
+      <div class="page-loading-circle">
+        <img class="page-loading-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+      </div>
+      <p class="page-loading-copy">Loading order history...</p>
+    </div>
+  </div>
+
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="history-page">
+      <div class="history-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Order History</span></div>
+      <h1 class="history-title">Order History</h1>
+      <p class="history-subtitle">View and track all your past orders</p>
+
+      <section class="history-filters">
+        <div class="history-filter-group">
+          <label for="orderSearch">Search Orders</label>
+          <input id="orderSearch" type="text" class="form-control" placeholder="Search by order number...">
+        </div>
+        <div class="history-filter-group">
+          <label for="orderStatus">Order Status</label>
+          <select id="orderStatus" class="form-control">
+            <option>All Orders</option>
+            <option>Delivered</option>
+            <option>In Transit</option>
+          </select>
+        </div>
+        <div class="history-filter-group">
+          <label for="orderPeriod">Time Period</label>
+          <select id="orderPeriod" class="form-control">
+            <option>All Time</option>
+            <option>Last 30 days</option>
+            <option>Last 90 days</option>
+            <option>2024</option>
+          </select>
+        </div>
+      </section>
+
+      <p class="history-count">Showing 5 of 5 orders</p>
+
+      <section class="history-order-card">
+        <div class="history-order-head">
+          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5690</span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">December 7, 2024</span></div>
+          <div><span class="history-label">Total</span><span class="history-value">$1,249.97</span></div>
+          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+        </div>
+        <div class="history-items">
+          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on December 9, 2024  ·  Tracking: UPS1234567890</div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" alt="Cold therapy product">
+            <div>
+              <a class="history-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a>
+              <div class="history-item-meta">Quantity: 2 | Price: $299.99</div>
+            </div>
+          </div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" alt="Knee brace product">
+            <div>
+              <a class="history-item-title" href="#">T Scope Premier Post-Op Knee Brace</a>
+              <div class="history-item-meta">Quantity: 1 | Price: $449.99</div>
+              <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
+            </div>
+          </div>
+          <div class="history-order-foot">
+            <a class="history-btn" href="#">Download Invoice</a>
+            <a class="history-btn" href="#">Return Items</a>
+            <a class="history-btn primary" href="#">Buy Again</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="history-order-card">
+        <div class="history-order-head">
+          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5665</span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">December 3, 2024</span></div>
+          <div><span class="history-label">Total</span><span class="history-value">$879.95</span></div>
+          <div><span class="history-label">Status</span><span class="history-status transit">In Transit</span></div>
+        </div>
+        <div class="history-items">
+          <div class="shipment-banner in-transit"><span class="glyphicon glyphicon-send"></span>Tracking: UPS9876543210<br>Estimated delivery: December 12, 2024</div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" alt="Shoulder immobilizer">
+            <div>
+              <a class="history-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a>
+              <div class="history-item-meta">Quantity: 3 | Price: $89.99</div>
+              <a class="history-config" href="#">&rsaquo; See other configurations (3 options available)</a>
+            </div>
+          </div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1714929818299-914d3114bcec.jpg" alt="Resistance bands">
+            <div>
+              <a class="history-item-title" href="#">Physical Therapy Resistance Bands Set</a>
+              <div class="history-item-meta">Quantity: 5 | Price: $29.99</div>
+              <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
+            </div>
+          </div>
+          <div class="history-order-foot">
+            <a class="history-btn" href="#">Download Invoice</a>
+            <a class="history-btn" href="#">Track Package</a>
+            <a class="history-btn primary" href="#">Buy Again</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="history-order-card">
+        <div class="history-order-head">
+          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5623</span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">November 27, 2024</span></div>
+          <div><span class="history-label">Total</span><span class="history-value">$649.98</span></div>
+          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+        </div>
+        <div class="history-items">
+          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on December 1, 2024  ·  Tracking: UPS5555666677</div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" alt="Cold therapy product">
+            <div>
+              <a class="history-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a>
+              <div class="history-item-meta">Quantity: 2 | Price: $299.99</div>
+            </div>
+          </div>
+          <div class="history-order-foot">
+            <a class="history-btn" href="#">Download Invoice</a>
+            <a class="history-btn" href="#">Return Items</a>
+            <a class="history-btn primary" href="#">Buy Again</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="history-order-card">
+        <div class="history-order-head">
+          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5598</span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">November 19, 2024</span></div>
+          <div><span class="history-label">Total</span><span class="history-value">$1,899.94</span></div>
+          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+        </div>
+        <div class="history-items">
+          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on November 24, 2024  ·  Tracking: UPS4444333322</div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" alt="Knee brace product">
+            <div>
+              <a class="history-item-title" href="#">T Scope Premier Post-Op Knee Brace</a>
+              <div class="history-item-meta">Quantity: 4 | Price: $449.99</div>
+              <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
+            </div>
+          </div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" alt="Shoulder immobilizer">
+            <div>
+              <a class="history-item-title" href="#">Shoulder Immobilizer Sling</a>
+              <div class="history-item-meta">Quantity: 1 | Price: $99.99</div>
+              <a class="history-config" href="#">&rsaquo; See other configurations (1 options available)</a>
+            </div>
+          </div>
+          <div class="history-order-foot">
+            <a class="history-btn" href="#">Download Invoice</a>
+            <a class="history-btn" href="#">Return Items</a>
+            <a class="history-btn primary" href="#">Buy Again</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="history-order-card">
+        <div class="history-order-head">
+          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5572</span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">November 14, 2024</span></div>
+          <div><span class="history-label">Total</span><span class="history-value">$459.98</span></div>
+          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+        </div>
+        <div class="history-items">
+          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on November 18, 2024</div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1714929818299-914d3114bcec.jpg" alt="Resistance bands">
+            <div>
+              <a class="history-item-title" href="#">Physical Therapy Resistance Bands Set</a>
+              <div class="history-item-meta">Quantity: 10 | Price: $29.99</div>
+              <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
+            </div>
+          </div>
+          <div class="history-item">
+            <img src="assets/searchbar/photo-1533560777802-046814bc297c.jpg" alt="Lumbar support">
+            <div>
+              <a class="history-item-title" href="#">Lumbar Support Belt</a>
+              <div class="history-item-meta">Quantity: 2 | Price: $79.99</div>
+              <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
+            </div>
+          </div>
+          <div class="history-order-foot">
+            <a class="history-btn" href="#">Download Invoice</a>
+            <a class="history-btn" href="#">Return Items</a>
+            <a class="history-btn primary" href="#">Buy Again</a>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      var loaderShownAt = Date.now();
+      var LOADER_MIN_VISIBLE_MS = 3000;
+      var loader = document.getElementById("pageLoadingScreen");
+      if (!loader) return;
+      var elapsed = Date.now() - loaderShownAt;
+      var delay = Math.max(0, LOADER_MIN_VISIBLE_MS - elapsed);
+      setTimeout(function () {
+        loader.classList.add("hidden");
+        setTimeout(function () {
+          if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+        }, 320);
+      }, delay);
+    })();
+
+    (function () {
+      function fallbackCartApi() {
+        function parsePrice(value) {
+          var cleaned = String(value || "").replace(/[^0-9.-]/g, "");
+          var parsed = parseFloat(cleaned);
+          return isFinite(parsed) ? parsed : 0;
+        }
+        function read() {
+          try {
+            var parsed = JSON.parse(localStorage.getItem("breg_cart_v1") || "[]");
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            return [];
+          }
+        }
+        function save(lines) {
+          try { localStorage.setItem("breg_cart_v1", JSON.stringify(lines)); } catch (e) {}
+        }
+        function sync() {
+          var total = read().reduce(function (sum, line) { return sum + Number(line && line.qty ? line.qty : 0); }, 0);
+          $(".cart-count").text(total);
+        }
+        function addLines(lines) {
+          var cart = read();
+          (Array.isArray(lines) ? lines : []).forEach(function (line) {
+            var sku = String(line && line.sku ? line.sku : "").trim();
+            var qty = Math.max(1, parseInt(line && line.qty, 10) || 1);
+            if (!sku) return;
+            var existing = cart.find(function (x) { return String(x && x.sku ? x.sku : "") === sku; });
+            if (existing) {
+              existing.qty = Number(existing.qty || 0) + qty;
+            } else {
+              cart.push({
+                sku: sku,
+                qty: qty,
+                name: String((line && line.name) || sku),
+                price: parsePrice(line && line.price),
+                image: String((line && line.image) || ""),
+                category: String((line && line.category) || "Order History"),
+                variant: String((line && line.variant) || ""),
+                size: String((line && line.size) || "")
+              });
+            }
+          });
+          save(cart);
+          sync();
+          return cart;
+        }
+        return {
+          parsePrice: parsePrice,
+          addLines: addLines
+        };
+      }
+
+      function getCartApi() {
+        if (window.BregCart && typeof window.BregCart.addLines === "function") {
+          return window.BregCart;
+        }
+        return fallbackCartApi();
+      }
+
+      function showAddedModal(lines) {
+        if (window.BregCart && typeof window.BregCart.showAddedModal === "function") {
+          window.BregCart.showAddedModal(lines);
+        }
+      }
+
+      function toSkuFromName(name) {
+        return String(name || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      function parseOrderItem($item, cartApi) {
+        var name = $.trim($item.find(".history-item-title").first().text() || "Product");
+        var meta = $.trim($item.find(".history-item-meta").first().text() || "");
+        var qtyMatch = meta.match(/Quantity:\s*(\d+)/i);
+        var priceMatch = meta.match(/Price:\s*\$?\s*([0-9]+(?:\.[0-9]+)?)/i);
+        var qty = qtyMatch ? Math.max(1, parseInt(qtyMatch[1], 10) || 1) : 1;
+        var price = priceMatch ? (cartApi.parsePrice ? cartApi.parsePrice(priceMatch[1]) : Number(priceMatch[1] || 0)) : 0;
+        return {
+          sku: toSkuFromName(name),
+          qty: qty,
+          name: name,
+          price: price,
+          image: String($item.find("img").attr("src") || ""),
+          category: "Order History",
+          variant: "",
+          size: "Universal"
+        };
+      }
+
+      $(".history-order-card").on("click", ".history-btn.primary", function (event) {
+        var $btn = $(this);
+        var $card = $btn.closest(".history-order-card");
+        var cartApi = getCartApi();
+        var lines = [];
+        event.preventDefault();
+        $card.find(".history-item").each(function () {
+          lines.push(parseOrderItem($(this), cartApi));
+        });
+        if (!lines.length) return;
+        cartApi.addLines(lines);
+        showAddedModal(lines);
+        $btn.text("Added to Cart");
+        setTimeout(function () {
+          $btn.text("Buy Again");
+        }, 1200);
+      });
+    })();
+  </script>
+</body>
+</html>

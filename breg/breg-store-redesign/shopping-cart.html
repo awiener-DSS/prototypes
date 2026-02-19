@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Shopping Cart</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .cart-wrap { padding: 20px 0 0; margin: 0 0 26px; }
+    .cart-title { margin: 0; font-size: 40px; line-height: 1.12; color: #11181f; font-weight: 700; letter-spacing: .2px; }
+    .cart-top-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 14px;
+      color: #007185;
+      text-decoration: none;
+    }
+    .cart-top-link:hover, .cart-top-link:focus { text-decoration: underline; color: #007185; }
+    .cart-notice {
+      position: fixed;
+      left: 20px;
+      top: calc(var(--cart-sticky-offset, 120px) + 12px);
+      z-index: 1200;
+      border: 1px solid #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      line-height: 1.4;
+      opacity: 0;
+      transform: translateY(-2px);
+      transition: opacity .18s ease, transform .18s ease;
+      pointer-events: none;
+      max-width: min(560px, calc(100vw - 24px));
+      display: none;
+    }
+    .cart-notice.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .cart-layout {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: minmax(0, 890px) minmax(0, 433px);
+      gap: 24px;
+      align-items: start;
+    }
+    .cart-left { min-width: 0; }
+    .cart-right {
+      min-width: 0;
+      position: sticky;
+      top: calc(var(--cart-sticky-offset, 120px) + 8px);
+      align-self: start;
+    }
+    .cart-left-card {
+      border: 1px solid #d5dde4;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(16, 26, 35, 0.05);
+    }
+    .cart-subtotal-strip {
+      background: #f6f8fa;
+      border-radius: 10px;
+      min-height: 60px;
+      padding: 16px;
+      margin-bottom: 14px;
+      font-size: 14px;
+      color: #1d252c;
+    }
+    .cart-subtotal-strip strong { font-size: 18px; font-weight: 600; }
+    .cart-item {
+      border: 1px solid #e3e9ef;
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 128px minmax(0, 1fr) auto;
+      gap: 14px;
+      align-items: start;
+      background: #fff;
+      margin-bottom: 10px;
+    }
+    .cart-item:last-child { margin-bottom: 0; }
+    .cart-item-image {
+      width: 128px;
+      height: 128px;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid #dbe3ea;
+      background: #f7fafc;
+      padding: 8px;
+    }
+    .cart-item-title {
+      margin: 0 0 2px;
+      font-size: 16px;
+      line-height: 24px;
+      color: #11181f;
+      font-weight: 400;
+    }
+    .cart-item-meta {
+      margin: 0 0 4px;
+      font-size: 14px;
+      color: #5f6b76;
+      line-height: 1.45;
+    }
+    .cart-item-stock {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #177245;
+    }
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .cart-qty {
+      width: 92px;
+      height: 34px;
+      border: 1px solid #cdd6df;
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 8px;
+      font-size: 14px;
+      color: #11181f;
+    }
+    .cart-link-btn {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      font-size: 14px;
+      color: #007185;
+      text-decoration: none;
+      line-height: 20px;
+    }
+    .cart-link-btn:hover, .cart-link-btn:focus { text-decoration: underline; color: #007185; }
+    .cart-item-price {
+      font-size: 18px;
+      line-height: 28px;
+      color: #11181f;
+      white-space: nowrap;
+      padding-top: 2px;
+      font-weight: 600;
+    }
+    .cart-bottom-subtotal {
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      margin-top: 12px;
+      padding-top: 14px;
+      text-align: right;
+      font-size: 18px;
+      line-height: 1.2;
+      color: #11181f;
+    }
+    .cart-bottom-subtotal .accent { color: #b12704; }
+    .cart-summary {
+      border: 1px solid #d5dde4;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      min-height: 0;
+      box-shadow: 0 2px 8px rgba(16, 26, 35, 0.05);
+    }
+    .cart-summary-sub {
+      font-size: 14px;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    .cart-summary-sub strong { font-size: 18px; font-weight: 600; }
+    .cart-checkout-btn {
+      display: flex;
+      width: 100%;
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      color: #111;
+      border-radius: 8px;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 600;
+      height: 40px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+    .cart-checkout-btn:hover, .cart-checkout-btn:focus { text-decoration: none; color: #111; }
+    .cart-summary-lines { margin: 0; padding: 0; list-style: none; }
+    .cart-summary-lines { margin-top: 10px; }
+    .cart-summary-lines li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 2px 0;
+      font-size: 14px;
+      color: #5f6b76;
+    }
+    .cart-summary-total {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 24px;
+      line-height: 1.1;
+      color: #b12704;
+      font-weight: 600;
+    }
+    .cart-empty {
+      border: 1px solid #d5dde4;
+      border-radius: 8px;
+      background: #fff;
+      padding: 18px;
+      color: #475569;
+      font-size: 14px;
+    }
+    .saved-section {
+      margin-top: 16px;
+      border: 1px solid #d5dde4;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(16, 26, 35, 0.05);
+    }
+    .saved-title {
+      margin: 0 0 10px;
+      font-size: 20px;
+      line-height: 1.25;
+      color: #11181f;
+      font-weight: 600;
+    }
+    .cart-empty-actions { margin-top: 12px; }
+    .cart-empty-actions .cart-checkout-btn { width: 280px; max-width: 100%; margin: 0; }
+    @media (max-width: 1024px) {
+      .cart-layout { grid-template-columns: 1fr; }
+      .cart-item { grid-template-columns: 104px minmax(0, 1fr); min-height: 0; }
+      .cart-item-image { width: 104px; height: 104px; }
+      .cart-item-price { grid-column: 2; justify-self: end; margin-top: 6px; }
+      .cart-summary { min-height: 0; }
+      .cart-right { position: static; top: auto; }
+    }
+    @media (max-width: 767px) {
+      .cart-wrap { padding: 18px 0 0; }
+      .cart-title { font-size: 32px; }
+      .cart-top-link { font-size: 14px; }
+      .cart-item-title { font-size: 16px; }
+      .cart-subtotal-strip strong, .cart-summary-sub strong { font-size: 18px; }
+      .cart-bottom-subtotal, .cart-summary-total { font-size: 24px; }
+      .cart-checkout-btn { font-size: 14px; height: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <section class="cart-wrap">
+      <h1 class="cart-title">Shopping Cart</h1>
+      <a class="cart-top-link" href="index.html">Continue shopping</a>
+      <div class="cart-notice" id="cartNotice" aria-live="polite"></div>
+      <div id="cartContent"></div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      var CART_STORAGE_KEY = "breg_cart_v1";
+      var SAVE_LATER_STORAGE_KEY = "breg_saved_for_later_v1";
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+      function loadCart() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveCart(cart) {
+        try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch (e) {}
+      }
+      function loadSaved() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(SAVE_LATER_STORAGE_KEY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function saveSaved(saved) {
+        try { localStorage.setItem(SAVE_LATER_STORAGE_KEY, JSON.stringify(saved)); } catch (e) {}
+      }
+      function addLineBySku(target, line) {
+        var sku = String(line.sku || "");
+        if (!sku) return target;
+        var existing = target.find(function (x) { return String(x.sku || "") === sku; });
+        if (existing) {
+          existing.qty = Number(existing.qty || 0) + Number(line.qty || 0);
+        } else {
+          target.push({
+            sku: sku,
+            qty: Number(line.qty || 0),
+            name: String(line.name || ""),
+            price: Number(line.price || 0),
+            image: String(line.image || ""),
+            category: String(line.category || ""),
+            variant: String(line.variant || ""),
+            size: String(line.size || "")
+          });
+        }
+        return target;
+      }
+      function syncStickyOffset() {
+        var header = document.querySelector(".top-header");
+        var headerHeight = header ? Math.ceil(header.getBoundingClientRect().height) : 112;
+        document.documentElement.style.setProperty("--cart-sticky-offset", String(headerHeight) + "px");
+      }
+      var noticeTimer = null;
+      function showCartNotice(message) {
+        var $notice = $("#cartNotice");
+        if (!$notice.length) return;
+        if (noticeTimer) {
+          clearTimeout(noticeTimer);
+          noticeTimer = null;
+        }
+        $notice.text(String(message || "")).addClass("show");
+        noticeTimer = setTimeout(function () {
+          $notice.removeClass("show");
+        }, 2200);
+      }
+      function renderCart() {
+        var cart = loadCart();
+        var saved = loadSaved();
+        var totalQty = 0;
+        var total = 0;
+        cart.forEach(function (line) {
+          totalQty += Number(line.qty || 0);
+          total += Number(line.qty || 0) * Number(line.price || 0);
+        });
+        $(".cart-count").text(totalQty);
+        var savedHtml = "";
+        if (saved.length) {
+          var savedRows = "";
+          saved.forEach(function (line, i) {
+            var qty = Number(line.qty || 0);
+            var price = Number(line.price || 0);
+            var variantText = escapeHtml(line.variant || line.sku || "Standard");
+            var sizeText = escapeHtml(line.size || "Universal");
+            var image = escapeHtml(line.image || "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png");
+            savedRows += "<article class='cart-item'>" +
+              "<img class='cart-item-image' src='" + image + "' alt='" + escapeHtml(line.name || line.sku || "Product") + "'>" +
+              "<div>" +
+                "<h2 class='cart-item-title'>" + escapeHtml(line.name || line.sku || "Product") + "</h2>" +
+                "<p class='cart-item-meta'>Variant: " + variantText + "</p>" +
+                "<p class='cart-item-meta'>Size: " + sizeText + "</p>" +
+                "<p class='cart-item-stock'>Saved for later</p>" +
+                "<div class='cart-item-controls'>" +
+                  "<button type='button' class='cart-link-btn cart-move-to-cart' data-index='" + i + "'>Move to cart</button>" +
+                  "<button type='button' class='cart-link-btn cart-remove-saved' data-index='" + i + "'><span class='glyphicon glyphicon-trash' style='font-size:11px; margin-right:4px;'></span>Delete</button>" +
+                "</div>" +
+              "</div>" +
+              "<div class='cart-item-price'>$" + (qty * price).toFixed(2) + "</div>" +
+            "</article>";
+          });
+          savedHtml =
+            "<section class='saved-section'>" +
+              "<h3 class='saved-title'>Saved for later (" + saved.length + ")</h3>" +
+              savedRows +
+            "</section>";
+        }
+        if (!cart.length) {
+          $("#cartContent").html(
+            "<div class='cart-empty'>No products in your cart yet.</div>" +
+            "<div class='cart-empty-actions'><a class='cart-checkout-btn' href='index.html'>Continue Shopping</a></div>" +
+            savedHtml
+          );
+          return;
+        }
+        var rows = "";
+        cart.forEach(function (line, i) {
+          var qty = Number(line.qty || 0);
+          var price = Number(line.price || 0);
+          var variantText = escapeHtml(line.variant || line.sku || "Standard");
+          var sizeText = escapeHtml(line.size || "Universal");
+          var image = escapeHtml(line.image || "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png");
+          rows += "<article class='cart-item'>" +
+            "<img class='cart-item-image' src='" + image + "' alt='" + escapeHtml(line.name || line.sku || "Product") + "'>" +
+            "<div>" +
+              "<h2 class='cart-item-title'>" + escapeHtml(line.name || line.sku || "Product") + "</h2>" +
+              "<p class='cart-item-meta'>Variant: " + variantText + "</p>" +
+              "<p class='cart-item-meta'>Size: " + sizeText + "</p>" +
+              "<p class='cart-item-stock'>In Stock</p>" +
+              "<div class='cart-item-controls'>" +
+                "<input class='cart-qty' type='number' min='1' step='1' value='" + qty + "' data-index='" + i + "'>" +
+                "<button type='button' class='cart-link-btn cart-remove' data-index='" + i + "'><span class='glyphicon glyphicon-trash' style='font-size:11px; margin-right:4px;'></span>Delete</button>" +
+                "<button type='button' class='cart-link-btn cart-save-later' data-index='" + i + "'>Save for later</button>" +
+              "</div>" +
+            "</div>" +
+            "<div class='cart-item-price'>$" + (qty * price).toFixed(2) + "</div>" +
+          "</article>";
+        });
+        $("#cartContent").html(
+          "<div class='cart-layout'>" +
+            "<section class='cart-left'>" +
+              "<div class='cart-left-card'>" +
+              "<div>" + rows + "</div>" +
+              "<div class='cart-bottom-subtotal'>Subtotal (" + totalQty + " item" + (totalQty === 1 ? "" : "s") + "): <span class='accent'>$" + total.toFixed(2) + "</span></div>" +
+              "</div>" +
+            "</section>" +
+            "<aside class='cart-right'>" +
+              "<div class='cart-summary'>" +
+                "<a class='cart-checkout-btn' href='checkout.html'>Proceed to Checkout</a>" +
+                "<ul class='cart-summary-lines'>" +
+                  "<li><span>Items:</span><span>$" + total.toFixed(2) + "</span></li>" +
+                  "<li><span>Shipping &amp; handling:</span><span>&mdash;</span></li>" +
+                  "<li><span>Total before tax:</span><span>&mdash;</span></li>" +
+                  "<li><span>Estimated tax:</span><span>&mdash;</span></li>" +
+                "</ul>" +
+                "<div class='cart-summary-total'><span>Order total:</span><span>$" + total.toFixed(2) + "</span></div>" +
+              "</div>" +
+            "</aside>" +
+          "</div>" +
+          savedHtml
+        );
+      }
+      $(document).on("change", ".cart-qty", function () {
+        var idx = Number($(this).attr("data-index"));
+        var qty = Math.max(1, Number($(this).val() || 1));
+        var cart = loadCart();
+        if (!cart[idx]) return;
+        cart[idx].qty = qty;
+        saveCart(cart);
+        renderCart();
+      });
+      $(document).on("click", ".cart-remove", function () {
+        var idx = Number($(this).attr("data-index"));
+        var cart = loadCart();
+        if (idx < 0 || idx >= cart.length) return;
+        cart.splice(idx, 1);
+        saveCart(cart);
+        renderCart();
+      });
+      $(document).on("click", ".cart-save-later", function () {
+        var idx = Number($(this).attr("data-index"));
+        var cart = loadCart();
+        var saved = loadSaved();
+        if (idx < 0 || idx >= cart.length) return;
+        var line = cart[idx];
+        cart.splice(idx, 1);
+        addLineBySku(saved, line);
+        saveCart(cart);
+        saveSaved(saved);
+        renderCart();
+        showCartNotice((line.name || "Item") + " was saved for later.");
+      });
+      $(document).on("click", ".cart-move-to-cart", function () {
+        var idx = Number($(this).attr("data-index"));
+        var cart = loadCart();
+        var saved = loadSaved();
+        if (idx < 0 || idx >= saved.length) return;
+        var line = saved[idx];
+        saved.splice(idx, 1);
+        addLineBySku(cart, line);
+        saveCart(cart);
+        saveSaved(saved);
+        renderCart();
+      });
+      $(document).on("click", ".cart-remove-saved", function () {
+        var idx = Number($(this).attr("data-index"));
+        var saved = loadSaved();
+        if (idx < 0 || idx >= saved.length) return;
+        saved.splice(idx, 1);
+        saveSaved(saved);
+        renderCart();
+      });
+      $(window).on("resize", syncStickyOffset);
+      syncStickyOffset();
+      renderCart();
+    })();
+  </script>
+</body>
+</html>

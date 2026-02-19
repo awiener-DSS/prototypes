@@ -1,0 +1,1460 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    .checkout-loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #eef1f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .28s ease, visibility .28s ease;
+      opacity: 1;
+      visibility: visible;
+    }
+    .checkout-loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .checkout-loading-inner { text-align: center; }
+    .checkout-loading-circle {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: #131653;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 22px rgba(19, 22, 83, .22);
+    }
+    .checkout-loading-logo {
+      width: 170px;
+      max-width: 46vw;
+      margin: 0;
+      display: block;
+      animation: checkoutLogoPulse 1.2s ease-in-out infinite;
+    }
+    .checkout-loading-copy {
+      margin: 0;
+      color: #334155;
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+    @keyframes checkoutLogoPulse {
+      0% { transform: scale(1); opacity: .72; }
+      50% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: .72; }
+    }
+
+    body { background: #EAEDED; }
+    .checkout-wrap { margin: 18px 0 26px; }
+    .checkout-title {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.15;
+      color: #11181f;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .checkout-back {
+      display: inline-block;
+      margin-bottom: 14px;
+      color: #007185;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .checkout-back:hover, .checkout-back:focus { color: #007185; text-decoration: underline; }
+    .checkout-layout { display: grid; grid-template-columns: minmax(0, 890px) minmax(0, 433px); gap: 24px; align-items: start; }
+    .checkout-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+    .checkout-step {
+      border: 1px solid #d5dde4;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(16, 26, 35, 0.05);
+    }
+    .checkout-step-head {
+      height: 52px;
+      background: #f6f8fa;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
+      border-bottom: 1px solid #e6edf3;
+    }
+    .checkout-step-num {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #007185;
+      color: #fff;
+      font-size: 12px;
+      line-height: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .checkout-step-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 28px;
+      color: #0a0a0a;
+      font-weight: 600;
+    }
+    .checkout-step-body { padding: 14px; background: #fff; }
+    .checkout-static-card {
+      border: 1px solid #e3e9ef;
+      border-radius: 10px;
+      background: #f7fafc;
+      padding: 14px;
+      color: #5f6b76;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .checkout-static-card strong { display: block; color: #0a0a0a; font-size: 16px; margin-bottom: 2px; font-weight: 500; }
+    .checkout-step-note { margin: 10px 0 0; color: #6a7282; font-size: 12px; line-height: 1.35; }
+    .checkout-options { display: flex; flex-direction: column; gap: 10px; }
+    .checkout-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+    .checkout-actions .checkout-add-address { margin-top: 0; flex: 1; min-width: 220px; }
+    .checkout-inline-field { margin-top: 10px; }
+    .checkout-inline-field label { display: block; margin: 0 0 4px; font-size: 12px; color: #5f6b76; font-weight: 600; }
+    .checkout-inline-field input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #d3dbe4;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 14px;
+      color: #11181f;
+      background: #fff;
+    }
+    .checkout-inline-field input:focus { outline: none; border-color: #007185; box-shadow: 0 0 0 2px rgba(0,113,133,.12); }
+    .checkout-pill-btn {
+      height: 36px;
+      border: 1px solid #d1d5dc;
+      border-radius: 999px;
+      background: #fff;
+      color: #007185;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0 14px;
+    }
+    .checkout-pill-btn:hover { background: #f7fafc; }
+    .checkout-ship-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .checkout-check-wrap { margin-top: 10px; display: grid; grid-template-columns: 1fr; gap: 6px; }
+    .checkout-check-wrap label { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: #334155; font-weight: 500; }
+    .checkout-check-wrap input { margin: 0; }
+    .checkout-service-options { margin-top: 10px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .checkout-service-option {
+      border: 1px solid #d1d5dc;
+      border-radius: 999px;
+      background: #fff;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #334155;
+      text-align: center;
+      cursor: pointer;
+      margin: 0;
+      position: relative;
+    }
+    .checkout-service-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .checkout-service-option.active {
+      border-color: #007185;
+      background: #eef9fc;
+      color: #0f4d56;
+      box-shadow: inset 0 0 0 1px rgba(0, 113, 133, .1);
+    }
+    .checkout-choice {
+      display: block;
+      border: 1px solid #e3e9ef;
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px 14px 14px 44px;
+      position: relative;
+      color: #4a5565;
+      cursor: pointer;
+      margin: 0;
+    }
+    .checkout-choice.active {
+      background: #eef9fc;
+      border-color: #007185;
+      box-shadow: inset 0 0 0 1px rgba(0, 113, 133, 0.1);
+    }
+    .checkout-choice input {
+      position: absolute;
+      left: 14px;
+      top: 17px;
+    }
+    .checkout-choice-title { display: block; margin: 0 0 2px; color: #0a0a0a; font-size: 16px; line-height: 1.35; font-weight: 500; }
+    .checkout-choice-line { display: block; font-size: 14px; line-height: 1.35; }
+    .checkout-choice-meta { display: block; font-size: 12px; line-height: 1.35; color: #6a7282; font-weight: 400; }
+    .checkout-add-address {
+      margin-top: 10px;
+      width: 100%;
+      height: 40px;
+      border: 1px solid #d1d5dc;
+      border-radius: 999px;
+      background: #fff;
+      color: #007185;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .checkout-add-address:hover { background: #f7fafc; }
+    .checkout-add-address .glyphicon { font-size: 14px; margin-right: 6px; top: 1px; }
+    .checkout-lines {
+      border: 1px solid #e3e9ef;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .checkout-line {
+      display: grid;
+      grid-template-columns: 64px minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 10px;
+      border-bottom: 1px solid #edf1f5;
+      align-items: center;
+    }
+    .checkout-line:last-child { border-bottom: 0; }
+    .checkout-line img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border: 1px solid #dbe3ea;
+      border-radius: 8px;
+      background: #fff;
+      padding: 4px;
+    }
+    .checkout-line-name {
+      margin: 0 0 2px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #11181f;
+      line-height: 1.35;
+    }
+    .checkout-line-meta {
+      margin: 0;
+      font-size: 12px;
+      color: #5f6b76;
+      line-height: 1.35;
+    }
+    .checkout-line-price {
+      font-size: 14px;
+      color: #11181f;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .checkout-summary {
+      border: 1px solid #d5dde4;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+      box-shadow: 0 2px 8px rgba(16, 26, 35, 0.05);
+      position: sticky;
+      top: calc(var(--checkout-sticky-offset, 120px) + 8px);
+      align-self: start;
+    }
+    .checkout-summary h3 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #11181f;
+      font-weight: 600;
+    }
+    .checkout-summary-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      border-top: 0;
+      padding-top: 0;
+    }
+    .checkout-summary-list li {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 14px;
+      color: #0f1111;
+      padding: 2px 0;
+    }
+    .checkout-total {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      font-size: 24px;
+      color: #b12704;
+      font-weight: 600;
+    }
+    .checkout-place {
+      margin-top: 12px;
+      width: 100%;
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      color: #111;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      height: 40px;
+    }
+    .checkout-place[disabled] { opacity: .6; cursor: not-allowed; }
+    .checkout-empty {
+      border: 1px solid #d5dde4;
+      border-radius: 12px;
+      background: #fff;
+      padding: 20px;
+      color: #475569;
+      font-size: 14px;
+    }
+    .checkout-order-lines { border-top: 1px solid rgba(0, 0, 0, 0.1); margin-top: 12px; padding-top: 12px; }
+    .checkout-order-line { display: grid; grid-template-columns: 36px minmax(0,1fr); gap: 8px; margin-bottom: 8px; }
+    .checkout-order-line img { width: 36px; height: 36px; border-radius: 4px; object-fit: cover; border: 1px solid #e5e7eb; }
+    .checkout-order-line p { margin: 0; font-size: 12px; color: #0f1111; line-height: 1.3; }
+    .checkout-order-line .muted { color: #5f6b76; font-size: 12px; }
+    .checkout-modal .modal-content { border-radius: 14px; border: 1px solid #d5dde4; box-shadow: 0 10px 28px rgba(16,26,35,.18); }
+    .checkout-modal .modal-header { border-bottom: 1px solid #e8edf2; padding: 14px 16px; background: #f6f8fa; }
+    .checkout-modal .modal-title { font-size: 20px; color: #11181f; font-weight: 600; }
+    .checkout-modal .modal-body { padding: 14px 16px 10px; }
+    .checkout-modal .form-group { margin-bottom: 12px; }
+    .checkout-modal label { font-size: 12px; color: #5f6b76; font-weight: 600; margin-bottom: 4px; }
+    .checkout-modal .form-control { height: 40px; border-radius: 8px; border: 1px solid #d3dbe4; box-shadow: none; }
+    .checkout-modal .form-control:focus { border-color: #467ddb; box-shadow: 0 0 0 2px rgba(70,125,219,.12); }
+    .checkout-modal .modal-footer { border-top: 1px solid #e8edf2; padding: 12px 16px; }
+    .checkout-modal .btn-primary {
+      background: #ffd814;
+      border-color: #fcd200;
+      color: #111;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-weight: 600;
+    }
+    .checkout-modal .btn-default { border-radius: 999px; padding: 8px 18px; border-color: #d1d5dc; }
+    .checkout-modal-list { display: flex; flex-direction: column; gap: 10px; max-height: 360px; overflow: auto; padding-right: 2px; }
+    .checkout-modal-list .checkout-choice { margin: 0; border-radius: 10px; }
+    .checkout-modal-subtle { margin: 0 0 10px; font-size: 12px; color: #6a7282; }
+    @media (max-width: 1024px) {
+      .checkout-layout { grid-template-columns: 1fr; }
+      .checkout-summary { position: static; top: auto; }
+      .checkout-ship-grid { grid-template-columns: 1fr; }
+      .checkout-service-options { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="checkout-loading-screen" id="checkoutLoadingScreen" aria-live="polite" aria-label="Loading checkout">
+    <div class="checkout-loading-inner">
+      <div class="checkout-loading-circle">
+        <img class="checkout-loading-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+      </div>
+      <p class="checkout-loading-copy">Preparing your checkout...</p>
+    </div>
+  </div>
+
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <section class="checkout-wrap">
+      <h1 class="checkout-title">Checkout</h1>
+      <a class="checkout-back" href="shopping-cart.html">Back to cart</a>
+      <div id="checkoutContent"></div>
+    </section>
+  </main>
+
+  <div class="modal fade checkout-modal" id="addShippingAddressModal" tabindex="-1" role="dialog" aria-labelledby="addShippingAddressTitle">
+    <div class="modal-dialog" role="document">
+      <form class="modal-content" id="addShippingAddressForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="addShippingAddressTitle">Add Shipping Address</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="shipName">Organization / Name</label>
+            <input id="shipName" name="name" type="text" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="shipLine1">Address Line 1</label>
+            <input id="shipLine1" name="line1" type="text" class="form-control" required>
+          </div>
+          <div class="row">
+            <div class="col-xs-5">
+              <div class="form-group">
+                <label for="shipCity">City</label>
+                <input id="shipCity" name="city" type="text" class="form-control" required>
+              </div>
+            </div>
+            <div class="col-xs-3">
+              <div class="form-group">
+                <label for="shipState">State</label>
+                <input id="shipState" name="state" type="text" class="form-control" required>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="shipZip">ZIP</label>
+                <input id="shipZip" name="zip" type="text" class="form-control" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-7">
+              <div class="form-group">
+                <label for="shipCountry">Country</label>
+                <input id="shipCountry" name="country" type="text" class="form-control" value="United States">
+              </div>
+            </div>
+            <div class="col-xs-5">
+              <div class="form-group">
+                <label for="shipPhone">Phone</label>
+                <input id="shipPhone" name="phone" type="text" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade checkout-modal" id="selectShippingAddressModal" tabindex="-1" role="dialog" aria-labelledby="selectShippingAddressTitle">
+    <div class="modal-dialog" role="document">
+      <form class="modal-content" id="selectShippingAddressForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="selectShippingAddressTitle">Select Shipping Address</h4>
+        </div>
+        <div class="modal-body">
+          <p class="checkout-modal-subtle">Choose where this order should be delivered.</p>
+          <div id="shippingAddressSelectionList" class="checkout-modal-list"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="openAddShippingFromSelect">Add new address</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Use this address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade checkout-modal" id="selectCreditCardModal" tabindex="-1" role="dialog" aria-labelledby="selectCreditCardTitle">
+    <div class="modal-dialog" role="document">
+      <form class="modal-content" id="selectCreditCardForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="selectCreditCardTitle">Select Credit Card</h4>
+        </div>
+        <div class="modal-body">
+          <p class="checkout-modal-subtle">Choose a saved card for this order.</p>
+          <div id="creditCardSelectionList" class="checkout-modal-list"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" id="openAddCardFromSelect">Add new card</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Use this card</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade checkout-modal" id="addCreditCardModal" tabindex="-1" role="dialog" aria-labelledby="addCreditCardTitle">
+    <div class="modal-dialog" role="document">
+      <form class="modal-content" id="addCreditCardForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="addCreditCardTitle">Add Credit Card</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="cardName">Name on card</label>
+            <input id="cardName" name="name" type="text" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="cardNumber">Card number</label>
+            <input id="cardNumber" name="number" type="text" class="form-control" required>
+          </div>
+          <div class="row">
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="cardMonth">Exp. month</label>
+                <input id="cardMonth" name="month" type="text" class="form-control" placeholder="MM" required>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="cardYear">Exp. year</label>
+                <input id="cardYear" name="year" type="text" class="form-control" placeholder="YYYY" required>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="cardType">Card type</label>
+                <select id="cardType" name="type" class="form-control">
+                  <option value="Visa">Visa</option>
+                  <option value="Mastercard">Mastercard</option>
+                  <option value="American Express">American Express</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <hr style="margin:8px 0 12px; border-color:#e8edf2;">
+          <div class="form-group">
+            <label for="cardBillName">Billing name / organization</label>
+            <input id="cardBillName" name="bill_name" type="text" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label for="cardBillLine1">Billing address line 1</label>
+            <input id="cardBillLine1" name="bill_line1" type="text" class="form-control" required>
+          </div>
+          <div class="row">
+            <div class="col-xs-5">
+              <div class="form-group">
+                <label for="cardBillCity">Billing city</label>
+                <input id="cardBillCity" name="bill_city" type="text" class="form-control" required>
+              </div>
+            </div>
+            <div class="col-xs-3">
+              <div class="form-group">
+                <label for="cardBillState">Billing state</label>
+                <input id="cardBillState" name="bill_state" type="text" class="form-control" required>
+              </div>
+            </div>
+            <div class="col-xs-4">
+              <div class="form-group">
+                <label for="cardBillZip">Billing ZIP</label>
+                <input id="cardBillZip" name="bill_zip" type="text" class="form-control" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xs-7">
+              <div class="form-group">
+                <label for="cardBillCountry">Billing country</label>
+                <input id="cardBillCountry" name="bill_country" type="text" class="form-control" value="United States" required>
+              </div>
+            </div>
+            <div class="col-xs-5">
+              <div class="form-group">
+                <label for="cardBillPhone">Billing phone</label>
+                <input id="cardBillPhone" name="bill_phone" type="text" class="form-control">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Card</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      var CART_STORAGE_KEY = "breg_cart_v1";
+      var ORDER_STORAGE_KEY = "breg_last_order_v1";
+      var MISSING_IMAGE = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
+      var didHideInitialLoader = false;
+      var loaderShownAt = Date.now();
+      var LOADER_MIN_VISIBLE_MS = 3000;
+
+      function hideInitialLoader() {
+        if (didHideInitialLoader) return;
+        didHideInitialLoader = true;
+        var loader = document.getElementById("checkoutLoadingScreen");
+        if (!loader) return;
+        var elapsed = Date.now() - loaderShownAt;
+        var delay = Math.max(0, LOADER_MIN_VISIBLE_MS - elapsed);
+        setTimeout(function () {
+          loader.classList.add("hidden");
+          setTimeout(function () {
+            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+          }, 320);
+        }, delay);
+      }
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function loadCart() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function saveCart(cart) {
+        try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart || [])); } catch (e) {}
+      }
+
+      function parseJson(key) {
+        try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
+      }
+
+      function quickDefaults() {
+        var rawCarrier = localStorage.getItem("bregShippingCarrier") || "";
+        var inferredCarrier = (rawCarrier === "UPS" || rawCarrier === "FedEx") ? rawCarrier : "FedEx";
+        var inferredOption = localStorage.getItem("bregShippingOption") || ((rawCarrier && rawCarrier !== "UPS" && rawCarrier !== "FedEx") ? rawCarrier : "Ground");
+        return {
+          shipping: parseJson("bregDefaultShippingAddress") || {
+            name: "Medical Clinic Inc.",
+            line1: "123 Healthcare Blvd",
+            cityStateZip: "Los Angeles, CA 90001",
+            country: "United States"
+          },
+          invoice: parseJson("bregDefaultInvoiceAddress") || {
+            name: "Medical Clinic Inc.",
+            line1: "123 Billing Ave",
+            cityStateZip: "Los Angeles, CA 90001",
+            country: "United States"
+          },
+          paymentMode: localStorage.getItem("bregCheckoutPaymentMode") || "invoice",
+          defaultCard: parseJson("bregDefaultCreditCard") || null,
+          defaultCardBilling: parseJson("bregDefaultCreditCardBillingAddress") || null,
+          purchaser: (localStorage.getItem("bregFirstName") || "Medical") + " (" + (localStorage.getItem("bregUserEmail") || "test@breg.com") + ")",
+          shippingAttentionTo: localStorage.getItem("bregShippingAttentionTo") || "",
+          shippingCarrier: inferredCarrier,
+          shippingOption: inferredOption,
+          shippingResidential: localStorage.getItem("bregShippingResidential") === "1",
+          shippingSignature: localStorage.getItem("bregShippingSignature") === "1"
+        };
+      }
+
+      function normalizeAddress(addr) {
+        var safe = addr && typeof addr === "object" ? addr : {};
+        var cityStateZip = String(safe.cityStateZip || safe.cityStatePostal || "").trim();
+        if (!cityStateZip) {
+          var locationParts = [];
+          if (safe.city) locationParts.push(String(safe.city));
+          if (safe.state) locationParts.push(String(safe.state));
+          var location = locationParts.join(", ");
+          if (safe.zip) location = location ? location + " " + String(safe.zip) : String(safe.zip);
+          cityStateZip = location;
+        }
+        return {
+          name: String(safe.name || safe.fullName || safe.company || ""),
+          line1: String(safe.line1 || safe.address1 || safe.street || ""),
+          cityStateZip: cityStateZip,
+          country: String(safe.country || safe.countryCode || "United States"),
+          phone: String(safe.phone || "")
+        };
+      }
+
+      function loadAddressOptions(keys, fallbackAddress) {
+        var options = [];
+        keys.forEach(function (key) {
+          var raw = parseJson(key);
+          if (Array.isArray(raw)) {
+            raw.forEach(function (entry) {
+              if (entry && typeof entry === "object") options.push(normalizeAddress(entry));
+            });
+            return;
+          }
+          if (raw && typeof raw === "object") {
+            options.push(normalizeAddress(raw));
+          }
+        });
+        options.push(normalizeAddress(fallbackAddress));
+        var dedupe = {};
+        var result = [];
+        options.forEach(function (opt) {
+          var hash = [opt.name, opt.line1, opt.cityStateZip, opt.country].join("|").toLowerCase();
+          if (hash && !dedupe[hash]) {
+            dedupe[hash] = true;
+            result.push(opt);
+          }
+        });
+        return result.length ? result : [normalizeAddress(fallbackAddress)];
+      }
+
+      function normalizeCard(entry) {
+        var safe = entry && typeof entry === "object" ? entry : {};
+        var rawNumber = String(safe.number || safe.cardNumber || "").replace(/\s+/g, "");
+        var last4 = String(safe.last4 || (rawNumber ? rawNumber.slice(-4) : "") || "").replace(/\D/g, "").slice(-4);
+        return {
+          type: String(safe.type || safe.brand || "Visa"),
+          last4: last4 || "0000",
+          expMonth: String(safe.expMonth || safe.month || ""),
+          expYear: String(safe.expYear || safe.year || ""),
+          name: String(safe.name || safe.cardholder || "")
+        };
+      }
+
+      function formatCardLabel(card) {
+        var normalized = normalizeCard(card);
+        var exp = (normalized.expMonth && normalized.expYear) ? (" • Exp " + normalized.expMonth + "/" + normalized.expYear) : "";
+        return normalized.type + " ending in " + normalized.last4 + exp;
+      }
+
+      function loadCreditCardOptions(defaultCard) {
+        var keys = ["bregSavedCreditCards", "bregCreditCards"];
+        var list = [];
+        keys.forEach(function (key) {
+          var raw = parseJson(key);
+          if (Array.isArray(raw)) {
+            raw.forEach(function (card) {
+              if (card && typeof card === "object") list.push(normalizeCard(card));
+            });
+          }
+        });
+        if (defaultCard && typeof defaultCard === "object") list.push(normalizeCard(defaultCard));
+        var dedupe = {};
+        var result = [];
+        list.forEach(function (card) {
+          var hash = [card.type, card.last4, card.expMonth, card.expYear, card.name].join("|").toLowerCase();
+          if (hash && !dedupe[hash]) {
+            dedupe[hash] = true;
+            result.push(card);
+          }
+        });
+        return result;
+      }
+
+      function sameAddress(a, b) {
+        if (!a || !b) return false;
+        return [a.name, a.line1, a.cityStateZip, a.country].join("|").toLowerCase() ===
+          [b.name, b.line1, b.cityStateZip, b.country].join("|").toLowerCase();
+      }
+
+      function findAddressIndex(options, target) {
+        var idx = -1;
+        options.forEach(function (opt, i) {
+          if (idx === -1 && sameAddress(opt, target)) idx = i;
+        });
+        return idx < 0 ? 0 : idx;
+      }
+
+      function findCardIndex(options, targetCard) {
+        var target = normalizeCard(targetCard || {});
+        var idx = -1;
+        options.forEach(function (card, i) {
+          var same = String(card.type || "").toLowerCase() === String(target.type || "").toLowerCase() &&
+            String(card.last4 || "") === String(target.last4 || "") &&
+            String(card.expMonth || "") === String(target.expMonth || "") &&
+            String(card.expYear || "") === String(target.expYear || "");
+          if (idx === -1 && same) idx = i;
+        });
+        return idx < 0 ? 0 : idx;
+      }
+
+      function formatAddress(addr) {
+        return [
+          escapeHtml(addr.name || ""),
+          escapeHtml(addr.line1 || ""),
+          escapeHtml(addr.cityStateZip || ""),
+          escapeHtml(addr.country || ""),
+          addr.phone ? "Phone: " + escapeHtml(addr.phone) : ""
+        ].filter(Boolean).join("<br>");
+      }
+
+      function getArrayFromStorage(key) {
+        var parsed = parseJson(key);
+        return Array.isArray(parsed) ? parsed : [];
+      }
+
+      function saveNewShippingAddress(addr) {
+        var normalized = normalizeAddress(addr);
+        var keys = ["bregSavedShippingAddresses", "bregSavedAddresses", "bregAddressBook"];
+        keys.forEach(function (key) {
+          var existing = getArrayFromStorage(key);
+          existing.push(normalized);
+          try { localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {}
+        });
+        try { localStorage.setItem("bregDefaultShippingAddress", JSON.stringify(normalized)); } catch (e) {}
+      }
+
+      function saveNewCreditCard(card) {
+        var normalized = normalizeCard(card);
+        var keys = ["bregSavedCreditCards", "bregCreditCards"];
+        keys.forEach(function (key) {
+          var existing = getArrayFromStorage(key).map(normalizeCard);
+          existing.push(normalized);
+          try { localStorage.setItem(key, JSON.stringify(existing)); } catch (e) {}
+        });
+        try { localStorage.setItem("bregDefaultCreditCard", JSON.stringify(normalized)); } catch (e) {}
+        if (card && card.billingAddress) {
+          try { localStorage.setItem("bregDefaultCreditCardBillingAddress", JSON.stringify(normalizeAddress(card.billingAddress))); } catch (e) {}
+        }
+      }
+
+      function ensureSeedShippingAddresses(defaultShipping) {
+        var base = normalizeAddress(defaultShipping || quickDefaults().shipping);
+        var seeds = [
+          base,
+          {
+            name: "St. Mary's Hospital",
+            line1: "1234 Medical Center Drive",
+            cityStateZip: "San Francisco, CA 94102",
+            country: "United States",
+            phone: "(415) 555-0123"
+          },
+          {
+            name: "General Hospital - Surgery Department",
+            line1: "5678 Healthcare Blvd",
+            cityStateZip: "Los Angeles, CA 90001",
+            country: "United States",
+            phone: "(213) 555-0456"
+          },
+          {
+            name: "University Medical Center",
+            line1: "910 Campus Drive",
+            cityStateZip: "San Diego, CA 92101",
+            country: "United States",
+            phone: "(619) 555-0789"
+          }
+        ].map(normalizeAddress);
+
+        var keys = ["bregSavedShippingAddresses", "bregSavedAddresses", "bregAddressBook"];
+        keys.forEach(function (key) {
+          var existing = getArrayFromStorage(key).map(normalizeAddress);
+          var merged = existing.concat(seeds);
+          var dedupe = {};
+          var next = [];
+          merged.forEach(function (addr) {
+            var hash = [addr.name, addr.line1, addr.cityStateZip, addr.country].join("|").toLowerCase();
+            if (hash && !dedupe[hash]) {
+              dedupe[hash] = true;
+              next.push(addr);
+            }
+          });
+          if (next.length) {
+            try { localStorage.setItem(key, JSON.stringify(next)); } catch (e) {}
+          }
+        });
+      }
+
+      function ensureSeedCreditCards(defaultCard) {
+        var base = defaultCard ? normalizeCard(defaultCard) : {
+          type: "Visa",
+          last4: "3456",
+          expMonth: "01",
+          expYear: "2029",
+          name: "Medical Clinic Inc."
+        };
+        var seeds = [
+          base,
+          { type: "Mastercard", last4: "8842", expMonth: "07", expYear: "2028", name: "Medical Clinic Inc." },
+          { type: "American Express", last4: "1008", expMonth: "11", expYear: "2027", name: "Medical Clinic Inc." }
+        ].map(normalizeCard);
+        var keys = ["bregSavedCreditCards", "bregCreditCards"];
+        keys.forEach(function (key) {
+          var existing = getArrayFromStorage(key).map(normalizeCard);
+          var merged = existing.concat(seeds);
+          var dedupe = {};
+          var next = [];
+          merged.forEach(function (card) {
+            var hash = [card.type, card.last4, card.expMonth, card.expYear, card.name].join("|").toLowerCase();
+            if (hash && !dedupe[hash]) {
+              dedupe[hash] = true;
+              next.push(card);
+            }
+          });
+          try { localStorage.setItem(key, JSON.stringify(next)); } catch (e) {}
+        });
+        if (!parseJson("bregDefaultCreditCard")) {
+          try { localStorage.setItem("bregDefaultCreditCard", JSON.stringify(base)); } catch (e) {}
+        }
+      }
+
+      function ensureDefaultCardBillingAddress(invoiceAddress) {
+        var existing = parseJson("bregDefaultCreditCardBillingAddress");
+        if (existing && typeof existing === "object") return normalizeAddress(existing);
+        var fallback = normalizeAddress(invoiceAddress || quickDefaults().invoice);
+        try { localStorage.setItem("bregDefaultCreditCardBillingAddress", JSON.stringify(fallback)); } catch (e) {}
+        return fallback;
+      }
+
+      function syncStickyOffset() {
+        var header = document.querySelector(".top-header");
+        var headerHeight = header ? Math.ceil(header.getBoundingClientRect().height) : 112;
+        document.documentElement.style.setProperty("--checkout-sticky-offset", String(headerHeight) + "px");
+      }
+
+      function getCheckoutSelections() {
+        var defaults = quickDefaults();
+        var shippingOptions = loadAddressOptions(
+          ["bregSavedShippingAddresses", "bregShippingAddresses", "bregSavedAddresses", "bregAddressBook", "bregDefaultShippingAddress"],
+          defaults.shipping
+        );
+        var invoiceOptions = loadAddressOptions(
+          ["bregSavedInvoiceAddresses", "bregInvoiceAddresses", "bregSavedAddresses", "bregAddressBook", "bregDefaultInvoiceAddress"],
+          defaults.invoice
+        );
+        var defaultCardBilling = ensureDefaultCardBillingAddress(invoiceOptions[0] || defaults.invoice);
+        var cardOptions = loadCreditCardOptions(defaults.defaultCard);
+        var shippingIdx = findAddressIndex(shippingOptions, normalizeAddress(defaults.shipping));
+        var invoiceIdx = 0;
+        var paymentMode = String($("input[name='paymentMethodMode']:checked").val() || defaults.paymentMode || "invoice").toLowerCase();
+        if (paymentMode !== "credit") paymentMode = "invoice";
+        var cardIdx = Number($("input[name='creditCardModal']:checked").val());
+        if (Number.isNaN(cardIdx) || cardIdx < 0 || cardIdx >= cardOptions.length) {
+          cardIdx = findCardIndex(cardOptions, defaults.defaultCard);
+        }
+        var attentionTo = String($("#shippingAttentionInput").val() || defaults.shippingAttentionTo || "").trim();
+        var shippingCarrier = String($("input[name='shippingCarrier']:checked").val() || defaults.shippingCarrier || "FedEx");
+        var shippingOption = String($("input[name='shippingOption']:checked").val() || defaults.shippingOption || "Ground");
+        var shippingResidential = $("#shippingResidentialInput").is(":checked");
+        var shippingSignature = $("#shippingSignatureInput").is(":checked");
+        var selectedShipping = shippingOptions[shippingIdx] || shippingOptions[0] || normalizeAddress(defaults.shipping);
+        var shippingWithAttention = {
+          name: selectedShipping.name,
+          line1: selectedShipping.line1,
+          cityStateZip: selectedShipping.cityStateZip,
+          country: selectedShipping.country,
+          phone: selectedShipping.phone,
+          attentionTo: attentionTo
+        };
+
+        return {
+          shippingOptions: shippingOptions,
+          invoiceOptions: invoiceOptions,
+          cardOptions: cardOptions,
+          shipping: shippingWithAttention,
+          invoice: invoiceOptions[invoiceIdx],
+          cardBillingAddress: defaultCardBilling,
+          paymentMode: paymentMode,
+          selectedCard: cardOptions[cardIdx] || null,
+          payment: paymentMode === "invoice" ? "Invoice" : formatCardLabel(cardOptions[cardIdx] || {}),
+          shippingMethod: {
+            carrier: shippingCarrier,
+            option: shippingOption,
+            residentialDelivery: shippingResidential,
+            signatureRequired: shippingSignature
+          },
+          purchaser: defaults.purchaser,
+          shippingAttentionTo: attentionTo
+        };
+      }
+
+      function applyCheckoutSelectionState() {
+        var state = getCheckoutSelections();
+        $(".checkout-choice").removeClass("active");
+        $("input[name='paymentMethodMode']:checked").closest(".checkout-choice").addClass("active");
+        $("input[name='shippingCarrier']:checked").closest(".checkout-choice").addClass("active");
+        $("input[name='shippingOption']:checked").closest(".checkout-choice").addClass("active");
+        try { localStorage.setItem("bregDefaultShippingAddress", JSON.stringify(state.shipping)); } catch (e) {}
+        try { localStorage.setItem("bregDefaultInvoiceAddress", JSON.stringify(state.invoice)); } catch (e) {}
+        try { localStorage.setItem("bregCheckoutPaymentMode", state.paymentMode || "invoice"); } catch (e) {}
+        try { localStorage.setItem("bregShippingCarrier", state.shippingMethod.carrier || "FedEx"); } catch (e) {}
+        try { localStorage.setItem("bregShippingOption", state.shippingMethod.option || "Ground"); } catch (e) {}
+        try { localStorage.setItem("bregShippingResidential", state.shippingMethod.residentialDelivery ? "1" : "0"); } catch (e) {}
+        try { localStorage.setItem("bregShippingSignature", state.shippingMethod.signatureRequired ? "1" : "0"); } catch (e) {}
+        try { localStorage.setItem("bregShippingAttentionTo", state.shippingAttentionTo || ""); } catch (e) {}
+        if (state.selectedCard) {
+          try { localStorage.setItem("bregDefaultCreditCard", JSON.stringify(normalizeCard(state.selectedCard))); } catch (e) {}
+        }
+      }
+
+      function renderShippingAddressSelectionModal() {
+        var defaults = quickDefaults();
+        var shippingOptions = loadAddressOptions(
+          ["bregSavedShippingAddresses", "bregShippingAddresses", "bregSavedAddresses", "bregAddressBook", "bregDefaultShippingAddress"],
+          defaults.shipping
+        );
+        var selectedIdx = findAddressIndex(shippingOptions, normalizeAddress(defaults.shipping));
+        $("#shippingAddressSelectionList").html(
+          shippingOptions.map(function (addr, idx) {
+            return "<label class='checkout-choice" + (idx === selectedIdx ? " active" : "") + "'>" +
+              "<input type='radio' name='shippingAddressModal' value='" + idx + "'" + (idx === selectedIdx ? " checked" : "") + ">" +
+              "<span class='checkout-choice-title'>" + escapeHtml(addr.name || "Shipping Address") + "</span>" +
+              "<span class='checkout-choice-line'>" + escapeHtml(addr.line1 || "") + "</span>" +
+              "<span class='checkout-choice-line'>" + escapeHtml(addr.cityStateZip || "") + "</span>" +
+              (addr.phone ? "<span class='checkout-choice-line'>Phone: " + escapeHtml(addr.phone) + "</span>" : "") +
+              (addr.country ? "<span class='checkout-choice-line'>" + escapeHtml(addr.country) + "</span>" : "") +
+            "</label>";
+          }).join("")
+        );
+      }
+
+      function renderCreditCardSelectionModal() {
+        var defaults = quickDefaults();
+        var cards = loadCreditCardOptions(defaults.defaultCard);
+        var selectedIdx = findCardIndex(cards, defaults.defaultCard);
+        $("#creditCardSelectionList").html(
+          cards.map(function (card, idx) {
+            return "<label class='checkout-choice" + (idx === selectedIdx ? " active" : "") + "'>" +
+              "<input type='radio' name='creditCardModal' value='" + idx + "'" + (idx === selectedIdx ? " checked" : "") + ">" +
+              "<span class='checkout-choice-title'>" + escapeHtml(card.type) + " ending in " + escapeHtml(card.last4) + "</span>" +
+              "<span class='checkout-choice-line'>Exp " + escapeHtml(card.expMonth) + "/" + escapeHtml(card.expYear) + "</span>" +
+              "<span class='checkout-choice-line'>" + escapeHtml(card.name) + "</span>" +
+            "</label>";
+          }).join("")
+        );
+      }
+
+      function buildOrder(cart, selections) {
+        var total = 0;
+        var lines = cart.map(function (line) {
+          var qty = Number(line.qty || 0);
+          var price = Number(line.price || 0);
+          var lineTotal = qty * price;
+          total += lineTotal;
+          return {
+            sku: String(line.sku || ""),
+            name: String(line.name || line.sku || "Product"),
+            qty: qty,
+            price: price,
+            lineTotal: lineTotal
+          };
+        });
+        var now = new Date();
+        return {
+          orderNumber: "ORD-" + now.getFullYear() + "-" + String(Math.floor(100000 + Math.random() * 900000)),
+          placedAt: now.toISOString(),
+          total: total,
+          lines: lines,
+          shippingAddress: selections ? selections.shipping : null,
+          invoiceAddress: selections ? selections.invoice : null,
+          paymentMode: selections ? selections.paymentMode : "invoice",
+          paymentType: selections ? selections.payment : null,
+          paymentCard: selections ? selections.selectedCard : null,
+          shippingMethod: selections ? selections.shippingMethod : null,
+          purchaser: selections ? selections.purchaser : null,
+          shippingAttentionTo: selections ? (selections.shippingAttentionTo || "") : ""
+        };
+      }
+
+      function renderCheckout() {
+        var cart = loadCart();
+        var defaults = quickDefaults();
+        ensureSeedShippingAddresses(defaults.shipping);
+        ensureSeedCreditCards(defaults.defaultCard);
+        defaults = quickDefaults();
+        var shippingOptions = loadAddressOptions(
+          ["bregSavedShippingAddresses", "bregShippingAddresses", "bregSavedAddresses", "bregAddressBook", "bregDefaultShippingAddress"],
+          defaults.shipping
+        );
+        var invoiceOptions = loadAddressOptions(
+          ["bregSavedInvoiceAddresses", "bregInvoiceAddresses", "bregSavedAddresses", "bregAddressBook", "bregDefaultInvoiceAddress"],
+          defaults.invoice
+        );
+        var cardBillingAddress = ensureDefaultCardBillingAddress(invoiceOptions[0] || defaults.invoice);
+        var cardOptions = loadCreditCardOptions(defaults.defaultCard);
+        var defaultShippingIdx = findAddressIndex(shippingOptions, normalizeAddress(defaults.shipping));
+        var defaultCardIdx = findCardIndex(cardOptions, defaults.defaultCard);
+        var selectedCard = cardOptions[defaultCardIdx] || null;
+        var paymentMode = String(defaults.paymentMode || "invoice").toLowerCase() === "credit" ? "credit" : "invoice";
+        var shippingCarrier = String(defaults.shippingCarrier || "FedEx");
+        var shippingOption = String(defaults.shippingOption || "Ground");
+        var shippingResidential = !!defaults.shippingResidential;
+        var shippingSignature = !!defaults.shippingSignature;
+
+        var totalQty = 0;
+        var total = 0;
+        cart.forEach(function (line) {
+          totalQty += Number(line.qty || 0);
+          total += Number(line.qty || 0) * Number(line.price || 0);
+        });
+        $(".cart-count").text(totalQty);
+
+        if (!cart.length) {
+          $("#checkoutContent").html(
+            "<div class='checkout-empty'>Your cart is empty. Add products before checking out.<br><br><a href='shopping-cart.html'>Return to cart</a></div>"
+          );
+          return;
+        }
+
+        var summaryLines = "";
+        var linesHtml = "";
+        cart.slice(0, 3).forEach(function (line) {
+          var name = escapeHtml(line.name || line.sku || "Product");
+          var qty = Number(line.qty || 0);
+          var image = escapeHtml(line.image || MISSING_IMAGE);
+          summaryLines += "<div class='checkout-order-line'>" +
+            "<img src='" + image + "' onerror=\"this.onerror=null;this.src='" + MISSING_IMAGE + "';\" alt='" + name + "'>" +
+            "<div><p>" + name + "</p><p class='muted'>Qty: " + qty + "</p></div>" +
+          "</div>";
+        });
+        cart.forEach(function (line) {
+          var qty = Number(line.qty || 0);
+          var price = Number(line.price || 0);
+          var image = escapeHtml(line.image || MISSING_IMAGE);
+          linesHtml += "<div class='checkout-line'>" +
+            "<img src='" + image + "' onerror=\"this.onerror=null;this.src='" + MISSING_IMAGE + "';\" alt='" + escapeHtml(line.name || line.sku || "Product") + "'>" +
+            "<div>" +
+              "<p class='checkout-line-name'>" + escapeHtml(line.name || line.sku || "Product") + "</p>" +
+              "<p class='checkout-line-meta'>SKU: " + escapeHtml(line.sku || "") + " | Qty: " + qty + "</p>" +
+            "</div>" +
+            "<div class='checkout-line-price'>$" + (qty * price).toFixed(2) + "</div>" +
+          "</div>";
+        });
+
+        $("#checkoutContent").html(
+          "<div class='checkout-layout'>" +
+            "<section class='checkout-main'>" +
+              "<section class='checkout-step'>" +
+                "<div class='checkout-step-head'>" +
+                  "<span class='checkout-step-num'>1</span>" +
+                  "<h2 class='checkout-step-title'>Shipping Address</h2>" +
+                "</div>" +
+                "<div class='checkout-step-body'>" +
+                  "<div class='checkout-static-card'>" +
+                    "<strong>" + escapeHtml((shippingOptions[defaultShippingIdx] || {}).name || "Shipping Address") + "</strong>" +
+                    formatAddress(shippingOptions[defaultShippingIdx] || {}) +
+                  "</div>" +
+                  "<div class='checkout-inline-field'>" +
+                    "<label for='shippingAttentionInput'>Attention To</label>" +
+                    "<input type='text' id='shippingAttentionInput' placeholder='Enter recipient or department' value='" + escapeHtml(defaults.shippingAttentionTo || "") + "'>" +
+                  "</div>" +
+                  "<div class='checkout-actions'>" +
+                    "<button type='button' class='checkout-add-address checkout-select-address'><span class='glyphicon glyphicon-map-marker'></span> Select another shipping address</button>" +
+                  "</div>" +
+                "</div>" +
+              "</section>" +
+              "<section class='checkout-step'>" +
+                "<div class='checkout-step-head'>" +
+                  "<span class='checkout-step-num'>2</span>" +
+                  "<h2 class='checkout-step-title'>Payment Method</h2>" +
+                "</div>" +
+                "<div class='checkout-step-body'>" +
+                  "<div class='checkout-options'>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='paymentMethodMode' value='invoice'" + (paymentMode === "invoice" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Invoice</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).name || "") + "</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).line1 || "") + "</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).cityStateZip || "") + "</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).country || "") + "</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='paymentMethodMode' value='credit'" + (paymentMode === "credit" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Credit Card</span>" +
+                      "<span class='checkout-choice-line'>" + escapeHtml(selectedCard ? formatCardLabel(selectedCard) : "No card selected") + "</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.name || "") + "</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.line1 || "") + "</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.cityStateZip || "") + "</span>" +
+                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.country || "") + "</span>" +
+                    "</label>" +
+                  "</div>" +
+                  (paymentMode === "credit"
+                    ? ("<div class='checkout-actions'>" +
+                        "<button type='button' class='checkout-pill-btn' id='selectCreditCardBtn'>Select a different credit card</button>" +
+                      "</div>")
+                    : "") +
+                "</div>" +
+              "</section>" +
+              "<section class='checkout-step'>" +
+                "<div class='checkout-step-head'>" +
+                  "<span class='checkout-step-num'>3</span>" +
+                  "<h2 class='checkout-step-title'>Shipping Method</h2>" +
+                "</div>" +
+                "<div class='checkout-step-body'>" +
+                  "<div class='checkout-choice-meta' style='margin-bottom:6px;'>Carrier</div>" +
+                  "<div class='checkout-ship-grid'>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingCarrier' value='FedEx'" + (shippingCarrier === "FedEx" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>FedEx</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingCarrier' value='UPS'" + (shippingCarrier === "UPS" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>UPS</span>" +
+                    "</label>" +
+                  "</div>" +
+                  "<div class='checkout-choice-meta' style='margin:10px 0 6px;'>Shipping Method</div>" +
+                  "<div class='checkout-options'>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingOption' value='Ground'" + (shippingOption === "Ground" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Ground</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingOption' value='Next Day Air'" + (shippingOption === "Next Day Air" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Next Day Air</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingOption' value='Next Day Air Saver'" + (shippingOption === "Next Day Air Saver" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Next Day Air Saver</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingOption' value='Air - 2nd Day Air'" + (shippingOption === "Air - 2nd Day Air" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Air - 2nd Day Air</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingOption' value='Air - 3 Day Select'" + (shippingOption === "Air - 3 Day Select" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Air - 3 Day Select</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingOption' value='Next Day Air Early AM'" + (shippingOption === "Next Day Air Early AM" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Next Day Air Early AM</span>" +
+                    "</label>" +
+                    "<label class='checkout-choice'>" +
+                      "<input type='radio' name='shippingOption' value='Saturday'" + (shippingOption === "Saturday" ? " checked" : "") + ">" +
+                      "<span class='checkout-choice-title'>Saturday</span>" +
+                      "<span class='checkout-choice-meta'>Only available on Fridays based on FedEx availability.</span>" +
+                    "</label>" +
+                  "</div>" +
+                  "<div class='checkout-check-wrap'>" +
+                    "<label><input type='checkbox' id='shippingResidentialInput'" + (shippingResidential ? " checked" : "") + "> Residential Delivery</label>" +
+                    "<label><input type='checkbox' id='shippingSignatureInput'" + (shippingSignature ? " checked" : "") + "> Signature Required</label>" +
+                  "</div>" +
+                "</div>" +
+              "</section>" +
+              "<section class='checkout-step'>" +
+                "<div class='checkout-step-head'>" +
+                  "<span class='checkout-step-num'>4</span>" +
+                  "<h2 class='checkout-step-title'>Items in this order</h2>" +
+                "</div>" +
+                "<div class='checkout-step-body'><div class='checkout-lines'>" + linesHtml + "</div></div>" +
+              "</section>" +
+            "</section>" +
+            "<aside class='checkout-summary'>" +
+              "<h3>Order Summary</h3>" +
+              "<ul class='checkout-summary-list'>" +
+                "<li><span>Items (" + totalQty + ")</span><span>$" + total.toFixed(2) + "</span></li>" +
+                "<li><span>Shipping &amp; handling</span><span style='color:#067d62;'>FREE</span></li>" +
+                "<li><span>Total before tax</span><span>$" + total.toFixed(2) + "</span></li>" +
+                "<li><span>Estimated tax</span><span>$0.00</span></li>" +
+              "</ul>" +
+              "<div class='checkout-total'><span>Order total:</span><span>$" + total.toFixed(2) + "</span></div>" +
+              "<button type='button' class='checkout-place' id='placeOrderBtn'>Place your order</button>" +
+              "<div class='checkout-step-note' style='text-align:center;margin-top:8px;'>By placing your order, you agree to Breg's privacy notice and conditions of use.</div>" +
+              "<div class='checkout-order-lines'>" + summaryLines + "</div>" +
+            "</aside>" +
+          "</div>"
+        );
+        applyCheckoutSelectionState();
+        hideInitialLoader();
+      }
+
+      $(document).on("change", "input[name='paymentMethodMode']", function () {
+        try { localStorage.setItem("bregCheckoutPaymentMode", String($(this).val() || "invoice")); } catch (e) {}
+        renderCheckout();
+      });
+
+      $(document).on("change", "input[name='shippingCarrier'], input[name='shippingOption'], #shippingResidentialInput, #shippingSignatureInput", function () {
+        applyCheckoutSelectionState();
+      });
+
+      $(document).on("input", "#shippingAttentionInput", function () {
+        try { localStorage.setItem("bregShippingAttentionTo", String($(this).val() || "").trim()); } catch (e) {}
+      });
+
+      $(document).on("change", "input[name='shippingAddressModal']", function () {
+        $(".checkout-modal-list .checkout-choice").removeClass("active");
+        $(this).closest(".checkout-choice").addClass("active");
+      });
+
+      $(document).on("change", "input[name='creditCardModal']", function () {
+        $("#creditCardSelectionList .checkout-choice").removeClass("active");
+        $(this).closest(".checkout-choice").addClass("active");
+      });
+
+      $(document).on("click", ".checkout-select-address", function () {
+        renderShippingAddressSelectionModal();
+        $("#selectShippingAddressModal").modal("show");
+      });
+
+      $(document).on("click", ".checkout-add-address:not(.checkout-select-address)", function () {
+        $("#addShippingAddressForm")[0].reset();
+        $("#shipCountry").val("United States");
+        $("#addShippingAddressModal").modal("show");
+      });
+
+      $(document).on("click", "#selectCreditCardBtn", function () {
+        renderCreditCardSelectionModal();
+        $("#selectCreditCardModal").modal("show");
+      });
+
+      $(document).on("show.bs.modal", "#addCreditCardModal", function () {
+        if (!$("#cardBillCountry").val()) {
+          $("#cardBillCountry").val("United States");
+        }
+      });
+
+      $(document).on("click", "#openAddShippingFromSelect", function () {
+        $("#selectShippingAddressModal").modal("hide");
+        setTimeout(function () {
+          $("#addShippingAddressForm")[0].reset();
+          $("#shipCountry").val("United States");
+          $("#addShippingAddressModal").modal("show");
+        }, 120);
+      });
+
+      $(document).on("click", "#openAddCardFromSelect", function () {
+        $("#selectCreditCardModal").modal("hide");
+        setTimeout(function () {
+          $("#addCreditCardForm")[0].reset();
+          $("#cardBillCountry").val("United States");
+          $("#addCreditCardModal").modal("show");
+        }, 120);
+      });
+
+      $(document).on("submit", "#selectShippingAddressForm", function (event) {
+        event.preventDefault();
+        var idx = Number($("input[name='shippingAddressModal']:checked").val());
+        if (Number.isNaN(idx)) idx = 0;
+        var defaults = quickDefaults();
+        var shippingOptions = loadAddressOptions(
+          ["bregSavedShippingAddresses", "bregShippingAddresses", "bregSavedAddresses", "bregAddressBook", "bregDefaultShippingAddress"],
+          defaults.shipping
+        );
+        var chosen = shippingOptions[idx] || shippingOptions[0] || normalizeAddress(defaults.shipping);
+        try { localStorage.setItem("bregDefaultShippingAddress", JSON.stringify(chosen)); } catch (e) {}
+        $("#selectShippingAddressModal").modal("hide");
+        renderCheckout();
+      });
+
+      $(document).on("submit", "#selectCreditCardForm", function (event) {
+        event.preventDefault();
+        var idx = Number($("input[name='creditCardModal']:checked").val());
+        if (Number.isNaN(idx)) idx = 0;
+        var defaults = quickDefaults();
+        var cards = loadCreditCardOptions(defaults.defaultCard);
+        var chosen = cards[idx] || cards[0] || null;
+        if (chosen) {
+          try { localStorage.setItem("bregDefaultCreditCard", JSON.stringify(normalizeCard(chosen))); } catch (e) {}
+          try { localStorage.setItem("bregCheckoutPaymentMode", "credit"); } catch (e) {}
+        }
+        $("#selectCreditCardModal").modal("hide");
+        renderCheckout();
+      });
+
+      $(document).on("submit", "#addShippingAddressForm", function (event) {
+        event.preventDefault();
+        var form = this;
+        var name = String(form.name.value || "").trim();
+        var line1 = String(form.line1.value || "").trim();
+        var city = String(form.city.value || "").trim();
+        var state = String(form.state.value || "").trim();
+        var zip = String(form.zip.value || "").trim();
+        if (!name || !line1 || !city || !state || !zip) return;
+        saveNewShippingAddress({
+          name: name,
+          line1: line1,
+          cityStateZip: city + ", " + state + " " + zip,
+          country: String(form.country.value || "United States").trim() || "United States",
+          phone: String(form.phone.value || "").trim()
+        });
+        $("#addShippingAddressModal").modal("hide");
+        renderCheckout();
+      });
+
+      $(document).on("submit", "#addCreditCardForm", function (event) {
+        event.preventDefault();
+        var form = this;
+        var name = String(form.name.value || "").trim();
+        var number = String(form.number.value || "").replace(/\D/g, "");
+        var month = String(form.month.value || "").trim();
+        var year = String(form.year.value || "").trim();
+        var type = String(form.type.value || "Visa").trim();
+        var billName = String(form.bill_name.value || "").trim();
+        var billLine1 = String(form.bill_line1.value || "").trim();
+        var billCity = String(form.bill_city.value || "").trim();
+        var billState = String(form.bill_state.value || "").trim();
+        var billZip = String(form.bill_zip.value || "").trim();
+        var billCountry = String(form.bill_country.value || "").trim() || "United States";
+        var billPhone = String(form.bill_phone.value || "").trim();
+        if (!name || number.length < 12 || !month || !year || !billName || !billLine1 || !billCity || !billState || !billZip) return;
+        saveNewCreditCard({
+          type: type,
+          number: number,
+          expMonth: month,
+          expYear: year,
+          name: name,
+          billingAddress: {
+            name: billName,
+            line1: billLine1,
+            cityStateZip: billCity + ", " + billState + " " + billZip,
+            country: billCountry,
+            phone: billPhone
+          }
+        });
+        try { localStorage.setItem("bregCheckoutPaymentMode", "credit"); } catch (e) {}
+        $("#addCreditCardModal").modal("hide");
+        renderCheckout();
+      });
+
+      $(document).on("click", "#placeOrderBtn", function () {
+        var $btn = $(this);
+        var cart = loadCart();
+        if (!cart.length) return;
+        $btn.prop("disabled", true).text("Placing Order...");
+        var order = buildOrder(cart, getCheckoutSelections());
+        try { localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order)); } catch (e) {}
+        saveCart([]);
+        window.location.href = "order-confirmation.html";
+      });
+
+      $(window).on("resize", syncStickyOffset);
+      syncStickyOffset();
+      renderCheckout();
+    })();
+  </script>
+</body>
+</html>

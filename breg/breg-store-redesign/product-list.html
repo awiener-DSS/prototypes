@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Product List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body {
+      background: #f5f7f8;
+      color: #0f1111;
+    }
+
+    .pl-page {
+      margin: 16px 0 26px;
+    }
+
+    .pl-breadcrumb {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #5f6b76;
+    }
+
+    .pl-breadcrumb a {
+      color: #007185;
+      text-decoration: none;
+    }
+
+    .pl-breadcrumb a:hover,
+    .pl-breadcrumb a:focus {
+      color: #005a6a;
+      text-decoration: none;
+    }
+
+    .pl-breadcrumb .sep {
+      margin: 0 6px;
+      color: #9ba6b2;
+    }
+
+    .pl-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .pl-title {
+      margin: 0;
+      font-size: 32px;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+
+    .pl-subtitle {
+      margin: 6px 0 0;
+      font-size: 14px;
+      color: #5a646d;
+    }
+
+    .pl-count {
+      margin: 0;
+      color: #37424d;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .pl-toolbar {
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      margin-bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pl-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #fff;
+      border: 1px solid #d5dde4;
+      border-radius: 12px;
+      padding: 8px;
+    }
+
+    .pl-sort,
+    .pl-view-toggle button,
+    .pl-mobile-filter {
+      height: 38px;
+      border: 1px solid #c7d0d8;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #0f1111;
+      background: #fff;
+    }
+
+    .pl-sort {
+      min-width: 180px;
+      padding: 0 30px 0 10px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-color: #fff;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #64707b 50%),
+        linear-gradient(135deg, #64707b 50%, transparent 50%);
+      background-position:
+        calc(100% - 14px) 16px,
+        calc(100% - 9px) 16px;
+      background-size: 5px 5px, 5px 5px;
+      background-repeat: no-repeat;
+    }
+
+    .pl-sort::-ms-expand {
+      display: none;
+    }
+
+    .pl-view-toggle {
+      display: inline-flex;
+      border: 1px solid #c7d0d8;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .pl-view-toggle button {
+      width: 40px;
+      border: 0;
+      border-radius: 0;
+      border-right: 1px solid #c7d0d8;
+    }
+
+    .pl-view-toggle button:last-child {
+      border-right: 0;
+    }
+
+    .pl-view-toggle button.active {
+      background: #e7f4f6;
+      color: #005f70;
+    }
+
+    .pl-mobile-filter {
+      padding: 0 12px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+
+    .pl-layout {
+      display: grid;
+      grid-template-columns: 290px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .pl-sidebar {
+      background: #fff;
+      border: 1px solid #d5dde4;
+      border-radius: 14px;
+      padding: 14px;
+      position: sticky;
+      top: 78px;
+      max-height: calc(100vh - 96px);
+      overflow: auto;
+    }
+
+    .pl-filter-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .pl-filter-title {
+      margin: 0;
+      font-size: 17px;
+      font-weight: 600;
+      color: #0f1111;
+    }
+
+    .pl-filter-clear {
+      border: 0;
+      background: transparent;
+      color: #007185;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 0;
+    }
+
+    .pl-filter-clear:hover,
+    .pl-filter-clear:focus {
+      color: #005f70;
+      text-decoration: underline;
+      outline: 0;
+    }
+
+    .pl-filter-group {
+      border-top: 1px solid #ecf0f3;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+
+    .pl-filter-group:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .pl-filter-group summary {
+      list-style: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #12181e;
+      margin-bottom: 8px;
+      position: relative;
+      padding-right: 18px;
+    }
+
+    .pl-filter-group summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .pl-filter-group summary:after {
+      content: "\e114";
+      font-family: "Glyphicons Halflings";
+      position: absolute;
+      right: 0;
+      top: 0;
+      font-size: 10px;
+      color: #6e7a85;
+    }
+
+    .pl-filter-group[open] summary:after {
+      content: "\e113";
+    }
+
+    .pl-option {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 0 0 7px;
+      font-size: 12px;
+      color: #0f1111;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .pl-option input {
+      margin: 0;
+    }
+
+    .pl-option-swatch {
+      gap: 8px;
+    }
+
+    .pl-swatch-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid #c2ccd4;
+      display: block;
+      object-fit: cover;
+    }
+
+    .pl-content {
+      min-width: 0;
+    }
+
+    .pl-active-filters {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin: 0 0 12px;
+    }
+
+    .pl-chip {
+      background: #fff;
+      border: 1px solid #c7d0d8;
+      border-radius: 999px;
+      font-size: 12px;
+      color: #1d252c;
+      padding: 4px 10px;
+      line-height: 1.3;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pl-chip .remove {
+      border: 0;
+      background: transparent;
+      color: #5f6a75;
+      padding: 0;
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .pl-count-inline {
+      margin-left: auto;
+      color: #37424d;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      padding-left: 8px;
+    }
+
+    .pl-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .pl-grid.compact {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .p-card {
+      background: #fff;
+      border: 1px solid #d4dde5;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      position: relative;
+    }
+    .p-card-link {
+      display: flex;
+      flex-direction: column;
+      color: inherit;
+      text-decoration: none;
+      height: 100%;
+    }
+    .p-card-link:hover,
+    .p-card-link:focus {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .p-card:hover {
+      transform: translateY(-2px);
+      border-color: #b7c3ce;
+      box-shadow: 0 8px 20px rgba(16, 26, 35, .12);
+    }
+
+    .p-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #eef2f5;
+      display: block;
+    }
+
+    .p-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .p-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.4;
+      color: #11181f;
+    }
+
+    .pl-empty {
+      background: #fff;
+      border: 1px solid #d4dde5;
+      border-radius: 14px;
+      padding: 30px 20px;
+      text-align: center;
+      color: #4e5963;
+      font-size: 14px;
+    }
+
+    .pl-filter-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 15, 20, .48);
+      z-index: 1250;
+      display: none;
+    }
+
+    .pl-filter-backdrop.open {
+      display: block;
+    }
+
+    @media (max-width: 1290px) {
+      .pl-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pl-grid.compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 991px) {
+      .pl-mobile-filter {
+        display: inline-flex;
+      }
+
+      .pl-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .pl-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(90vw, 340px);
+        border-radius: 0;
+        z-index: 1300;
+        max-height: none;
+        transform: translateX(-100%);
+        transition: transform .2s ease;
+      }
+
+      .pl-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .pl-grid,
+      .pl-grid.compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .pl-header {
+        gap: 10px;
+      }
+
+      .pl-count-inline {
+        width: 100%;
+        margin-left: 0;
+        padding-left: 0;
+        text-align: left;
+      }
+
+      .pl-toolbar-right {
+        padding: 0;
+        background: transparent;
+        border: 0;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .pl-title {
+        font-size: 26px;
+      }
+
+      .pl-grid,
+      .pl-grid.compact {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <section class="pl-page">
+      <p class="pl-breadcrumb"><a href="index.html">Home</a><span class="sep">&gt;</span><span id="categoryBreadcrumb">Knee Bracing</span></p>
+      <div class="pl-header">
+        <h1 class="pl-title" id="categoryTitle">Knee Bracing</h1>
+        <div class="pl-toolbar">
+          <button type="button" class="pl-mobile-filter" id="mobileFilterBtn"><span class="glyphicon glyphicon-filter"></span> Filters</button>
+          <div class="pl-toolbar-right">
+            <select class="pl-sort" id="sortSelect">
+              <option value="featured">Sort: Featured</option>
+              <option value="price_asc">Sort: Price Low to High</option>
+              <option value="price_desc">Sort: Price High to Low</option>
+              <option value="name_asc">Sort: Name A to Z</option>
+            </select>
+            <div class="pl-view-toggle" role="group" aria-label="View mode">
+              <button type="button" id="viewComfortable" class="active" aria-label="Comfortable view"><span class="glyphicon glyphicon-th-large"></span></button>
+              <button type="button" id="viewCompact" aria-label="Compact view"><span class="glyphicon glyphicon-th"></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pl-layout">
+        <aside class="pl-sidebar" id="plSidebar">
+          <div class="pl-filter-top">
+            <h2 class="pl-filter-title">Filters</h2>
+            <button type="button" class="pl-filter-clear" id="clearAllFilters">Clear all</button>
+          </div>
+
+          <details class="pl-filter-group" open>
+            <summary>Subcategory</summary>
+            <div id="subcategoryOptions"></div>
+          </details>
+
+          <details class="pl-filter-group" open>
+            <summary>Size</summary>
+            <div id="sizeOptions"></div>
+          </details>
+
+          <details class="pl-filter-group" open>
+            <summary>Option</summary>
+            <div id="optionOptions"></div>
+          </details>
+
+          <details class="pl-filter-group" open>
+            <summary>Color</summary>
+            <div id="colorOptions"></div>
+          </details>
+
+          <details class="pl-filter-group" open>
+            <summary>Gender</summary>
+            <div id="genderOptions"></div>
+          </details>
+
+          <details class="pl-filter-group" open>
+            <summary>Orientation</summary>
+            <div id="orientationOptions"></div>
+          </details>
+
+          <details class="pl-filter-group" open>
+            <summary>UOM</summary>
+            <div id="uomOptions"></div>
+          </details>
+        </aside>
+
+        <section class="pl-content">
+          <div class="pl-active-filters" id="activeFilters"></div>
+          <div class="pl-grid" id="productGrid"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div class="pl-filter-backdrop" id="filterBackdrop"></div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var category = params.get("category") || "Knee Bracing";
+      var subcategory = params.get("subcategory") || "";
+      var categoryAliases = {
+        "Cold Therapy": "Cold Therapy and DVT",
+        "Spine Support": "Spine Bracing",
+        "Ankle & Foot": "Walker/Ankle/Foot Bracing",
+        "Walker/Ankle/Foot": "Walker/Ankle/Foot Bracing",
+        "Elbow & Wrist": "Elbow/Wrist Bracing",
+        "Wrist/Elbow Bracing": "Elbow/Wrist Bracing",
+        "Hip & Thigh": "Hip Bracing"
+      };
+      category = categoryAliases[category] || category;
+
+      var baseImages = [
+        "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg",
+        "assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg",
+        "assets/searchbar/photo-1714929818299-914d3114bcec.jpg",
+        "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg",
+        "assets/searchbar/photo-1533560777802-046814bc297c.jpg",
+        "assets/searchbar/photo-1715531786135-5ac445758873.jpg"
+      ];
+      var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
+
+      var colorSwatchMap = {
+        BLACK: "#24282c",
+        BLUE: "#2f4e89",
+        GRAY: "#8f979f",
+        GREY: "#8f979f",
+        WHITE: "#eef2f5",
+        TEAL: "#0f8aa0",
+        NAVY: "#1f346f",
+        SILVER: "#b8bec6",
+        GREEN: "#3b8b4e",
+        RED: "#c13b3b",
+        YELLOW: "#d4aa00"
+      };
+
+      function escapeHtml(text) {
+        return String(text)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function titleizeCategory() {
+        $("#categoryTitle").text(category);
+        var categoryLink = "product-list.html?category=" + encodeURIComponent(category);
+        if (subcategory) {
+          $("#categoryBreadcrumb").html(
+            "<a href='" + categoryLink + "'>" + escapeHtml(category) + "</a>" +
+            " <span class='sep'>&gt;</span> " +
+            escapeHtml(subcategory)
+          );
+        } else {
+          $("#categoryBreadcrumb").text(category);
+        }
+      }
+
+      function renderFilterOptions(target, values, className, selectedSet, formatLabel) {
+        var html = "";
+        values.forEach(function (value) {
+          var checked = selectedSet && selectedSet.indexOf(value) > -1 ? " checked" : "";
+          html += "<label class='pl-option" + (className === "filter-color" ? " pl-option-swatch" : "") + "'>";
+          html += "<input type='checkbox' class='" + className + "' value='" + escapeHtml(value) + "'" + checked + ">";
+          html += formatLabel ? formatLabel(value) : escapeHtml(value);
+          html += "</label>";
+        });
+        $(target).html(html);
+      }
+
+      function normalizeKey(value) {
+        return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+      }
+
+      function uniqueValues(values) {
+        var map = {};
+        var out = [];
+        (values || []).forEach(function (value) {
+          var cleaned = String(value || "").trim();
+          if (!cleaned || cleaned.toUpperCase() === "N/A") return;
+          if (map[cleaned]) return;
+          map[cleaned] = true;
+          out.push(cleaned);
+        });
+        return out;
+      }
+
+      function colorToSwatch(value) {
+        var key = String(value || "").trim().toUpperCase();
+        return colorSwatchMap[key] || "#bcc5cd";
+      }
+
+      function directChildren(node, localName) {
+        var out = [];
+        Array.prototype.forEach.call(node.childNodes || [], function (child) {
+          if (child.nodeType === 1 && child.localName === localName) out.push(child);
+        });
+        return out;
+      }
+
+      function firstDirectChild(node, localName) {
+        var list = directChildren(node, localName);
+        return list.length ? list[0] : null;
+      }
+
+      function firstDescendant(node, localName) {
+        var list = node.getElementsByTagNameNS("*", localName);
+        return list.length ? list[0] : null;
+      }
+
+      function nodeText(node) {
+        return node ? $.trim(node.textContent || "") : "";
+      }
+
+      function childText(node, localName) {
+        return nodeText(firstDirectChild(node, localName));
+      }
+
+      function parseCustomAttributes(productNode) {
+        var attrs = {};
+        var customContainer = firstDirectChild(productNode, "custom-attributes");
+        if (!customContainer) return attrs;
+        directChildren(customContainer, "custom-attribute").forEach(function (node) {
+          var name = node.getAttribute("name");
+          if (!name) return;
+          var values = [];
+          var valueNodes = node.getElementsByTagNameNS("*", "value");
+          if (valueNodes.length) {
+            Array.prototype.forEach.call(valueNodes, function (v) {
+              var text = $.trim(v.textContent || "");
+              if (text) values.push(text);
+            });
+          } else {
+            var direct = $.trim(node.textContent || "");
+            if (direct) values.push(direct);
+          }
+          attrs[name] = uniqueValues(values);
+        });
+        return attrs;
+      }
+
+      function parseCategoriesXML(xmlDoc) {
+        var map = {};
+        var lookup = {};
+        var categories = xmlDoc.getElementsByTagNameNS("*", "category");
+        Array.prototype.forEach.call(categories, function (node) {
+          var id = childText(node, "name") || node.getAttribute("name") || "";
+          if (!id) return;
+          var display = id;
+          var displayNodes = node.getElementsByTagNameNS("*", "display-name");
+          Array.prototype.forEach.call(displayNodes, function (dNode) {
+            if (display !== id) return;
+            var lang = dNode.getAttribute("xml:lang") || dNode.getAttribute("lang") || "";
+            if (!lang || lang === "en-US") display = nodeText(dNode) || id;
+          });
+          var parentNode = firstDirectChild(node, "parent");
+          var parent = parentNode ? (parentNode.getAttribute("name") || "") : "";
+          map[id] = { id: id, display: display, parent: parent };
+          lookup[normalizeKey(id)] = id;
+          lookup[normalizeKey(display)] = id;
+        });
+        return { map: map, lookup: lookup };
+      }
+
+      function resolveCategory(linkNames, categoryIndex) {
+        var links = linkNames || [];
+        if (!links.length) {
+          return { category: "Uncategorized", subcategory: "Uncategorized" };
+        }
+
+        var raw = links[0];
+        var catId = categoryIndex.map[raw] ? raw : categoryIndex.lookup[normalizeKey(raw)];
+        if (!catId) {
+          return { category: raw, subcategory: raw };
+        }
+
+        var sub = categoryIndex.map[catId];
+        var current = sub;
+        var guard = 0;
+        while (current && current.parent && current.parent !== "Shop" && guard < 30) {
+          current = categoryIndex.map[current.parent];
+          guard += 1;
+        }
+        return {
+          category: current ? current.display : sub.display,
+          subcategory: sub.display
+        };
+      }
+
+      function normalizeProductImageUrl(rawUrl) {
+        var prefix = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/";
+        var url = (rawUrl || "").trim();
+        if (!url) return "";
+        if (/^https?:\/\//i.test(url)) return url;
+        if (url.indexOf("20260218-all-products.xml/") === 0) {
+          url = url.replace(/^20260218-all-products\.xml\//, "");
+        }
+        if (url.charAt(0) === "/") {
+          url = url.slice(1);
+        }
+        return prefix + url;
+      }
+
+      function parseProductsXML(productsXmlDoc, categoriesXmlDoc) {
+        var categoryIndex = parseCategoriesXML(categoriesXmlDoc);
+        var parsed = [];
+        var bySku = {};
+        var variationChildSet = {};
+        var prefix = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/";
+
+        var productNodes = productsXmlDoc.getElementsByTagNameNS("*", "product");
+        Array.prototype.forEach.call(productNodes, function (productNode, idx) {
+          var sku = productNode.getAttribute("sku") || childText(productNode, "sku");
+          if (!sku) return;
+          var name = sku;
+          var nameNodes = productNode.getElementsByTagNameNS("*", "name");
+          Array.prototype.forEach.call(nameNodes, function (nNode) {
+            if (name !== sku) return;
+            var lang = nNode.getAttribute("xml:lang") || nNode.getAttribute("lang") || "";
+            if (!lang || lang === "en-US") name = nodeText(nNode) || sku;
+          });
+          var online = childText(productNode, "online");
+          if (online && online !== "1") return;
+
+          var imageNode = null;
+          var imagesNode = firstDirectChild(productNode, "images");
+          if (imagesNode) {
+            var imageRefs = directChildren(imagesNode, "image-ref");
+            Array.prototype.forEach.call(imageRefs, function (img) {
+              if (imageNode) return;
+              if ((img.getAttribute("image-type") || "") === "M") imageNode = img;
+            });
+            imageNode = imageNode || imageRefs[0] || null;
+          }
+          var imageBase = imageNode ? (imageNode.getAttribute("image-base-name") || "") : "";
+          var image = imageBase ? normalizeProductImageUrl(prefix + imageBase) : missingProductImage;
+          var price = parseFloat(nodeText(firstDescendant(productNode, "product-list-price"))) || 0;
+          var categoryLinks = [];
+          var categoryLinksNode = firstDirectChild(productNode, "category-links");
+          if (categoryLinksNode) {
+            directChildren(categoryLinksNode, "category-link").forEach(function (node) {
+              var linkName = node.getAttribute("name");
+              if (linkName) categoryLinks.push(linkName);
+            });
+          }
+
+          var masteredSkus = [];
+          var variationsNode = firstDirectChild(productNode, "variations");
+          if (variationsNode) {
+            var masteredProductsNode = firstDirectChild(variationsNode, "mastered-products");
+            if (masteredProductsNode) {
+              directChildren(masteredProductsNode, "mastered-product").forEach(function (node) {
+                var childSku = node.getAttribute("sku");
+                if (childSku) {
+                  masteredSkus.push(childSku);
+                  variationChildSet[childSku] = true;
+                }
+              });
+            }
+          }
+
+          var custom = parseCustomAttributes(productNode);
+          var entry = {
+            id: sku,
+            sku: sku,
+            name: name,
+            image: image,
+            price: price,
+            oldPrice: price,
+            categoryLinks: categoryLinks,
+            custom: custom,
+            masteredSkus: masteredSkus
+          };
+          parsed.push(entry);
+          bySku[sku] = entry;
+        });
+
+        var items = [];
+        parsed.forEach(function (entry) {
+          var isVariationMaster = entry.masteredSkus.length > 0;
+          var isVariationProduct = !isVariationMaster && !!variationChildSet[entry.sku];
+          var type = isVariationMaster ? "variation-master" : (isVariationProduct ? "variation-product" : "product");
+
+          if (type === "variation-product") return;
+
+          var children = [];
+          if (isVariationMaster) {
+            children = entry.masteredSkus.map(function (childSku) { return bySku[childSku]; }).filter(Boolean);
+          }
+
+          var linkSource = entry.categoryLinks.length ? entry.categoryLinks : (children[0] ? children[0].categoryLinks : []);
+          var categoryData = resolveCategory(linkSource, categoryIndex);
+          var source = children.length ? children : [entry];
+          var collect = function (attr) {
+            var all = [];
+            source.forEach(function (p) {
+              all = all.concat((p.custom[attr] || []));
+            });
+            return uniqueValues(all);
+          };
+
+          var optionValues = collect("Option").concat(collect("LeftRight"));
+          optionValues = uniqueValues(optionValues);
+
+          items.push({
+            id: entry.sku,
+            name: entry.name,
+            image: entry.image,
+            category: categoryData.category,
+            subcategory: categoryData.subcategory,
+            type: type,
+            size: (collect("Size")[0] || "U"),
+            sizeOptions: collect("Size"),
+            optionOptions: optionValues,
+            colorOptions: collect("Color"),
+            genderOptions: collect("Gender"),
+            orientationOptions: collect("Orientation"),
+            uomOptions: collect("UOM"),
+            price: entry.price,
+            oldPrice: entry.oldPrice
+          });
+        });
+
+        return items;
+      }
+
+      var allCatalogItems = [];
+      var products = [];
+      var filtered = products.slice();
+      var compactView = false;
+
+      function productMatchesState(product, state, excludeFacet) {
+        if (excludeFacet !== "subcategory" && state.subcategories.length && state.subcategories.indexOf(product.subcategory) === -1) return false;
+        if (excludeFacet !== "size" && state.sizes.length && !product.sizeOptions.some(function (size) { return state.sizes.indexOf(size) > -1; })) return false;
+        if (excludeFacet !== "option" && state.options.length && !product.optionOptions.some(function (option) { return state.options.indexOf(option) > -1; })) return false;
+        if (excludeFacet !== "color" && state.colors.length && !product.colorOptions.some(function (color) { return state.colors.indexOf(color) > -1; })) return false;
+        if (excludeFacet !== "gender" && state.genders.length && !product.genderOptions.some(function (gender) { return state.genders.indexOf(gender) > -1; })) return false;
+        if (excludeFacet !== "orientation" && state.orientations.length && !product.orientationOptions.some(function (orientation) { return state.orientations.indexOf(orientation) > -1; })) return false;
+        if (excludeFacet !== "uom" && state.uoms.length && !product.uomOptions.some(function (uom) { return state.uoms.indexOf(uom) > -1; })) return false;
+        return true;
+      }
+
+      function renderFacetGroup(target, values, className, selectedSet, formatLabel) {
+        var selected = (selectedSet || []).filter(function (value) { return values.indexOf(value) > -1; });
+        renderFilterOptions(target, values, className, selected, formatLabel);
+        var $group = $(target).closest(".pl-filter-group");
+        $group.toggle(values.length > 0);
+      }
+
+      function buildFacetFilters() {
+        var state = currentState();
+        if (subcategory && !state.subcategories.length) {
+          state.subcategories = [subcategory];
+        }
+        var facetDefs = [
+          { key: "subcategory", target: "#subcategoryOptions", className: "filter-subcategory", selected: state.subcategories, valueGetter: function (p) { return [p.subcategory]; } },
+          { key: "size", target: "#sizeOptions", className: "filter-size", selected: state.sizes, valueGetter: function (p) { return p.sizeOptions || []; } },
+          { key: "option", target: "#optionOptions", className: "filter-option", selected: state.options, valueGetter: function (p) { return p.optionOptions || []; } },
+          { key: "color", target: "#colorOptions", className: "filter-color", selected: state.colors, valueGetter: function (p) { return p.colorOptions || []; }, formatLabel: function (value) {
+            var swatch = colorToSwatch(value);
+            return "<span class='pl-swatch-thumb' style='background:" + swatch + ";'></span><span>" + escapeHtml(value) + "</span>";
+          } },
+          { key: "gender", target: "#genderOptions", className: "filter-gender", selected: state.genders, valueGetter: function (p) { return p.genderOptions || []; } },
+          { key: "orientation", target: "#orientationOptions", className: "filter-orientation", selected: state.orientations, valueGetter: function (p) { return p.orientationOptions || []; } },
+          { key: "uom", target: "#uomOptions", className: "filter-uom", selected: state.uoms, valueGetter: function (p) { return p.uomOptions || []; } }
+        ];
+
+        facetDefs.forEach(function (facet) {
+          var scopedProducts = products.filter(function (p) { return productMatchesState(p, state, facet.key); });
+          var values = uniqueValues([].concat.apply([], scopedProducts.map(facet.valueGetter)));
+          renderFacetGroup(facet.target, values, facet.className, facet.selected, facet.formatLabel);
+        });
+      }
+
+      function selectedValues(selector) {
+        return $(selector + ":checked").map(function () { return this.value; }).get();
+      }
+
+      function currentState() {
+        return {
+          sort: $("#sortSelect").val(),
+          subcategories: selectedValues(".filter-subcategory"),
+          sizes: selectedValues(".filter-size"),
+          options: selectedValues(".filter-option"),
+          colors: selectedValues(".filter-color"),
+          genders: selectedValues(".filter-gender"),
+          orientations: selectedValues(".filter-orientation"),
+          uoms: selectedValues(".filter-uom")
+        };
+      }
+
+      function applyFilters() {
+        buildFacetFilters();
+        var s = currentState();
+
+        filtered = products.filter(function (p) {
+          if (s.subcategories.length && s.subcategories.indexOf(p.subcategory) === -1) return false;
+          if (s.sizes.length && !p.sizeOptions.some(function (size) { return s.sizes.indexOf(size) > -1; })) return false;
+          if (s.options.length && !p.optionOptions.some(function (option) { return s.options.indexOf(option) > -1; })) return false;
+          if (s.colors.length && !p.colorOptions.some(function (color) { return s.colors.indexOf(color) > -1; })) return false;
+          if (s.genders.length && !p.genderOptions.some(function (gender) { return s.genders.indexOf(gender) > -1; })) return false;
+          if (s.orientations.length && !p.orientationOptions.some(function (orientation) { return s.orientations.indexOf(orientation) > -1; })) return false;
+          if (s.uoms.length && !p.uomOptions.some(function (uom) { return s.uoms.indexOf(uom) > -1; })) return false;
+          return true;
+        });
+
+        if (s.sort === "price_asc") filtered.sort(function (a, b) { return a.price - b.price; });
+        if (s.sort === "price_desc") filtered.sort(function (a, b) { return b.price - a.price; });
+        if (s.sort === "name_asc") filtered.sort(function (a, b) { return a.name.localeCompare(b.name); });
+
+        renderActiveFilters(s);
+        renderGrid();
+      }
+
+      function renderActiveFilters(state) {
+        var chips = [];
+
+        state.subcategories.forEach(function (v) {
+          chips.push("<span class='pl-chip'>" + escapeHtml(v) + " <button class='remove' data-remove='subcategory' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        });
+
+        state.sizes.forEach(function (v) {
+          chips.push("<span class='pl-chip'>Size " + escapeHtml(v) + " <button class='remove' data-remove='size' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        });
+        state.options.forEach(function (v) {
+          chips.push("<span class='pl-chip'>Option " + escapeHtml(v) + " <button class='remove' data-remove='option' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        });
+        state.colors.forEach(function (v) {
+          chips.push("<span class='pl-chip'>Color " + escapeHtml(v) + " <button class='remove' data-remove='color' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        });
+        state.genders.forEach(function (v) {
+          chips.push("<span class='pl-chip'>Gender " + escapeHtml(v) + " <button class='remove' data-remove='gender' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        });
+        state.orientations.forEach(function (v) {
+          chips.push("<span class='pl-chip'>Orientation " + escapeHtml(v) + " <button class='remove' data-remove='orientation' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        });
+        state.uoms.forEach(function (v) {
+          chips.push("<span class='pl-chip'>UOM " + escapeHtml(v) + " <button class='remove' data-remove='uom' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        });
+
+        chips.push("<span class='pl-count-inline'><span id='resultCountInline'>" + filtered.length + "</span> products</span>");
+        $("#activeFilters").html(chips.join(""));
+      }
+
+      function renderGrid() {
+        var $grid = $("#productGrid");
+        var html = "";
+
+        if (!filtered.length) {
+          html = "<div class='pl-empty'>No products match these filters. Try clearing a few selections.</div>";
+          $grid.html(html);
+          return;
+        }
+
+        filtered.forEach(function (p, idx) {
+          var fallbackImage = missingProductImage;
+          html += "" +
+            "<article class='p-card'>" +
+              "<a class='p-card-link' href='product-detail.html?category=" + encodeURIComponent(category) + "&id=" + encodeURIComponent(p.id) + "'>" +
+                "<img class='p-thumb' src='" + p.image + "' onerror=\"this.onerror=null;this.src='" + fallbackImage + "';\" alt='" + escapeHtml(p.name) + "'>" +
+                "<div class='p-body'>" +
+                  "<h3 class='p-title'>" + escapeHtml(p.name) + "</h3>" +
+                "</div>" +
+              "</a>" +
+            "</article>";
+        });
+
+        $grid.html(html);
+      }
+
+      function clearAllFilters() {
+        $("#sortSelect").val("featured");
+        $(".filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom").prop("checked", false);
+        applyFilters();
+      }
+
+      function removeFilter(type, value) {
+        if (type === "subcategory") $(".filter-subcategory[value='" + value + "']").prop("checked", false);
+        if (type === "size") $(".filter-size[value='" + value + "']").prop("checked", false);
+        if (type === "option") $(".filter-option[value='" + value + "']").prop("checked", false);
+        if (type === "color") $(".filter-color[value='" + value + "']").prop("checked", false);
+        if (type === "gender") $(".filter-gender[value='" + value + "']").prop("checked", false);
+        if (type === "orientation") $(".filter-orientation[value='" + value + "']").prop("checked", false);
+        if (type === "uom") $(".filter-uom[value='" + value + "']").prop("checked", false);
+        applyFilters();
+      }
+
+      function toggleMobileFilters(open) {
+        if (window.matchMedia("(max-width: 991px)").matches) {
+          $("#plSidebar").toggleClass("open", open);
+          $("#filterBackdrop").toggleClass("open", open);
+          $("body").toggleClass("all-drawer-open", open);
+        }
+      }
+
+      function parseXmlString(xmlString) {
+        var parser = new window.DOMParser();
+        var doc = parser.parseFromString(xmlString, "application/xml");
+        if (doc.getElementsByTagName("parsererror").length) return null;
+        return doc;
+      }
+
+      function loadXmlWithFallback(paths) {
+        var deferred = $.Deferred();
+        var idx = 0;
+
+        function tryNext() {
+          if (idx >= paths.length) {
+            deferred.reject(new Error("All XML paths failed"));
+            return;
+          }
+          var path = paths[idx];
+          idx += 1;
+          $.ajax({ url: path, dataType: "text", cache: false })
+            .done(function (raw) {
+              var doc = parseXmlString(raw);
+              if (!doc) {
+                tryNext();
+                return;
+              }
+              deferred.resolve(doc);
+            })
+            .fail(function () {
+              tryNext();
+            });
+        }
+
+        tryNext();
+        return deferred.promise();
+      }
+
+      function loadCatalogAndInit() {
+        $("#productGrid").html("<div class='pl-empty'>Loading products...</div>");
+        if (window.BREG_CATALOG_ITEMS && window.BREG_CATALOG_ITEMS.length) {
+          allCatalogItems = window.BREG_CATALOG_ITEMS.map(function (item) {
+            var normalized = $.extend({}, item);
+            normalized.image = normalizeProductImageUrl(normalized.image || "");
+            return normalized;
+          });
+          products = allCatalogItems.filter(function (item) {
+            return normalizeKey(item.category) === normalizeKey(category);
+          });
+          buildFacetFilters();
+          applyFilters();
+          return;
+        }
+
+        var productXmlPaths = [
+          "analysis/20260218-all-products.xml",
+          "./analysis/20260218-all-products.xml",
+          "/analysis/20260218-all-products.xml",
+          "20260218-all-products.xml",
+          "./20260218-all-products.xml"
+        ];
+        var categoryXmlPaths = [
+          "analysis/2026-02-17-all-categories.xml",
+          "./analysis/2026-02-17-all-categories.xml",
+          "/analysis/2026-02-17-all-categories.xml",
+          "2026-02-17-all-categories.xml",
+          "./2026-02-17-all-categories.xml"
+        ];
+
+        $.when(
+          loadXmlWithFallback(productXmlPaths),
+          loadXmlWithFallback(categoryXmlPaths)
+        ).done(function (productsXml, categoriesXml) {
+          allCatalogItems = parseProductsXML(productsXml, categoriesXml);
+          products = allCatalogItems.filter(function (item) {
+            return normalizeKey(item.category) === normalizeKey(category);
+          });
+          buildFacetFilters();
+          applyFilters();
+        }).fail(function () {
+          products = allCatalogItems.slice();
+          filtered = [];
+          $("#productGrid").html("<div class='pl-empty'>Could not load catalog XML data. Check XML file paths and hosting context.</div>");
+          $("#activeFilters").empty();
+        });
+      }
+
+      titleizeCategory();
+      loadCatalogAndInit();
+
+      $(document)
+        .on("input change", "#sortSelect, .filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom", function () {
+          applyFilters();
+        })
+        .on("click", "#clearAllFilters", function () {
+          clearAllFilters();
+        })
+        .on("click", "#activeFilters .remove", function () {
+          removeFilter($(this).data("remove"), $(this).data("value"));
+        })
+        .on("click", "#viewComfortable", function () {
+          compactView = false;
+          $("#productGrid").removeClass("compact");
+          $("#viewCompact").removeClass("active");
+          $(this).addClass("active");
+        })
+        .on("click", "#viewCompact", function () {
+          compactView = true;
+          $("#productGrid").addClass("compact");
+          $("#viewComfortable").removeClass("active");
+          $(this).addClass("active");
+        })
+        .on("click", "#mobileFilterBtn", function () {
+          toggleMobileFilters(true);
+        })
+        .on("click", "#filterBackdrop", function () {
+          toggleMobileFilters(false);
+        });
+
+      $(window).on("resize", function () {
+        if (window.innerWidth > 991) {
+          toggleMobileFilters(false);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

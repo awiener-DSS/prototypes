@@ -1,0 +1,1030 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<enfinity xsi:schemaLocation="http://www.intershop.com/xml/ns/enfinity/7.1/xcs/impex catalog.xsd http://www.intershop.com/xml/ns/enfinity/6.5/core/impex-dt dt.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.intershop.com/xml/ns/enfinity/7.1/xcs/impex" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:dt="http://www.intershop.com/xml/ns/enfinity/6.5/core/impex-dt" major="6" minor="1" family="enfinity" branch="enterprise" build="0.0.454">
+<category name="CervicalClavicle">
+<name>CervicalClavicle</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>4.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Cervical Clavicle</display-name>
+<parent name="SpineBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/113XX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T14:41:36+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">CervicalClavicle</custom-attribute>
+</custom-attributes>
+</category>
+<category name="PediatricsShoulderBracing">
+<name>PediatricsShoulderBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Shoulder Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Pediatrics" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/0847X.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">PediatricShoulderBracing</custom-attribute>
+</custom-attributes>
+</category>
+<category name="PediatricsMiscellaneous">
+<name>PediatricsMiscellaneous</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Miscellaneous</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Pediatrics" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/X00832X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-03T14:50:18+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">Miscellaneous</custom-attribute>
+</custom-attributes>
+</category>
+<category name="AluminumPushButtonCrutches">
+<name>AluminumPushButtonCrutches</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Aluminum Push Button Crutches</display-name>
+<description xml:lang="en-US"></description>
+<parent name="CrutchesCanesWalkers" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/1003XX-000.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T13:46:06+00:00</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">AluminumPushButtonCrutches</custom-attribute>
+</custom-attributes>
+</category>
+<category name="FoldingWalker">
+<name>FoldingWalker</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Folding Walker</display-name>
+<parent name="CrutchesCanesWalkers" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100312-XXX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="META_DESCRIPTION_GENERATE" dt:dt="string" xml:lang="en-US">automatic</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T13:46:06+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">FoldingWalker</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="META_TITLE_GENERATE" dt:dt="string" xml:lang="en-US">automatic</custom-attribute>
+</custom-attributes>
+</category>
+<category name="PatellofemoralBracing">
+<name>PatellofemoralBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Patellofemoral Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="KneeBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100462-XXX.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-07T16:23:47+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">PatellofemoralBracing</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="ElbowWristBracing">
+<name>ElbowWristBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>3.0</position>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Elbow/Wrist Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Shop" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="category/ElbowWristBraces.jpg" domain="Breg" />
+<image-ref image-view="back" image-type="M" image-base-name="category/ElbowWristBraces.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="ShowInMenu" dt:dt="string">True</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">ElbowWristBracing</custom-attribute>
+</custom-attributes>
+</category>
+<category name="Pediatrics">
+<name>Pediatrics</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>9.0</position>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Pediatrics</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Shop" />
+<images>
+<image-ref image-view="back" image-type="M" image-base-name="category/Pediatrics.jpg" domain="Breg" />
+<image-ref image-view="front" image-type="M" image-base-name="category/Pediatrics.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">Pediatrics</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="PediatricsFootSupports">
+<name>PediatricsFootSupports</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Foot Supports</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Pediatrics" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/SA900309.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">PediatricsFootSupports</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-03T14:26:36+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="ColdTherapyandDVT">
+<name>ColdTherapyandDVT</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>2.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Cold Therapy and DVT</display-name>
+<parent name="Shop" />
+<images>
+<image-ref image-view="back" image-type="M" image-base-name="category/ColdTherapyandDVT.jpg" domain="Breg" />
+<image-ref image-view="front" image-type="M" image-base-name="category/ColdTherapyandDVT.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">ColdTherapyandDVT</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="UpperSpine">
+<name>UpperSpine</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>2.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Featured Upper Spine</display-name>
+<parent name="SpineBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/SP40180-000.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">UpperSpine</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T14:41:36+00:00</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="SoftKneeBracing">
+<name>SoftKneeBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Soft Supports</display-name>
+<description xml:lang="en-US"></description>
+<parent name="KneeBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/2804X.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">SoftKneeBracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-07T16:23:47+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="LowerSpine">
+<name>LowerSpine</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>1.0</position>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Featured Lower Spine</display-name>
+<description xml:lang="en-US"></description>
+<parent name="SpineBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/SP20627-000.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T14:41:36+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">LowerSpine</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="PediatricsWalkingBoots">
+<name>PediatricsWalkingBoots</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Walking Boots</display-name>
+<parent name="Pediatrics" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/AL185003XX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">PediatricsWalkingBoots</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-03T14:26:36+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="PushButtonAluminumCane">
+<name>PushButtonAluminumCane</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Push Button Aluminum Cane</display-name>
+<description xml:lang="en-US"></description>
+<parent name="CrutchesCanesWalkers" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100314-000.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T13:46:06+00:00</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">PushButtonAluminumCane</custom-attribute>
+</custom-attributes>
+</category>
+<category name="SplintandFractureManagement">
+<name>SplintandFractureManagement</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Splint and Fracture Management</display-name>
+<parent name="SplintsandFractureManagement" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/AE2351X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:56:50+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">SplintandFractureManagement</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="PostOp">
+<name>PostOp</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Post Op</display-name>
+<description xml:lang="en-US"></description>
+<parent name="HipBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/0881X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">PostOp</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T14:42:12+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="HomeTherapyKits">
+<name>HomeTherapyKits</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Home Therapy Kits</display-name>
+<parent name="HomeTherapyMisc." />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/01400.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">HomeTherapyKits</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T16:02:54+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="WalkerAnkleFootBracing">
+<name>WalkerAnkleFootBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>10.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Walker/Ankle/Foot Bracing</display-name>
+<parent name="Shop" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="large/AL5430XX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-10T12:34:07+00:00</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">WalkerAnkleFootBracing</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="FunctionalOABracing">
+<name>FunctionalOABracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Functional OA Bracing</display-name>
+<parent name="KneeBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/130XX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">FunctionalOABracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-07T16:23:47+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="KneeLigamentBracing">
+<name>KneeLigamentBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Knee Ligament Bracing</display-name>
+<parent name="KneeBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/009XX.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">KneeLigamentBracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-07T16:23:00+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="PediatricsPost-OpKneeBracing">
+<name>PediatricsPost-OpKneeBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Knee Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Pediatrics" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="KZ114YXX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">PediatricsPost-OpKneeBracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-03T14:26:36+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="DVTProphylaxis">
+<name>DVTProphylaxis</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">DVT Prophylaxis</display-name>
+<description xml:lang="en-US"></description>
+<parent name="ColdTherapyandDVT" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="DVT001-On-Person-Front-0001 L.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">dvtprophylaxis</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2025-03-10T16:44:34+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="ShoulderBracing">
+<name>ShoulderBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>6.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Shoulder Bracing</display-name>
+<parent name="Shop" />
+<images>
+<image-ref image-view="back" image-type="M" image-base-name="category/ShoulderBracing.jpg" domain="Breg" />
+<image-ref image-view="front" image-type="M" image-base-name="category/ShoulderBracing.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">ShoulderBracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="ShowInMenu" dt:dt="string">True</custom-attribute>
+</custom-attributes>
+</category>
+<category name="HipBracing">
+<name>HipBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>11.0</position>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Hip Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Shop" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="category/HipBracing.jpg" domain="Breg" />
+<image-ref image-view="back" image-type="M" image-base-name="category/HipBracing.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">HipBracing</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="PediatricsElbowBracing">
+<name>PediatricsElbowBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Elbow/Wrist Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Pediatrics" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/AE028XXX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">PediatricsElbowBracing</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-03T14:26:00+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="Pads">
+<name>Pads</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Pads</display-name>
+<description xml:lang="en-US"></description>
+<parent name="ColdTherapyandDVT" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/047XX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-12T15:17:44+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">pads</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="Devices">
+<name>Devices</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Devices</display-name>
+<parent name="ColdTherapyandDVT" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/1005XX-000.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">devices</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-12T16:59:40+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="ElbowBracing">
+<name>ElbowBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Elbow Bracing</display-name>
+<parent name="ElbowWristBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/0725XX.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">ElbowBracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-18T12:42:33+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="AdjustableROM">
+<name>AdjustableROM</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Adjustable ROM</display-name>
+<description xml:lang="en-US"></description>
+<parent name="KneeBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/1411X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">AdjustableROM</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-07T16:23:47+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="SlingsandBraces">
+<name>SlingsandBraces</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Slings and Braces</display-name>
+<description xml:lang="en-US"></description>
+<parent name="ShoulderBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/0850X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:54:24+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">Slingsandbraces</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="ImmobilizersandStabilizers">
+<name>ImmobilizersandStabilizers</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Immobilizers and Stabilizers</display-name>
+<description xml:lang="en-US"></description>
+<parent name="ShoulderBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/0852X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:54:24+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">ImmobilizersandStabilizers</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="Recovery">
+<name>Recovery</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Recovery</display-name>
+<parent name="HomeTherapyMisc." />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/VP10106-0X0.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T16:02:54+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">Recovery</custom-attribute>
+</custom-attributes>
+</category>
+<category name="Lumbar">
+<name>Lumbar</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>3.0</position>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Lumbar</display-name>
+<description xml:lang="en-US"></description>
+<parent name="SpineBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/0733X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">lumbar</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T14:41:36+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="Shop" import-mode="UPDATE">
+<name>Shop</name>
+<root>1</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US">The Shop products and services catalog.</description>
+<display-name xml:lang="en-US">Shop</display-name>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="ExcludePathFromSearchIndex" dt:dt="boolean">true</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">shop</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="ShowInMenu" dt:dt="string">True</custom-attribute>
+</custom-attributes>
+</category>
+<category name="PediatricsUpperSpine">
+<name>PediatricsUpperSpine</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Upper Spine</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Pediatrics" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100016-0X0.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-03T14:26:36+00:00</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">PediatricsUpperSpine</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="SpineBracing">
+<name>SpineBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>8.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Spine Bracing</display-name>
+<parent name="Shop" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="category/SpineBracing.jpg" domain="Breg" />
+<image-ref image-view="back" image-type="M" image-base-name="category/SpineBracing.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">SprineBracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="WalkingBoots">
+<name>WalkingBoots</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Walking Boots</display-name>
+<description xml:lang="en-US"></description>
+<parent name="WalkerAnkleFootBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100617-XX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-10T12:44:14+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">WalkingBoots</custom-attribute>
+</custom-attributes>
+</category>
+<category name="Post-OpKneeBracing">
+<name>Post-OpKneeBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Post-Op Knee Bracing</display-name>
+<parent name="KneeBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/0881X.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">Post-OpKneeBracing</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-08-07T16:23:47+00:00</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+</custom-attributes>
+</category>
+<category name="CrutchesCanesWalkers">
+<name>CrutchesCanesWalkers</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>4.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Crutches, Canes &amp; Walkers</display-name>
+<parent name="Shop" />
+<images>
+<image-ref image-view="back" image-type="M" image-base-name="category/CanesCrutchesWalkers.jpg" domain="Breg" />
+<image-ref image-view="front" image-type="M" image-base-name="category/CanesCrutchesWalkers.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="ShowInMenu" dt:dt="string">True</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">CrutchesCanesWalkers</custom-attribute>
+</custom-attributes>
+</category>
+<category name="AnkleBracing">
+<name>AnkleBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Ankle Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="WalkerAnkleFootBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100622-0XX.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">AnkleBracing</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T14:38:30+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="FootSupports">
+<name>FootSupports</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Foot Supports</display-name>
+<parent name="WalkerAnkleFootBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100627-XXX.jpeg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">FootSupports</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T14:38:30+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="SplintsandFractureManagement">
+<name>SplintsandFractureManagement</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>7.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Splints and Fracture Management</display-name>
+<parent name="Shop" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="category/SplitsandFractureBracking.jpg" domain="Breg" />
+<image-ref image-view="back" image-type="M" image-base-name="category/SplitsandFractureBracking.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="ShowInMenu" dt:dt="string">True</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">SplintsandFractureManagement</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+</custom-attributes>
+</category>
+<category name="KneeBracing">
+<name>KneeBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>1.0</position>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Knee Bracing</display-name>
+<parent name="Shop" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="category/KneeBraces.jpg" domain="Breg" />
+<image-ref image-view="back" image-type="M" image-base-name="category/KneeBraces.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">KneeBracing</custom-attribute>
+</custom-attributes>
+</category>
+<category name="WristBracing">
+<name>WristBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Wrist Bracing</display-name>
+<parent name="ElbowWristBracing" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/100709-XXX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">WristBracing</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="FractureBracing">
+<name>FractureBracing</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Fracture Bracing</display-name>
+<description xml:lang="en-US"></description>
+<parent name="SplintsandFractureManagement" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/300X.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:56:50+00:00</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">FractureBracing</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+<category name="HomeTherapyMisc.">
+<name>HomeTherapyMisc.</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<position>5.0</position>
+<category-links>
+</category-links>
+<display-name xml:lang="en-US">Home Therapy &amp; Misc.</display-name>
+<description xml:lang="en-US"></description>
+<parent name="Shop" />
+<images>
+<image-ref image-view="back" image-type="M" image-base-name="category/HomeTherapyandMisc.jpg" domain="Breg" />
+<image-ref image-view="front" image-type="M" image-base-name="category/HomeTherapyandMisc.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="seoURL" dt:dt="string">HomeTherapyMisc.</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-31T18:57:47+00:00</custom-attribute>
+<custom-attribute name="ShowInMenu" dt:dt="string">True</custom-attribute>
+</custom-attributes>
+</category>
+<category name="GelPacks">
+<name>GelPacks</name>
+<root>0</root>
+<product-assignment-query></product-assignment-query>
+<template></template>
+<online>1</online>
+<category-links>
+</category-links>
+<description xml:lang="en-US"></description>
+<display-name xml:lang="en-US">Gel Packs</display-name>
+<parent name="ColdTherapyandDVT" />
+<images>
+<image-ref image-view="front" image-type="M" image-base-name="medium/028XX.jpg" domain="Breg" />
+</images>
+<custom-attributes>
+<custom-attribute name="META_TITLE_GENERATE" dt:dt="string" xml:lang="en-US">automatic</custom-attribute>
+<custom-attribute name="PublishedDate" dt:dt="date">2021-07-12T15:17:00+00:00</custom-attribute>
+<custom-attribute name="META_DESCRIPTION_GENERATE" dt:dt="string" xml:lang="en-US">automatic</custom-attribute>
+<custom-attribute name="PRODUCT_SORTING_TYPE" dt:dt="string">default</custom-attribute>
+<custom-attribute name="seoURL" dt:dt="string">gelaccessories</custom-attribute>
+<custom-attribute name="richContent" dt:dt="string" xml:lang="en-US"></custom-attribute>
+</custom-attributes>
+</category>
+</enfinity>

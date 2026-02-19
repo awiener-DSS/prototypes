@@ -1,0 +1,2462 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Product Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .pdp-page { margin: 16px 0 26px; }
+    .pdp-mobile-sticky-name { display: none; }
+    .pdp-breadcrumb {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #5f6b76;
+    }
+    .pdp-breadcrumb a {
+      color: #007185;
+      text-decoration: none;
+    }
+    .pdp-breadcrumb a:hover,
+    .pdp-breadcrumb a:focus {
+      color: #005a6a;
+      text-decoration: none;
+    }
+    .pdp-breadcrumb .sep {
+      margin: 0 6px;
+      color: #9ba6b2;
+    }
+    .pdp-layout { display: grid; grid-template-columns: 360px minmax(420px, 1fr) 294px; gap: 14px; align-items: start; }
+    .pdp-gallery-col { position: sticky; top: 96px; align-self: start; }
+    .pdp-gallery-main { border: 1px solid #d5dde4; border-radius: 14px; background: #fff; padding: 18px; height: 400px; display: flex; align-items: center; justify-content: center; }
+    .pdp-gallery-main img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+    .pdp-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+    .pdp-thumb { width: 100%; height: 82px; border: 1px solid #d5dde4; border-radius: 8px; background: #fff; padding: 8px; cursor: pointer; }
+    .pdp-thumb.active { border-color: #ff9900; }
+    .pdp-thumb img { width: 100%; height: 100%; object-fit: contain; }
+    .pdp-main { display: flex; flex-direction: column; gap: 12px; }
+    .pdp-card { border: 1px solid #d5dde4; border-radius: 14px; background: #fff; padding: 14px; }
+    .pdp-top h1 { margin: 10px 0 8px; font-size: 24px; line-height: 32px; font-weight: 500; color: #0a0a0a; letter-spacing: .07px; }
+    .pdp-badge { display: inline-block; background: #cc0c39; color: #fff; border-radius: 4px; padding: 4px 10px; font-size: 12px; line-height: 1; }
+    .pdp-sku { font-size: 14px; color: #4a5565; margin-bottom: 12px; line-height: 20px; }
+    .pdp-shortdesc { font-size: 14px; line-height: 20px; color: #334155; margin: -6px 0 12px; }
+    .pdp-top-actions { display: flex; gap: 12px; }
+    .pdp-mini-btn { height: 38px; border-radius: 8px; border: 1px solid #d1d5dc; background: #fff; color: #364153; font-size: 14px; line-height: 20px; padding: 8px 16px; }
+    .pdp-mini-btn.warm { border-color: #c7511f; background: #fff8f0; color: #c7511f; }
+    .pdp-list-wrap { position: relative; }
+    .pdp-list-btn { min-width: 132px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+    .pdp-list-popover {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 320px;
+      max-width: min(92vw, 320px);
+      background: #fff;
+      border: 1px solid #d5dde4;
+      border-radius: 12px;
+      box-shadow: 0 16px 28px rgba(15, 23, 42, .15);
+      padding: 12px;
+      z-index: 200;
+      display: none;
+    }
+    .pdp-list-popover.open { display: block; }
+    .pdp-list-title { margin: 0 0 2px; font-size: 14px; font-weight: 600; color: #0f172a; }
+    .pdp-list-subtitle { margin: 0 0 10px; font-size: 12px; color: #64748b; }
+    .pdp-list-items { max-height: 200px; overflow: auto; border: 1px solid #e5eaf0; border-radius: 8px; background: #f8fafc; }
+    .pdp-list-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; font-size: 13px; color: #1f2937; border-bottom: 1px solid #e7edf5; }
+    .pdp-list-item:last-child { border-bottom: 0; }
+    .pdp-list-foot { margin-top: 10px; display: flex; justify-content: space-between; gap: 8px; }
+    .pdp-list-link {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: #1f2937;
+    }
+    .pdp-price-wrap { border-top: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; padding: 14px 0 12px; }
+    .pdp-price { color: #b12704; font-size: 30px; line-height: 36px; margin: 0 0 8px; letter-spacing: .39px; }
+    .pdp-price-note { font-size: 12px; color: #4a5565; margin: 0; }
+    .pdp-inventory-msg {
+      margin: 6px 0 0;
+      font-size: 13px;
+      line-height: 18px;
+      color: #067647;
+      display: none;
+    }
+    .pdp-top-cart-row { margin-top: 12px; }
+    .pdp-top-cart-controls { display: flex; align-items: center; gap: 10px; }
+    .pdp-top-cart-controls .pdp-top-cart-btn { flex: 1; }
+    .pdp-top-qty {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 0 2px;
+      white-space: nowrap;
+    }
+    .pdp-top-qty-label { margin: 0; font-size: 13px; line-height: 18px; color: #364153; }
+    .pdp-top-cart-btn {
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      border-radius: 999px;
+      font-size: 15px;
+      line-height: 1.1;
+      color: #0a0a0a;
+      width: 100%;
+      height: 42px;
+    }
+    .pdp-top-cart-btn[disabled] { opacity: .55; cursor: not-allowed; }
+    .pdp-top-bulk-btn {
+      margin-top: 8px;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 14px;
+      color: #0a0a0a;
+      width: 100%;
+      height: 38px;
+    }
+    .pdp-top-bulk-btn[disabled] { opacity: .55; cursor: not-allowed; }
+    .pdp-check-inventory-btn {
+      margin-top: 8px;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 14px;
+      color: #0a0a0a;
+      width: 100%;
+      height: 38px;
+    }
+    .pdp-config {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .pdp-group { display: none; }
+    .pdp-group.show {
+      display: block;
+      min-width: 0;
+      border: 1px solid #d8e0e8;
+      border-radius: 12px;
+      padding: 10px 12px 12px;
+      background: #fff;
+    }
+    .pdp-group.active-step {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, 0.08);
+    }
+    .pdp-group.completed-step {
+      border-color: #9dc7cf;
+      background: #f7fbfc;
+    }
+    .pdp-group.locked {
+      opacity: 0.52;
+      background: #f8fafc;
+    }
+    .pdp-group.locked .pdp-option-chip {
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+    .pdp-group-label { margin: 0 0 3px; font-size: 10px; color: #55616d; line-height: 14px; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .pdp-group-head { display: flex; justify-content: space-between; align-items: center; margin: 0 0 4px; gap: 6px; }
+    .pdp-size-chart { font-size: 11px; color: #007185; text-decoration: none; white-space: nowrap; }
+    .pdp-option-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 0;
+    }
+    .pdp-option-chip {
+      border: 1px solid #d5dde4;
+      background: #fff;
+      color: #364153;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      line-height: 18px;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .pdp-option-chip.active {
+      border-color: #007185;
+      background: #e9f7f9;
+      color: #0f4d56;
+    }
+    .pdp-option-chip:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(0,113,133,.12);
+    }
+    .pdp-stock { background: #f9fafb; border: 1px solid #d5dde4; border-radius: 10px; padding: 14px; font-size: 13px; color: #4a5565; }
+    .pdp-stock-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+    .pdp-stock strong { color: #00a63e; font-weight: 600; }
+    .pdp-sku-selected { margin: 4px 0 0; color: #1e2939; }
+    .pdp-info { background: #f0f8ff; border: 1px solid #8ec6d0; border-radius: 10px; padding: 14px; }
+    .pdp-info-title { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: #1e2939; }
+    .pdp-jump { margin: 0; padding: 0; list-style: none; }
+    .pdp-jump li {
+      min-height: 38px;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 4px;
+      margin: 0 0 8px;
+      padding: 9px 13px;
+      color: #007185;
+      font-size: 14px;
+      line-height: 20px;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .pdp-jump a {
+      display: block;
+      color: #007185;
+      text-decoration: none;
+    }
+    .pdp-jump a:hover,
+    .pdp-jump a:focus {
+      color: #005a6a;
+      text-decoration: none;
+    }
+    .pdp-jump li.is-active {
+      border-color: #007185;
+      background: #e9f7f9;
+    }
+    .pdp-btn-primary { border: 1px solid #fcd200; background: #ffd814; border-radius: 999px; font-size: 16px; line-height: 1.1; color: #0a0a0a; width: 100%; height: 42px; }
+    .pdp-btn-primary[disabled] { opacity: .55; cursor: not-allowed; }
+    .pdp-rail { border: 1px solid #d5dde4; border-radius: 10px; background: #fff; padding: 14px; position: sticky; top: 96px; }
+    .pdp-rail h3 { margin: 0 0 16px; padding-bottom: 9px; border-bottom: 1px solid #e5e7eb; font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: -.31px; color: #0a0a0a; }
+    .pdp-rail-item { display: flex; gap: 12px; margin-bottom: 16px; text-decoration: none; color: inherit; }
+    .pdp-rail-item img { width: 80px; height: 80px; border: 1px solid #d1d5dc; border-radius: 4px; background: #fff; object-fit: contain; padding: 9px; }
+    .pdp-rail-name { font-size: 14px; line-height: 20px; color: #0a0a0a; letter-spacing: -.15px; }
+    .pdp-rail-price { color: #b12704; font-size: 14px; margin-top: 4px; }
+    .pdp-rail .pdp-info { margin-top: 8px; }
+    .pdp-tabs { margin-top: 12px; background: #fff; border: 1px solid #d5dde4; border-radius: 14px; padding: 14px; }
+    .pdp-tab-head { display: flex; gap: 0; border-bottom: 1px solid #e8edf1; padding-bottom: 1px; margin-bottom: 16px; height: 47px; }
+    .pdp-tab { height: 46px; border: 0; border-bottom: 2px solid transparent; background: transparent; padding: 13px 24px; font-size: 14px; line-height: 20px; color: #4a5565; }
+    .pdp-tab.active { color: #007185; border-bottom-color: #ff9900; }
+    .pdp-content-section { margin-bottom: 24px; }
+    .pdp-content-section h3 { margin: 0 0 12px; font-size: 16px; line-height: 24px; font-weight: 500; color: #0a0a0a; letter-spacing: -.31px; }
+    .pdp-content-section p { margin: 0 0 12px; font-size: 14px; line-height: 22.75px; color: #364153; letter-spacing: -.15px; }
+    .pdp-feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 14px; color: #364153; line-height: 20px; }
+    .pdp-feature-grid div::before { content: "✓ "; color: #007185; }
+    .pdp-indications { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .pdp-panel { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 4px; padding: 17px; }
+    .pdp-panel h4 { margin: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 500; color: #101828; }
+    .pdp-panel ul { margin: 0; padding-left: 16px; color: #364153; font-size: 14px; line-height: 20px; }
+    .pdp-models { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .pdp-model-card { border: 1px solid #d1d5dc; border-radius: 4px; background: #fff; padding: 17px; }
+    .pdp-model-card h4 { margin: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 500; color: #0a0a0a; }
+    .pdp-model-card p { margin: 0; font-size: 14px; line-height: 20px; color: #364153; }
+    .pdp-empty { border: 1px solid #d1d5dc; border-radius: 10px; background: #fff; padding: 22px; color: #4a5565; font-size: 14px; }
+    .pdp-qty-row { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin-top: 2px; }
+    .pdp-qty-label { margin: 0; font-size: 14px; line-height: 20px; color: #0a0a0a; }
+    .pdp-qty-select { width: 64px; height: 37px; border: 1px solid #d1d5dc; border-radius: 4px; background: #fff; font-size: 14px; }
+    @media (max-width: 1200px) {
+      .pdp-layout { grid-template-columns: 1fr; }
+      .pdp-gallery-col { position: static; top: auto; }
+      .pdp-top h1 { font-size: 24px; }
+      .pdp-rail-name { font-size: 14px; }
+      .pdp-indications, .pdp-models, .pdp-feature-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 767px) {
+      .pdp-mobile-sticky-name {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        top: var(--pdp-mobile-name-top, 108px);
+        z-index: 1040;
+        background: #fff;
+        border-bottom: 1px solid #e8edf1;
+        padding: 10px 16px;
+        font-size: 16px;
+        line-height: 1.3;
+        font-weight: 600;
+        color: #0a0a0a;
+        box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
+        transform: translateY(-120%);
+        opacity: 0;
+        transition: transform .18s ease, opacity .18s ease;
+        pointer-events: none;
+      }
+      .pdp-mobile-sticky-name.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .pdp-gallery-main { height: 360px; }
+      .pdp-top h1 { font-size: 22px; line-height: 28px; }
+      .pdp-price { font-size: 34px; }
+      .pdp-btn-primary { font-size: 18px; }
+      .pdp-top-cart-controls {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+      }
+      .pdp-top-cart-controls .pdp-top-cart-btn {
+        flex: 1;
+        min-width: 0;
+      }
+      .pdp-top-cart-btn {
+        height: 38px;
+        border-width: 1px;
+        border-radius: 999px;
+        padding: 8px 16px;
+      }
+      .pdp-top-qty {
+        justify-content: flex-start;
+        padding: 0;
+      }
+      .pdp-top-qty-label { display: none; }
+      .pdp-top-qty .pdp-qty-select {
+        width: 64px;
+        height: 38px;
+      }
+    }
+    .bulk-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 20, 33, 0.45);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    .bulk-modal.open { display: flex; }
+    .bulk-dialog {
+      width: min(1280px, 100%);
+      max-height: 86vh;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #d5dde4;
+      display: flex;
+      flex-direction: column;
+    }
+    .bulk-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .bulk-head h3 { margin: 0; font-size: 18px; line-height: 24px; color: #0a0a0a; }
+    .bulk-close {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      font-size: 22px;
+      line-height: 1;
+      color: #4b5563;
+    }
+    .bulk-body { padding: 10px 16px 16px; overflow: auto; }
+    .bulk-note { margin: 0 0 12px; font-size: 13px; color: #4a5565; }
+    .bulk-filters {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 0 0 12px;
+      padding: 10px;
+      border: 1px solid #e5e9ef;
+      border-radius: 10px;
+      background: #f9fbfc;
+    }
+    .bulk-filter { min-width: 0; }
+    .bulk-filter-label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 11px;
+      line-height: 14px;
+      font-weight: 600;
+      color: #5b6572;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+    .bulk-filter-input {
+      width: 100%;
+      height: 34px;
+      border: 1px solid #cdd6df;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 13px;
+      color: #0f172a;
+      background: #fff;
+    }
+    .bulk-filter-count {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #607080;
+    }
+    .bulk-table { width: 100%; border-collapse: collapse; }
+    .bulk-table th,
+    .bulk-table td { border-bottom: 1px solid #eceff3; padding: 10px 8px; font-size: 13px; vertical-align: top; }
+    .bulk-table th { text-align: left; color: #4a5565; font-weight: 600; }
+    .bulk-sort {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .bulk-sort-arrow {
+      font-size: 10px;
+      line-height: 1;
+      color: #64748b;
+    }
+    .bulk-sku { font-weight: 600; color: #0f172a; }
+    .bulk-opts { color: #4a5565; margin-top: 2px; }
+    .bulk-price { font-weight: 600; color: #b12704; white-space: nowrap; }
+    .bulk-qty {
+      width: 88px;
+      height: 34px;
+      border: 1px solid #cdd6df;
+      border-radius: 8px;
+      padding: 0 8px;
+      font-size: 14px;
+    }
+    .bulk-foot {
+      padding: 12px 16px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fff;
+    }
+    .bulk-btn-cancel {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 14px;
+    }
+    .bulk-btn-add {
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      border-radius: 999px;
+      height: 38px;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0a0a0a;
+    }
+    .bulk-btn-check {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 14px;
+      color: #0f172a;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      line-height: 1;
+    }
+    .bulk-btn-check:hover,
+    .bulk-btn-check:focus {
+      text-decoration: none;
+      color: #0f172a;
+    }
+    .bulk-stock-text { color: #166534; }
+    .bulk-mobile-list { display: none; }
+    .bulk-mobile-card {
+      border: 1px solid #e4e8ee;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .bulk-mobile-card:last-child { margin-bottom: 0; }
+    .bulk-mobile-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .bulk-mobile-sku {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.35;
+      color: #0f172a;
+      font-weight: 700;
+      word-break: break-word;
+    }
+    .bulk-mobile-price {
+      font-size: 14px;
+      line-height: 1.35;
+      color: #b12704;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .bulk-mobile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      margin-bottom: 10px;
+    }
+    .bulk-mobile-kv {
+      min-width: 0;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #475569;
+    }
+    .bulk-mobile-kv strong {
+      display: block;
+      margin-bottom: 2px;
+      color: #64748b;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .25px;
+    }
+    .bulk-mobile-qty-row {
+      display: grid;
+      grid-template-columns: 1fr 110px;
+      gap: 10px;
+      align-items: center;
+    }
+    .bulk-mobile-qty-label {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.3;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: .25px;
+      font-weight: 600;
+    }
+    .list-create-dialog { width: min(460px, 100%); }
+    .list-create-body { padding: 16px; }
+    .list-create-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: #475569;
+      font-weight: 600;
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
+    .list-create-input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #cdd6df;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 14px;
+      color: #0f172a;
+      background: #fff;
+    }
+    .list-create-input:focus {
+      outline: none;
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+    }
+    .list-create-error {
+      min-height: 18px;
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: #b91c1c;
+    }
+    .image-zoom-dialog {
+      width: min(1200px, 96vw);
+      height: min(90vh, 900px);
+      padding: 12px;
+      background: #fff;
+      border-radius: 12px;
+    }
+    .image-zoom-wrap {
+      width: 100%;
+      height: calc(100% - 46px);
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .image-zoom-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .image-zoom-thumbs {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .image-zoom-thumb {
+      border: 1px solid #d5dde4;
+      border-radius: 8px;
+      background: #fff;
+      height: 68px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .image-zoom-thumb.active { border-color: #ff9900; }
+    .image-zoom-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .size-chart-dialog { width: min(760px, 96vw); }
+    .size-chart-body { padding: 14px 16px 16px; }
+    .size-chart-note {
+      margin: 0 0 10px;
+      font-size: 13px;
+      color: #475569;
+    }
+    .size-chart-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .size-chart-table th,
+    .size-chart-table td {
+      border-bottom: 1px solid #e8edf3;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #0f172a;
+      text-align: left;
+    }
+    .size-chart-table th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #334155;
+    }
+    .size-chart-table tr:last-child td { border-bottom: 0; }
+    .buy-now-dialog { width: min(760px, 96vw); }
+    .buy-now-body { padding: 14px 16px 16px; }
+    .buy-now-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .buy-now-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 10px 12px;
+    }
+    .buy-now-card h4 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: #475569;
+    }
+    .buy-now-card p { margin: 0; font-size: 13px; line-height: 1.5; color: #0f172a; }
+    .buy-now-order {
+      margin-top: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #0f172a;
+    }
+    .cart-added-dialog { width: min(980px, 96vw); }
+    .cart-added-body { padding: 14px 16px 16px; }
+    .cart-added-note {
+      margin: 0 0 10px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .cart-added-sub {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: #475569;
+    }
+    .cart-added-picked {
+      margin: 0 0 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+    }
+    .cart-added-picked h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .cart-added-picked-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+    .cart-added-picked-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+      align-items: baseline;
+      border-bottom: 1px solid #eef2f7;
+      padding-bottom: 6px;
+    }
+    .cart-added-picked-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    .cart-added-picked-name {
+      font-size: 12px;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+    .cart-added-picked-sku,
+    .cart-added-picked-qty {
+      font-size: 12px;
+      color: #475569;
+      white-space: nowrap;
+    }
+    .cart-added-related {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 10px;
+    }
+    .cart-added-related h4 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .cart-added-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .cart-added-item {
+      border: 1px solid #dbe3ea;
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .cart-added-item img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      background: #fff;
+      padding: 4px;
+    }
+    .cart-added-item-title {
+      margin: 0 0 4px;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #0f172a;
+    }
+    .cart-added-item-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .cart-added-item-title a:hover,
+    .cart-added-item-title a:focus {
+      text-decoration: underline;
+    }
+    .cart-added-item-price {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: #b12704;
+    }
+    .cart-added-add {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: #0f172a;
+    }
+    @media (max-width: 767px) {
+      .bulk-filters { grid-template-columns: 1fr; }
+      .image-zoom-thumbs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .buy-now-grid { grid-template-columns: 1fr; }
+      .cart-added-list { grid-template-columns: 1fr; }
+      #bulkOrderModal {
+        padding: 0;
+        align-items: flex-end;
+      }
+      #bulkOrderModal .bulk-dialog {
+        width: 100%;
+        max-height: 94vh;
+        border-radius: 14px 14px 0 0;
+        border-left: 0;
+        border-right: 0;
+        overflow-x: hidden;
+      }
+      #bulkOrderModal .bulk-dialog,
+      #bulkOrderModal .bulk-dialog * {
+        box-sizing: border-box;
+      }
+      #bulkOrderModal .bulk-head {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #fff;
+        padding: 12px 14px;
+      }
+      #bulkOrderModal .bulk-head h3 {
+        font-size: 16px;
+        line-height: 1.25;
+      }
+      #bulkOrderModal .bulk-body {
+        padding: 10px 12px 12px;
+        overflow-x: hidden;
+      }
+      #bulkOrderModal .bulk-note {
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+      #bulkOrderModal .bulk-filter-input {
+        height: 38px;
+        font-size: 13px;
+      }
+      #bulkOrderModal .bulk-table { display: none; }
+      #bulkOrderModal .bulk-mobile-list { display: block; }
+      #bulkOrderModal .bulk-mobile-card,
+      #bulkOrderModal .bulk-mobile-grid,
+      #bulkOrderModal .bulk-mobile-qty-row,
+      #bulkOrderModal .bulk-filters {
+        min-width: 0;
+        max-width: 100%;
+      }
+      #bulkOrderModal .bulk-mobile-grid {
+        grid-template-columns: 1fr;
+      }
+      #bulkOrderModal .bulk-mobile-qty-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+      }
+      #bulkOrderModal .bulk-qty {
+        width: 100%;
+        height: 38px;
+        min-width: 0;
+      }
+      #bulkOrderModal .bulk-foot {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        background: #fff;
+        border-top: 1px solid #e5e7eb;
+        padding: 10px 12px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      #bulkOrderModal .bulk-btn-cancel,
+      #bulkOrderModal .bulk-btn-check,
+      #bulkOrderModal .bulk-btn-add {
+        width: 100%;
+        height: 40px;
+        font-size: 14px;
+        min-width: 0;
+      }
+      #bulkOrderModal .bulk-mobile-sku,
+      #bulkOrderModal .bulk-mobile-kv {
+        overflow-wrap: anywhere;
+        word-break: break-word;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+  <div class="pdp-mobile-sticky-name" id="pdpMobileStickyName"></div>
+
+  <main class="site-max">
+    <section class="pdp-page">
+    <p class="pdp-breadcrumb">
+      <a href="index.html">Home</a>
+      <span class="sep">&gt;</span>
+      <a id="crumbCategory" href="product-list.html?category=Knee%20Bracing">Knee Bracing</a>
+      <span class="sep" id="crumbSubSep">&gt;</span>
+      <a id="crumbSubcategory" href="product-list.html?category=Knee%20Bracing&amp;subcategory=Knee%20Ligament%20Bracing">Knee Ligament Bracing</a>
+      <span class="sep">&gt;</span>
+      <span id="crumbProduct">Product</span>
+    </p>
+
+    <section id="pdpRoot"></section>
+
+    <section class="pdp-tabs" id="pdpTabs" style="display:none;">
+      <div class="pdp-tab-head">
+        <button type="button" class="pdp-tab active js-scroll-section" data-target="#pdp-overview">Overview</button>
+        <button type="button" class="pdp-tab js-scroll-section" data-target="#pdp-clinical">Clinical Information</button>
+        <button type="button" class="pdp-tab js-scroll-section" data-target="#pdp-specifications">Specifications</button>
+        <button type="button" class="pdp-tab js-scroll-section" data-target="#pdp-fitting-use">Fitting &amp; Use</button>
+      </div>
+      <div class="pdp-content-section" id="pdp-overview">
+        <h3>Product Description</h3>
+        <p>The Breg T Scope Post-Op Knee Brace is designed to provide superior stabilization and support during post-operative recovery and rehabilitation. Engineered with precision and comfort in mind, this brace features adjustable ROM (Range of Motion) hinges that allow healthcare providers to customize the level of mobility based on the patient's recovery stage.</p>
+        <p>Ideal for ACL/PCL/MCL/LCL reconstruction, meniscus repair, and other knee surgeries, this brace combines durability with patient comfort. The lightweight aluminum frame ensures structural integrity while minimizing patient burden during extended wear periods.</p>
+      </div>
+      <div class="pdp-content-section" id="pdp-clinical">
+        <h3>Key Features</h3>
+        <div class="pdp-feature-grid">
+          <div>Adjustable ROM hinges (0° to 120° flexion/extension)</div>
+          <div>Bilateral design fits left or right knee</div>
+          <div>Latex-free, hypoallergenic materials</div>
+          <div>Breathable foam padding for patient comfort</div>
+          <div>Tool-free hinge adjustments for quick modifications</div>
+          <div>Reinforced strapping system for secure fit</div>
+          <div>Radiolucent frame allows for X-rays without removal</div>
+          <div>Machine washable liner for easy maintenance</div>
+        </div>
+      </div>
+      <div class="pdp-content-section" id="pdp-specifications">
+        <h3>Primary Indications</h3>
+        <div class="pdp-indications">
+          <div class="pdp-panel">
+            <h4>Post-Operative Care</h4>
+            <ul>
+              <li>ACL/PCL reconstruction</li>
+              <li>MCL/LCL repair</li>
+              <li>Meniscus repair or meniscectomy</li>
+              <li>Total knee arthroplasty</li>
+            </ul>
+          </div>
+          <div class="pdp-panel">
+            <h4>Conservative Treatment</h4>
+            <ul>
+              <li>Ligament sprains or tears</li>
+              <li>Patellar instability</li>
+              <li>Post-traumatic knee injuries</li>
+              <li>Chronic knee instability</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="pdp-content-section" id="pdp-fitting-use">
+        <h3>Available Models</h3>
+        <div class="pdp-models">
+          <div class="pdp-model-card">
+            <h4>Standard Model</h4>
+            <p>Basic post-operative support with essential ROM control and stabilization features.</p>
+          </div>
+          <div class="pdp-model-card">
+            <h4>Pro Model</h4>
+            <p>Enhanced padding and additional strap configurations for improved comfort and adjustability.</p>
+          </div>
+          <div class="pdp-model-card">
+            <h4>Elite Model</h4>
+            <p>Premium materials with advanced hinge technology and superior moisture-wicking liner system.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="bulk-modal" id="bulkOrderModal" aria-hidden="true">
+      <div class="bulk-dialog" role="dialog" aria-modal="true" aria-labelledby="bulkModalTitle">
+        <div class="bulk-head">
+          <h3 id="bulkModalTitle">Bulk Order Multiple Variants</h3>
+          <button type="button" class="bulk-close" id="bulkModalClose" aria-label="Close">×</button>
+        </div>
+        <div class="bulk-body">
+          <p class="bulk-note">Enter quantities for each SKU variation you want to add.</p>
+          <div id="bulkModalFilters"></div>
+          <p class="bulk-filter-count" id="bulkFilterCount"></p>
+          <div id="bulkModalContent"></div>
+        </div>
+        <div class="bulk-foot">
+          <button type="button" class="bulk-btn-cancel" id="bulkModalCancel">Cancel</button>
+          <button type="button" class="bulk-btn-check" id="bulkModalCheckInventory">Check Inventory</button>
+          <button type="button" class="bulk-btn-add" id="bulkModalAdd">Add Selected to Cart</button>
+        </div>
+      </div>
+    </div>
+    <div class="bulk-modal" id="createListModal" aria-hidden="true">
+      <div class="bulk-dialog list-create-dialog" role="dialog" aria-modal="true" aria-labelledby="createListTitle">
+        <div class="bulk-head">
+          <h3 id="createListTitle">Create New List</h3>
+          <button type="button" class="bulk-close" id="createListClose" aria-label="Close">×</button>
+        </div>
+        <form id="createListForm">
+          <div class="list-create-body">
+            <label class="list-create-label" for="createListInput">List name</label>
+            <input id="createListInput" class="list-create-input" type="text" maxlength="80" autocomplete="off" placeholder="e.g. Surgery Essentials">
+            <p class="list-create-error" id="createListError"></p>
+          </div>
+          <div class="bulk-foot">
+            <button type="button" class="bulk-btn-cancel" id="createListCancel">Cancel</button>
+            <button type="submit" class="bulk-btn-add">Create List</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="bulk-modal" id="imageZoomModal" aria-hidden="true">
+      <div class="bulk-dialog image-zoom-dialog" role="dialog" aria-modal="true" aria-labelledby="imageZoomTitle">
+        <div class="bulk-head">
+          <h3 id="imageZoomTitle">Product Image</h3>
+          <button type="button" class="bulk-close" id="imageZoomClose" aria-label="Close">×</button>
+        </div>
+        <div class="image-zoom-wrap">
+          <img id="imageZoomSrc" src="" alt="Product image enlarged">
+        </div>
+        <div class="image-zoom-thumbs" id="imageZoomThumbs"></div>
+      </div>
+    </div>
+    <div class="bulk-modal" id="sizeChartModal" aria-hidden="true">
+      <div class="bulk-dialog size-chart-dialog" role="dialog" aria-modal="true" aria-labelledby="sizeChartTitle">
+        <div class="bulk-head">
+          <h3 id="sizeChartTitle">Size Chart</h3>
+          <button type="button" class="bulk-close" id="sizeChartClose" aria-label="Close">×</button>
+        </div>
+        <div class="size-chart-body">
+          <p class="size-chart-note">Use this chart as a guide. Refer to product instructions for final clinical fit.</p>
+          <div id="sizeChartContent"></div>
+        </div>
+      </div>
+    </div>
+    <div class="bulk-modal" id="buyNowModal" aria-hidden="true">
+      <div class="bulk-dialog buy-now-dialog" role="dialog" aria-modal="true" aria-labelledby="buyNowTitle">
+        <div class="bulk-head">
+          <h3 id="buyNowTitle">Quick Checkout</h3>
+          <button type="button" class="bulk-close" id="buyNowClose" aria-label="Close">×</button>
+        </div>
+        <div class="buy-now-body">
+          <div class="buy-now-grid">
+            <div class="buy-now-card"><h4>Default Shipping Address</h4><p id="buyNowShipping"></p></div>
+            <div class="buy-now-card"><h4>Default Invoice Address</h4><p id="buyNowInvoice"></p></div>
+            <div class="buy-now-card"><h4>Payment Type</h4><p id="buyNowPayment"></p></div>
+            <div class="buy-now-card"><h4>Purchaser</h4><p id="buyNowPurchaser"></p></div>
+          </div>
+          <div class="buy-now-order" id="buyNowOrder"></div>
+        </div>
+        <div class="bulk-foot">
+          <button type="button" class="bulk-btn-cancel" id="buyNowCancel">Cancel</button>
+          <button type="button" class="bulk-btn-add" id="buyNowPlaceOrder">Place Order</button>
+        </div>
+      </div>
+    </div>
+    <div class="bulk-modal" id="cartAddedModal" aria-hidden="true">
+      <div class="bulk-dialog cart-added-dialog" role="dialog" aria-modal="true" aria-labelledby="cartAddedTitle">
+        <div class="bulk-head">
+          <h3 id="cartAddedTitle">Added to Cart</h3>
+          <button type="button" class="bulk-close" id="cartAddedClose" aria-label="Close">×</button>
+        </div>
+        <div class="cart-added-body">
+          <p class="cart-added-note" id="cartAddedSummary"></p>
+          <p class="cart-added-sub" id="cartAddedOtherItems"></p>
+          <div class="cart-added-picked" id="cartAddedPicked" style="display:none;"></div>
+          <div class="cart-added-related">
+            <h4>Frequently Purchased Together</h4>
+            <div class="cart-added-list" id="cartAddedRelated"></div>
+          </div>
+        </div>
+        <div class="bulk-foot">
+          <button type="button" class="bulk-btn-cancel" id="cartAddedContinue">Continue Shopping</button>
+          <a class="bulk-btn-check" id="cartAddedViewCart" href="shopping-cart.html">View Cart</a>
+          <button type="button" class="bulk-btn-add" id="cartAddedBuyNow">Buy Now</button>
+        </div>
+      </div>
+    </div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script src="analysis/product-descriptions.js?v=20260218a"></script>
+  <script src="analysis/variant-data.js?v=20260218a"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var productId = params.get("id") || "";
+      var category = params.get("category") || "Knee Bracing";
+      var storedAuth = localStorage.getItem("bregSignedIn");
+      var isSignedIn = storedAuth === null ? true : storedAuth === "true";
+      var categoryAliases = {
+        "Cold Therapy": "Cold Therapy and DVT",
+        "Spine Support": "Spine Bracing",
+        "Ankle & Foot": "Walker/Ankle/Foot Bracing",
+        "Walker/Ankle/Foot": "Walker/Ankle/Foot Bracing",
+        "Elbow & Wrist": "Elbow/Wrist Bracing",
+        "Wrist/Elbow Bracing": "Elbow/Wrist Bracing",
+        "Hip & Thigh": "Hip Bracing"
+      };
+      category = categoryAliases[category] || category;
+
+      var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
+      var catalog = window.BREG_CATALOG_ITEMS || [];
+      var descriptionMap = window.BREG_PRODUCT_DESCRIPTIONS || {};
+      var variantsByMaster = window.BREG_VARIANTS_BY_MASTER || {};
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function normalizeKey(v) {
+        return String(v || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+      }
+
+      function normalizeImage(url) {
+        var prefix = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/";
+        var v = String(url || "").trim();
+        if (!v) return "";
+        if (/^https?:\/\//i.test(v)) return v;
+        if (v.indexOf("20260218-all-products.xml/") === 0) v = v.replace(/^20260218-all-products\.xml\//, "");
+        if (v.charAt(0) === "/") v = v.slice(1);
+        return prefix + v;
+      }
+
+      function cleanDescriptionHtml(raw) {
+        var text = String(raw || "").trim();
+        if (!text) return "";
+        var temp = document.createElement("textarea");
+        temp.innerHTML = text;
+        var decoded = temp.value || text;
+        var div = document.createElement("div");
+        div.innerHTML = decoded;
+        var plain = (div.textContent || div.innerText || "").replace(/\s+/g, " ").trim();
+        return plain;
+      }
+
+      function uniq(values) {
+        var seen = {};
+        var out = [];
+        (values || []).forEach(function (v) {
+          var s = String(v || "").trim();
+          if (!s || s.toUpperCase() === "N/A" || seen[s]) return;
+          seen[s] = true;
+          out.push(s);
+        });
+        return out;
+      }
+
+      function findProduct() {
+        var byId = catalog.find(function (p) { return p.id === productId; });
+        if (byId) return byId;
+        var sameCat = catalog.filter(function (p) { return normalizeKey(p.category) === normalizeKey(category); });
+        return sameCat[0] || null;
+      }
+
+      function variantMatchesSelection(variant, selected) {
+        return Object.keys(selected).every(function (k) {
+          var value = selected[k];
+          if (!value) return true;
+          var values = (variant.attributes && variant.attributes[k]) || [];
+          return values.indexOf(value) > -1;
+        });
+      }
+
+      function renderPage(product) {
+        if (!product) {
+          $("#pdpMobileStickyName").removeClass("show").text("");
+          $(window).off("scroll.pdpsticky resize.pdpsticky");
+          $("#pdpRoot").html("<div class='pdp-empty'>Product not found.</div>");
+          return;
+        }
+
+        var image = normalizeImage(product.image) || missingProductImage;
+        var galleryImages = [image, image, image, image];
+        var related = catalog.filter(function (p) {
+          return p.id !== product.id && normalizeKey(p.category) === normalizeKey(product.category);
+        }).slice(0, 4);
+
+        var facetDefs = [
+          { key: "size", label: "Size", values: uniq(product.sizeOptions || []) },
+          { key: "option", label: "Model", values: uniq(product.optionOptions || []) },
+          { key: "color", label: "Color", values: uniq(product.colorOptions || []) },
+          { key: "gender", label: "Gender", values: uniq(product.genderOptions || []) },
+          { key: "orientation", label: "Orientation", values: uniq(product.orientationOptions || []) },
+          { key: "uom", label: "UOM", values: uniq(product.uomOptions || []) }
+        ].filter(function (f) { return f.values.length > 0; });
+
+        var selected = {};
+        facetDefs.forEach(function (f) {
+          selected[f.key] = "";
+        });
+        var flowFacets = facetDefs.slice();
+        var requiredFacets = facetDefs.filter(function (f) { return f.values.length > 1; });
+        var stepByFacet = {};
+        flowFacets.forEach(function (f, i) { stepByFacet[f.key] = i + 1; });
+        var shortDesc = cleanDescriptionHtml(descriptionMap[product.id] || "") ||
+          cleanDescriptionHtml(product.shortDescription || "") ||
+          cleanDescriptionHtml(product.short_description || "") ||
+          cleanDescriptionHtml(product.shortdescription || "") ||
+          cleanDescriptionHtml(product.marketingDescription || "") ||
+          cleanDescriptionHtml(product.marketing_description || "") ||
+          cleanDescriptionHtml(product.description || "") ||
+          "Premium medical support solution designed for clinical and home use.";
+        var loginRedirectHref = "login.html?redirect=" + encodeURIComponent(window.location.pathname.split("/").pop() + window.location.search);
+
+        var html = "" +
+          "<div class='pdp-layout'>" +
+            "<section class='pdp-card pdp-gallery-col'>" +
+              "<div class='pdp-gallery-main'><img id='pdpMainImage' src='" + escapeHtml(image) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(product.name) + "'></div>" +
+              "<div class='pdp-thumbs' id='pdpThumbs'></div>" +
+            "</section>" +
+            "<section class='pdp-main'>" +
+              "<div class='pdp-top pdp-card' id='pdpTopCard'>" +
+                "<h1>" + escapeHtml(product.name) + "</h1>" +
+                "<div class='pdp-sku'>Item #: " + escapeHtml(product.id) + "</div>" +
+                "<div class='pdp-shortdesc'>" + escapeHtml(shortDesc) + "</div>" +
+                "<div class='pdp-top-actions'>" +
+                  "<div class='pdp-list-wrap' id='pdpListWrap'>" +
+                    "<button type='button' id='topListBtn' class='pdp-mini-btn pdp-list-btn'><span id='topListBtnText'>Add to List</span><span class='caret'></span></button>" +
+                    "<div class='pdp-list-popover' id='topListPanel'>" +
+                      "<p class='pdp-list-title'>Add to List</p>" +
+                      "<p class='pdp-list-subtitle' id='topListSubtitle'>Save this item for later.</p>" +
+                      "<div class='pdp-list-items' id='topListItems'></div>" +
+                      "<div class='pdp-list-foot'>" +
+                        "<button type='button' class='pdp-list-link' id='createListBtn'>Create List</button>" +
+                        "<button type='button' class='pdp-list-link' id='closeListBtn'>Done</button>" +
+                      "</div>" +
+                    "</div>" +
+                  "</div>" +
+                "</div>" +
+	                "<div class='pdp-price-wrap'>" +
+	                  "<p class='pdp-price' id='pdpPriceValue'>$" + Number(product.price || 0).toFixed(2) + "</p>" +
+	                  "<p class='pdp-inventory-msg' id='topInventoryMsg'></p>" +
+	                  "<div class='pdp-top-cart-row'>" +
+	                    "<div class='pdp-top-cart-controls'>" +
+	                      "<button type='button' id='topAddToCartBtn' class='pdp-top-cart-btn' disabled>" + (isSignedIn ? "Select Options to Continue" : "Login to Continue") + "</button>" +
+	                      "<div class='pdp-top-qty' id='topQtyWrap'><p class='pdp-top-qty-label'>Qty</p><select id='topQtySelect' class='pdp-qty-select' disabled><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option></select></div>" +
+	                    "</div>" +
+	                    "<button type='button' id='topCheckInventoryBtn' class='pdp-check-inventory-btn' style='display:none;'>Check Inventory</button>" +
+	                    "<button type='button' id='topBulkOrderBtn' class='pdp-top-bulk-btn'>Or Bulk Order Multiple Variants</button>" +
+	                  "</div>" +
+	                "</div>" +
+              "</div>" +
+              "<div class='pdp-card'>" +
+                "<div class='pdp-config' id='pdpConfig'></div>" +
+              "</div>" +
+              "<div class='pdp-card'>" +
+	                "<div class='pdp-stock'>" +
+	                  "<div class='pdp-stock-line'><span>Availability: <strong>In Stock</strong></span></div>" +
+	                  "<div>Ships from nearest distribution center</div>" +
+	                  "<div class='pdp-sku-selected' id='pdpSelectedSku'></div>" +
+	                "</div>" +
+              "</div>" +
+            "</section>" +
+            "<aside class='pdp-rail'>" +
+              "<h3>Frequently Purchased Together</h3>" +
+              "<div id='pdpRail'></div>" +
+	              "<div class='pdp-info'>" +
+	                "<p class='pdp-info-title'>Jump to product information:</p>" +
+	                "<ul class='pdp-jump'>" +
+	                  "<li><a href='#pdp-overview' class='js-scroll-section' data-target='#pdp-overview'>Overview</a></li>" +
+	                  "<li><a href='#pdp-clinical' class='js-scroll-section' data-target='#pdp-clinical'>Clinical Information</a></li>" +
+	                  "<li><a href='#pdp-specifications' class='js-scroll-section' data-target='#pdp-specifications'>Specifications</a></li>" +
+	                  "<li><a href='#pdp-fitting-use' class='js-scroll-section' data-target='#pdp-fitting-use'>Fitting &amp; Use</a></li>" +
+	                "</ul>" +
+	              "</div>" +
+	            "</aside>" +
+	          "</div>";
+
+        $("#pdpRoot").html(html);
+        $("#pdpTabs").show();
+        $(".pdp-jump a[data-target='#pdp-overview']").closest("li").addClass("is-active");
+
+        $("#crumbCategory")
+          .text(product.category || "Category")
+          .attr("href", "product-list.html?category=" + encodeURIComponent(product.category || ""));
+
+        var subcategory = product.subcategory || "";
+        var hasSubcategory = !!subcategory;
+        $("#crumbSubSep").toggle(hasSubcategory);
+        $("#crumbSubcategory")
+          .toggle(hasSubcategory)
+          .text(subcategory)
+          .attr("href", "product-list.html?category=" + encodeURIComponent(product.category || "") + "&subcategory=" + encodeURIComponent(subcategory));
+
+        $("#crumbProduct").text(product.name);
+        $("#pdpMobileStickyName").text(product.name);
+
+        function setMobileStickyTop() {
+          var offset = $(".top-header").outerHeight() || 108;
+          document.documentElement.style.setProperty("--pdp-mobile-name-top", offset + "px");
+        }
+        function bindMobileStickyTitle() {
+          var $sticky = $("#pdpMobileStickyName");
+          var $title = $("#pdpTopCard h1").first();
+          if (!$sticky.length || !$title.length) return;
+          $(window).off("scroll.pdpsticky resize.pdpsticky");
+          function applyStickyState() {
+            if (!window.matchMedia("(max-width: 767px)").matches) {
+              $sticky.removeClass("show");
+              return;
+            }
+            setMobileStickyTop();
+            var threshold = ($title.offset().top || 0) + ($title.outerHeight() || 0);
+            var scrollTop = $(window).scrollTop() || 0;
+            $sticky.toggleClass("show", scrollTop > threshold);
+          }
+          $(window).on("scroll.pdpsticky resize.pdpsticky", applyStickyState);
+          applyStickyState();
+        }
+        setMobileStickyTop();
+        bindMobileStickyTitle();
+
+        var thumbHtml = "";
+        galleryImages.forEach(function (src, idx) {
+          thumbHtml += "<button type='button' class='pdp-thumb" + (idx === 0 ? " active" : "") + "' data-src='" + escapeHtml(src) + "'><img src='" + escapeHtml(src) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='Thumbnail " + (idx + 1) + "'></button>";
+        });
+        $("#pdpThumbs").html(thumbHtml);
+
+        var cfgHtml = "";
+        facetDefs.forEach(function (facet) {
+          var chips = facet.values.map(function (v) {
+            var isActive = selected[facet.key] === v;
+            return "<button type='button' class='pdp-option-chip" + (isActive ? " active" : "") + "' data-facet='" + facet.key + "' data-value='" + escapeHtml(v) + "'>" + escapeHtml(v) + "</button>";
+          }).join("");
+          if (facet.key === "size") {
+            cfgHtml += "<div class='pdp-group show' data-group='" + facet.key + "'>" +
+              "<div class='pdp-group-head'><p class='pdp-group-label'>Size</p><a href='#' class='pdp-size-chart'>Size Chart</a></div>" +
+              "<div class='pdp-option-chips'>" + chips + "</div>" +
+            "</div>";
+          } else {
+            cfgHtml += "<div class='pdp-group show' data-group='" + facet.key + "'>" +
+              "<p class='pdp-group-label'>" + facet.label + "</p>" +
+              "<div class='pdp-option-chips'>" + chips + "</div>" +
+            "</div>";
+          }
+        });
+        $("#pdpConfig").html(cfgHtml || "<div class='pdp-empty'>No configurable options for this product.</div>");
+
+        var railHtml = "";
+        related.forEach(function (p) {
+          var pImg = normalizeImage(p.image) || missingProductImage;
+          railHtml += "<a class='pdp-rail-item' href='product-detail.html?category=" + encodeURIComponent(p.category) + "&id=" + encodeURIComponent(p.id) + "'>" +
+            "<img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'>" +
+            "<div><div class='pdp-rail-name'>" + escapeHtml(p.name) + "</div>" + (isSignedIn ? ("<div class='pdp-rail-price'>$" + Number(p.price || 0).toFixed(2) + "</div>") : "") + "</div>" +
+          "</a>";
+        });
+        $("#pdpRail").html(railHtml || "<div class='pdp-empty'>No related products found.</div>");
+
+        var currentResolvedSku = product.id;
+        var LIST_STORAGE_KEY = "breg_saved_lists_v1";
+        var defaultLists = [
+          "Shopping List",
+          "Recovery Supplies",
+          "Post-Surgery Essentials",
+          "Athletic Support",
+          "Clinic Supplies"
+        ];
+        function loadListState() {
+          var state = {};
+          defaultLists.forEach(function (n) { state[n] = []; });
+          try {
+            var raw = localStorage.getItem(LIST_STORAGE_KEY);
+            if (!raw) return state;
+            var parsed = JSON.parse(raw);
+            Object.keys(parsed || {}).forEach(function (name) {
+              if (!Array.isArray(parsed[name])) return;
+              state[name] = parsed[name].map(function (v) { return String(v || ""); }).filter(Boolean);
+            });
+          } catch (e) {}
+          return state;
+        }
+        function saveListState() {
+          try { localStorage.setItem(LIST_STORAGE_KEY, JSON.stringify(listState)); } catch (e) {}
+        }
+        function getListTargetSku() {
+          return String(currentResolvedSku || product.id || "");
+        }
+        function listsContainingSku(sku) {
+          var out = [];
+          Object.keys(listState).forEach(function (name) {
+            if ((listState[name] || []).indexOf(sku) > -1) out.push(name);
+          });
+          return out;
+        }
+        function refreshListButton() {
+          var sku = getListTargetSku();
+          var cnt = listsContainingSku(sku).length;
+          var label = cnt > 0 ? (cnt === 1 ? "Saved to List" : "Saved to Lists") : "Add to List";
+          $("#topListBtnText").text(label);
+          $("#topListBtn").toggleClass("warm", cnt > 0);
+        }
+        function renderListPanel() {
+          var sku = getListTargetSku();
+          var containing = listsContainingSku(sku);
+          var html = "";
+          Object.keys(listState).sort().forEach(function (name) {
+            var checked = (listState[name] || []).indexOf(sku) > -1 ? " checked" : "";
+            html += "<label class='pdp-list-item'><input type='checkbox' class='js-list-check' data-list='" + escapeHtml(name) + "'" + checked + "> <span>" + escapeHtml(name) + "</span></label>";
+          });
+          $("#topListItems").html(html || "<div class='pdp-empty'>No lists available.</div>");
+          $("#topListSubtitle").text(
+            containing.length
+              ? ("Already saved in: " + containing.join(", "))
+              : "Save this item for later."
+          );
+        }
+        function openCreateListModal() {
+          $("#topListPanel").removeClass("open");
+          $("#createListError").text("");
+          $("#createListInput").val("");
+          $("#createListModal").addClass("open").attr("aria-hidden", "false");
+          setTimeout(function () {
+            $("#createListInput").trigger("focus");
+          }, 0);
+        }
+        function closeCreateListModal() {
+          $("#createListModal").removeClass("open").attr("aria-hidden", "true");
+        }
+        function openImageZoomModal(src, altText) {
+          var imgSrc = String(src || "").trim();
+          if (!imgSrc) return;
+          $("#imageZoomSrc")
+            .attr("src", imgSrc)
+            .attr("alt", altText || "Product image enlarged");
+          $("#imageZoomModal").addClass("open").attr("aria-hidden", "false");
+        }
+        function closeImageZoomModal() {
+          $("#imageZoomModal").removeClass("open").attr("aria-hidden", "true");
+        }
+        function renderSizeChart() {
+          var sizeFacet = facetDefs.find(function (f) { return f.key === "size"; });
+          var sizes = (sizeFacet && sizeFacet.values) ? sizeFacet.values.slice() : [];
+          if (!sizes.length) {
+            $("#sizeChartContent").html("<div class='pdp-empty'>No size chart available for this product.</div>");
+            return;
+          }
+          var rows = sizes.map(function (size) {
+            return "<tr><td>" + escapeHtml(size) + "</td><td>See product label</td><td>See product label</td></tr>";
+          }).join("");
+          var table = "" +
+            "<table class='size-chart-table'>" +
+              "<thead><tr><th>Size</th><th>Measurement Range</th><th>Recommended Fit</th></tr></thead>" +
+              "<tbody>" + rows + "</tbody>" +
+            "</table>";
+          $("#sizeChartContent").html(table);
+        }
+        function openSizeChartModal() {
+          renderSizeChart();
+          $("#sizeChartModal").addClass("open").attr("aria-hidden", "false");
+        }
+        function closeSizeChartModal() {
+          $("#sizeChartModal").removeClass("open").attr("aria-hidden", "true");
+        }
+        function loadQuickCheckoutDefaults() {
+          function parseJson(key) {
+            try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
+          }
+          var shipping = parseJson("bregDefaultShippingAddress") || {
+            name: "Medical Clinic Inc.",
+            line1: "123 Healthcare Blvd",
+            cityStateZip: "Los Angeles, CA 90001",
+            country: "United States"
+          };
+          var invoice = parseJson("bregDefaultInvoiceAddress") || shipping;
+          var payment = localStorage.getItem("bregDefaultPaymentType") || "Corporate Visa ending in 3456";
+          var purchaser = (localStorage.getItem("bregFirstName") || "Medical") + " (" + (localStorage.getItem("bregUserEmail") || "test@breg.com") + ")";
+          return { shipping: shipping, invoice: invoice, payment: payment, purchaser: purchaser };
+        }
+        function formatAddress(address) {
+          return [
+            address.name || "",
+            address.line1 || "",
+            address.cityStateZip || "",
+            address.country || ""
+          ].filter(Boolean).join("<br>");
+        }
+        function openBuyNowModal(sku, qty, priceValue) {
+          var defaults = loadQuickCheckoutDefaults();
+          $("#buyNowShipping").html(formatAddress(defaults.shipping));
+          $("#buyNowInvoice").html(formatAddress(defaults.invoice));
+          $("#buyNowPayment").text(defaults.payment);
+          $("#buyNowPurchaser").text(defaults.purchaser);
+          var cart = loadCartState();
+          var lines = cart.slice();
+          if (!lines.length && sku) {
+            lines.push({
+              sku: String(sku || ""),
+              qty: Number(qty || 1),
+              name: String(product.name || "Product"),
+              price: Number(priceValue || product.price || 0)
+            });
+          }
+          var rows = "";
+          var total = 0;
+          lines.forEach(function (line) {
+            var lineQty = Number(line.qty || 0);
+            var linePrice = Number(line.price != null ? line.price : product.price || 0);
+            var lineTotal = lineQty * linePrice;
+            total += lineTotal;
+            rows += "<tr>" +
+              "<td>" + escapeHtml(line.name || line.sku || "Product") + "</td>" +
+              "<td>" + escapeHtml(String(line.sku || "")) + "</td>" +
+              "<td>" + lineQty + "</td>" +
+              "<td>$" + linePrice.toFixed(2) + "</td>" +
+              "<td>$" + lineTotal.toFixed(2) + "</td>" +
+            "</tr>";
+          });
+          $("#buyNowOrder").html(
+            "<strong>Order Summary (" + lines.length + " item" + (lines.length === 1 ? "" : "s") + ")</strong>" +
+            "<table class='bulk-table' style='margin-top:8px;'>" +
+              "<thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead>" +
+              "<tbody>" + rows + "</tbody>" +
+            "</table>" +
+            "<div style='margin-top:8px;'><strong>Estimated Total: $" + total.toFixed(2) + "</strong></div>"
+          );
+          $("#buyNowPlaceOrder").prop("disabled", false);
+          $("#buyNowModal").addClass("open").attr("aria-hidden", "false");
+        }
+        function closeBuyNowModal() {
+          $("#buyNowModal").removeClass("open").attr("aria-hidden", "true");
+        }
+        var CART_STORAGE_KEY = "breg_cart_v1";
+        function loadCartState() {
+          try {
+            var parsed = JSON.parse(localStorage.getItem(CART_STORAGE_KEY) || "[]");
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            return [];
+          }
+        }
+        function saveCartState(cart) {
+          try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart)); } catch (e) {}
+        }
+        function clearCartState() {
+          try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify([])); } catch (e) {}
+        }
+        function updateCartBadge(cart) {
+          var total = (cart || []).reduce(function (sum, line) {
+            return sum + Number(line.qty || 0);
+          }, 0);
+          $(".cart-count").text(total);
+        }
+        function buildOrderPayloadFromCart(defaultSku, defaultQty, defaultPrice) {
+          var cart = loadCartState();
+          var lines = cart.slice();
+          if (!lines.length && defaultSku) {
+            lines.push({
+              sku: String(defaultSku || ""),
+              qty: Number(defaultQty || 1),
+              name: String(product.name || "Product"),
+              price: Number(defaultPrice || product.price || 0)
+            });
+          }
+          var total = 0;
+          lines = lines.map(function (line) {
+            var qty = Number(line.qty || 0);
+            var price = Number(line.price || 0);
+            var lineTotal = qty * price;
+            total += lineTotal;
+            return {
+              sku: String(line.sku || ""),
+              name: String(line.name || line.sku || "Product"),
+              qty: qty,
+              price: price,
+              lineTotal: lineTotal
+            };
+          });
+          var now = new Date();
+          return {
+            orderNumber: "ORD-" + now.getFullYear() + "-" + String(Math.floor(100000 + Math.random() * 900000)),
+            placedAt: now.toISOString(),
+            total: total,
+            lines: lines
+          };
+        }
+        function addToCartLine(line) {
+          var cart = loadCartState();
+          var sku = String(line.sku || "");
+          if (!sku) return cart;
+          var existing = cart.find(function (x) { return String(x.sku || "") === sku; });
+          if (existing) {
+            existing.qty = Number(existing.qty || 0) + Number(line.qty || 0);
+          } else {
+            cart.push({
+              sku: sku,
+              qty: Number(line.qty || 0),
+              name: String(line.name || ""),
+              price: Number(line.price || 0),
+              image: String(line.image || ""),
+              category: String(line.category || "")
+            });
+          }
+          saveCartState(cart);
+          updateCartBadge(cart);
+          return cart;
+        }
+        function openCartAddedModal(mainLine) {
+          var cart = loadCartState();
+          var totalQty = cart.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
+          var thisQty = Number(mainLine.qty || 0);
+          var otherQty = Math.max(0, totalQty - thisQty);
+          $("#cartAddedSummary").text(mainLine.name + " (Qty " + thisQty + ") was added to your cart.");
+          $("#cartAddedOtherItems").text(
+            otherQty > 0
+              ? ("You also have " + otherQty + " other item" + (otherQty === 1 ? "" : "s") + " in your cart.")
+              : "This is the first item in your cart."
+          );
+          $("#cartAddedPicked").hide().html("");
+          var relatedHtml = "";
+          related.forEach(function (p) {
+            var pImg = normalizeImage(p.image) || missingProductImage;
+            var pHref = "product-detail.html?category=" + encodeURIComponent(p.category || "") + "&id=" + encodeURIComponent(p.id || "");
+            relatedHtml += "<div class='cart-added-item'>" +
+              "<a href='" + pHref + "'><img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'></a>" +
+              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + Number(p.price || 0).toFixed(2) + "</p>" +
+              "<button type='button' class='cart-added-add js-cart-added-add' data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-price='" + Number(p.price || 0).toFixed(2) + "' data-image='" + escapeHtml(pImg) + "' data-category='" + escapeHtml(p.category || "") + "'>Add</button></div>" +
+            "</div>";
+          });
+          $("#cartAddedRelated").html(relatedHtml || "<div class='pdp-empty'>No related products found.</div>");
+          $("#cartAddedModal").data("buy-now-sku", mainLine.sku).data("buy-now-qty", thisQty).data("buy-now-price", Number(mainLine.price || 0));
+          $("#cartAddedModal").addClass("open").attr("aria-hidden", "false");
+        }
+        function openCartAddedModalForBulk(lines) {
+          var totalAdded = lines.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
+          var lineCount = lines.length;
+          var first = lines[0] || { sku: product.id, qty: 1, price: Number(product.price || 0) };
+          var cart = loadCartState();
+          var totalQty = cart.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
+          var otherQty = Math.max(0, totalQty - totalAdded);
+          $("#cartAddedSummary").text(
+            lineCount + " SKU" + (lineCount === 1 ? "" : "s") + " (Qty " + totalAdded + ") were added to your cart."
+          );
+          $("#cartAddedOtherItems").text(
+            otherQty > 0
+              ? ("You also have " + otherQty + " other item" + (otherQty === 1 ? "" : "s") + " in your cart.")
+              : "These are the first items in your cart."
+          );
+          var pickedHtml = "<h4>Items added</h4><ul class='cart-added-picked-list'>";
+          lines.forEach(function (line) {
+            var sku = String(line.sku || "");
+            var qty = Number(line.qty || 0);
+            var name = String(line.name || sku || "Product");
+            pickedHtml += "<li class='cart-added-picked-row'>" +
+              "<span class='cart-added-picked-name'>" + escapeHtml(name) + "</span>" +
+              "<span class='cart-added-picked-sku'>" + escapeHtml(sku) + "</span>" +
+              "<span class='cart-added-picked-qty'>Qty " + qty + "</span>" +
+            "</li>";
+          });
+          pickedHtml += "</ul>";
+          $("#cartAddedPicked").html(pickedHtml).show();
+          var relatedHtml = "";
+          related.forEach(function (p) {
+            var pImg = normalizeImage(p.image) || missingProductImage;
+            var pHref = "product-detail.html?category=" + encodeURIComponent(p.category || "") + "&id=" + encodeURIComponent(p.id || "");
+            relatedHtml += "<div class='cart-added-item'>" +
+              "<a href='" + pHref + "'><img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'></a>" +
+              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + Number(p.price || 0).toFixed(2) + "</p>" +
+              "<button type='button' class='cart-added-add js-cart-added-add' data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-price='" + Number(p.price || 0).toFixed(2) + "' data-image='" + escapeHtml(pImg) + "' data-category='" + escapeHtml(p.category || "") + "'>Add</button></div>" +
+            "</div>";
+          });
+          $("#cartAddedRelated").html(relatedHtml || "<div class='pdp-empty'>No related products found.</div>");
+          $("#cartAddedModal").data("buy-now-sku", first.sku).data("buy-now-qty", Number(first.qty || 1)).data("buy-now-price", Number(first.price || 0));
+          $("#cartAddedModal").addClass("open").attr("aria-hidden", "false");
+        }
+        function closeCartAddedModal() {
+          $("#cartAddedModal").removeClass("open").attr("aria-hidden", "true");
+        }
+        function renderImageZoomThumbs(activeSrc) {
+          var seen = {};
+          var srcs = [];
+          $(".pdp-thumb").each(function () {
+            var s = String($(this).attr("data-src") || "").trim();
+            if (!s || seen[s]) return;
+            seen[s] = true;
+            srcs.push(s);
+          });
+          if (!srcs.length) {
+            var main = String($("#pdpMainImage").attr("src") || "").trim();
+            if (main) srcs.push(main);
+          }
+          var html = "";
+          srcs.forEach(function (src) {
+            var active = src === activeSrc ? " active" : "";
+            html += "<button type='button' class='image-zoom-thumb" + active + "' data-src='" + escapeHtml(src) + "'>" +
+              "<img src='" + escapeHtml(src) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='Zoom thumbnail'>" +
+            "</button>";
+          });
+          $("#imageZoomThumbs").html(html);
+        }
+        var listState = loadListState();
+        updateCartBadge(loadCartState());
+
+        function applyWizardState() {
+          autoSelectSinglesInSequence();
+          var firstPending = null;
+          for (var i = 0; i < flowFacets.length; i += 1) {
+            if (!selected[flowFacets[i].key]) {
+              firstPending = flowFacets[i];
+              break;
+            }
+          }
+          var firstPendingStep = firstPending ? stepByFacet[firstPending.key] : 0;
+
+          facetDefs.forEach(function (facet) {
+            var $group = $(".pdp-group[data-group='" + facet.key + "']");
+            var step = stepByFacet[facet.key] || 0;
+            var isSelected = !!selected[facet.key];
+            var isLocked = !!(firstPending && step > firstPendingStep);
+
+            $group.removeClass("active-step completed-step locked");
+            if (isLocked) {
+              $group.addClass("locked");
+            } else if (isSelected) {
+              $group.addClass("completed-step");
+            } else if (firstPending && facet.key === firstPending.key) {
+              $group.addClass("active-step");
+            }
+
+          });
+          syncChipStates();
+        }
+
+        function autoSelectSinglesInSequence() {
+          var canAdvance = true;
+          for (var i = 0; i < flowFacets.length; i += 1) {
+            var facet = flowFacets[i];
+            if (!canAdvance) break;
+            if (selected[facet.key]) continue;
+            if (facet.values.length === 1) {
+              selected[facet.key] = facet.values[0] || "";
+            } else {
+              canAdvance = false;
+            }
+          }
+        }
+
+        function syncChipStates() {
+          facetDefs.forEach(function (facet) {
+            var value = selected[facet.key] || "";
+            $(".pdp-group[data-group='" + facet.key + "'] .pdp-option-chip").each(function () {
+              $(this).toggleClass("active", $(this).attr("data-value") === value);
+            });
+          });
+        }
+
+        function getFirstPendingFacet() {
+          for (var i = 0; i < flowFacets.length; i += 1) {
+            if (!selected[flowFacets[i].key]) return flowFacets[i];
+          }
+          return null;
+        }
+
+        function scrollToFacetStep(facetKey) {
+          if (!facetKey) return;
+          var node = $(".pdp-group[data-group='" + facetKey + "']").get(0);
+          if (!node) return;
+          var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          node.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "center",
+            inline: "nearest"
+          });
+        }
+
+        function updateResolvedSku() {
+          var isMaster = product.type === "variation-master";
+          var variants = variantsByMaster[product.id] || [];
+          var resolved = product.id;
+          var unresolvedReason = "";
+          var wasEnabled = !$("#topAddToCartBtn").prop("disabled");
+          var isConfigurable = isMaster && requiredFacets.length > 0;
+
+          if (isMaster) {
+            if (!variants.length) {
+              unresolvedReason = "Variant data unavailable for this master.";
+            } else {
+              var missingFacets = requiredFacets.filter(function (f) { return !selected[f.key]; });
+              if (missingFacets.length) {
+                unresolvedReason = "Choose " + missingFacets[0].label + " to continue.";
+              } else {
+                var matches = variants.filter(function (v) { return variantMatchesSelection(v, selected); });
+                if (matches.length === 1) {
+                  resolved = matches[0].sku;
+                  var vImg = (matches[0].images && matches[0].images.length) ? normalizeImage(matches[0].images[0]) : "";
+                  if (vImg) {
+                    $("#pdpMainImage").attr("src", vImg);
+                  }
+                } else if (matches.length === 0) {
+                  unresolvedReason = "No sellable SKU matches the selected options.";
+                } else {
+                  // Some imported masters can have duplicate variants on visible facets.
+                  // Once every visible facet is selected, resolve deterministically.
+                  var allVisibleFacetsSelected = facetDefs.every(function (f) { return !!selected[f.key]; });
+                  if (allVisibleFacetsSelected) {
+                    var masterStem = String(product.id || "").split("-")[0] || "";
+                    var preferred = matches.find(function (v) {
+                      return masterStem && String(v.sku || "").indexOf(masterStem) === 0;
+                    });
+                    var chosen = preferred || matches[0];
+                    resolved = chosen.sku;
+                    var chosenImg = (chosen.images && chosen.images.length) ? normalizeImage(chosen.images[0]) : "";
+                    if (chosenImg) {
+                      $("#pdpMainImage").attr("src", chosenImg);
+                    }
+                  } else {
+                    unresolvedReason = "Select additional options to resolve a single sellable SKU.";
+                  }
+                }
+              }
+            }
+          }
+          currentResolvedSku = resolved || product.id;
+
+          if (unresolvedReason) {
+            $("#pdpSelectedSku").text(unresolvedReason);
+            $("#topAddToCartBtn").prop("disabled", isSignedIn).text(isSignedIn ? "Select Options to Continue" : "Login to Continue");
+            $("#topQtyWrap").hide();
+            $("#topQtySelect").prop("disabled", true);
+            $("#topCheckInventoryBtn").hide();
+            $("#topInventoryMsg").hide().text("");
+            if (isConfigurable || !isSignedIn) {
+              $("#pdpPriceValue").hide();
+            }
+          } else {
+            $("#pdpSelectedSku").html("Selected SKU: <strong>" + escapeHtml(resolved) + "</strong>");
+            $("#topAddToCartBtn").prop("disabled", false).text(isSignedIn ? "Add to Cart" : "Login to Continue");
+            if (isSignedIn) {
+              $("#topQtyWrap").css("display", "flex");
+              $("#topQtySelect").prop("disabled", false);
+              $("#topCheckInventoryBtn").show();
+              $("#pdpPriceValue").show();
+            } else {
+              $("#topQtyWrap").hide();
+              $("#topQtySelect").prop("disabled", true);
+              $("#topCheckInventoryBtn").hide();
+              $("#pdpPriceValue").hide();
+            }
+            $("#topInventoryMsg").hide().text("");
+            if (!wasEnabled && requiredFacets.length) {
+              var topCard = $("#pdpTopCard").get(0);
+              if (topCard) {
+                var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+                topCard.scrollIntoView({
+                  behavior: prefersReducedMotion ? "auto" : "smooth",
+                  block: "center",
+                  inline: "nearest"
+                });
+              }
+            }
+          }
+          if (!isSignedIn) {
+            $("#topBulkOrderBtn").hide();
+          }
+          refreshListButton();
+          renderListPanel();
+        }
+
+        $(document).on("click", ".pdp-thumb", function () {
+          var src = $(this).attr("data-src");
+          $(".pdp-thumb").removeClass("active");
+          $(this).addClass("active");
+          $("#pdpMainImage").attr("src", src);
+        });
+        $(document).on("click", "#pdpMainImage", function () {
+          var src = $(this).attr("src");
+          openImageZoomModal(src, $(this).attr("alt"));
+          renderImageZoomThumbs(src);
+        });
+        $(document).on("click", ".image-zoom-thumb", function () {
+          var src = $(this).attr("data-src");
+          if (!src) return;
+          $("#imageZoomSrc").attr("src", src);
+          $("#pdpMainImage").attr("src", src);
+          $(".image-zoom-thumb").removeClass("active");
+          $(this).addClass("active");
+          $(".pdp-thumb").removeClass("active");
+          $(".pdp-thumb").filter(function () {
+            return $(this).attr("data-src") === src;
+          }).first().addClass("active");
+        });
+
+        $(document).on("click", ".pdp-option-chip", function () {
+          var $chip = $(this);
+          var $group = $chip.closest(".pdp-group");
+          if ($group.hasClass("locked")) return;
+          var facet = $chip.attr("data-facet");
+          var value = $chip.attr("data-value");
+          selected[facet] = value;
+          var currentStep = stepByFacet[facet] || 0;
+          if (currentStep > 0) {
+            flowFacets.forEach(function (f) {
+              if (stepByFacet[f.key] > currentStep) {
+                selected[f.key] = "";
+              }
+            });
+          }
+          applyWizardState();
+          var nextPending = getFirstPendingFacet();
+          var nextStep = nextPending ? (stepByFacet[nextPending.key] || 0) : 0;
+          if (nextPending && nextStep > currentStep) {
+            scrollToFacetStep(nextPending.key);
+          }
+          updateResolvedSku();
+        });
+        $(document).on("click", ".js-scroll-section", function (e) {
+          var target = $(this).attr("data-target") || $(this).attr("href") || "";
+          if (!target || target.charAt(0) !== "#") return;
+          var $target = $(target);
+          if (!$target.length) return;
+          function setActiveSectionStates() {
+            $(".pdp-tab").removeClass("active");
+            $(".pdp-tab.js-scroll-section").filter(function () {
+              return $(this).attr("data-target") === target;
+            }).first().addClass("active");
+            $(".pdp-jump li").removeClass("is-active");
+            $(".pdp-jump a.js-scroll-section").filter(function () {
+              return $(this).attr("data-target") === target;
+            }).closest("li").addClass("is-active");
+            $("#pdpTabs .pdp-content-section").hide();
+            $target.show();
+          }
+          var isTabClick = $(this).closest(".pdp-tab-head").length > 0;
+          if (isTabClick) {
+            e.preventDefault();
+            setActiveSectionStates();
+            return;
+          }
+          e.preventDefault();
+          var headerOffset = $(".top-header").outerHeight() || 0;
+          var isJumpLink = $(this).closest(".pdp-jump").length > 0;
+          var $scrollTarget = isJumpLink ? $("#pdpTabs") : $target;
+          var sectionOffset = 12;
+          var top = Math.max(0, Math.floor($scrollTarget.offset().top - headerOffset - sectionOffset));
+          $("html, body").stop(true).animate({ scrollTop: top }, 260);
+          setActiveSectionStates();
+        });
+        $(document).on("click", ".pdp-size-chart", function (e) {
+          e.preventDefault();
+          openSizeChartModal();
+        });
+        $("#topCheckInventoryBtn").on("click", function () {
+          $("#topInventoryMsg").text("In stock").show();
+        });
+        $(document).on("click", "#topListBtn", function () {
+          $("#topListPanel").toggleClass("open");
+        });
+        $(document).on("click", "#closeListBtn", function () {
+          $("#topListPanel").removeClass("open");
+        });
+        $(document).on("change", ".js-list-check", function () {
+          var listName = $(this).attr("data-list") || "";
+          var sku = getListTargetSku();
+          if (!listName || !sku) return;
+          var arr = listState[listName] || [];
+          var idx = arr.indexOf(sku);
+          if (this.checked && idx === -1) arr.push(sku);
+          if (!this.checked && idx > -1) arr.splice(idx, 1);
+          listState[listName] = arr;
+          saveListState();
+          refreshListButton();
+        });
+        $(document).on("click", "#createListBtn", function () {
+          openCreateListModal();
+        });
+        $("#createListClose, #createListCancel").on("click", function () {
+          closeCreateListModal();
+        });
+        $("#createListModal").on("click", function (e) {
+          if (e.target === this) closeCreateListModal();
+        });
+        $("#imageZoomClose").on("click", function () {
+          closeImageZoomModal();
+        });
+        $("#imageZoomModal").on("click", function (e) {
+          if (e.target === this) closeImageZoomModal();
+        });
+        $("#sizeChartClose").on("click", function () {
+          closeSizeChartModal();
+        });
+        $("#sizeChartModal").on("click", function (e) {
+          if (e.target === this) closeSizeChartModal();
+        });
+        $("#buyNowClose, #buyNowCancel").on("click", function () {
+          closeBuyNowModal();
+        });
+        $("#buyNowModal").on("click", function (e) {
+          if (e.target === this) closeBuyNowModal();
+        });
+        $("#buyNowPlaceOrder").on("click", function () {
+          $(this).prop("disabled", true);
+          var sku = String($("#cartAddedModal").data("buy-now-sku") || "");
+          var qty = Number($("#cartAddedModal").data("buy-now-qty") || 1);
+          var unitPrice = Number($("#cartAddedModal").data("buy-now-price") || product.price || 0);
+          var order = buildOrderPayloadFromCart(sku, qty, unitPrice);
+          try { localStorage.setItem("breg_last_order_v1", JSON.stringify(order)); } catch (e) {}
+          clearCartState();
+          updateCartBadge([]);
+          window.location.href = "order-confirmation.html";
+        });
+        $("#cartAddedClose, #cartAddedContinue").on("click", function () {
+          closeCartAddedModal();
+        });
+        $("#cartAddedModal").on("click", function (e) {
+          if (e.target === this) closeCartAddedModal();
+        });
+        $("#cartAddedBuyNow").on("click", function () {
+          closeCartAddedModal();
+          window.location.href = "checkout.html";
+        });
+        $(document).on("click", ".js-cart-added-add", function () {
+          var line = {
+            sku: String($(this).attr("data-sku") || ""),
+            qty: 1,
+            name: String($(this).attr("data-name") || ""),
+            price: Number($(this).attr("data-price") || 0),
+            image: String($(this).attr("data-image") || ""),
+            category: String($(this).attr("data-category") || "")
+          };
+          addToCartLine(line);
+          $(this).text("Added").prop("disabled", true);
+          var cart = loadCartState();
+          var totalQty = cart.reduce(function (sum, item) { return sum + Number(item.qty || 0); }, 0);
+          var baseQty = Number($("#cartAddedModal").data("buy-now-qty") || 0);
+          var otherQty = Math.max(0, totalQty - baseQty);
+          $("#cartAddedOtherItems").text(
+            otherQty > 0
+              ? ("You also have " + otherQty + " other item" + (otherQty === 1 ? "" : "s") + " in your cart.")
+              : "This is the first item in your cart."
+          );
+        });
+        $(document).on("keydown", function (e) {
+          if (e.key === "Escape") {
+            if ($("#imageZoomModal").hasClass("open")) closeImageZoomModal();
+            if ($("#createListModal").hasClass("open")) closeCreateListModal();
+            if ($("#bulkOrderModal").hasClass("open")) closeBulkModal();
+            if ($("#sizeChartModal").hasClass("open")) closeSizeChartModal();
+            if ($("#buyNowModal").hasClass("open")) closeBuyNowModal();
+            if ($("#cartAddedModal").hasClass("open")) closeCartAddedModal();
+          }
+        });
+        $("#createListForm").on("submit", function (e) {
+          e.preventDefault();
+          var name = String($("#createListInput").val() || "").trim();
+          if (!name) {
+            $("#createListError").text("Enter a list name.");
+            return;
+          }
+          var existing = Object.keys(listState).find(function (n) {
+            return n.toLowerCase() === name.toLowerCase();
+          });
+          var finalName = existing || name;
+          if (!listState[finalName]) listState[finalName] = [];
+          var sku = getListTargetSku();
+          if (sku && listState[finalName].indexOf(sku) === -1) listState[finalName].push(sku);
+          saveListState();
+          refreshListButton();
+          renderListPanel();
+          closeCreateListModal();
+        });
+        $(document).on("click", function (e) {
+          if (!$(e.target).closest("#pdpListWrap").length) {
+            $("#topListPanel").removeClass("open");
+          }
+        });
+
+        function summarizeVariantOptions(variant) {
+          var parts = [];
+          facetDefs.forEach(function (facet) {
+            var vals = (variant.attributes && variant.attributes[facet.key]) || [];
+            if (vals.length) parts.push(facet.label + ": " + vals[0]);
+          });
+          return parts.join(" | ");
+        }
+
+        function getVariantFacetValue(variant, facetKey) {
+          var vals = (variant.attributes && variant.attributes[facetKey]) || [];
+          return vals.length ? String(vals[0]) : "";
+        }
+
+        function getBulkVariants() {
+          if (product.type === "variation-master") {
+            return (variantsByMaster[product.id] || []).filter(function (v) { return v.online !== false; });
+          }
+          return [{ sku: product.id, attributes: {} }];
+        }
+
+        var bulkState = {
+          variants: [],
+          qtyBySku: {},
+          inventoryBySku: {},
+          optionFacets: [],
+          sortKey: "sku",
+          sortDir: "asc",
+          search: "",
+          facetFilters: {}
+        };
+
+        function getBulkOptionFacets(variants) {
+          return facetDefs.filter(function (facet) {
+            return variants.some(function (v) {
+              return !!getVariantFacetValue(v, facet.key);
+            });
+          });
+        }
+
+        function getBulkFilterFacets(variants) {
+          return facetDefs.filter(function (facet) {
+            var seen = {};
+            var count = 0;
+            variants.forEach(function (v) {
+              var val = getVariantFacetValue(v, facet.key);
+              if (!val || seen[val]) return;
+              seen[val] = true;
+              count += 1;
+            });
+            return count > 1;
+          });
+        }
+
+        function getBulkFacetValues(variants, facetKey) {
+          var seen = {};
+          var out = [];
+          variants.forEach(function (v) {
+            var val = getVariantFacetValue(v, facetKey);
+            if (!val || seen[val]) return;
+            seen[val] = true;
+            out.push(val);
+          });
+          return out.sort();
+        }
+
+        function renderBulkFilters(variants) {
+          var filterFacets = getBulkFilterFacets(variants);
+          var filtersHtml = "<div class='bulk-filters'>" +
+            "<div class='bulk-filter'>" +
+              "<label class='bulk-filter-label' for='bulkSearchFilter'>Search</label>" +
+              "<input id='bulkSearchFilter' class='bulk-filter-input' type='text' placeholder='Search SKU or option' value='" + escapeHtml(bulkState.search) + "'>" +
+            "</div>";
+          filterFacets.forEach(function (facet) {
+            var selectedVal = bulkState.facetFilters[facet.key] || "";
+            var options = "<option value=''>All " + escapeHtml(facet.label) + "</option>";
+            getBulkFacetValues(variants, facet.key).forEach(function (v) {
+              options += "<option value='" + escapeHtml(v) + "'" + (selectedVal === v ? " selected" : "") + ">" + escapeHtml(v) + "</option>";
+            });
+            filtersHtml += "<div class='bulk-filter'>" +
+              "<label class='bulk-filter-label' for='bulkFacet_" + facet.key + "'>" + escapeHtml(facet.label) + "</label>" +
+              "<select id='bulkFacet_" + facet.key + "' class='bulk-filter-input bulk-facet-filter' data-facet='" + facet.key + "'>" + options + "</select>" +
+            "</div>";
+          });
+          filtersHtml += "</div>";
+          $("#bulkModalFilters").html(filtersHtml);
+        }
+
+        function getFilteredBulkVariants() {
+          var q = String(bulkState.search || "").trim().toLowerCase();
+          return bulkState.variants.filter(function (v) {
+            var text = (String(v.sku || "") + " " + summarizeVariantOptions(v)).toLowerCase();
+            if (q && text.indexOf(q) === -1) return false;
+            var facetKeys = Object.keys(bulkState.facetFilters);
+            for (var i = 0; i < facetKeys.length; i += 1) {
+              var key = facetKeys[i];
+              var wanted = bulkState.facetFilters[key];
+              if (!wanted) continue;
+              if (getVariantFacetValue(v, key) !== wanted) return false;
+            }
+            return true;
+          });
+        }
+
+        function getBulkSortValue(variant, sortKey) {
+          if (sortKey === "sku") return String(variant.sku || "");
+          if (sortKey === "price") return Number(variant.price != null ? variant.price : product.price || 0);
+          if (sortKey === "qty") return Number(bulkState.qtyBySku[String(variant.sku || "")] || 0);
+          if (sortKey === "inventory") return String(bulkState.inventoryBySku[String(variant.sku || "")] || "");
+          if (sortKey.indexOf("facet:") === 0) {
+            return String(getVariantFacetValue(variant, sortKey.slice(6)) || "");
+          }
+          return "";
+        }
+
+        function sortBulkVariants(variants) {
+          var key = bulkState.sortKey || "sku";
+          var dir = bulkState.sortDir === "desc" ? -1 : 1;
+          return variants.slice().sort(function (a, b) {
+            var av = getBulkSortValue(a, key);
+            var bv = getBulkSortValue(b, key);
+            var cmp = 0;
+            if (typeof av === "number" && typeof bv === "number") {
+              cmp = av - bv;
+            } else {
+              cmp = String(av).localeCompare(String(bv), undefined, { numeric: true, sensitivity: "base" });
+            }
+            return cmp * dir;
+          });
+        }
+
+        function bulkSortHeader(label, sortKey) {
+          var active = bulkState.sortKey === sortKey;
+          var arrow = active ? (bulkState.sortDir === "desc" ? "▼" : "▲") : "↕";
+          return "<button type='button' class='bulk-sort' data-sort='" + escapeHtml(sortKey) + "'>" +
+            escapeHtml(label) + "<span class='bulk-sort-arrow'>" + arrow + "</span></button>";
+        }
+
+        function renderBulkTable() {
+          var variants = sortBulkVariants(getFilteredBulkVariants());
+          var optionFacets = bulkState.optionFacets || [];
+          $("#bulkFilterCount").text(variants.length + " variant" + (variants.length === 1 ? "" : "s") + " shown");
+          if (!variants.length) {
+            $("#bulkModalContent").html("<div class='pdp-empty'>No variants match the current filters.</div>");
+            return;
+          }
+          var headers = "<th>" + bulkSortHeader("SKU", "sku") + "</th>";
+          optionFacets.forEach(function (facet) {
+            headers += "<th>" + bulkSortHeader(facet.label, "facet:" + facet.key) + "</th>";
+          });
+          headers += "<th>" + bulkSortHeader("Price", "price") + "</th>";
+          headers += "<th>" + bulkSortHeader("Inventory", "inventory") + "</th>";
+          headers += "<th>" + bulkSortHeader("Quantity", "qty") + "</th>";
+          var rows = variants.map(function (v) {
+            var sku = String(v.sku || "");
+            var qtyVal = bulkState.qtyBySku[sku] != null ? bulkState.qtyBySku[sku] : 0;
+            var price = Number(v.price != null ? v.price : product.price || 0).toFixed(2);
+            var stock = bulkState.inventoryBySku[sku] || "";
+            var stockHtml = stock ? "<span class='bulk-stock-text'>" + escapeHtml(stock) + "</span>" : "";
+            var row = "<tr><td><div class='bulk-sku'>" + escapeHtml(sku) + "</div></td>";
+            optionFacets.forEach(function (facet) {
+              row += "<td>" + escapeHtml(getVariantFacetValue(v, facet.key) || "-") + "</td>";
+            });
+            row += "<td><div class='bulk-price'>$" + price + "</div></td>" +
+              "<td class='bulk-inventory-cell'>" + stockHtml + "</td>" +
+              "<td><input class='bulk-qty' type='number' min='0' step='1' value='" + qtyVal + "' data-sku='" + escapeHtml(sku) + "'></td></tr>";
+            return row;
+          }).join("");
+          var mobileCards = variants.map(function (v) {
+            var sku = String(v.sku || "");
+            var qtyVal = bulkState.qtyBySku[sku] != null ? bulkState.qtyBySku[sku] : 0;
+            var price = Number(v.price != null ? v.price : product.price || 0).toFixed(2);
+            var stock = bulkState.inventoryBySku[sku] || "";
+            var detailRows = optionFacets.map(function (facet) {
+              var value = getVariantFacetValue(v, facet.key) || "-";
+              return "<div class='bulk-mobile-kv'><strong>" + escapeHtml(facet.label) + "</strong>" + escapeHtml(value) + "</div>";
+            }).join("");
+            detailRows += "<div class='bulk-mobile-kv'><strong>Inventory</strong>" + (stock ? ("<span class='bulk-stock-text'>" + escapeHtml(stock) + "</span>") : "-") + "</div>";
+            return "<div class='bulk-mobile-card'>" +
+              "<div class='bulk-mobile-top'>" +
+                "<p class='bulk-mobile-sku'>" + escapeHtml(sku) + "</p>" +
+                "<span class='bulk-mobile-price'>$" + price + "</span>" +
+              "</div>" +
+              "<div class='bulk-mobile-grid'>" + detailRows + "</div>" +
+              "<div class='bulk-mobile-qty-row'>" +
+                "<p class='bulk-mobile-qty-label'>Quantity</p>" +
+                "<input class='bulk-qty' type='number' min='0' step='1' value='" + qtyVal + "' data-sku='" + escapeHtml(sku) + "'>" +
+              "</div>" +
+            "</div>";
+          }).join("");
+          $("#bulkModalContent").html(
+            "<table class='bulk-table'>" +
+              "<thead><tr>" + headers + "</tr></thead>" +
+              "<tbody>" + rows + "</tbody>" +
+            "</table>" +
+            "<div class='bulk-mobile-list'>" + mobileCards + "</div>"
+          );
+        }
+
+        function openBulkModal() {
+          var variants = getBulkVariants();
+          bulkState.variants = variants;
+          bulkState.qtyBySku = {};
+          bulkState.inventoryBySku = {};
+          bulkState.optionFacets = getBulkOptionFacets(variants);
+          bulkState.sortKey = "sku";
+          bulkState.sortDir = "asc";
+          bulkState.search = "";
+          bulkState.facetFilters = {};
+          if (!variants.length) {
+            $("#bulkModalFilters").empty();
+            $("#bulkFilterCount").text("");
+            $("#bulkModalContent").html("<div class='pdp-empty'>No sellable variants available for bulk order.</div>");
+          } else {
+            renderBulkFilters(variants);
+            renderBulkTable();
+          }
+          $("#bulkOrderModal").addClass("open").attr("aria-hidden", "false");
+        }
+
+        function closeBulkModal() {
+          $("#bulkOrderModal").removeClass("open").attr("aria-hidden", "true");
+        }
+        function getBulkSelectedLines() {
+          var lines = [];
+          Object.keys(bulkState.qtyBySku).forEach(function (sku) {
+            var qty = Number(bulkState.qtyBySku[sku] || 0);
+            if (qty > 0) lines.push({ sku: sku, qty: qty });
+          });
+          return lines;
+        }
+        function checkBulkInventory(lines) {
+          var statusBySku = {};
+          lines.forEach(function (line) {
+            statusBySku[line.sku] = "In stock";
+          });
+          bulkState.inventoryBySku = statusBySku;
+          renderBulkTable();
+        }
+
+        $("#topAddToCartBtn").on("click", function () {
+          if (!isSignedIn) {
+            window.location.href = loginRedirectHref;
+            return;
+          }
+          var qty = Number($("#topQtySelect").val() || 1);
+          var sku = String(currentResolvedSku || product.id || "");
+          var line = {
+            sku: sku,
+            qty: qty,
+            name: String(product.name || "Product"),
+            price: Number(product.price || 0),
+            image: String(normalizeImage(product.image) || missingProductImage),
+            category: String(product.category || "")
+          };
+          addToCartLine(line);
+          openCartAddedModal(line);
+        });
+        $("#topBulkOrderBtn").on("click", function () {
+          if (!isSignedIn) {
+            window.location.href = loginRedirectHref;
+            return;
+          }
+          openBulkModal();
+        });
+        $("#bulkModalClose, #bulkModalCancel").on("click", function () {
+          closeBulkModal();
+        });
+        $("#bulkOrderModal").on("click", function (e) {
+          if (e.target === this) closeBulkModal();
+        });
+        $(document).on("input", "#bulkSearchFilter", function () {
+          bulkState.search = $(this).val() || "";
+          renderBulkTable();
+        });
+        $(document).on("change", ".bulk-facet-filter", function () {
+          var key = $(this).attr("data-facet");
+          bulkState.facetFilters[key] = $(this).val() || "";
+          renderBulkTable();
+        });
+        $(document).on("input", ".bulk-qty", function () {
+          var sku = $(this).attr("data-sku");
+          var qty = Number($(this).val() || 0);
+          if (!sku) return;
+          bulkState.qtyBySku[sku] = qty > 0 ? qty : 0;
+          delete bulkState.inventoryBySku[sku];
+          $(this).closest("tr").find(".bulk-inventory-cell").text("");
+        });
+        $(document).on("click", ".bulk-sort", function () {
+          var key = $(this).attr("data-sort") || "sku";
+          if (bulkState.sortKey === key) {
+            bulkState.sortDir = bulkState.sortDir === "asc" ? "desc" : "asc";
+          } else {
+            bulkState.sortKey = key;
+            bulkState.sortDir = "asc";
+          }
+          renderBulkTable();
+        });
+        $("#bulkModalCheckInventory").on("click", function () {
+          var lines = getBulkSelectedLines();
+          checkBulkInventory(lines);
+        });
+        $("#bulkModalAdd").on("click", function () {
+          var lines = getBulkSelectedLines();
+          if (!lines.length) {
+            alert("Enter quantity for at least one SKU.");
+            return;
+          }
+          var addedLines = [];
+          lines.forEach(function (line) {
+            var matched = (bulkState.variants || []).find(function (v) {
+              return String(v.sku || "") === String(line.sku || "");
+            }) || {};
+            var matchedImage = (matched.images && matched.images.length) ? normalizeImage(matched.images[0]) : normalizeImage(product.image);
+            var addedLine = {
+              sku: String(line.sku || ""),
+              qty: Number(line.qty || 0),
+              name: String(matched.name || product.name || line.sku || "Product"),
+              price: Number(matched.price != null ? matched.price : product.price || 0),
+              image: String(matchedImage || missingProductImage),
+              category: String(product.category || "")
+            };
+            addedLines.push(addedLine);
+            addToCartLine({
+              sku: addedLine.sku,
+              qty: addedLine.qty,
+              name: addedLine.name,
+              price: addedLine.price,
+              image: addedLine.image,
+              category: addedLine.category
+            });
+          });
+          closeBulkModal();
+          openCartAddedModalForBulk(addedLines);
+        });
+
+        applyWizardState();
+        updateResolvedSku();
+      }
+
+      renderPage(findProduct());
+    })();
+  </script>
+</body>
+</html>

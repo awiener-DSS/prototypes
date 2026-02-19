@@ -1,0 +1,1483 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Bulk Order</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .bulk-wrap { padding: 16px 0 26px; }
+    .bulk-head {
+      margin-bottom: 10px;
+    }
+    .bulk-title {
+      margin: 0;
+      color: #1e2939;
+      font-size: 36px;
+      line-height: 1.1;
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .bulk-sub {
+      margin: 5px 0 0;
+      color: #4a5565;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .bulk-head-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      position: sticky;
+      top: calc(var(--bulk-sticky-offset, 110px) + 8px);
+      z-index: 40;
+      background: rgba(238, 241, 244, 0.96);
+      border: 1px solid #d7dee6;
+      border-radius: 10px;
+      padding: 8px;
+      backdrop-filter: blur(4px);
+      width: fit-content;
+      margin: 0 0 14px auto;
+    }
+    .bulk-btn {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      color: #0f172a;
+      border-radius: 4px;
+      height: 40px;
+      padding: 0 14px;
+      font-size: 16px;
+      font-weight: 500;
+      line-height: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .bulk-btn:hover,
+    .bulk-btn:focus {
+      color: #0f172a;
+      text-decoration: none;
+      outline: 0;
+      border-color: #b7c0cc;
+    }
+    .bulk-btn-primary {
+      border-color: #fcd200;
+      background: #ffd814;
+    }
+    .bulk-btn-secondary {
+      border-color: #c7ced4;
+      background: #fff;
+      color: #0f172a;
+    }
+    .bulk-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .bulk-card {
+      background: #f9fafb;
+      border: 1px solid #d1d5dc;
+      border-radius: 10px;
+      padding: 24px;
+    }
+    .bulk-card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .bulk-card-icon {
+      color: #0b87b0;
+      font-size: 16px;
+      margin-top: 2px;
+      width: 16px;
+      text-align: center;
+      flex: 0 0 auto;
+    }
+    .bulk-card-title {
+      margin: 0;
+      color: #1e2939;
+      font-size: 26px;
+      line-height: 1.2;
+      font-weight: 600;
+      letter-spacing: -.15px;
+    }
+    .bulk-card-sub {
+      margin: 3px 0 0;
+      color: #4a5565;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .bulk-field {
+      margin-bottom: 10px;
+    }
+    .bulk-label {
+      display: block;
+      color: #364153;
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+    .bulk-input,
+    .bulk-number {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #d1d5dc;
+      border-radius: 4px;
+      background: #fff;
+      color: #0a0a0a;
+      font-size: 14px;
+      line-height: 20px;
+      padding: 8px 12px;
+    }
+    .bulk-input:focus,
+    .bulk-number:focus {
+      border-color: #2f6fed;
+      box-shadow: 0 0 0 3px rgba(47,111,237,.14);
+      outline: 0;
+    }
+    .bulk-suggest {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      z-index: 20;
+      background: #fff;
+      border: 1px solid #d6dee7;
+      border-radius: 10px;
+      box-shadow: 0 10px 20px rgba(15,23,42,.12);
+      max-height: 280px;
+      overflow: auto;
+      display: none;
+    }
+    .bulk-suggest.open { display: block; }
+    .bulk-suggest-item {
+      width: 100%;
+      border: 0;
+      background: #fff;
+      padding: 8px 10px;
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 8px;
+      align-items: center;
+      text-align: left;
+      border-bottom: 1px solid #eef2f6;
+    }
+    .bulk-suggest-item:last-child { border-bottom: 0; }
+    .bulk-suggest-item:hover,
+    .bulk-suggest-item:focus {
+      background: #f8fbff;
+      outline: 0;
+    }
+    .bulk-suggest-item img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border: 1px solid #e4e8ee;
+      border-radius: 8px;
+      background: #fff;
+      padding: 2px;
+    }
+    .bulk-suggest-name {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .bulk-suggest-sku {
+      display: block;
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+    .bulk-input-cell { position: relative; }
+    .bulk-add-line {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #d1d5dc;
+      border-radius: 4px;
+      background: #d1d5dc;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 24px;
+      margin-top: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .bulk-add-line.enabled {
+      background: #007185;
+      border-color: #007185;
+    }
+    .bulk-add-line.enabled:hover,
+    .bulk-add-line.enabled:focus {
+      background: #005f70;
+      border-color: #005f70;
+      color: #fff;
+    }
+    .bulk-divider {
+      border-top: 1px solid #d1d5dc;
+      margin: 12px 0 0;
+      padding-top: 12px;
+    }
+    .bulk-mini-label {
+      color: #4a5565;
+      font-size: 12px;
+      line-height: 16px;
+      margin-bottom: 8px;
+    }
+    .bulk-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .bulk-chip {
+      border: 1px solid #d1d5dc;
+      border-radius: 4px;
+      background: #fff;
+      color: #0a0a0a;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 500;
+      height: 26px;
+      padding: 0 10px;
+    }
+    .bulk-upload {
+      border: 2px solid #d1d5dc;
+      border-radius: 10px;
+      height: 48px;
+      background: #f9fafb;
+      color: #364153;
+      font-size: 14px;
+      line-height: 20px;
+      display: inline-flex;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .bulk-upload:hover,
+    .bulk-upload:focus {
+      border-color: #b7c0cc;
+      text-decoration: none;
+      color: #364153;
+      outline: 0;
+    }
+    .bulk-template {
+      width: 100%;
+      border: 1px solid #d1d5dc;
+      border-radius: 4px;
+      height: 38px;
+      background: #fff;
+      color: #0a0a0a;
+      font-size: 14px;
+      line-height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .bulk-template:hover,
+    .bulk-template:focus {
+      text-decoration: none;
+      color: #0a0a0a;
+      outline: 0;
+      border-color: #b7c0cc;
+    }
+    .bulk-code {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 4px;
+      color: #364153;
+      font-size: 12px;
+      line-height: 16px;
+      min-height: 66px;
+      padding: 8px;
+      font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      margin: 0;
+    }
+    .bulk-list {
+      border: 2px solid #d1d5dc;
+      border-radius: 10px;
+      background: #f9fafb;
+      min-height: 264px;
+      padding: 18px;
+    }
+    .bulk-empty {
+      min-height: 224px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .bulk-empty-icon {
+      font-size: 58px;
+      color: #9ca3af;
+      margin-bottom: 10px;
+    }
+    .bulk-empty-title {
+      margin: 0;
+      color: #1e2939;
+      font-size: 28px;
+      line-height: 1.2;
+      font-weight: 600;
+    }
+    .bulk-empty-sub {
+      margin: 8px 0 0;
+      color: #4a5565;
+      font-size: 16px;
+      line-height: 24px;
+    }
+    .bulk-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid #d1d5dc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .bulk-table thead th {
+      background: #f8fafc;
+      border-bottom: 1px solid #d1d5dc;
+      color: #334155;
+      font-size: 12px;
+      line-height: 16px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      padding: 10px;
+    }
+    .bulk-table tbody td {
+      border-bottom: 1px solid #e7edf3;
+      padding: 10px;
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 20px;
+      vertical-align: middle;
+    }
+    .bulk-table tbody tr:last-child td { border-bottom: 0; }
+    .bulk-item {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 10px;
+      align-items: center;
+      min-width: 0;
+    }
+    .bulk-item img {
+      width: 52px;
+      height: 52px;
+      object-fit: contain;
+      border: 1px solid #dbe3ea;
+      border-radius: 8px;
+      background: #fff;
+      padding: 2px;
+    }
+    .bulk-item-name {
+      margin: 0;
+      color: #0f172a;
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+    .bulk-item-sku {
+      margin: 2px 0 0;
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .bulk-remove {
+      border: 0;
+      background: transparent;
+      color: #007185;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0;
+    }
+    .bulk-remove:hover,
+    .bulk-remove:focus {
+      color: #005f70;
+      text-decoration: underline;
+      outline: 0;
+    }
+    .bulk-inv-status {
+      font-size: 12px;
+      line-height: 1.3;
+      font-weight: 600;
+      min-height: 16px;
+    }
+    .bulk-inv-status.in-stock { color: #166534; }
+    .bulk-inv-status.low-stock { color: #92400e; }
+    .bulk-inv-status.out-stock { color: #991b1b; }
+    .bulk-item-open {
+      border: 0;
+      background: transparent;
+      color: #0f172a;
+      padding: 0;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 600;
+    }
+    .bulk-item-open:hover,
+    .bulk-item-open:focus {
+      color: #007185;
+      text-decoration: underline;
+      outline: 0;
+    }
+    .bulk-detail-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 12000;
+      background: rgba(15, 23, 42, 0.56);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .bulk-detail-modal.open { display: flex; }
+    .bulk-detail-dialog {
+      width: min(880px, 96vw);
+      max-height: 92vh;
+      overflow: auto;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #dbe3ea;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.28);
+    }
+    .bulk-detail-head {
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .bulk-detail-title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .bulk-detail-close {
+      border: 0;
+      background: transparent;
+      color: #475569;
+      font-size: 30px;
+      line-height: 1;
+      padding: 0 4px;
+    }
+    .bulk-detail-close:hover,
+    .bulk-detail-close:focus {
+      color: #0f172a;
+      outline: 0;
+    }
+    .bulk-detail-body {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 16px;
+    }
+    .bulk-detail-image-wrap {
+      border: 1px solid #dbe3ea;
+      border-radius: 12px;
+      background: #f8fafc;
+      min-height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+    }
+    .bulk-detail-image {
+      width: 100%;
+      max-height: 280px;
+      object-fit: contain;
+    }
+    .bulk-detail-meta h4 {
+      margin: 0 0 8px;
+      color: #1e2939;
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 700;
+    }
+    .bulk-detail-kv {
+      margin: 0 0 6px;
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .bulk-detail-kv strong {
+      color: #0f172a;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+    .bulk-detail-desc {
+      margin: 12px 0 0;
+      color: #334155;
+      font-size: 14px;
+      line-height: 1.55;
+      border-top: 1px solid #e5e7eb;
+      padding-top: 12px;
+      white-space: pre-line;
+    }
+    .bulk-list-modal .bulk-detail-dialog {
+      width: min(560px, 96vw);
+    }
+    .bulk-list-body {
+      padding: 14px 16px;
+    }
+    .bulk-list-title {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: #334155;
+      line-height: 1.45;
+    }
+    .bulk-list-items {
+      display: grid;
+      gap: 8px;
+      max-height: 260px;
+      overflow: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 10px;
+      background: #fff;
+    }
+    .bulk-list-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #0f172a;
+      margin: 0;
+      font-weight: 500;
+    }
+    .bulk-list-item input {
+      margin: 0;
+      width: 14px;
+      height: 14px;
+    }
+    .bulk-list-row {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .bulk-list-new {
+      border: 0;
+      background: transparent;
+      color: #007185;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0;
+    }
+    .bulk-list-new:hover,
+    .bulk-list-new:focus {
+      color: #005f70;
+      text-decoration: underline;
+      outline: 0;
+    }
+    .bulk-list-sub {
+      color: #64748b;
+      font-size: 12px;
+      line-height: 1.3;
+    }
+    .bulk-create-form {
+      padding: 14px 16px;
+    }
+    .bulk-create-label {
+      display: block;
+      margin: 0 0 6px;
+      color: #334155;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .bulk-create-input {
+      width: 100%;
+      height: 38px;
+      border: 1px solid #d1d5dc;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #0f172a;
+      padding: 0 10px;
+    }
+    .bulk-create-input:focus {
+      outline: 0;
+      border-color: #2f6fed;
+      box-shadow: 0 0 0 3px rgba(47,111,237,.14);
+    }
+    .bulk-create-error {
+      min-height: 18px;
+      margin: 8px 0 0;
+      color: #b91c1c;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    #bulkFileInput { display: none; }
+
+    @media (max-width: 1100px) {
+      .bulk-grid { grid-template-columns: 1fr; }
+      .bulk-title { font-size: 32px; }
+    }
+    @media (max-width: 767px) {
+      .bulk-wrap { padding-top: 14px; }
+      .bulk-title { font-size: 24px; line-height: 1.15; }
+      .bulk-sub { font-size: 13px; line-height: 1.35; }
+      .bulk-card { padding: 12px; }
+      .bulk-card-title { font-size: 20px; line-height: 1.2; }
+      .bulk-card-sub { font-size: 13px; line-height: 1.35; }
+      .bulk-label { font-size: 13px; }
+      .bulk-input,
+      .bulk-number { height: 36px; font-size: 13px; padding: 7px 10px; }
+      .bulk-add-line,
+      .bulk-template,
+      .bulk-upload,
+      .bulk-btn { font-size: 13px; height: 36px; }
+      .bulk-head-actions {
+        width: 100%;
+        justify-content: stretch;
+        margin-left: 0;
+        top: calc(var(--bulk-sticky-offset, 104px) + 6px);
+        gap: 6px;
+        padding: 6px;
+      }
+      .bulk-btn { flex: 1; justify-content: center; min-width: 0; padding: 0 8px; }
+      .bulk-empty-icon { font-size: 42px; margin-bottom: 8px; }
+      .bulk-empty-title { font-size: 22px; }
+      .bulk-empty-sub { font-size: 14px; line-height: 1.4; }
+      .bulk-item-name { font-size: 13px; }
+      .bulk-table thead { display: none; }
+      .bulk-table,
+      .bulk-table tbody,
+      .bulk-table tr,
+      .bulk-table td { display: block; width: 100%; }
+      .bulk-table tbody td { border-bottom: 0; padding: 6px 10px; }
+      .bulk-table tbody tr { border-bottom: 1px solid #e7edf3; padding: 8px 0; }
+      .bulk-table tbody tr:last-child { border-bottom: 0; }
+      .bulk-detail-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 420px) {
+      .bulk-title { font-size: 22px; }
+      .bulk-card-title { font-size: 18px; }
+      .bulk-head-actions { position: static; }
+      .bulk-head-actions { display: grid; grid-template-columns: 1fr; }
+      .bulk-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <section class="bulk-wrap">
+      <div class="bulk-head">
+        <div>
+          <h1 class="bulk-title">Bulk Order</h1>
+          <p class="bulk-sub">Add multiple products to your cart quickly</p>
+        </div>
+      </div>
+      <div class="bulk-head-actions">
+        <button type="button" class="bulk-btn" id="bulkSaveListBtn"><span class="glyphicon glyphicon-heart-empty"></span> Add to List</button>
+        <button type="button" class="bulk-btn bulk-btn-secondary" id="bulkCheckAllInvBtn"><span class="glyphicon glyphicon-ok-circle"></span> Check Inventory</button>
+        <button type="button" class="bulk-btn bulk-btn-primary" id="bulkAddAllBtn"><span class="glyphicon glyphicon-shopping-cart"></span> Add All to Cart (<span id="bulkTotalQty">0</span>)</button>
+      </div>
+
+      <div class="bulk-grid">
+        <section class="bulk-card">
+          <div class="bulk-card-head">
+            <span class="bulk-card-icon glyphicon glyphicon-plus"></span>
+            <div>
+              <h2 class="bulk-card-title">Add Products Manually</h2>
+              <p class="bulk-card-sub">Start typing SKU or product name for suggestions</p>
+            </div>
+          </div>
+
+          <div class="bulk-field">
+            <label class="bulk-label" for="manualSkuInput">SKU Number</label>
+            <div class="bulk-input-cell">
+              <input id="manualSkuInput" class="bulk-input" type="text" autocomplete="off" placeholder="e.g., T-SCOPE-PREM">
+              <div class="bulk-suggest" id="manualSkuSuggest"></div>
+            </div>
+          </div>
+
+          <div class="bulk-field">
+            <label class="bulk-label" for="manualQtyInput">Quantity</label>
+            <input id="manualQtyInput" class="bulk-number" type="number" min="1" step="1" value="1">
+          </div>
+
+          <button type="button" class="bulk-add-line" id="manualAddBtn"><span class="glyphicon glyphicon-plus"></span> Add to List</button>
+
+          <div class="bulk-divider">
+            <div class="bulk-mini-label">Example SKUs:</div>
+            <div class="bulk-chip-list">
+              <button type="button" class="bulk-chip js-example-chip">T-SCOPE-PREM</button>
+              <button type="button" class="bulk-chip js-example-chip">FUSION-OA-PLUS</button>
+              <button type="button" class="bulk-chip js-example-chip">POLAR-CARE-WAVE</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="bulk-card">
+          <div class="bulk-card-head">
+            <span class="bulk-card-icon glyphicon glyphicon-upload"></span>
+            <div>
+              <h2 class="bulk-card-title">Upload CSV or Excel File</h2>
+              <p class="bulk-card-sub">Upload a file with SKU and quantity columns</p>
+            </div>
+          </div>
+
+          <input id="bulkFileInput" type="file" accept=".csv,.txt,.xlsx,.xls">
+          <button type="button" class="bulk-upload" id="bulkChooseFileBtn"><span class="glyphicon glyphicon-upload"></span> Choose file or drag here</button>
+          <button type="button" class="bulk-template" id="bulkTemplateBtn"><span class="glyphicon glyphicon-download-alt"></span> Download CSV Template</button>
+
+          <div class="bulk-divider" style="padding-top:12px;">
+            <div class="bulk-mini-label">File format example:</div>
+            <pre class="bulk-code">SKU,Quantity
+T-SCOPE-PREM,2
+FUSION-OA-PLUS,1</pre>
+          </div>
+        </section>
+      </div>
+
+      <section class="bulk-list" id="bulkList"></section>
+    </section>
+  </main>
+
+  <div class="bulk-detail-modal" id="bulkDetailModal" aria-hidden="true">
+    <div class="bulk-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="bulkDetailTitle">
+      <div class="bulk-detail-head">
+        <h3 class="bulk-detail-title" id="bulkDetailTitle">Product Details</h3>
+        <button type="button" class="bulk-detail-close" id="bulkDetailClose" aria-label="Close">x</button>
+      </div>
+      <div class="bulk-detail-body">
+        <div class="bulk-detail-image-wrap">
+          <img id="bulkDetailImage" class="bulk-detail-image" src="" alt="">
+        </div>
+        <div class="bulk-detail-meta">
+          <h4 id="bulkDetailName"></h4>
+          <p class="bulk-detail-kv"><strong>SKU:</strong><span id="bulkDetailSku"></span></p>
+          <p class="bulk-detail-kv"><strong>Category:</strong><span id="bulkDetailCategory"></span></p>
+          <p class="bulk-detail-kv"><strong>Price:</strong><span id="bulkDetailPrice"></span></p>
+          <div class="bulk-detail-desc" id="bulkDetailDesc"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bulk-detail-modal bulk-list-modal" id="bulkListModal" aria-hidden="true">
+    <div class="bulk-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="bulkListTitle">
+      <div class="bulk-detail-head">
+        <h3 class="bulk-detail-title" id="bulkListTitle">Add to List</h3>
+        <button type="button" class="bulk-detail-close" id="bulkListClose" aria-label="Close">x</button>
+      </div>
+      <div class="bulk-list-body">
+        <p class="bulk-list-title" id="bulkListModalTitle">Select list(s) for these products.</p>
+        <div class="bulk-list-items" id="bulkListItems"></div>
+        <div class="bulk-list-row">
+          <button type="button" class="bulk-list-new" id="bulkOpenCreateList">+ Create New List</button>
+          <span class="bulk-list-sub" id="bulkListSubtext"></span>
+        </div>
+      </div>
+      <div class="bulk-detail-head" style="border-top:1px solid #e5e7eb;border-bottom:0;justify-content:flex-end;">
+        <button type="button" class="bulk-btn bulk-btn-secondary" id="bulkListCancel">Cancel</button>
+        <button type="button" class="bulk-btn bulk-btn-primary" id="bulkListSave">Save</button>
+      </div>
+    </div>
+  </div>
+  <div class="bulk-detail-modal bulk-list-modal" id="bulkCreateListModal" aria-hidden="true">
+    <div class="bulk-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="bulkCreateListTitle">
+      <div class="bulk-detail-head">
+        <h3 class="bulk-detail-title" id="bulkCreateListTitle">Create New List</h3>
+        <button type="button" class="bulk-detail-close" id="bulkCreateListClose" aria-label="Close">x</button>
+      </div>
+      <form id="bulkCreateListForm" class="bulk-create-form">
+        <label class="bulk-create-label" for="bulkCreateListInput">List name</label>
+        <input id="bulkCreateListInput" class="bulk-create-input" type="text" maxlength="80" autocomplete="off" placeholder="e.g. Surgery Essentials">
+        <p class="bulk-create-error" id="bulkCreateListError"></p>
+        <div class="bulk-detail-head" style="border-top:1px solid #e5e7eb;border-bottom:0;justify-content:flex-end;margin:12px -16px -14px;padding:12px 16px 0 16px;">
+          <button type="button" class="bulk-btn bulk-btn-secondary" id="bulkCreateListCancel">Cancel</button>
+          <button type="submit" class="bulk-btn bulk-btn-primary">Create List</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script src="analysis/product-descriptions.js?v=20260218a"></script>
+  <script>
+    (function () {
+      var qoApi = window.BregQuickOrder || {};
+      var cartApi = window.BregCart || {};
+      var descriptionMap = window.BREG_PRODUCT_DESCRIPTIONS || {};
+      var missingImage = String(qoApi.missingImage || "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png");
+      var draftStorageKey = String(qoApi.draftStorageKey || "breg_quick_order_draft_v1");
+      var LIST_STORAGE_KEY = "breg_saved_lists_v1";
+      var defaultLists = [
+        "Shopping List",
+        "Recovery Supplies",
+        "Post-Surgery Essentials",
+        "Athletic Support",
+        "Clinic Supplies"
+      ];
+      var items = [];
+      var listState = {};
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function toPrice(value) {
+        var n = Number(value || 0);
+        return isFinite(n) ? n : 0;
+      }
+
+      function loadListState() {
+        var state = {};
+        defaultLists.forEach(function (name) { state[name] = []; });
+        try {
+          var parsed = JSON.parse(localStorage.getItem(LIST_STORAGE_KEY) || "{}");
+          Object.keys(parsed || {}).forEach(function (name) {
+            if (!Array.isArray(parsed[name])) return;
+            state[name] = parsed[name].map(function (v) { return String(v || ""); }).filter(Boolean);
+          });
+        } catch (e) {}
+        return state;
+      }
+
+      function saveListState() {
+        try { localStorage.setItem(LIST_STORAGE_KEY, JSON.stringify(listState)); } catch (e) {}
+      }
+
+      function currentSkuList() {
+        return items.map(function (item) { return String(item.sku || ""); }).filter(Boolean);
+      }
+
+      function refreshAddToListButton() {
+        var skus = currentSkuList();
+        if (!skus.length) {
+          $("#bulkSaveListBtn").html("<span class='glyphicon glyphicon-heart-empty'></span> Add to List");
+          return;
+        }
+        var coveredLists = 0;
+        Object.keys(listState).forEach(function (listName) {
+          var arr = listState[listName] || [];
+          var allIncluded = skus.every(function (sku) { return arr.indexOf(sku) > -1; });
+          if (allIncluded) coveredLists += 1;
+        });
+        if (coveredLists > 0) {
+          $("#bulkSaveListBtn").html("<span class='glyphicon glyphicon-heart'></span> Saved to List" + (coveredLists > 1 ? "s" : ""));
+        } else {
+          $("#bulkSaveListBtn").html("<span class='glyphicon glyphicon-heart-empty'></span> Add to List");
+        }
+      }
+
+      function openListModal() {
+        if (!items.length) return;
+        var skus = currentSkuList();
+        var html = "";
+        Object.keys(listState).sort().forEach(function (listName) {
+          var arr = listState[listName] || [];
+          var allIncluded = skus.every(function (sku) { return arr.indexOf(sku) > -1; });
+          html += "<label class='bulk-list-item'><input type='checkbox' class='js-bulk-list-check' data-list='" + escapeHtml(listName) + "'" + (allIncluded ? " checked" : "") + "> <span>" + escapeHtml(listName) + "</span></label>";
+        });
+        $("#bulkListItems").html(html || "<div class='bulk-list-sub'>No lists available.</div>");
+        $("#bulkListSubtext").text(skus.length + " product" + (skus.length === 1 ? "" : "s") + " selected");
+        $("#bulkListModal").addClass("open").attr("aria-hidden", "false");
+      }
+
+      function closeListModal() {
+        $("#bulkListModal").removeClass("open").attr("aria-hidden", "true");
+      }
+
+      function openCreateListModal() {
+        $("#bulkCreateListError").text("");
+        $("#bulkCreateListInput").val("");
+        $("#bulkCreateListModal").addClass("open").attr("aria-hidden", "false");
+        setTimeout(function () { $("#bulkCreateListInput").trigger("focus"); }, 0);
+      }
+
+      function closeCreateListModal() {
+        $("#bulkCreateListModal").removeClass("open").attr("aria-hidden", "true");
+      }
+
+      function syncBulkStickyOffset() {
+        var header = document.querySelector(".top-header");
+        var headerHeight = header ? Math.ceil(header.getBoundingClientRect().height) : 110;
+        document.documentElement.style.setProperty("--bulk-sticky-offset", String(headerHeight) + "px");
+      }
+
+      function cleanDescriptionHtml(value) {
+        var raw = String(value || "").trim();
+        if (!raw) return "";
+        var decoded = $("<textarea>").html(raw).text();
+        var text = $("<div>").html(decoded).text();
+        return String(text || "").replace(/\s+/g, " ").trim();
+      }
+
+      function getItemDescription(item) {
+        var sku = String(item && item.sku ? item.sku : "");
+        if (!sku) return "";
+        var fromMap = cleanDescriptionHtml(descriptionMap[sku] || "");
+        if (fromMap) return fromMap;
+        return "No additional product details are available for this item.";
+      }
+
+      function openDetailModal(item) {
+        if (!item) return;
+        var image = String(item.image || "") || missingImage;
+        $("#bulkDetailName").text(item.name || item.sku || "Product");
+        $("#bulkDetailSku").text(item.sku || "");
+        $("#bulkDetailCategory").text(item.category || "Quick Order");
+        $("#bulkDetailPrice").text("$" + toPrice(item.price).toFixed(2));
+        $("#bulkDetailDesc").text(getItemDescription(item));
+        $("#bulkDetailImage")
+          .attr("src", image)
+          .attr("alt", item.name || item.sku || "Product");
+        $("#bulkDetailModal").addClass("open").attr("aria-hidden", "false");
+      }
+
+      function closeDetailModal() {
+        $("#bulkDetailModal").removeClass("open").attr("aria-hidden", "true");
+      }
+
+      function skuKey(value) {
+        if (qoApi.skuKey) return qoApi.skuKey(value);
+        return String(value || "").trim().toUpperCase();
+      }
+
+      function setManualSelected(item) {
+        $("#manualSkuInput").data("quick-selected", item && item.sku ? {
+          sku: String(item.sku || ""),
+          name: String(item.name || item.sku || ""),
+          image: String(item.image || ""),
+          category: String(item.category || ""),
+          price: toPrice(item.price)
+        } : null);
+        $("#manualAddBtn").toggleClass("enabled", !!(item && item.sku));
+      }
+
+      function closeManualSuggest() {
+        $("#manualSkuSuggest").removeClass("open").empty();
+      }
+
+      function renderManualSuggest(results) {
+        if (!results || !results.length) {
+          closeManualSuggest();
+          return;
+        }
+        var html = results.map(function (item) {
+          var image = String(item.image || "") || missingImage;
+          return "" +
+            "<button type='button' class='bulk-suggest-item js-manual-suggestion' " +
+              "data-sku='" + escapeHtml(item.sku) + "' " +
+              "data-name='" + escapeHtml(item.name || item.sku) + "' " +
+              "data-image='" + escapeHtml(image) + "' " +
+              "data-price='" + toPrice(item.price).toFixed(2) + "' " +
+              "data-category='" + escapeHtml(item.category || "") + "'>" +
+              "<img src='" + escapeHtml(image) + "' onerror=\"this.onerror=null;this.src='" + missingImage + "';\" alt='" + escapeHtml(item.name || item.sku) + "'>" +
+              "<span><span class='bulk-suggest-name'>" + escapeHtml(item.name || item.sku) + "</span><span class='bulk-suggest-sku'>SKU: " + escapeHtml(item.sku) + "</span></span>" +
+            "</button>";
+        }).join("");
+        $("#manualSkuSuggest").html(html).addClass("open");
+      }
+
+      function resolveInputToMeta(rawInput, selected) {
+        if (selected && selected.sku) return selected;
+        var text = String(rawInput || "").trim();
+        if (!text) return null;
+
+        var bySku = qoApi.catalogBySku ? qoApi.catalogBySku(text) : null;
+        if (bySku && bySku.sku) return bySku;
+
+        var byName = null;
+        if (qoApi.searchCatalog) {
+          var candidates = qoApi.searchCatalog(text) || [];
+          var needle = text.toLowerCase();
+          byName = candidates.find(function (it) {
+            return String(it && it.name ? it.name : "").toLowerCase() === needle;
+          }) || null;
+        }
+        if (byName && byName.sku) return byName;
+
+        return {
+          sku: text,
+          name: text,
+          image: "",
+          category: "Quick Order",
+          price: 0
+        };
+      }
+
+      function upsertItem(line) {
+        var key = skuKey(line.sku);
+        var existing = items.find(function (it) { return skuKey(it.sku) === key; });
+        if (existing) {
+          existing.qty = Number(existing.qty || 0) + Number(line.qty || 0);
+          if (line.name) existing.name = line.name;
+          if (line.image) existing.image = line.image;
+          if (line.category) existing.category = line.category;
+          if (line.price || line.price === 0) existing.price = toPrice(line.price);
+        } else {
+          items.push({
+            sku: String(line.sku || ""),
+            name: String(line.name || line.sku || ""),
+            image: String(line.image || ""),
+            category: String(line.category || "Quick Order"),
+            qty: Math.max(1, Number(line.qty || 1)),
+            price: toPrice(line.price),
+            inventoryStatus: ""
+          });
+        }
+      }
+
+      function inventoryFromSku(sku, qty) {
+        var code = String(sku || "");
+        if (!code) return "";
+        var hash = 0;
+        for (var i = 0; i < code.length; i += 1) hash = (hash + code.charCodeAt(i) * (i + 1)) % 997;
+        if (hash % 9 === 0 || Number(qty || 0) > 12) return "Out of Stock";
+        if (hash % 4 === 0 || Number(qty || 0) > 6) return "Low Stock";
+        return "In Stock";
+      }
+
+      function statusClass(status) {
+        if (status === "In Stock") return "in-stock";
+        if (status === "Low Stock") return "low-stock";
+        if (status === "Out of Stock") return "out-stock";
+        return "";
+      }
+
+      function checkInventoryForItem(index) {
+        if (!isFinite(index) || index < 0 || index >= items.length) return;
+        var item = items[index];
+        var qty = Math.max(1, Number(item.qty || 1));
+        item.inventoryStatus = inventoryFromSku(item.sku, qty);
+      }
+
+      function checkInventoryForAll() {
+        items.forEach(function (_, index) {
+          checkInventoryForItem(index);
+        });
+      }
+
+      function syncHeadActions() {
+        var totalQty = items.reduce(function (sum, item) {
+          return sum + Math.max(0, Number(item.qty || 0));
+        }, 0);
+        $("#bulkTotalQty").text(totalQty);
+      }
+
+      function renderItems() {
+        syncHeadActions();
+        refreshAddToListButton();
+        if (!items.length) {
+          $("#bulkList").html(
+            "<div class='bulk-empty'>" +
+              "<span class='bulk-empty-icon glyphicon glyphicon-shopping-cart'></span>" +
+              "<h3 class='bulk-empty-title'>No items added yet</h3>" +
+              "<p class='bulk-empty-sub'>Upload a CSV file or manually add products to get started</p>" +
+            "</div>"
+          );
+          return;
+        }
+
+        var rows = items.map(function (item, index) {
+          var image = String(item.image || "") || missingImage;
+          return "" +
+            "<tr>" +
+              "<td>" +
+                "<div class='bulk-item'>" +
+                  "<img src='" + escapeHtml(image) + "' onerror=\"this.onerror=null;this.src='" + missingImage + "';\" alt='" + escapeHtml(item.name || item.sku) + "'>" +
+                  "<div><p class='bulk-item-name'><button type='button' class='bulk-item-open js-open-product-modal' data-index='" + index + "'>" + escapeHtml(item.name || item.sku) + "</button></p><p class='bulk-item-sku'>SKU: " + escapeHtml(item.sku) + "</p></div>" +
+                "</div>" +
+              "</td>" +
+              "<td>$" + toPrice(item.price).toFixed(2) + "</td>" +
+              "<td><input type='number' min='1' step='1' class='bulk-number js-item-qty' data-index='" + index + "' value='" + Math.max(1, Number(item.qty || 1)) + "' style='height:34px;width:92px;'></td>" +
+              "<td><span class='bulk-inv-status " + statusClass(item.inventoryStatus) + "'>" + escapeHtml(item.inventoryStatus || "") + "</span></td>" +
+              "<td><button type='button' class='bulk-remove js-remove-item' data-index='" + index + "'>Remove</button></td>" +
+            "</tr>";
+        }).join("");
+
+        var table = "" +
+          "<table class='bulk-table'>" +
+            "<thead><tr><th style='text-align:left;'>Product</th><th style='text-align:left;'>Price</th><th style='text-align:left;'>Qty</th><th style='text-align:left;'>Inventory</th><th style='text-align:left;'>Action</th></tr></thead>" +
+            "<tbody>" + rows + "</tbody>" +
+          "</table>";
+
+        $("#bulkList").html(table);
+      }
+
+      function addManualLine() {
+        var rawInput = String($("#manualSkuInput").val() || "").trim();
+        var qty = Math.max(1, Number($("#manualQtyInput").val() || 1));
+        var selected = $("#manualSkuInput").data("quick-selected");
+        var resolved = resolveInputToMeta(rawInput, selected);
+        if (!resolved || !resolved.sku) return;
+
+        upsertItem({
+          sku: String(resolved.sku || ""),
+          name: String(resolved.name || resolved.sku || ""),
+          image: String(resolved.image || ""),
+          category: String(resolved.category || "Quick Order"),
+          qty: qty,
+          price: toPrice(resolved.price)
+        });
+
+        $("#manualSkuInput").val("");
+        $("#manualQtyInput").val("1");
+        setManualSelected(null);
+        closeManualSuggest();
+        renderItems();
+      }
+
+      function readDraftRows() {
+        try {
+          var parsed = JSON.parse(sessionStorage.getItem(draftStorageKey) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      function clearDraftRows() {
+        try { sessionStorage.removeItem(draftStorageKey); } catch (e) {}
+      }
+
+      function hydrateFromDraft() {
+        var rows = readDraftRows();
+        clearDraftRows();
+        if (!rows.length) return;
+        rows.forEach(function (row) {
+          var qty = Math.max(1, Number(row && row.qty != null ? row.qty : 1));
+          var selected = row && row.selected ? row.selected : null;
+          var rawInput = row && row.input ? String(row.input) : "";
+          var resolved = resolveInputToMeta(rawInput, selected);
+          if (!resolved || !resolved.sku) return;
+          upsertItem({
+            sku: String(resolved.sku || ""),
+            name: String(resolved.name || resolved.sku || ""),
+            image: String(resolved.image || ""),
+            category: String(resolved.category || "Quick Order"),
+            qty: qty,
+            price: toPrice(resolved.price)
+          });
+        });
+      }
+
+      function parseCsvLines(csvText) {
+        var text = String(csvText || "").trim();
+        if (!text) return [];
+        var lines = text.split(/\r?\n/).map(function (line) { return line.trim(); }).filter(Boolean);
+        if (!lines.length) return [];
+
+        var hasHeader = /^\s*sku\s*,\s*quantity\s*$/i.test(lines[0]) || /^\s*sku\s*,/i.test(lines[0]);
+        var start = hasHeader ? 1 : 0;
+        var parsed = [];
+
+        for (var i = start; i < lines.length; i += 1) {
+          var parts = lines[i].split(",");
+          if (!parts.length) continue;
+          var skuOrName = String(parts[0] || "").trim();
+          if (!skuOrName) continue;
+          var qty = Math.max(1, Number(parts[1] || 1));
+          parsed.push({ input: skuOrName, qty: qty });
+        }
+
+        return parsed;
+      }
+
+      if (qoApi.ensureCatalogLoaded) qoApi.ensureCatalogLoaded();
+      listState = loadListState();
+      syncBulkStickyOffset();
+      hydrateFromDraft();
+      renderItems();
+
+      $(document).on("input", "#manualSkuInput", function () {
+        var value = String($(this).val() || "").trim();
+        setManualSelected(null);
+        if (value.length < 2) {
+          closeManualSuggest();
+          return;
+        }
+        if (!qoApi.ensureCatalogLoaded || !qoApi.searchCatalog) return;
+        qoApi.ensureCatalogLoaded().done(function () {
+          renderManualSuggest(qoApi.searchCatalog(value));
+        });
+      });
+
+      $(document).on("keydown", "#manualSkuInput", function (event) {
+        if (event.key !== "Enter") return;
+        var $first = $("#manualSkuSuggest .js-manual-suggestion").first();
+        if ($first.length) {
+          event.preventDefault();
+          $first.trigger("click");
+          return;
+        }
+        event.preventDefault();
+        addManualLine();
+      });
+
+      $(document).on("click", ".js-manual-suggestion", function () {
+        var item = {
+          sku: String($(this).attr("data-sku") || ""),
+          name: String($(this).attr("data-name") || ""),
+          image: String($(this).attr("data-image") || ""),
+          category: String($(this).attr("data-category") || ""),
+          price: toPrice($(this).attr("data-price"))
+        };
+        $("#manualSkuInput").val(item.name || item.sku);
+        setManualSelected(item);
+        closeManualSuggest();
+        $("#manualQtyInput").trigger("focus");
+      });
+
+      $(document).on("mousedown", function (event) {
+        if (!$(event.target).closest(".bulk-input-cell").length) {
+          closeManualSuggest();
+        }
+      });
+
+      $(document).on("click", "#manualAddBtn", function () {
+        addManualLine();
+      });
+
+      $(document).on("click", ".js-example-chip", function () {
+        $("#manualSkuInput").val(String($(this).text() || "").trim()).trigger("input").trigger("focus");
+      });
+
+      $(document).on("click", "#bulkChooseFileBtn", function () {
+        $("#bulkFileInput").trigger("click");
+      });
+
+      $(document).on("change", "#bulkFileInput", function () {
+        var file = this.files && this.files[0];
+        if (!file) return;
+        var reader = new FileReader();
+        reader.onload = function () {
+          var entries = parseCsvLines(reader.result || "");
+          entries.forEach(function (entry) {
+            var resolved = resolveInputToMeta(entry.input, null);
+            if (!resolved || !resolved.sku) return;
+            upsertItem({
+              sku: String(resolved.sku || ""),
+              name: String(resolved.name || resolved.sku || ""),
+              image: String(resolved.image || ""),
+              category: String(resolved.category || "Quick Order"),
+              qty: Math.max(1, Number(entry.qty || 1)),
+              price: toPrice(resolved.price)
+            });
+          });
+          renderItems();
+          $("#bulkFileInput").val("");
+        };
+        reader.readAsText(file);
+      });
+
+      $(document).on("click", "#bulkTemplateBtn", function () {
+        var csv = "SKU,Quantity\nT-SCOPE-PREM,2\nFUSION-OA-PLUS,1\n";
+        var blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        var link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "bulk-order-template.csv";
+        document.body.appendChild(link);
+        link.click();
+        setTimeout(function () {
+          URL.revokeObjectURL(link.href);
+          link.remove();
+        }, 0);
+      });
+
+      $(document).on("click", ".js-remove-item", function () {
+        var index = Number($(this).attr("data-index"));
+        if (!isFinite(index) || index < 0 || index >= items.length) return;
+        items.splice(index, 1);
+        renderItems();
+      });
+
+      $(document).on("input change", ".js-item-qty", function () {
+        var index = Number($(this).attr("data-index"));
+        if (!isFinite(index) || index < 0 || index >= items.length) return;
+        items[index].qty = Math.max(1, Number($(this).val() || 1));
+        items[index].inventoryStatus = "";
+        syncHeadActions();
+      });
+      $(document).on("click", "#bulkCheckAllInvBtn", function () {
+        if (!items.length) return;
+        checkInventoryForAll();
+        renderItems();
+      });
+
+      $(document).on("click", "#bulkSaveListBtn", function () {
+        openListModal();
+      });
+
+      $(document).on("click", "#bulkAddAllBtn", function () {
+        if (!items.length) return;
+        var lines = items.map(function (item) {
+          return {
+            sku: String(item.sku || ""),
+            qty: Math.max(1, Number(item.qty || 1)),
+            name: String(item.name || item.sku || ""),
+            price: toPrice(item.price),
+            image: String(item.image || ""),
+            category: String(item.category || "Quick Order"),
+            variant: String(item.sku || ""),
+            size: ""
+          };
+        });
+        if (cartApi.addLines) cartApi.addLines(lines);
+        if (cartApi.showAddedModal) cartApi.showAddedModal(lines);
+      });
+
+      $(document).on("click", ".js-open-product-modal", function () {
+        var index = Number($(this).attr("data-index"));
+        if (!isFinite(index) || index < 0 || index >= items.length) return;
+        openDetailModal(items[index]);
+      });
+      $(document).on("click", "#bulkDetailClose", function () {
+        closeDetailModal();
+      });
+      $(document).on("click", "#bulkDetailModal", function (event) {
+        if (event.target === this) closeDetailModal();
+      });
+      $(document).on("keydown.bulkDetail", function (event) {
+        if (event.key === "Escape" && $("#bulkDetailModal").hasClass("open")) {
+          closeDetailModal();
+        }
+      });
+      $(document).on("click", "#bulkListClose, #bulkListCancel", function () {
+        closeListModal();
+      });
+      $(document).on("click", "#bulkListModal", function (event) {
+        if (event.target === this) closeListModal();
+      });
+      $(document).on("click", "#bulkOpenCreateList", function () {
+        openCreateListModal();
+      });
+      $(document).on("click", "#bulkCreateListClose, #bulkCreateListCancel", function () {
+        closeCreateListModal();
+      });
+      $(document).on("click", "#bulkCreateListModal", function (event) {
+        if (event.target === this) closeCreateListModal();
+      });
+      $(document).on("submit", "#bulkCreateListForm", function (event) {
+        event.preventDefault();
+        var name = String($("#bulkCreateListInput").val() || "").trim();
+        if (!name) {
+          $("#bulkCreateListError").text("Enter a list name.");
+          return;
+        }
+        var existing = Object.keys(listState).find(function (n) { return n.toLowerCase() === name.toLowerCase(); });
+        var finalName = existing || name;
+        if (!listState[finalName]) listState[finalName] = [];
+        saveListState();
+        closeCreateListModal();
+        openListModal();
+      });
+      $(document).on("click", "#bulkListSave", function () {
+        var skus = currentSkuList();
+        if (!skus.length) {
+          closeListModal();
+          return;
+        }
+        var selectedLists = $(".js-bulk-list-check:checked").map(function () {
+          return String($(this).attr("data-list") || "");
+        }).get();
+
+        Object.keys(listState).forEach(function (listName) {
+          var arr = (listState[listName] || []).slice();
+          if (selectedLists.indexOf(listName) > -1) {
+            skus.forEach(function (sku) {
+              if (arr.indexOf(sku) === -1) arr.push(sku);
+            });
+          } else {
+            arr = arr.filter(function (sku) { return skus.indexOf(sku) === -1; });
+          }
+          listState[listName] = arr;
+        });
+        saveListState();
+        closeListModal();
+        refreshAddToListButton();
+      });
+      $(document).on("keydown.bulkList", function (event) {
+        if (event.key !== "Escape") return;
+        if ($("#bulkCreateListModal").hasClass("open")) closeCreateListModal();
+        if ($("#bulkListModal").hasClass("open")) closeListModal();
+      });
+      $(window).on("resize", function () {
+        syncBulkStickyOffset();
+      });
+    })();
+  </script>
+</body>
+</html>

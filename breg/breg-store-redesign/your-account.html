@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Your Account</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .account-page {
+      margin: 12px 0 18px;
+      padding-top: 0;
+    }
+    .account-breadcrumb {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #5f6b76;
+    }
+    .account-breadcrumb a {
+      color: #007185;
+      text-decoration: none;
+    }
+    .account-breadcrumb a:hover,
+    .account-breadcrumb a:focus {
+      color: #005a6a;
+      text-decoration: none;
+    }
+    .account-breadcrumb .sep {
+      margin: 0 6px;
+      color: #9ba6b2;
+    }
+    .account-page h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.1;
+      color: #0f1111;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+    }
+    .account-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 20px;
+    }
+    .account-title-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .account-user-meta {
+      font-size: 14px;
+      line-height: 1.25;
+      color: #565959;
+      font-weight: 500;
+    }
+    .account-page-signout {
+      border: 0;
+      background: transparent;
+      color: #5f6b76;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 0;
+      text-decoration: none;
+    }
+    .account-page-signout:hover,
+    .account-page-signout:focus {
+      color: #007185;
+      text-decoration: underline;
+      outline: 0;
+    }
+    .account-section {
+      margin-bottom: 32px;
+    }
+    .account-dashboard {
+      margin-bottom: 22px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .dashboard-card {
+      border: 1px solid #cfd4d8;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px 16px;
+    }
+    .dashboard-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .dashboard-title {
+      margin: 0;
+      font-size: 19px;
+      line-height: 1.2;
+      font-weight: 500;
+      color: #0f1111;
+    }
+    .dashboard-link {
+      color: #007185;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+    .dashboard-link:hover,
+    .dashboard-link:focus {
+      color: #007185;
+      text-decoration: underline;
+    }
+    .dashboard-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .dashboard-metric {
+      border: 1px solid #e3e7ea;
+      border-radius: 12px;
+      background: #f7f8f8;
+      padding: 10px 10px 9px;
+      min-height: 74px;
+    }
+    .dashboard-label {
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.25;
+      font-weight: 500;
+    }
+    .dashboard-value {
+      margin: 0;
+      font-size: 20px;
+      color: #0f1111;
+      line-height: 1.15;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+    .dashboard-copy {
+      margin: 6px 0 0;
+      font-size: 13px;
+      color: #565959;
+      line-height: 1.35;
+    }
+    .dashboard-requisitions {
+      display: grid;
+      gap: 8px;
+    }
+    .dashboard-req {
+      border: 1px solid #e3e7ea;
+      border-radius: 12px;
+      background: #f7f8f8;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .dashboard-req strong {
+      display: block;
+      font-size: 13px;
+      line-height: 1.25;
+      color: #0f1111;
+      font-weight: 600;
+    }
+    .dashboard-req span {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.3;
+    }
+    .dashboard-req-status {
+      font-size: 12px;
+      font-weight: 600;
+      color: #007185;
+      white-space: nowrap;
+    }
+    .account-section-title {
+      margin: 0 0 12px;
+      font-size: 21px;
+      line-height: 1.15;
+      color: #0f1111;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+    }
+    .account-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    .account-tile {
+      display: flex;
+      align-items: center;
+      min-height: 112px;
+      border: 1px solid #cfd4d8;
+      border-radius: 14px;
+      padding: 12px 14px;
+      background: #fff;
+      color: inherit;
+      text-decoration: none;
+      transition: background-color .15s ease, border-color .15s ease;
+    }
+    .account-tile:hover,
+    .account-tile:focus {
+      color: inherit;
+      text-decoration: none;
+      border-color: #8e9aa4;
+      background: #F7F8F8;
+      box-shadow: none;
+    }
+    .tile-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      width: 100%;
+    }
+    .tile-icon {
+      width: 44px;
+      height: 44px;
+      color: #007185;
+      flex: 0 0 44px;
+    }
+    .tile-title {
+      margin: 0 0 2px;
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 500;
+      color: #0f1111;
+    }
+    .tile-copy {
+      margin: 0;
+      color: #565959;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .admin-modal .modal-dialog {
+      width: min(1080px, calc(100% - 40px));
+      margin: 70px auto;
+    }
+    .admin-modal .modal-content {
+      border-radius: 20px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 18px 36px rgba(15, 17, 17, .28);
+      overflow: hidden;
+    }
+    .admin-modal .modal-header {
+      border-bottom: 1px solid #d5d9d9;
+      padding: 22px 28px;
+    }
+    .admin-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      color: #0f1111;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+    .admin-modal .close {
+      font-size: 44px;
+      line-height: 1;
+      font-weight: 300;
+      opacity: .65;
+      margin-top: -8px;
+    }
+    .admin-modal .close:hover,
+    .admin-modal .close:focus { opacity: .9; }
+    .admin-modal .modal-body {
+      padding: 24px 28px 18px;
+      background: #fff;
+    }
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .admin-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 18px;
+      padding: 18px 20px 16px;
+      background: #fff;
+    }
+    .admin-card-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .admin-avatar {
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: #05798f;
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 74px;
+    }
+    .admin-avatar .glyphicon {
+      font-size: 36px;
+      top: 0;
+    }
+    .admin-name {
+      margin: 0 0 2px;
+      color: #0f1111;
+      font-size: 17px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+    .admin-role {
+      margin: 0;
+      color: #565959;
+      font-size: 14px;
+      line-height: 1.35;
+    }
+    .admin-contact-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #007185;
+      margin: 8px 0 0;
+    }
+    .admin-contact-row .glyphicon {
+      font-size: 16px;
+      color: #565959;
+      top: 0;
+      width: 20px;
+      text-align: center;
+    }
+    .admin-contact-row.phone { color: #007185; }
+    .admin-note {
+      border-top: 1px solid #d5d9d9;
+      padding-top: 14px;
+      margin-top: 6px;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    @media (max-width: 1200px) {
+      .account-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .admin-modal .modal-dialog {
+        width: calc(100% - 30px);
+      }
+      .admin-name { font-size: 17px; }
+      .admin-role { font-size: 14px; }
+      .admin-note,
+      .admin-contact-row { font-size: 13px; }
+    }
+    @media (max-width: 991px) {
+      .account-page {
+        margin: 12px 0 18px;
+        padding-top: 0;
+      }
+      .account-page h1 {
+        font-size: 28px;
+      }
+      .account-user-meta {
+        font-size: 13px;
+      }
+      .account-title-row {
+        margin-bottom: 16px;
+      }
+      .account-section-title {
+        font-size: 19px;
+      }
+      .account-grid {
+        grid-template-columns: 1fr;
+      }
+      .account-dashboard {
+        grid-template-columns: 1fr;
+      }
+      .dashboard-metrics {
+        grid-template-columns: 1fr;
+      }
+      .admin-grid {
+        grid-template-columns: 1fr;
+      }
+      .admin-modal .modal-header {
+        padding: 18px 20px;
+      }
+      .admin-modal .modal-title { font-size: 22px; }
+      .admin-modal .modal-body {
+        padding: 18px 20px 16px;
+      }
+      .admin-avatar {
+        width: 62px;
+        height: 62px;
+        flex-basis: 62px;
+      }
+      .admin-avatar .glyphicon {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="account-page">
+      <div class="account-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <span>Your Account</span></div>
+      <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+        <symbol id="ic-heart" viewBox="0 0 64 64"><path d="M32 53.5c-7.3-6.8-18-15.5-18-25.2 0-6 4.8-10.8 10.8-10.8 3.2 0 6.2 1.4 8.2 3.7 2-2.3 5-3.7 8.2-3.7 6 0 10.8 4.8 10.8 10.8 0 9.7-10.7 18.4-18 25.2z" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="ic-clock" viewBox="0 0 64 64"><circle cx="32" cy="32" r="21" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M32 20v13l9 4" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="ic-x-circle" viewBox="0 0 64 64"><circle cx="32" cy="32" r="21" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M25 25l14 14M39 25L25 39" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></symbol>
+        <symbol id="ic-invoice" viewBox="0 0 64 64"><path d="M24 10h16l10 10v33a3 3 0 0 1-3 3H24a3 3 0 0 1-3-3V13a3 3 0 0 1 3-3z" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/><path d="M40 10v10h10M28 31h14M28 39h14M28 47h10" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></symbol>
+        <symbol id="ic-box" viewBox="0 0 64 64"><path d="M32 8l18 10v28L32 56 14 46V18L32 8zM14 18l18 10 18-10M32 28v28" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/></symbol>
+        <symbol id="ic-return" viewBox="0 0 64 64"><path d="M20 23h-8V15M12 23h22c10.5 0 19 8.5 19 19s-8.5 19-19 19c-9.7 0-17.8-7.3-18.9-16.7" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="ic-user" viewBox="0 0 64 64"><circle cx="32" cy="21" r="9" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M16 50c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></symbol>
+        <symbol id="ic-pin" viewBox="0 0 64 64"><path d="M32 56S16 40.5 16 28a16 16 0 1 1 32 0c0 12.5-16 28-16 28z" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/><circle cx="32" cy="28" r="5" fill="none" stroke="currentColor" stroke-width="2.7"/></symbol>
+        <symbol id="ic-card" viewBox="0 0 64 64"><rect x="11" y="16" width="42" height="32" rx="4" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M11 28h42" fill="none" stroke="currentColor" stroke-width="2.7"/></symbol>
+        <symbol id="ic-signout" viewBox="0 0 64 64"><path d="M24 54H14a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4h10" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M38 44l12-12-12-12M22 32h28" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+        <symbol id="ic-user-plus" viewBox="0 0 64 64"><circle cx="24" cy="21" r="9" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M8 50c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M51 22v14M44 29h14" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></symbol>
+        <symbol id="ic-users" viewBox="0 0 64 64"><circle cx="24" cy="21" r="8.5" fill="none" stroke="currentColor" stroke-width="2.7"/><circle cx="43" cy="22" r="6.5" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M9 50c0-8.5 6.9-15.5 15.5-15.5S40 41.5 40 50M44.5 35c6.2 0 11.5 5.1 11.5 11.3" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></symbol>
+      </svg>
+
+      <div class="account-title-row">
+        <div class="account-title-main">
+          <h1>Your Account</h1>
+          <span class="account-user-meta" id="accountUserMeta">Test User • Account Administrator</span>
+        </div>
+        <a href="#" id="pageSignOutTile" class="account-page-signout">Sign Out</a>
+      </div>
+
+      <section class="account-dashboard" aria-label="Account Dashboard">
+        <article class="dashboard-card">
+          <div class="dashboard-head">
+            <h2 class="dashboard-title">My Budget</h2>
+          </div>
+          <div class="dashboard-metrics">
+            <div class="dashboard-metric">
+              <p class="dashboard-label">Spending limit per order</p>
+              <p class="dashboard-value">$2,500</p>
+            </div>
+            <div class="dashboard-metric">
+              <p class="dashboard-label">Budget (weekly)</p>
+              <p class="dashboard-value">$8,000</p>
+            </div>
+            <div class="dashboard-metric">
+              <p class="dashboard-label">Already spent</p>
+              <p class="dashboard-value">$3,420</p>
+            </div>
+          </div>
+          <p class="dashboard-copy">$4,580 remaining this week.</p>
+        </article>
+
+        <article class="dashboard-card">
+          <div class="dashboard-head">
+            <h2 class="dashboard-title">My Requisitions</h2>
+            <a class="dashboard-link" href="pending-orders.html">View all pending orders</a>
+          </div>
+          <div class="dashboard-requisitions">
+            <div class="dashboard-req">
+              <div>
+                <strong>REQ-240198</strong>
+                <span>Submitted today • 4 items • $612.00</span>
+              </div>
+              <span class="dashboard-req-status">Awaiting Approval</span>
+            </div>
+            <div class="dashboard-req">
+              <div>
+                <strong>REQ-240173</strong>
+                <span>Submitted yesterday • 2 items • $189.00</span>
+              </div>
+              <span class="dashboard-req-status">Awaiting Approval</span>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="account-section">
+        <h2 class="account-section-title">Purchases</h2>
+        <div class="account-grid">
+          <a class="account-tile" href="my-favorites.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-heart"></use></svg><div><h3 class="tile-title">My Favorites</h3><p class="tile-copy">View and manage your saved product lists and favorites</p></div></div></a>
+          <a class="account-tile" href="pending-orders.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-clock"></use></svg><div><h3 class="tile-title">Pending Orders</h3><p class="tile-copy">Review orders waiting for approval or processing</p></div></div></a>
+          <a class="account-tile" href="rejected-orders.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-x-circle"></use></svg><div><h3 class="tile-title">Rejected Orders</h3><p class="tile-copy">View orders that have been declined or rejected</p></div></div></a>
+          <a class="account-tile" href="invoices.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-invoice"></use></svg><div><h3 class="tile-title">Invoices</h3><p class="tile-copy">Access and download your purchase invoices</p></div></div></a>
+          <a class="account-tile" href="order-history.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-box"></use></svg><div><h3 class="tile-title">Order History</h3><p class="tile-copy">Track packages and view all your past orders</p></div></div></a>
+          <a class="account-tile" href="order-history.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-return"></use></svg><div><h3 class="tile-title">Returns</h3><p class="tile-copy">Return or replace items from your recent orders</p></div></div></a>
+        </div>
+      </section>
+
+      <section class="account-section">
+        <h2 class="account-section-title">Profile</h2>
+        <div class="account-grid">
+          <a class="account-tile" href="profile-settings.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-user"></use></svg><div><h3 class="tile-title">Profile Settings</h3><p class="tile-copy">Edit your name, email, password, and other login information</p></div></div></a>
+          <a class="account-tile" href="saved-addresses.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-pin"></use></svg><div><h3 class="tile-title">Saved Addresses</h3><p class="tile-copy">Manage your shipping and billing addresses</p></div></div></a>
+          <a class="account-tile" href="saved-payment.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-card"></use></svg><div><h3 class="tile-title">Saved Payment Information</h3><p class="tile-copy">Manage your payment methods and billing information</p></div></div></a>
+        </div>
+      </section>
+
+      <section class="account-section" id="account-administrators">
+        <h2 class="account-section-title">My Organization</h2>
+        <div class="account-grid">
+          <a class="account-tile" href="add-users.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-user-plus"></use></svg><div><h3 class="tile-title">Add Users</h3><p class="tile-copy">Invite and manage team members for your organization</p></div></div></a>
+          <a class="account-tile" href="#" data-toggle="modal" data-target="#accountAdministratorsModal"><div class="tile-row"><svg class="tile-icon"><use href="#ic-users"></use></svg><div><h3 class="tile-title">Account Administrators</h3><p class="tile-copy">View contact information for your account administrators</p></div></div></a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal fade admin-modal" id="accountAdministratorsModal" tabindex="-1" role="dialog" aria-labelledby="accountAdministratorsModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="accountAdministratorsModalTitle">Your Account Administrators</h2>
+        </div>
+        <div class="modal-body">
+          <div class="admin-grid">
+            <article class="admin-card">
+              <div class="admin-card-top">
+                <div class="admin-avatar"><span class="glyphicon glyphicon-user"></span></div>
+                <div>
+                  <h3 class="admin-name">Sarah Johnson</h3>
+                  <p class="admin-role">Account Administrator</p>
+                </div>
+              </div>
+              <div class="admin-contact-row"><span class="glyphicon glyphicon-envelope"></span> sarah.johnson@hospital.org</div>
+              <div class="admin-contact-row phone"><span class="glyphicon glyphicon-earphone"></span> (555) 123-4567</div>
+            </article>
+            <article class="admin-card">
+              <div class="admin-card-top">
+                <div class="admin-avatar"><span class="glyphicon glyphicon-user"></span></div>
+                <div>
+                  <h3 class="admin-name">Michael Chen</h3>
+                  <p class="admin-role">Account Administrator</p>
+                </div>
+              </div>
+              <div class="admin-contact-row"><span class="glyphicon glyphicon-envelope"></span> michael.chen@hospital.org</div>
+            </article>
+          </div>
+          <div class="admin-note">Need help with your account? Contact your account administrators for assistance with orders, approvals, and organization settings.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      function renderAccountUserMeta() {
+        var firstName = "Test";
+        var role = "Account Administrator";
+        try { firstName = localStorage.getItem("bregFirstName") || "Test"; } catch (e) {}
+        try { role = localStorage.getItem("bregUserRole") || "Account Administrator"; } catch (e) {}
+        $("#accountUserMeta").text(firstName + " • " + role);
+      }
+
+      $(document).on("click", "#pageSignOutTile", function (event) {
+        event.preventDefault();
+        try { localStorage.setItem("bregSignedIn", "false"); } catch (e) {}
+        try { localStorage.removeItem("bregFirstName"); } catch (e) {}
+        try { localStorage.removeItem("bregAccountName"); } catch (e) {}
+        try { localStorage.removeItem("bregUserEmail"); } catch (e) {}
+        try { localStorage.removeItem("bregUserRole"); } catch (e) {}
+        window.location.href = "index.html";
+      });
+
+      renderAccountUserMeta();
+    })();
+  </script>
+</body>
+</html>

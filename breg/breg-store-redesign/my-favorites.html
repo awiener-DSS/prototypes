@@ -1,0 +1,1182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - My Favorites</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body {
+      background: #EAEDED;
+    }
+    .lists-page {
+      margin: 12px 0 18px;
+    }
+    .lists-breadcrumb {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #5f6b76;
+    }
+    .lists-breadcrumb a {
+      color: #007185;
+      text-decoration: none;
+    }
+    .lists-breadcrumb a:hover,
+    .lists-breadcrumb a:focus {
+      color: #005a6a;
+      text-decoration: none;
+    }
+    .lists-breadcrumb .sep {
+      margin: 0 6px;
+      color: #9ba6b2;
+    }
+    .lists-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+    .lists-head h1 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.1;
+      font-weight: 400;
+      color: #0f1111;
+      letter-spacing: -0.5px;
+    }
+    .lists-sub {
+      margin-top: 5px;
+      color: #565959;
+      font-size: 14px;
+    }
+    .btn-create-list {
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      border-radius: 18px;
+      padding: 7px 15px;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-create-list:hover {
+      background: #f7ca00;
+      text-decoration: none;
+      color: #0f1111;
+    }
+    .lists-layout {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 12px;
+    }
+    .lists-panel,
+    .list-preview-panel {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+    }
+    .lists-panel-head,
+    .preview-head {
+      border-bottom: 1px solid #eaeded;
+      padding: 11px 14px;
+      font-size: 13px;
+      color: #565959;
+      text-transform: uppercase;
+      letter-spacing: .45px;
+      font-weight: 600;
+    }
+    .lists-filterbar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 10px 0;
+      flex-wrap: wrap;
+    }
+    .list-filter-btn {
+      border: 1px solid #d5d9d9;
+      background: #fff;
+      border-radius: 14px;
+      color: #0f1111;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 6px 11px;
+    }
+    .list-filter-btn:hover {
+      background: #F7F8F8;
+      border-color: #bcc5cb;
+    }
+    .list-filter-btn.active {
+      border-color: #c7511f;
+      background: #fff8f0;
+      color: #0f1111;
+    }
+    .lists-rows {
+      display: grid;
+      gap: 8px;
+      padding: 10px;
+    }
+    .list-section-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #565959;
+      margin: 4px 2px 2px;
+      font-weight: 600;
+    }
+    .list-row {
+      border: 1px solid #d5d9d9;
+      border-radius: 10px;
+      background: #fff;
+      text-align: left;
+      width: 100%;
+      padding: 10px 12px;
+      transition: border-color .15s ease, background-color .15s ease;
+    }
+    .list-row:hover {
+      background: #F7F8F8;
+      border-color: #adb8bf;
+    }
+    .list-row.active {
+      border-color: #C7511F;
+      background: #FFF8F0;
+    }
+    .list-row-title {
+      margin: 0 0 2px;
+      font-size: 17px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .list-row-meta {
+      color: #565959;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .list-row-owner {
+      margin-top: 2px;
+      color: #565959;
+      font-size: 11px;
+      line-height: 1.3;
+    }
+    .list-preview-panel {
+      min-height: 440px;
+    }
+    .preview-body {
+      padding: 12px;
+    }
+    .preview-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .preview-list-title {
+      margin: 0 0 5px;
+      font-size: 26px;
+      font-weight: 400;
+      color: #0f1111;
+      letter-spacing: -0.4px;
+    }
+    .preview-meta {
+      color: #565959;
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+    .preview-owner {
+      color: #565959;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    .preview-actions {
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .preview-btn {
+      border: 1px solid #d5d9d9;
+      border-radius: 16px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 11px;
+      text-decoration: none;
+    }
+    .preview-btn:hover {
+      background: #F7F8F8;
+      color: #0f1111;
+      text-decoration: none;
+    }
+    .preview-btn.is-disabled {
+      background: #f3f4f5;
+      border-color: #d5d9d9;
+      color: #8d969c;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .preview-btn-primary {
+      border-color: #fcd200;
+      background: #ffd814;
+      font-weight: 600;
+    }
+    .preview-btn-primary:hover {
+      background: #f7ca00;
+    }
+    .preview-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .preview-item {
+      border: 1px solid #d5d9d9;
+      border-radius: 10px;
+      padding: 9px;
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      gap: 10px;
+      background: #fff;
+      min-height: 130px;
+    }
+    .preview-item img {
+      width: 74px;
+      height: 74px;
+      border-radius: 7px;
+      object-fit: cover;
+      border: 1px solid #d5d9d9;
+    }
+    .preview-item-name {
+      margin: 0 0 2px;
+      color: #0f1111;
+      font-size: 13px;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+    .preview-item-id {
+      color: #565959;
+      font-size: 11px;
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+    .preview-item-note,
+    .preview-item-price {
+      color: #565959;
+      font-size: 11px;
+      line-height: 1.35;
+    }
+    .preview-item-price {
+      color: #0f1111;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+    .preview-item-qty {
+      margin-top: 7px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #d5d9d9;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .preview-item-qty-btn {
+      border: 0;
+      background: #fff;
+      color: #0f1111;
+      font-size: 12px;
+      line-height: 1;
+      width: 24px;
+      height: 24px;
+      padding: 0;
+    }
+    .preview-item-qty-btn:hover {
+      background: #F7F8F8;
+    }
+    .preview-item-qty-input {
+      width: 36px;
+      height: 24px;
+      border: 0;
+      border-left: 1px solid #eaeded;
+      border-right: 1px solid #eaeded;
+      text-align: center;
+      font-size: 12px;
+      color: #0f1111;
+      padding: 0;
+      outline: none;
+    }
+    .preview-item-add {
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      border-radius: 14px;
+      color: #0f1111;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      margin-top: 7px;
+    }
+    .preview-item-add:hover {
+      background: #f7ca00;
+    }
+    .preview-empty {
+      color: #565959;
+      font-size: 13px;
+      padding: 18px 16px;
+      border: 1px dashed #d5d9d9;
+      border-radius: 10px;
+      text-align: center;
+      background: #fafbfc;
+    }
+    .preview-empty-btn {
+      margin-top: 9px;
+      border: 1px solid #d5d9d9;
+      border-radius: 15px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 11px;
+    }
+    .create-list-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 8px 22px rgba(15, 17, 17, 0.16);
+    }
+    .create-list-modal .modal-header {
+      border-bottom: 1px solid #eaeded;
+      padding: 12px 16px;
+    }
+    .create-list-modal .modal-title {
+      color: #0f1111;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+    }
+    .create-list-modal .modal-body {
+      padding: 14px 16px;
+    }
+    .create-list-modal .modal-copy {
+      color: #565959;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .create-list-modal .form-control {
+      border-color: #b8c1c7;
+      border-radius: 8px;
+      height: 38px;
+      color: #0f1111;
+      box-shadow: none;
+    }
+    .create-list-modal .form-control:focus {
+      border-color: #f08804;
+      box-shadow: 0 0 0 2px rgba(240, 136, 4, 0.16);
+    }
+    .create-list-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 10px 16px 14px;
+    }
+    .create-list-modal .btn-default {
+      border-radius: 16px;
+      border-color: #d5d9d9;
+      color: #0f1111;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+    }
+    .create-list-modal .btn-default:hover {
+      background: #F7F8F8;
+      color: #0f1111;
+      border-color: #c4cbd1;
+    }
+    .create-list-modal .btn-create-submit {
+      border-radius: 16px;
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      color: #0f1111;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+    }
+    .create-list-modal .btn-create-submit:hover {
+      background: #f7ca00;
+      color: #0f1111;
+    }
+    .create-list-modal .btn-create-submit:disabled {
+      background: #e9ecef;
+      border-color: #d5d9d9;
+      color: #8d969c;
+      cursor: default;
+    }
+    .manage-list-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 8px 22px rgba(15, 17, 17, 0.16);
+    }
+    .manage-list-modal .modal-header {
+      border-bottom: 1px solid #eaeded;
+      padding: 12px 16px;
+    }
+    .manage-list-modal .modal-title {
+      color: #0f1111;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+    }
+    .manage-list-modal .modal-body {
+      padding: 14px 16px;
+    }
+    .manage-list-modal .modal-copy {
+      color: #565959;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .manage-list-modal .form-control {
+      border-color: #b8c1c7;
+      border-radius: 8px;
+      height: 38px;
+      color: #0f1111;
+      box-shadow: none;
+    }
+    .manage-list-modal .form-control:focus {
+      border-color: #f08804;
+      box-shadow: 0 0 0 2px rgba(240, 136, 4, 0.16);
+    }
+    .manage-list-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 10px 16px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+    .manage-list-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+    }
+    .manage-list-modal .btn-default {
+      border-radius: 16px;
+      border-color: #d5d9d9;
+      color: #0f1111;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+    }
+    .manage-list-modal .btn-default:hover {
+      background: #F7F8F8;
+      color: #0f1111;
+      border-color: #c4cbd1;
+    }
+    .manage-list-modal .btn-manage-save {
+      border-radius: 16px;
+      border: 1px solid #fcd200;
+      background: #ffd814;
+      color: #0f1111;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+    }
+    .manage-list-modal .btn-manage-save:hover {
+      background: #f7ca00;
+      color: #0f1111;
+    }
+    .manage-list-modal .btn-manage-save:disabled {
+      background: #e9ecef;
+      border-color: #d5d9d9;
+      color: #8d969c;
+      cursor: default;
+    }
+    .manage-list-modal .btn-delete-list {
+      border-radius: 16px;
+      border: 1px solid #b12704;
+      background: #fff;
+      color: #b12704;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+    }
+    .manage-list-modal .btn-delete-list:hover {
+      background: #fff5f5;
+      color: #b12704;
+      border-color: #b12704;
+    }
+    @media (max-width: 991px) {
+      .lists-layout {
+        grid-template-columns: 1fr;
+      }
+      .lists-head h1 {
+        font-size: 30px;
+      }
+      .preview-items {
+        grid-template-columns: 1fr;
+      }
+      .preview-top {
+        display: block;
+      }
+      .preview-actions {
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="lists-page">
+      <div class="lists-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>My Favorites</span></div>
+      <div class="lists-head">
+        <div>
+          <h1>My Favorites</h1>
+          <div class="lists-sub">View and manage your saved product lists</div>
+        </div>
+        <a href="#" class="btn-create-list" id="createListBtn">+ Create a List</a>
+      </div>
+
+      <div class="lists-layout">
+        <section class="lists-panel">
+          <div class="lists-panel-head">Saved Lists</div>
+          <div class="lists-filterbar" id="listsFilterBar">
+            <button type="button" class="list-filter-btn active" data-scope="all">All Lists</button>
+            <button type="button" class="list-filter-btn" data-scope="mine">Created by You</button>
+            <button type="button" class="list-filter-btn" data-scope="team">Created by Team</button>
+          </div>
+          <div class="lists-rows" id="listsRows"></div>
+        </section>
+
+        <aside class="list-preview-panel">
+          <div class="preview-head">List Preview</div>
+          <div class="preview-body">
+            <div class="preview-top">
+              <div>
+                <h2 class="preview-list-title" id="previewListTitle">Shopping List</h2>
+                <div class="preview-meta" id="previewMeta"></div>
+                <div class="preview-owner" id="previewOwner"></div>
+              </div>
+              <div class="preview-actions">
+                <a href="#" class="preview-btn preview-btn-primary">Add All to Cart</a>
+                <a href="#" class="preview-btn" id="manageListBtn">Manage List</a>
+              </div>
+            </div>
+            <div class="preview-items" id="previewItems"></div>
+            <div class="preview-empty" id="previewEmpty" style="display:none;">
+              This list has no saved items yet.
+              <div><button class="preview-empty-btn" type="button">Browse products</button></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade create-list-modal" id="createListModal" tabindex="-1" role="dialog" aria-labelledby="createListModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="createListModalTitle">Create a List</h2>
+        </div>
+        <form id="createListForm">
+          <div class="modal-body">
+            <p class="modal-copy">Name your new favorites list.</p>
+            <input id="createListName" type="text" class="form-control" maxlength="80" autocomplete="off" placeholder="List name">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+            <button id="createListSubmit" type="submit" class="btn btn-create-submit" disabled>Create List</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade manage-list-modal" id="manageListModal" tabindex="-1" role="dialog" aria-labelledby="manageListModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="manageListModalTitle">Manage List</h2>
+        </div>
+        <form id="manageListForm">
+          <div class="modal-body">
+            <p class="modal-copy">Rename your list or delete it from your account.</p>
+            <input id="manageListName" type="text" class="form-control" maxlength="80" autocomplete="off" placeholder="List name">
+          </div>
+          <div class="modal-footer">
+            <button id="deleteListBtn" type="button" class="btn btn-delete-list">Delete List</button>
+            <div class="manage-list-actions">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+              <button id="manageListSave" type="submit" class="btn btn-manage-save" disabled>Save Changes</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      if (localStorage.getItem("bregSignedIn") === "false") {
+        window.location.href = "login.html?redirect=" + encodeURIComponent("my-favorites.html");
+        return;
+      }
+
+      var lists = [
+        {
+          id: "shopping",
+          title: "Shopping List",
+          owner: "You",
+          scope: "mine",
+          count: 12,
+          updated: "Updated 2 days ago",
+          items: [
+            { id: "BRG-100247", name: "Polar Care Kodiak Cold Therapy", qty: 2, price: "$299.99", image: "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" },
+            { id: "BRG-401532", name: "FreeSport Knee Brace - Premium", qty: 4, price: "$119.99", image: "assets/searchbar/photo-1715531786135-5ac445758873.jpg" },
+            { id: "BRG-209114", name: "SlingShot 3 Shoulder Brace", qty: 1, price: "$89.99", image: "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg" },
+            { id: "BRG-305881", name: "Fusion OA Plus Knee Brace", qty: 5, price: "$479.99", image: "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" }
+          ]
+        },
+        {
+          id: "recovery",
+          title: "Recovery Supplies",
+          owner: "Alex Chen",
+          scope: "team",
+          count: 8,
+          updated: "Updated yesterday",
+          items: [
+            { id: "BRG-601332", name: "PAD INTELLI-FLO HIP Therapy Pad", qty: 2, price: "$159.99", image: "assets/searchbar/photo-1620148222862-b95cf7405a7b.jpg" },
+            { id: "BRG-199873", name: "Ice Pack System - Portable", qty: 5, price: "$59.99", image: "assets/searchbar/photo-1727947417960-cb361b15dc71.jpg" },
+            { id: "BRG-784210", name: "Polar Care Cube Therapy Unit", qty: 1, price: "$199.99", image: "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" }
+          ]
+        },
+        {
+          id: "postop",
+          title: "Post-Surgery Essentials",
+          owner: "You",
+          scope: "mine",
+          count: 15,
+          updated: "Updated 5 days ago",
+          items: [
+            { id: "BRG-330201", name: "T Scope Premier Post-Op Knee Brace", qty: 3, price: "$449.99", image: "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" },
+            { id: "BRG-442715", name: "Shoulder Immobilizer Sling", qty: 2, price: "$54.99", image: "assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" },
+            { id: "BRG-883219", name: "Lumbar Support Back Brace", qty: 10, price: "$79.99", image: "assets/searchbar/photo-1533560777802-046814bc297c.jpg" }
+          ]
+        },
+        {
+          id: "athletic",
+          title: "Athletic Support",
+          owner: "Jordan Lee",
+          scope: "team",
+          count: 6,
+          updated: "Updated 1 week ago",
+          items: [
+            { id: "BRG-120879", name: "Ankle Brace Sport", qty: 3, price: "$59.99", image: "assets/searchbar/photo-1637580678290-29617636bdc7.jpg" },
+            { id: "BRG-667110", name: "Advanced Hip Support", qty: 3, price: "$219.99", image: "assets/searchbar/photo-1711188054107-18018e0f77a5.jpg" }
+          ]
+        },
+        {
+          id: "clinic",
+          title: "Clinic Supplies",
+          owner: "Pat Morgan",
+          scope: "team",
+          count: 22,
+          updated: "Updated today",
+          items: []
+        }
+      ];
+
+      var activeListId = lists[0].id;
+      var rowsEl = document.getElementById("listsRows");
+      var previewTitleEl = document.getElementById("previewListTitle");
+      var previewMetaEl = document.getElementById("previewMeta");
+      var previewOwnerEl = document.getElementById("previewOwner");
+      var previewItemsEl = document.getElementById("previewItems");
+      var previewEmptyEl = document.getElementById("previewEmpty");
+      var manageListBtnEl = document.getElementById("manageListBtn");
+      var listScope = "all";
+      var $createListModal = $("#createListModal");
+      var $createListName = $("#createListName");
+      var $createListSubmit = $("#createListSubmit");
+      var $createListForm = $("#createListForm");
+      var $manageListModal = $("#manageListModal");
+      var $manageListForm = $("#manageListForm");
+      var $manageListName = $("#manageListName");
+      var $manageListSave = $("#manageListSave");
+      var $deleteListBtn = $("#deleteListBtn");
+      var $listsFilterBar = $("#listsFilterBar");
+      var currentFirstName = localStorage.getItem("bregFirstName") || "Medical";
+      var currentOwnerLabel = currentFirstName + " (You)";
+      var manageTargetId = null;
+      var manageOriginalName = "";
+
+      function fallbackCartApi() {
+        function parsePrice(value) {
+          var cleaned = String(value || "").replace(/[^0-9.-]/g, "");
+          var parsed = parseFloat(cleaned);
+          return isFinite(parsed) ? parsed : 0;
+        }
+        function read() {
+          try {
+            var parsed = JSON.parse(localStorage.getItem("breg_cart_v1") || "[]");
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            return [];
+          }
+        }
+        function save(lines) {
+          try { localStorage.setItem("breg_cart_v1", JSON.stringify(lines)); } catch (e) {}
+        }
+        function sync() {
+          var total = read().reduce(function (sum, line) { return sum + Number(line && line.qty ? line.qty : 0); }, 0);
+          $(".cart-count").text(total);
+        }
+        function addLines(lines) {
+          var cart = read();
+          (Array.isArray(lines) ? lines : []).forEach(function (line) {
+            var sku = String(line && line.sku ? line.sku : "").trim();
+            var qty = Math.max(1, parseInt(line && line.qty, 10) || 1);
+            if (!sku) return;
+            var existing = cart.find(function (x) { return String(x && x.sku ? x.sku : "") === sku; });
+            if (existing) {
+              existing.qty = Number(existing.qty || 0) + qty;
+            } else {
+              cart.push({
+                sku: sku,
+                qty: qty,
+                name: String((line && line.name) || sku),
+                price: parsePrice(line && line.price),
+                image: String((line && line.image) || ""),
+                category: String((line && line.category) || "My Favorites"),
+                variant: String((line && line.variant) || ""),
+                size: String((line && line.size) || "")
+              });
+            }
+          });
+          save(cart);
+          sync();
+          return cart;
+        }
+        return {
+          parsePrice: parsePrice,
+          addLines: addLines
+        };
+      }
+
+      function getCartApi() {
+        if (window.BregCart && typeof window.BregCart.addLines === "function") {
+          return window.BregCart;
+        }
+        return fallbackCartApi();
+      }
+
+      function showAddedModal(lines) {
+        if (window.BregCart && typeof window.BregCart.showAddedModal === "function") {
+          window.BregCart.showAddedModal(lines);
+        }
+      }
+
+      function toCartLine(item, qtyOverride) {
+        var cartApi = getCartApi();
+        var qty = Math.max(1, parseInt(qtyOverride != null ? qtyOverride : item.qty, 10) || 1);
+        return {
+          sku: String(item.id || "").trim(),
+          qty: qty,
+          name: item.name || item.id || "Product",
+          price: (cartApi.parsePrice ? cartApi.parsePrice(item.price) : item.price),
+          image: item.image || "",
+          category: "My Favorites",
+          variant: item.id || "",
+          size: "Universal"
+        };
+      }
+
+      lists.forEach(function (list) {
+        if (list.owner === "You") list.owner = currentOwnerLabel;
+      });
+      lists.forEach(function (list) {
+        if (!Array.isArray(list.items) || !list.items.length) return;
+        list.count = list.items.reduce(function (total, item) {
+          return total + Math.max(1, parseInt(item.qty, 10) || 1);
+        }, 0);
+      });
+
+      function setCreateListState() {
+        $createListSubmit.prop("disabled", !$createListName.val().trim());
+      }
+      function setManageListState() {
+        var nextName = $manageListName.val().trim();
+        $manageListSave.prop("disabled", !nextName || nextName === manageOriginalName);
+      }
+      function getListById(id) {
+        return lists.find(function (list) { return list.id === id; }) || null;
+      }
+      function recalcListCount(list) {
+        if (!list || !Array.isArray(list.items) || !list.items.length) return;
+        list.count = list.items.reduce(function (total, item) {
+          return total + Math.max(1, parseInt(item.qty, 10) || 1);
+        }, 0);
+      }
+
+      function getVisibleLists() {
+        if (listScope === "mine") {
+          return lists.filter(function (list) { return list.scope === "mine"; });
+        }
+        if (listScope === "team") {
+          return lists.filter(function (list) { return list.scope === "team"; });
+        }
+        return lists.slice();
+      }
+
+      function ensureActiveListVisible() {
+        var visible = getVisibleLists();
+        var hasActive = visible.some(function (list) { return list.id === activeListId; });
+        if (!hasActive && visible.length) {
+          activeListId = visible[0].id;
+        }
+      }
+
+      function updateFilterButtons() {
+        var mineCount = lists.filter(function (list) { return list.scope === "mine"; }).length;
+        var teamCount = lists.filter(function (list) { return list.scope === "team"; }).length;
+        var $all = $listsFilterBar.find("[data-scope='all']");
+        var $mine = $listsFilterBar.find("[data-scope='mine']");
+        var $team = $listsFilterBar.find("[data-scope='team']");
+        $all.text("All Lists (" + lists.length + ")");
+        $mine.text("Created by You (" + mineCount + ")");
+        $team.text("Created by Team (" + teamCount + ")");
+        $listsFilterBar.find(".list-filter-btn").removeClass("active");
+        $listsFilterBar.find("[data-scope='" + listScope + "']").addClass("active");
+      }
+
+      function renderRows() {
+        var visibleLists = getVisibleLists();
+        var html = "";
+        var myLists;
+        var teamLists;
+
+        if (!visibleLists.length) {
+          rowsEl.innerHTML = "<div class='list-section-label'>No lists found in this view.</div>";
+          return;
+        }
+
+        function renderListRow(list) {
+          var active = list.id === activeListId ? " active" : "";
+          return (
+            "<button class='list-row" + active + "' data-list-id='" + list.id + "' type='button'>" +
+              "<h3 class='list-row-title'>" + list.title + "</h3>" +
+              "<div class='list-row-meta'>" + list.count + " items · " + list.updated + "</div>" +
+              "<div class='list-row-owner'>Created by " + list.owner + "</div>" +
+            "</button>"
+          );
+        }
+
+        if (listScope === "all") {
+          myLists = visibleLists.filter(function (list) { return list.scope === "mine"; });
+          teamLists = visibleLists.filter(function (list) { return list.scope === "team"; });
+          if (myLists.length) {
+            html += "<div class='list-section-label'>Created by You</div>";
+            html += myLists.map(renderListRow).join("");
+          }
+          if (teamLists.length) {
+            html += "<div class='list-section-label'>Created by Team</div>";
+            html += teamLists.map(renderListRow).join("");
+          }
+        } else {
+          html += visibleLists.map(renderListRow).join("");
+        }
+
+        rowsEl.innerHTML = html;
+      }
+
+      function renderPreview() {
+        var visibleLists = getVisibleLists();
+        var list = getListById(activeListId);
+        if (!visibleLists.length) {
+          previewTitleEl.textContent = "No Lists Available";
+          previewMetaEl.textContent = "Create a list or switch filters to view available lists.";
+          previewOwnerEl.textContent = "";
+          manageListBtnEl.classList.add("is-disabled");
+          manageListBtnEl.setAttribute("aria-disabled", "true");
+          manageListBtnEl.setAttribute("title", "Only the list creator can manage this list");
+          previewItemsEl.innerHTML = "";
+          previewEmptyEl.style.display = "";
+          return;
+        }
+        if (!list) {
+          activeListId = visibleLists[0].id;
+          list = getListById(activeListId);
+        }
+        if (!list) return;
+        previewTitleEl.textContent = list.title;
+        previewMetaEl.textContent = list.count + " items · " + list.updated;
+        previewOwnerEl.textContent = "Created by " + list.owner;
+        if (list.scope === "mine") {
+          manageListBtnEl.classList.remove("is-disabled");
+          manageListBtnEl.setAttribute("aria-disabled", "false");
+          manageListBtnEl.removeAttribute("title");
+        } else {
+          manageListBtnEl.classList.add("is-disabled");
+          manageListBtnEl.setAttribute("aria-disabled", "true");
+          manageListBtnEl.setAttribute("title", "Only the list creator can manage this list");
+        }
+        previewItemsEl.innerHTML = (list.items || []).map(function (item) {
+          var qty = Math.max(1, parseInt(item.qty, 10) || 1);
+          return (
+            "<div class='preview-item' data-item-id='" + item.id + "'>" +
+              "<img src='" + item.image + "' alt=''>" +
+              "<div>" +
+                "<p class='preview-item-name'>" + item.name + "</p>" +
+                "<div class='preview-item-id'>Item #: " + item.id + "</div>" +
+                "<div class='preview-item-note'>Qty " + qty + "</div>" +
+                "<div class='preview-item-price'>" + item.price + "</div>" +
+                "<div class='preview-item-qty'>" +
+                  "<button type='button' class='preview-item-qty-btn qty-dec'>-</button>" +
+                  "<input type='number' min='1' max='999' class='preview-item-qty-input qty-input' value='" + qty + "'>" +
+                  "<button type='button' class='preview-item-qty-btn qty-inc'>+</button>" +
+                "</div>" +
+                "<button type='button' class='preview-item-add'>Add to Cart</button>" +
+              "</div>" +
+            "</div>"
+          );
+        }).join("");
+        var empty = !list.items || !list.items.length;
+        previewEmptyEl.style.display = empty ? "" : "none";
+      }
+
+      rowsEl.addEventListener("click", function (event) {
+        var row = event.target.closest(".list-row");
+        if (!row) return;
+        activeListId = row.getAttribute("data-list-id");
+        renderRows();
+        renderPreview();
+      });
+      previewItemsEl.addEventListener("click", function (event) {
+        var list = getListById(activeListId);
+        var itemWrap = event.target.closest(".preview-item");
+        var itemId;
+        var item;
+        var nextQty;
+        var inputEl;
+        var cartApi;
+        if (!list || !itemWrap) return;
+        itemId = itemWrap.getAttribute("data-item-id");
+        item = (list.items || []).find(function (entry) { return entry.id === itemId; });
+        if (!item) return;
+        if (event.target.closest(".preview-item-add")) {
+          inputEl = itemWrap.querySelector(".qty-input");
+          nextQty = Math.max(1, parseInt(inputEl && inputEl.value, 10) || parseInt(item.qty, 10) || 1);
+          item.qty = nextQty;
+          recalcListCount(list);
+          list.updated = "Updated just now";
+          cartApi = getCartApi();
+          var addedLine = toCartLine(item, nextQty);
+          cartApi.addLines([addedLine]);
+          showAddedModal([addedLine]);
+          renderRows();
+          renderPreview();
+          return;
+        }
+        if (event.target.closest(".qty-dec")) {
+          nextQty = Math.max(1, (parseInt(item.qty, 10) || 1) - 1);
+        } else if (event.target.closest(".qty-inc")) {
+          nextQty = Math.min(999, (parseInt(item.qty, 10) || 1) + 1);
+        } else {
+          return;
+        }
+        item.qty = nextQty;
+        recalcListCount(list);
+        list.updated = "Updated just now";
+        renderRows();
+        renderPreview();
+      });
+      previewItemsEl.addEventListener("change", function (event) {
+        var input = event.target.closest(".qty-input");
+        var list = getListById(activeListId);
+        var itemWrap;
+        var itemId;
+        var item;
+        var nextQty;
+        if (!input || !list) return;
+        itemWrap = input.closest(".preview-item");
+        if (!itemWrap) return;
+        itemId = itemWrap.getAttribute("data-item-id");
+        item = (list.items || []).find(function (entry) { return entry.id === itemId; });
+        if (!item) return;
+        nextQty = Math.max(1, Math.min(999, parseInt(input.value, 10) || 1));
+        item.qty = nextQty;
+        recalcListCount(list);
+        list.updated = "Updated just now";
+        renderRows();
+        renderPreview();
+      });
+      $listsFilterBar.on("click", ".list-filter-btn", function () {
+        listScope = $(this).data("scope") || "all";
+        updateFilterButtons();
+        ensureActiveListVisible();
+        renderRows();
+        renderPreview();
+      });
+
+      document.getElementById("createListBtn").addEventListener("click", function (event) {
+        event.preventDefault();
+        $createListName.val("");
+        setCreateListState();
+        $createListModal.modal("show");
+      });
+      manageListBtnEl.addEventListener("click", function (event) {
+        var activeList = getListById(activeListId);
+        event.preventDefault();
+        if (!activeList || activeList.scope !== "mine") return;
+        manageTargetId = activeList.id;
+        manageOriginalName = activeList.title;
+        $manageListName.val(manageOriginalName);
+        setManageListState();
+        $manageListModal.modal("show");
+      });
+
+      $createListName.on("input", setCreateListState);
+      $createListModal.on("shown.bs.modal", function () {
+        $createListName.trigger("focus");
+      });
+      $manageListName.on("input", setManageListState);
+      $manageListModal.on("shown.bs.modal", function () {
+        $manageListName.trigger("focus");
+      });
+      $createListForm.on("submit", function (event) {
+        var name;
+        event.preventDefault();
+        name = $createListName.val().trim();
+        if (!name) return;
+        lists.unshift({
+          id: "custom_" + Date.now(),
+          title: name,
+          owner: currentOwnerLabel,
+          scope: "mine",
+          count: 0,
+          updated: "Updated just now",
+          items: []
+        });
+        listScope = "mine";
+        activeListId = lists[0].id;
+        updateFilterButtons();
+        ensureActiveListVisible();
+        renderRows();
+        renderPreview();
+        $createListModal.modal("hide");
+      });
+      $manageListForm.on("submit", function (event) {
+        var list;
+        var nextName;
+        event.preventDefault();
+        list = getListById(manageTargetId);
+        if (!list || list.scope !== "mine") return;
+        nextName = $manageListName.val().trim();
+        if (!nextName || nextName === list.title) return;
+        list.title = nextName;
+        list.updated = "Updated just now";
+        renderRows();
+        renderPreview();
+        $manageListModal.modal("hide");
+      });
+      $deleteListBtn.on("click", function () {
+        var list = getListById(manageTargetId);
+        var visibleLists;
+        if (!list || list.scope !== "mine") return;
+        if (!window.confirm("Delete this list? This cannot be undone.")) return;
+        lists = lists.filter(function (item) { return item.id !== list.id; });
+        visibleLists = getVisibleLists();
+        if (!visibleLists.length && lists.length) {
+          activeListId = lists[0].id;
+        } else if (visibleLists.length) {
+          activeListId = visibleLists[0].id;
+        }
+        updateFilterButtons();
+        ensureActiveListVisible();
+        renderRows();
+        renderPreview();
+        $manageListModal.modal("hide");
+      });
+      $manageListModal.on("hidden.bs.modal", function () {
+        manageTargetId = null;
+        manageOriginalName = "";
+      });
+
+      $(".preview-btn-primary").on("click", function (event) {
+        event.preventDefault();
+        var list = getListById(activeListId);
+        var cartApi = getCartApi();
+        var lines;
+        if (!list || !Array.isArray(list.items) || !list.items.length) return;
+        lines = list.items.map(function (item) { return toCartLine(item, item.qty); });
+        cartApi.addLines(lines);
+        showAddedModal(lines);
+      });
+      $(".preview-empty-btn").on("click", function (event) {
+        event.preventDefault();
+        window.location.href = "index.html";
+      });
+
+      updateFilterButtons();
+      ensureActiveListVisible();
+      renderRows();
+      renderPreview();
+    })();
+  </script>
+</body>
+</html>

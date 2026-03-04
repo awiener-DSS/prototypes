@@ -1,0 +1,131 @@
+/**
+ * Breg Brand Standards - Digital Implementation
+ * Based on Breg Brand Standards Guide
+ * Typography: Halogen (headlines) / Pathway Extreme (body) - Oswald used as Halogen substitute for web
+ * Colors: PMS 2758, 2728, 2727, 2768, 354 (accent)
+ */
+
+:root {
+  /* Primary Colors - Breg Brand */
+  --breg-primary-dark: #001E62;      /* PMS 2758 - Keep Moving, header */
+  --breg-primary: #0047bb;            /* PMS 2728 - Forward, main accent */
+  --breg-primary-light: #307fe2;     /* PMS 2727 */
+  --breg-darkest: #071d49;           /* PMS 2768 - body text */
+  --breg-accent-green: #00b140;      /* PMS 354 - accent, use sparingly */
+  --breg-accent-cyan: #00a9e0;      /* PMS 2995 */
+  --breg-accent-light: #9adbe8;      /* PMS 304 */
+  --breg-gray: #d9e1e2;             /* PMS 7541 - background */
+  --breg-white: #ffffff;
+
+  /* Typography */
+  --font-headline: "Oswald", "Trebuchet MS", sans-serif;
+  --font-body: "Pathway Extreme", "Trebuchet MS", sans-serif;
+
+  /* Font sizes - brand hierarchy */
+  --font-size-h1: 36px;
+  --font-size-h2: 24px;
+  --font-size-h3: 18px;
+  --font-size-body: 15px;
+  --font-size-small: 13px;
+  --font-size-tiny: 12px;
+}
+
+/* Bootstrap overrides - Breg brand */
+.btn-primary, .btn-default.btn-primary {
+  background: var(--breg-primary, #0047bb) !important;
+  border-color: var(--breg-primary, #0047bb) !important;
+  color: #fff !important;
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+}
+.btn-primary:hover, .btn-default.btn-primary:hover {
+  background: var(--breg-primary-dark, #001E62) !important;
+  border-color: var(--breg-primary-dark, #001E62) !important;
+  color: #fff !important;
+}
+.btn-default {
+  font-family: var(--font-body) !important;
+  border-color: var(--breg-primary, #0047bb) !important;
+  color: var(--breg-primary, #0047bb) !important;
+}
+.btn-default:hover {
+  background: rgba(0, 71, 187, 0.08) !important;
+  border-color: var(--breg-primary-dark, #001E62) !important;
+  color: var(--breg-primary-dark, #001E62) !important;
+}
+.btn-success {
+  background: var(--breg-accent-green, #00b140) !important;
+  border-color: var(--breg-accent-green, #00b140) !important;
+  font-family: var(--font-body) !important;
+}
+.modal-header {
+  background: #f6f8fa !important;
+  color: var(--breg-darkest, #071d49) !important;
+  font-family: var(--font-headline) !important;
+}
+.modal-body, .modal-footer {
+  font-family: var(--font-body) !important;
+  color: var(--breg-darkest, #071d49) !important;
+}
+.form-control {
+  font-family: var(--font-body) !important;
+  font-size: var(--font-size-body) !important;
+}
+h1, .h1 { font-family: var(--font-headline) !important; font-weight: 700 !important; color: var(--breg-darkest, #071d49) !important; }
+h2, .h2 { font-family: var(--font-headline) !important; font-weight: 600 !important; color: var(--breg-darkest, #071d49) !important; }
+h3, .h3 { font-family: var(--font-headline) !important; font-weight: 600 !important; color: var(--breg-darkest, #071d49) !important; }
+h4, .h4 { font-family: var(--font-body) !important; font-weight: 600 !important; color: var(--breg-darkest, #071d49) !important; }
+a { color: var(--breg-primary, #0047bb); }
+a:hover { color: var(--breg-primary-dark, #001E62); }
+
+/* Product List (pl-*) overrides */
+.pl-breadcrumb, .pl-breadcrumb a, .pl-subtitle, .pl-count { font-family: var(--font-body); }
+.pl-breadcrumb a { color: var(--breg-primary) !important; }
+.pl-breadcrumb a:hover { color: var(--breg-primary-dark) !important; }
+.pl-title { font-family: var(--font-headline) !important; color: var(--breg-darkest) !important; }
+.pl-filter-title, .pl-filter-clear { font-family: var(--font-body); }
+.pl-filter-clear { color: var(--breg-primary) !important; }
+.pl-view-toggle button.active { background: rgba(0, 71, 187, 0.1) !important; color: var(--breg-primary) !important; }
+body { background: var(--breg-gray) !important; color: var(--breg-darkest) !important; }
+
+/* Product Detail (pdp-*) overrides */
+.pdp-title, .pdp-price, .pdp-empty { font-family: var(--font-body); }
+.pdp-title { font-family: var(--font-headline); color: var(--breg-darkest); }
+
+/* Cart overrides */
+.cart-checkout-btn, .cart-empty-actions a { font-family: var(--font-body) !important; }
+.cart-checkout-btn { background: var(--breg-primary) !important; border-color: var(--breg-primary) !important; }
+.cart-checkout-btn:hover { background: var(--breg-primary-dark) !important; border-color: var(--breg-primary-dark) !important; }
+
+/* Checkout overrides */
+.checkout-back { color: var(--breg-primary) !important; font-family: var(--font-body); }
+.checkout-empty a { color: var(--breg-primary) !important; }
+
+/* Order confirmation */
+.confirm-btn.primary { background: var(--breg-primary) !important; border-color: var(--breg-primary) !important; font-family: var(--font-body); }
+.confirm-btn { font-family: var(--font-body); border-color: var(--breg-primary); color: var(--breg-primary); }
+.confirm-btn:hover { background: rgba(0, 71, 187, 0.08) !important; }
+
+/* Login */
+.login-card, .login-form input { font-family: var(--font-body); }
+.btn-login { background: var(--breg-primary) !important; border-color: var(--breg-primary) !important; }
+
+/* Account pages */
+.account-tile, .account-breadcrumb, .dashboard-link, .users-breadcrumb { font-family: var(--font-body); }
+.account-tile .tile-title { font-family: var(--font-headline); color: var(--breg-darkest); }
+.dashboard-link { color: var(--breg-primary) !important; }
+.tile-copy { color: var(--breg-darkest); opacity: 0.85; }
+
+/* Modals - ensure brand styling */
+.modal .btn-primary { background: var(--breg-primary) !important; }
+.modal .btn-default { border-color: var(--breg-primary); color: var(--breg-primary); }
+.promo-strip .btn { background: #fff !important; border-color: #fff !important; color: var(--breg-primary) !important; font-family: var(--font-body) !important; }
+.promo-strip .btn:hover { background: rgba(255,255,255,.9) !important; border-color: #fff !important; color: var(--breg-primary-dark) !important; }
+
+/* Form labels and inputs */
+label, .form-label { font-family: var(--font-body); color: var(--breg-darkest); }
+input, select, textarea { font-family: var(--font-body) !important; }
+
+/* Tables */
+table, th, td { font-family: var(--font-body); }
+th { font-family: var(--font-headline); color: var(--breg-darkest); }

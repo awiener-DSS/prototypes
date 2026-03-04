@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Saved Addresses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .addresses-page { margin: 12px 0 18px; }
+    .addresses-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .addresses-breadcrumb a { color: #007185; text-decoration: none; }
+    .addresses-breadcrumb a:hover,.addresses-breadcrumb a:focus { color: #005a6a; text-decoration: none; }
+    .addresses-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .addresses-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .addresses-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .addresses-subtitle { margin: 4px 0 0; font-size: 14px; color: #565959; line-height: 1.35; }
+    .addresses-add-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 8px 18px;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+      margin-top: 8px;
+    }
+    .addresses-add-btn .glyphicon { margin-right: 6px; top: 2px; }
+    .addresses-add-btn:hover,
+    .addresses-add-btn:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+      text-decoration: none;
+    }
+    .address-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .address-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 16px 18px 14px;
+    }
+    .address-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .address-type {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #007185;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .address-type .glyphicon { font-size: 18px; color: #007185; top: 0; }
+    .address-default {
+      display: none;
+      border-radius: 999px;
+      background: #0f8b24;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.2;
+      padding: 4px 10px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .address-card.is-default .address-default { display: inline-block; }
+    .address-name {
+      margin: 0 0 2px;
+      font-size: 17px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.25;
+    }
+    .address-lines {
+      margin: 0;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .address-phone {
+      margin: 8px 0 0;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .address-actions {
+      border-top: 1px solid #eaeded;
+      margin-top: 10px;
+      padding-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+    .address-action {
+      color: #007185;
+      text-decoration: none;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .address-action .glyphicon { margin-right: 4px; top: 2px; }
+    .address-action:hover,.address-action:focus { color: #c7511f; text-decoration: none; }
+    .address-action.delete { color: #d95f19; }
+    .address-action.delete:hover,.address-action.delete:focus { color: #b54812; }
+    .address-divider {
+      color: #c7ced4;
+      line-height: 1;
+      margin: 0 -2px;
+    }
+    @media (max-width: 1199px) {
+      .addresses-title { font-size: 30px; }
+      .addresses-subtitle { font-size: 14px; }
+    }
+    @media (max-width: 767px) {
+      .addresses-head { flex-direction: column; }
+      .addresses-title { font-size: 28px; }
+      .addresses-subtitle { font-size: 13px; }
+      .address-grid { grid-template-columns: 1fr; }
+      .addresses-add-btn { margin-top: 0; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="addresses-page">
+      <div class="addresses-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Saved Addresses</span></div>
+      <div class="addresses-head">
+        <div>
+          <h1 class="addresses-title">Saved Addresses</h1>
+          <p class="addresses-subtitle">Manage your shipping and billing addresses</p>
+        </div>
+        <a class="addresses-add-btn" href="#" id="addAddressBtn"><span class="glyphicon glyphicon-plus"></span> Add New Address</a>
+      </div>
+
+      <section class="address-grid" id="addressGrid">
+        <article class="address-card is-default">
+          <div class="address-card-head">
+            <div class="address-type"><span class="glyphicon glyphicon-briefcase"></span> Work Address</div>
+            <div class="address-default"><span class="glyphicon glyphicon-star"></span> Default</div>
+          </div>
+          <h2 class="address-name">Medical Clinic Inc.</h2>
+          <p class="address-lines">123 Healthcare Blvd<br>Los Angeles, CA 90001<br>United States</p>
+          <p class="address-phone">Phone: (555) 123-4567</p>
+          <div class="address-actions">
+            <a class="address-action js-edit-address" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+            <span class="address-divider">|</span>
+            <a class="address-action delete js-delete-address" href="#"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+          </div>
+        </article>
+
+        <article class="address-card">
+          <div class="address-card-head">
+            <div class="address-type"><span class="glyphicon glyphicon-home"></span> Home Address</div>
+            <div class="address-default"><span class="glyphicon glyphicon-star"></span> Default</div>
+          </div>
+          <h2 class="address-name">John Smith</h2>
+          <p class="address-lines">456 Residential St<br>Santa Monica, CA 90401<br>United States</p>
+          <p class="address-phone">Phone: (555) 987-6543</p>
+          <div class="address-actions">
+            <a class="address-action js-edit-address" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+            <span class="address-divider">|</span>
+            <a class="address-action delete js-delete-address" href="#"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+            <span class="address-divider">|</span>
+            <a class="address-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
+          </div>
+        </article>
+
+        <article class="address-card">
+          <div class="address-card-head">
+            <div class="address-type"><span class="glyphicon glyphicon-map-marker"></span> Other Address</div>
+            <div class="address-default"><span class="glyphicon glyphicon-star"></span> Default</div>
+          </div>
+          <h2 class="address-name">West Coast Distribution Center</h2>
+          <p class="address-lines">789 Warehouse Way<br>Long Beach, CA 90802<br>United States</p>
+          <p class="address-phone">Phone: (555) 456-7890</p>
+          <div class="address-actions">
+            <a class="address-action js-edit-address" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+            <span class="address-divider">|</span>
+            <a class="address-action delete js-delete-address" href="#"><span class="glyphicon glyphicon-trash"></span>Delete</a>
+            <span class="address-divider">|</span>
+            <a class="address-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      var $grid = $("#addressGrid");
+
+      function updateDefaultActions() {
+        $grid.find(".address-card").each(function () {
+          var $card = $(this);
+          var isDefault = $card.hasClass("is-default");
+          var $setDefault = $card.find(".js-make-default");
+          if (isDefault) {
+            $setDefault.hide();
+            $card.find(".address-divider").last().hide();
+          } else {
+            $setDefault.show();
+            $card.find(".address-divider").last().show();
+          }
+        });
+      }
+
+      $grid.on("click", ".js-make-default", function (event) {
+        event.preventDefault();
+        var $card = $(this).closest(".address-card");
+        $grid.find(".address-card").removeClass("is-default");
+        $card.addClass("is-default");
+        updateDefaultActions();
+      });
+
+      $grid.on("click", ".js-edit-address, .js-delete-address", function (event) {
+        event.preventDefault();
+      });
+
+      $("#addAddressBtn").on("click", function (event) {
+        event.preventDefault();
+      });
+
+      updateDefaultActions();
+    })();
+  </script>
+</body>
+</html>

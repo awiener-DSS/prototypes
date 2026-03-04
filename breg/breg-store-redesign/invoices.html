@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Invoices</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    .page-loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #eef1f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity .28s ease, visibility .28s ease;
+      opacity: 1;
+      visibility: visible;
+    }
+    .page-loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .page-loading-inner { text-align: center; }
+    .page-loading-circle {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: #131653;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      box-shadow: 0 8px 22px rgba(19, 22, 83, .22);
+    }
+    .page-loading-logo {
+      width: 170px;
+      max-width: 46vw;
+      margin: 0;
+      display: block;
+      animation: pageLogoPulse 1.2s ease-in-out infinite;
+    }
+    .page-loading-copy {
+      margin: 0;
+      color: #334155;
+      font-size: 14px;
+      letter-spacing: .2px;
+    }
+    @keyframes pageLogoPulse {
+      0% { transform: scale(1); opacity: .72; }
+      50% { transform: scale(1.02); opacity: 1; }
+      100% { transform: scale(1); opacity: .72; }
+    }
+
+    body { background: #EAEDED; }
+    .invoices-page { margin: 12px 0 18px; }
+    .invoices-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .invoices-breadcrumb a { color: #007185; text-decoration: none; }
+    .invoices-breadcrumb a:hover,.invoices-breadcrumb a:focus { color: #005a6a; text-decoration: none; }
+    .invoices-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .invoices-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .invoices-subtitle { margin: 4px 0 16px; font-size: 14px; color: #565959; line-height: 1.35; }
+    .invoice-filters {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+    .invoice-filters-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .invoice-filters-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+    }
+    .invoice-filters-title .glyphicon { color: #0f1111; font-size: 14px; }
+    .invoice-filters-toggle {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      font-size: 13px;
+      color: #007185;
+      font-weight: 500;
+    }
+    .invoice-filters-toggle:hover,.invoice-filters-toggle:focus {
+      color: #c7511f;
+      text-decoration: none;
+      outline: 0;
+    }
+    .invoice-filters-body {
+      display: none;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #eaeded;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .invoice-filters.open .invoice-filters-body { display: grid; }
+    .invoice-filter-group label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: #565959;
+      font-weight: 500;
+    }
+    .invoice-filter-group .form-control {
+      height: 34px;
+      border-radius: 8px;
+      border-color: #c7ced4;
+      font-size: 13px;
+      color: #0f1111;
+      box-shadow: none;
+    }
+    .invoice-filter-group .form-control:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+    }
+    .invoice-count {
+      margin: 0 0 10px;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .invoice-table-wrap {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .invoice-table th,
+    .invoice-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #eaeded;
+      font-size: 13px;
+      color: #0f1111;
+      text-align: left;
+      vertical-align: middle;
+      word-wrap: break-word;
+    }
+    .invoice-table thead th {
+      background: #f7f8f9;
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .invoice-table tbody tr:last-child td { border-bottom: 0; }
+    .invoice-link {
+      color: #007185;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .invoice-link:hover,.invoice-link:focus { color: #c7511f; text-decoration: none; }
+    .invoice-status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+    .invoice-status.paid { background: #eaf3ea; color: #22803b; }
+    .invoice-status.pending { background: #f8eddc; color: #d57900; }
+    .invoice-status.overdue { background: #fbe7e7; color: #c73c2f; }
+    .invoice-action {
+      color: #007185;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .invoice-action .glyphicon { margin-right: 6px; top: 2px; }
+    .invoice-action:hover,.invoice-action:focus { color: #c7511f; text-decoration: none; }
+    @media (max-width: 1199px) {
+      .invoices-title { font-size: 30px; }
+      .invoices-subtitle { font-size: 14px; }
+      .invoice-filters-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 767px) {
+      .invoices-title { font-size: 28px; }
+      .invoices-subtitle { font-size: 13px; }
+      .invoice-filters-body { grid-template-columns: 1fr; }
+      .invoice-table-wrap { overflow-x: auto; }
+      .invoice-table { min-width: 860px; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <div class="page-loading-screen" id="pageLoadingScreen" aria-live="polite" aria-label="Loading invoices">
+    <div class="page-loading-inner">
+      <div class="page-loading-circle">
+        <img class="page-loading-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+      </div>
+      <p class="page-loading-copy">Loading invoices...</p>
+    </div>
+  </div>
+
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="invoices-page">
+      <div class="invoices-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Invoices</span></div>
+      <h1 class="invoices-title">Invoices</h1>
+      <p class="invoices-subtitle">Search and download your purchase invoices</p>
+
+      <section class="invoice-filters" id="invoiceFilters">
+        <div class="invoice-filters-head">
+          <div class="invoice-filters-title"><span class="glyphicon glyphicon-filter"></span> Search Filters</div>
+          <button type="button" class="invoice-filters-toggle" id="invoiceFiltersToggle">Show Filters</button>
+        </div>
+        <div class="invoice-filters-body" id="invoiceFiltersBody">
+          <div class="invoice-filter-group">
+            <label for="invoiceFilterNumber">Invoice #</label>
+            <input id="invoiceFilterNumber" type="text" class="form-control" placeholder="INV-">
+          </div>
+          <div class="invoice-filter-group">
+            <label for="invoiceFilterOrder">Order #</label>
+            <input id="invoiceFilterOrder" type="text" class="form-control" placeholder="ORD-">
+          </div>
+          <div class="invoice-filter-group">
+            <label for="invoiceFilterStatus">Status</label>
+            <select id="invoiceFilterStatus" class="form-control">
+              <option>All</option>
+              <option>Paid</option>
+              <option>Pending</option>
+              <option>Overdue</option>
+            </select>
+          </div>
+          <div class="invoice-filter-group">
+            <label for="invoiceFilterDate">Invoice Date</label>
+            <input id="invoiceFilterDate" type="text" class="form-control" placeholder="MM/DD/YYYY">
+          </div>
+        </div>
+      </section>
+
+      <p class="invoice-count">Showing 6 of 6 invoices</p>
+
+      <section class="invoice-table-wrap">
+        <table class="invoice-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Order #</th>
+              <th>PO #</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Ship To</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>INV-2024-12-001</td>
+              <td><a class="invoice-link" href="#">ORD-2024-5678</a></td>
+              <td>PO-2024-001234</td>
+              <td>Dec 4, 2024</td>
+              <td>$1,249.97</td>
+              <td><span class="invoice-status paid">Paid</span></td>
+              <td>Los Angeles, CA</td>
+              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+            </tr>
+            <tr>
+              <td>INV-2024-12-002</td>
+              <td><a class="invoice-link" href="#">ORD-2024-5679</a></td>
+              <td>PO-2024-001235</td>
+              <td>Dec 5, 2024</td>
+              <td>$879.95</td>
+              <td><span class="invoice-status pending">Pending</span></td>
+              <td>New York, NY</td>
+              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+            </tr>
+            <tr>
+              <td>INV-2024-12-003</td>
+              <td><a class="invoice-link" href="#">ORD-2024-5680</a></td>
+              <td>PO-2024-001236</td>
+              <td>Dec 6, 2024</td>
+              <td>$1,599.96</td>
+              <td><span class="invoice-status paid">Paid</span></td>
+              <td>Chicago, IL</td>
+              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+            </tr>
+            <tr>
+              <td>INV-2024-11-045</td>
+              <td><a class="invoice-link" href="#">ORD-2024-5601</a></td>
+              <td>PO-2024-001180</td>
+              <td>Nov 27, 2024</td>
+              <td>$2,349.85</td>
+              <td><span class="invoice-status overdue">Overdue</span></td>
+              <td>Houston, TX</td>
+              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+            </tr>
+            <tr>
+              <td>INV-2024-11-044</td>
+              <td><a class="invoice-link" href="#">ORD-2024-5598</a></td>
+              <td>PO-2024-001175</td>
+              <td>Nov 24, 2024</td>
+              <td>$459.99</td>
+              <td><span class="invoice-status paid">Paid</span></td>
+              <td>Phoenix, AZ</td>
+              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+            </tr>
+            <tr>
+              <td>INV-2024-11-040</td>
+              <td><a class="invoice-link" href="#">ORD-2024-5590</a></td>
+              <td>PO-2024-001168</td>
+              <td>Nov 19, 2024</td>
+              <td>$3,299.70</td>
+              <td><span class="invoice-status paid">Paid</span></td>
+              <td>Los Angeles, CA</td>
+              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      var loaderShownAt = Date.now();
+      var LOADER_MIN_VISIBLE_MS = 3000;
+      function hideInitialLoader() {
+        var loader = document.getElementById("pageLoadingScreen");
+        if (!loader) return;
+        var elapsed = Date.now() - loaderShownAt;
+        var delay = Math.max(0, LOADER_MIN_VISIBLE_MS - elapsed);
+        setTimeout(function () {
+          loader.classList.add("hidden");
+          setTimeout(function () {
+            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+          }, 320);
+        }, delay);
+      }
+
+      var $filters = $("#invoiceFilters");
+      var $toggle = $("#invoiceFiltersToggle");
+      $toggle.on("click", function () {
+        $filters.toggleClass("open");
+        $toggle.text($filters.hasClass("open") ? "Hide Filters" : "Show Filters");
+      });
+
+      hideInitialLoader();
+    })();
+  </script>
+</body>
+</html>

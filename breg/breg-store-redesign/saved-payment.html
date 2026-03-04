@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Saved Payment Information</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .payments-page { margin: 12px 0 18px; }
+    .payments-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .payments-breadcrumb a { color: #007185; text-decoration: none; }
+    .payments-breadcrumb a:hover,.payments-breadcrumb a:focus { color: #005a6a; text-decoration: none; }
+    .payments-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .payments-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .payments-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .payments-subtitle { margin: 4px 0 0; font-size: 14px; color: #565959; line-height: 1.35; }
+    .payments-add-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 8px 18px;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+      margin-top: 8px;
+    }
+    .payments-add-btn .glyphicon { margin-right: 6px; top: 2px; }
+    .payments-add-btn:hover,
+    .payments-add-btn:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+      text-decoration: none;
+    }
+    .payment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .payment-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px 16px 12px;
+    }
+    .card-band {
+      height: 28px;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      position: relative;
+      margin-bottom: 12px;
+    }
+    .card-band.visa { background: #1f2479; }
+    .card-band.mastercard { background: #f5001e; }
+    .card-band.amex { background: #1775c6; }
+    .card-default {
+      display: none;
+      position: absolute;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: #0f8b24;
+      color: #fff;
+      font-size: 12px;
+      line-height: 1.2;
+      padding: 4px 10px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .payment-card.is-default .card-default { display: inline-block; }
+    .card-number {
+      margin: 0 0 4px;
+      color: #0f1111;
+      font-size: 17px;
+      line-height: 1.25;
+      font-weight: 500;
+      letter-spacing: .2px;
+    }
+    .card-holder {
+      margin: 0 0 2px;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .card-expiry {
+      margin: 0;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.35;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .card-expiry .glyphicon { font-size: 13px; top: 0; color: #565959; }
+    .card-billing {
+      border-top: 1px solid #eaeded;
+      margin-top: 8px;
+      padding-top: 8px;
+    }
+    .card-billing-label {
+      margin: 0;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.3;
+      font-weight: 500;
+    }
+    .card-billing-copy {
+      margin: 2px 0 0;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .payment-actions {
+      border-top: 1px solid #eaeded;
+      margin-top: 10px;
+      padding-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+    .payment-action {
+      color: #007185;
+      text-decoration: none;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .payment-action .glyphicon { margin-right: 4px; top: 2px; }
+    .payment-action:hover,.payment-action:focus { color: #c7511f; text-decoration: none; }
+    .payment-action.remove { color: #d95f19; }
+    .payment-action.remove:hover,.payment-action.remove:focus { color: #b54812; }
+    .payment-divider {
+      color: #c7ced4;
+      line-height: 1;
+      margin: 0 -2px;
+    }
+    .payments-secure {
+      border: 1px solid #2a9ec5;
+      border-radius: 12px;
+      background: #eaf5fb;
+      padding: 14px 18px;
+      display: flex;
+      gap: 12px;
+      color: #0f1111;
+    }
+    .payments-secure .glyphicon {
+      color: #0f7da0;
+      font-size: 18px;
+      top: 2px;
+    }
+    .payments-secure-title {
+      margin: 0;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+    .payments-secure-copy {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: #565959;
+      line-height: 1.4;
+    }
+    @media (max-width: 1199px) {
+      .payments-title { font-size: 30px; }
+      .payments-subtitle { font-size: 14px; }
+    }
+    @media (max-width: 767px) {
+      .payments-head { flex-direction: column; }
+      .payments-title { font-size: 28px; }
+      .payments-subtitle { font-size: 13px; }
+      .payments-add-btn { margin-top: 0; }
+      .payment-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="payments-page">
+      <div class="payments-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Saved Payment Information</span></div>
+      <div class="payments-head">
+        <div>
+          <h1 class="payments-title">Saved Payment Methods</h1>
+          <p class="payments-subtitle">Manage your payment methods and billing information</p>
+        </div>
+        <a class="payments-add-btn" href="#" id="addPaymentBtn"><span class="glyphicon glyphicon-plus"></span> Add Payment Method</a>
+      </div>
+
+      <section class="payment-grid" id="paymentGrid">
+        <article class="payment-card is-default">
+          <div class="card-band visa">VISA <span class="card-default"><span class="glyphicon glyphicon-star"></span> Default</span></div>
+          <p class="card-number">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</p>
+          <p class="card-holder">John Smith</p>
+          <p class="card-expiry"><span class="glyphicon glyphicon-calendar"></span> Expires 12/2026</p>
+          <div class="card-billing">
+            <p class="card-billing-label">Billing Address:</p>
+            <p class="card-billing-copy">123 Healthcare Blvd, Los Angeles, CA 90001</p>
+          </div>
+          <div class="payment-actions">
+            <a class="payment-action js-edit-payment" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+            <span class="payment-divider">|</span>
+            <a class="payment-action remove js-remove-payment" href="#"><span class="glyphicon glyphicon-trash"></span>Remove</a>
+          </div>
+        </article>
+
+        <article class="payment-card">
+          <div class="card-band mastercard">Mastercard <span class="card-default"><span class="glyphicon glyphicon-star"></span> Default</span></div>
+          <p class="card-number">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 5555</p>
+          <p class="card-holder">John Smith</p>
+          <p class="card-expiry"><span class="glyphicon glyphicon-calendar"></span> Expires 08/2025</p>
+          <div class="card-billing">
+            <p class="card-billing-label">Billing Address:</p>
+            <p class="card-billing-copy">456 Residential St, Santa Monica, CA 90401</p>
+          </div>
+          <div class="payment-actions">
+            <a class="payment-action js-edit-payment" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+            <span class="payment-divider">|</span>
+            <a class="payment-action remove js-remove-payment" href="#"><span class="glyphicon glyphicon-trash"></span>Remove</a>
+            <span class="payment-divider">|</span>
+            <a class="payment-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
+          </div>
+        </article>
+
+        <article class="payment-card">
+          <div class="card-band amex">AMEX <span class="card-default"><span class="glyphicon glyphicon-star"></span> Default</span></div>
+          <p class="card-number">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 1005</p>
+          <p class="card-holder">Medical Clinic Inc.</p>
+          <p class="card-expiry"><span class="glyphicon glyphicon-calendar"></span> Expires 03/2027</p>
+          <div class="card-billing">
+            <p class="card-billing-label">Billing Address:</p>
+            <p class="card-billing-copy">123 Healthcare Blvd, Los Angeles, CA 90001</p>
+          </div>
+          <div class="payment-actions">
+            <a class="payment-action js-edit-payment" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+            <span class="payment-divider">|</span>
+            <a class="payment-action remove js-remove-payment" href="#"><span class="glyphicon glyphicon-trash"></span>Remove</a>
+            <span class="payment-divider">|</span>
+            <a class="payment-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
+          </div>
+        </article>
+      </section>
+
+      <section class="payments-secure">
+        <span class="glyphicon glyphicon-credit-card"></span>
+        <div>
+          <p class="payments-secure-title">Your payment information is secure</p>
+          <p class="payments-secure-copy">We use industry-standard encryption to protect your card details. Your CVV is never stored and is only used for transaction verification.</p>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      var $grid = $("#paymentGrid");
+
+      function updateDefaultActions() {
+        $grid.find(".payment-card").each(function () {
+          var $card = $(this);
+          var isDefault = $card.hasClass("is-default");
+          var $setDefault = $card.find(".js-make-default");
+          if (isDefault) {
+            $setDefault.hide();
+            $card.find(".payment-divider").last().hide();
+          } else {
+            $setDefault.show();
+            $card.find(".payment-divider").last().show();
+          }
+        });
+      }
+
+      $grid.on("click", ".js-make-default", function (event) {
+        event.preventDefault();
+        var $card = $(this).closest(".payment-card");
+        $grid.find(".payment-card").removeClass("is-default");
+        $card.addClass("is-default");
+        updateDefaultActions();
+      });
+
+      $grid.on("click", ".js-edit-payment, .js-remove-payment", function (event) {
+        event.preventDefault();
+      });
+
+      $("#addPaymentBtn").on("click", function (event) {
+        event.preventDefault();
+      });
+
+      updateDefaultActions();
+    })();
+  </script>
+</body>
+</html>

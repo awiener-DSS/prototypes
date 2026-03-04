@@ -1483,3 +1483,42 @@
     }
   });
 })();
+
+// Scroll-to-top button (site-wide, independent of header/search)
+(function () {
+  function initScrollTop() {
+    var btn = document.querySelector(".scroll-top-btn");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "scroll-top-btn";
+      btn.setAttribute("aria-label", "Scroll to top");
+      btn.innerHTML = "<span class='glyphicon glyphicon-chevron-up'></span>";
+      document.body.appendChild(btn);
+    }
+    if (btn._bregScrollTopInited) return;
+    btn._bregScrollTopInited = true;
+
+    function updateVisibility() {
+      var y = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      if (y > 240) {
+        btn.classList.add("visible");
+      } else {
+        btn.classList.remove("visible");
+      }
+    }
+
+    btn.addEventListener("click", function () {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    });
+
+    window.addEventListener("scroll", updateVisibility, { passive: true });
+    updateVisibility();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initScrollTop);
+  } else {
+    initScrollTop();
+  }
+})();

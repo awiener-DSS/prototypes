@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Order Confirmation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .confirm-wrap { margin: 14px 0 24px; }
+    .confirm-card {
+      border: 1px solid #d5dde4;
+      border-radius: 12px;
+      background: #fff;
+      padding: 16px;
+    }
+    .confirm-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+    .confirm-title { margin: 0 0 6px; font-size: 28px; line-height: 1.2; color: #0f172a; }
+    .confirm-sub { margin: 0 0 12px; font-size: 14px; color: #475569; }
+    .confirm-meta { margin: 0 0 12px; font-size: 14px; color: #0f172a; }
+    .confirm-ship {
+      margin: 0 0 12px;
+      border: 1px solid #e5eaf0;
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 10px 12px;
+    }
+    .confirm-options-grid {
+      margin: 0 0 12px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .confirm-option-card {
+      border: 1px solid #e5eaf0;
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 10px 12px;
+    }
+    .confirm-option-title {
+      margin: 0 0 6px;
+      font-size: 13px;
+      color: #334155;
+      font-weight: 600;
+    }
+    .confirm-option-copy {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #0f172a;
+    }
+    .confirm-ship-title {
+      margin: 0 0 6px;
+      font-size: 13px;
+      color: #334155;
+      font-weight: 600;
+    }
+    .confirm-ship-copy {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #0f172a;
+    }
+    .confirm-table { width: 100%; border-collapse: collapse; }
+    .confirm-table th, .confirm-table td {
+      border-bottom: 1px solid #e8edf3;
+      padding: 10px 8px;
+      font-size: 13px;
+      text-align: left;
+      color: #0f172a;
+    }
+    .confirm-table th { color: #475569; font-weight: 600; }
+    .confirm-total {
+      margin-top: 10px;
+      text-align: right;
+      font-size: 16px;
+      color: #0f172a;
+      font-weight: 600;
+    }
+    .confirm-actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .confirm-btn {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 14px;
+      color: #0f172a;
+      text-decoration: none;
+    }
+    .confirm-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    @media (max-width: 900px) {
+      .confirm-options-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <section class="confirm-wrap">
+      <div class="confirm-card">
+        <div class="confirm-ok"><span class="glyphicon glyphicon-ok"></span> Order Confirmed</div>
+        <h1 class="confirm-title">Thank you for your order</h1>
+        <p class="confirm-sub">Your order has been received and is being processed.</p>
+        <p class="confirm-meta" id="confirmMeta"></p>
+        <div id="confirmCheckoutSelections"></div>
+        <div id="confirmTable"></div>
+        <div class="confirm-total" id="confirmTotal"></div>
+        <div class="confirm-actions">
+          <a class="confirm-btn primary" href="index.html">Continue Shopping</a>
+          <a class="confirm-btn" href="order-history.html">View Order History</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+      var order = null;
+      try { order = JSON.parse(localStorage.getItem("breg_last_order_v1") || "null"); } catch (e) {}
+      if (!order || !Array.isArray(order.lines) || !order.lines.length) {
+        $("#confirmMeta").text("No recent order details were found.");
+        $("#confirmTable").html("<div class='pdp-empty'>Order details unavailable.</div>");
+        $("#confirmTotal").text("");
+        return;
+      }
+      var placed = new Date(order.placedAt || Date.now());
+      $("#confirmMeta").html(
+        "<strong>Order Number:</strong> " + escapeHtml(order.orderNumber || "") +
+        " &nbsp;|&nbsp; <strong>Placed:</strong> " + placed.toLocaleString()
+      );
+
+      function formatAddressLines(address) {
+        var lines = [];
+        if (!address || typeof address !== "object") return lines;
+        if (address.name) lines.push(escapeHtml(address.name));
+        if (address.line1) lines.push(escapeHtml(address.line1));
+        if (address.cityStateZip) lines.push(escapeHtml(address.cityStateZip));
+        if (address.country) lines.push(escapeHtml(address.country));
+        if (address.phone) lines.push("Phone: " + escapeHtml(address.phone));
+        return lines;
+      }
+
+      function formatCard(card) {
+        if (!card || typeof card !== "object") return "";
+        var parts = [];
+        if (card.type || card.last4) {
+          parts.push(escapeHtml((card.type || "Card") + (card.last4 ? (" ending in " + card.last4) : "")));
+        }
+        if (card.expMonth || card.expYear) {
+          parts.push("Exp " + escapeHtml(String(card.expMonth || "")) + "/" + escapeHtml(String(card.expYear || "")));
+        }
+        if (card.name) parts.push(escapeHtml(card.name));
+        return parts.join("<br>");
+      }
+
+      var shipping = order.shippingAddress || null;
+      var attentionTo = (shipping && shipping.attentionTo) || order.shippingAttentionTo || "";
+      var shippingLines = formatAddressLines(shipping);
+      if (attentionTo) shippingLines.unshift("<strong>Attention To:</strong> " + escapeHtml(attentionTo));
+
+      var invoice = order.invoiceAddress || null;
+      var invoiceLines = formatAddressLines(invoice);
+
+      var paymentMode = String(order.paymentMode || "").toLowerCase();
+      var paymentTitle = paymentMode === "credit" ? "Payment Method (Credit Card)" : "Payment Method (Invoice)";
+      var paymentLines = [];
+      if (paymentMode === "credit") {
+        var cardBlock = formatCard(order.paymentCard);
+        if (order.paymentType) {
+          paymentLines.push(escapeHtml(order.paymentType));
+        } else if (cardBlock) {
+          paymentLines.push(cardBlock);
+        } else {
+          paymentLines.push("Credit Card");
+        }
+        var storedCardBilling = null;
+        try { storedCardBilling = JSON.parse(localStorage.getItem("bregDefaultCreditCardBillingAddress") || "null"); } catch (e) {}
+        var cardBillingSource =
+          (order.paymentCard && order.paymentCard.billingAddress) ||
+          storedCardBilling ||
+          order.invoiceAddress ||
+          order.shippingAddress ||
+          null;
+        var cardBilling = formatAddressLines(cardBillingSource);
+        if (cardBilling.length) paymentLines.push("<strong>Billing Address:</strong><br>" + cardBilling.join("<br>"));
+      } else {
+        paymentLines.push(order.paymentType ? escapeHtml(order.paymentType) : "Invoice");
+        if (invoiceLines.length) paymentLines.push("<strong>Invoice Address:</strong><br>" + invoiceLines.join("<br>"));
+      }
+
+      var shipMethod = order.shippingMethod || {};
+      var shipMethodLines = [];
+      if (shipMethod.carrier) shipMethodLines.push("<strong>Carrier:</strong> " + escapeHtml(shipMethod.carrier));
+      if (shipMethod.option) shipMethodLines.push("<strong>Method:</strong> " + escapeHtml(shipMethod.option));
+      if (shipMethod.residentialDelivery) shipMethodLines.push("Residential Delivery");
+      if (shipMethod.signatureRequired) shipMethodLines.push("Signature Required");
+      if (!shipMethodLines.length) shipMethodLines.push("Standard");
+
+      var purchaser = order.purchaser || "";
+      var selectionsHtml = "<div class='confirm-options-grid'>";
+      if (shippingLines.length) {
+        selectionsHtml +=
+          "<div class='confirm-option-card'>" +
+            "<p class='confirm-option-title'>Shipping Address</p>" +
+            "<p class='confirm-option-copy'>" + shippingLines.join("<br>") + "</p>" +
+          "</div>";
+      }
+      selectionsHtml +=
+        "<div class='confirm-option-card'>" +
+          "<p class='confirm-option-title'>" + paymentTitle + "</p>" +
+          "<p class='confirm-option-copy'>" + paymentLines.join("<br>") + "</p>" +
+        "</div>" +
+        "<div class='confirm-option-card'>" +
+          "<p class='confirm-option-title'>Shipping Method</p>" +
+          "<p class='confirm-option-copy'>" + shipMethodLines.join("<br>") + "</p>" +
+        "</div>";
+      if (purchaser) {
+        selectionsHtml +=
+          "<div class='confirm-option-card'>" +
+            "<p class='confirm-option-title'>Purchaser</p>" +
+            "<p class='confirm-option-copy'>" + escapeHtml(purchaser) + "</p>" +
+          "</div>";
+      }
+      selectionsHtml += "</div>";
+      $("#confirmCheckoutSelections").html(selectionsHtml);
+
+      var rows = "";
+      order.lines.forEach(function (line) {
+        rows += "<tr>" +
+          "<td>" + escapeHtml(line.name || line.sku || "Product") + "</td>" +
+          "<td>" + escapeHtml(line.sku || "") + "</td>" +
+          "<td>" + Number(line.qty || 0) + "</td>" +
+          "<td>$" + BregFormatMoney(Number(line.price || 0)) + "</td>" +
+          "<td>$" + BregFormatMoney(Number(line.lineTotal || 0)) + "</td>" +
+        "</tr>";
+      });
+      $("#confirmTable").html(
+        "<table class='confirm-table'>" +
+          "<thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead>" +
+          "<tbody>" + rows + "</tbody>" +
+        "</table>"
+      );
+      $("#confirmTotal").text("Order Total: $" + BregFormatMoney(Number(order.total || 0)));
+      $(".cart-count").text("0");
+    })();
+  </script>
+</body>
+</html>

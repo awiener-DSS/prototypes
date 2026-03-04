@@ -1,0 +1,1139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Add Users</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .users-page { margin: 12px 0 18px; }
+    .users-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .users-breadcrumb a { color: #007185; text-decoration: none; }
+    .users-breadcrumb a:hover,.users-breadcrumb a:focus { color: #005a6a; text-decoration: none; }
+    .users-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .users-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .users-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .users-subtitle { margin: 4px 0 0; font-size: 14px; color: #565959; line-height: 1.35; }
+    .users-invite-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 8px 18px;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+      margin-top: 8px;
+    }
+    .users-invite-btn .glyphicon { margin-right: 6px; top: 2px; }
+    .users-invite-btn:hover,
+    .users-invite-btn:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+      text-decoration: none;
+    }
+    .users-search-wrap {
+      position: relative;
+      max-width: 500px;
+      margin-bottom: 12px;
+    }
+    .users-search-wrap .glyphicon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6f777d;
+      font-size: 18px;
+      pointer-events: none;
+    }
+    .users-search {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #c7ced4;
+      border-radius: 12px;
+      padding: 0 14px 0 44px;
+      font-size: 13px;
+      color: #0f1111;
+      box-shadow: none;
+    }
+    .users-search:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+      outline: 0;
+    }
+    .users-table-wrap {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .users-table th,
+    .users-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #eaeded;
+      font-size: 13px;
+      color: #0f1111;
+      text-align: left;
+      vertical-align: middle;
+      word-wrap: break-word;
+    }
+    .users-table thead th {
+      background: #f7f8f9;
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .users-table tbody tr:last-child td { border-bottom: 0; }
+    .user-id {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #05798f;
+      color: #fff;
+      font-size: 13px;
+      line-height: 44px;
+      text-align: center;
+      font-weight: 500;
+      display: inline-block;
+      margin-right: 12px;
+      vertical-align: middle;
+    }
+    .user-name {
+      vertical-align: middle;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+    }
+    .role-badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+    .role-badge.admin { background: #fbe7e7; color: #c73c2f; }
+    .role-badge.manager { background: #dff1f6; color: #0b7796; }
+    .role-badge.user { background: #f0f1f3; color: #565959; }
+    .table-action {
+      color: #007185;
+      text-decoration: none;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+    .table-action:last-child { margin-right: 0; }
+    .table-action:hover,.table-action:focus { color: #c7511f; text-decoration: none; }
+    .table-action.delete { color: #d95f19; }
+    .table-action.delete:hover,.table-action.delete:focus { color: #b54812; }
+    .users-empty {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #565959;
+      font-size: 13px;
+      border-top: 1px solid #eaeded;
+    }
+    .permissions-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 16px 18px;
+    }
+    .permissions-title {
+      margin: 0 0 12px;
+      font-size: 17px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .permissions-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+    .permissions-col ul {
+      margin: 8px 0 0;
+      padding-left: 16px;
+      color: #565959;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .permissions-col .role-badge { margin-bottom: 2px; }
+    @media (max-width: 1199px) {
+      .users-title { font-size: 30px; }
+      .users-subtitle { font-size: 14px; }
+    }
+    @media (max-width: 991px) {
+      .permissions-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 767px) {
+      .users-head { flex-direction: column; }
+      .users-title { font-size: 28px; }
+      .users-subtitle { font-size: 13px; }
+      .users-invite-btn { margin-top: 0; }
+      .users-table-wrap { overflow-x: auto; }
+      .users-table { min-width: 1180px; }
+    }
+    .budget-value {
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.25;
+      display: block;
+    }
+    .budget-sub {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.25;
+    }
+    .budget-modal .modal-dialog {
+      width: min(560px, calc(100% - 40px));
+      margin: 70px auto;
+    }
+    .budget-modal .modal-content {
+      border-radius: 16px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 18px 36px rgba(15, 17, 17, .28);
+      overflow: hidden;
+    }
+    .budget-modal .modal-header {
+      border-bottom: 1px solid #d5d9d9;
+      padding: 18px 22px;
+    }
+    .budget-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      color: #0f1111;
+      font-weight: 400;
+    }
+    .budget-modal .close {
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 300;
+      opacity: .65;
+      margin-top: -6px;
+    }
+    .budget-modal .close:hover,
+    .budget-modal .close:focus { opacity: .9; }
+    .budget-modal .modal-body {
+      padding: 20px 22px;
+      background: #fff;
+    }
+    .budget-field {
+      margin-bottom: 14px;
+    }
+    .budget-field:last-child {
+      margin-bottom: 0;
+    }
+    .budget-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f1111;
+      line-height: 1.25;
+    }
+    .budget-input,
+    .budget-select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #c7ced4;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: #0f1111;
+      box-shadow: none;
+      background: #fff;
+    }
+    .budget-input:focus,
+    .budget-select:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+      outline: 0;
+    }
+    .budget-hint {
+      margin: 0;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.3;
+    }
+    .budget-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .budget-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 0 14px;
+      text-decoration: none;
+      line-height: 1;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      color: #0f1111;
+    }
+    .budget-btn:hover,
+    .budget-btn:focus {
+      color: #0f1111;
+      text-decoration: none;
+      background: #f7f8f8;
+    }
+    .budget-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .budget-btn.primary:hover,
+    .budget-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    .user-modal .modal-dialog {
+      width: min(620px, calc(100% - 40px));
+      margin: 70px auto;
+    }
+    .user-modal .modal-content {
+      border-radius: 16px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 18px 36px rgba(15, 17, 17, .28);
+      overflow: hidden;
+    }
+    .user-modal .modal-header {
+      border-bottom: 1px solid #d5d9d9;
+      padding: 18px 22px;
+    }
+    .user-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      color: #0f1111;
+      font-weight: 400;
+    }
+    .user-modal .close {
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 300;
+      opacity: .65;
+      margin-top: -6px;
+    }
+    .user-modal .close:hover,
+    .user-modal .close:focus { opacity: .9; }
+    .user-modal .modal-body {
+      padding: 20px 22px;
+      background: #fff;
+    }
+    .user-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .user-field.full {
+      grid-column: 1 / -1;
+    }
+    .user-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f1111;
+      line-height: 1.25;
+    }
+    .user-input,
+    .user-select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #c7ced4;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: #0f1111;
+      box-shadow: none;
+      background: #fff;
+    }
+    .user-input:focus,
+    .user-select:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+      outline: 0;
+    }
+    .user-error {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #b12704;
+      display: none;
+    }
+    .user-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .user-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 0 14px;
+      text-decoration: none;
+      line-height: 1;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      color: #0f1111;
+    }
+    .user-btn:hover,
+    .user-btn:focus {
+      color: #0f1111;
+      text-decoration: none;
+      background: #f7f8f8;
+    }
+    .user-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .user-btn.primary:hover,
+    .user-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    .delete-modal .modal-dialog {
+      width: min(500px, calc(100% - 40px));
+      margin: 90px auto;
+    }
+    .delete-modal .modal-content {
+      border-radius: 16px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 18px 36px rgba(15, 17, 17, .28);
+      overflow: hidden;
+    }
+    .delete-modal .modal-header {
+      border-bottom: 1px solid #d5d9d9;
+      padding: 18px 22px;
+    }
+    .delete-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      color: #0f1111;
+      font-weight: 400;
+    }
+    .delete-modal .close {
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 300;
+      opacity: .65;
+      margin-top: -6px;
+    }
+    .delete-modal .close:hover,
+    .delete-modal .close:focus { opacity: .9; }
+    .delete-modal .modal-body {
+      padding: 16px 22px 10px;
+      background: #fff;
+    }
+    .delete-modal-copy {
+      margin: 0;
+      font-size: 14px;
+      color: #565959;
+      line-height: 1.45;
+    }
+    .delete-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .delete-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 0 14px;
+      text-decoration: none;
+      line-height: 1;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      color: #0f1111;
+    }
+    .delete-btn:hover,
+    .delete-btn:focus {
+      color: #0f1111;
+      text-decoration: none;
+      background: #f7f8f8;
+    }
+    .delete-btn.danger {
+      border-color: #f3b7b0;
+      background: #fff4f4;
+      color: #b12704;
+    }
+    .delete-btn.danger:hover,
+    .delete-btn.danger:focus {
+      border-color: #e7a19a;
+      background: #ffe9e9;
+      color: #9f1f02;
+    }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="users-page">
+      <div class="users-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Manage Users</span></div>
+      <div class="users-head">
+        <div>
+          <h1 class="users-title">Team Members</h1>
+          <p class="users-subtitle">Invite and manage team members for your organization</p>
+        </div>
+        <a class="users-invite-btn" href="#" id="inviteUserBtn"><span class="glyphicon glyphicon-user"></span>+ Invite User</a>
+      </div>
+
+      <div class="users-search-wrap">
+        <span class="glyphicon glyphicon-search"></span>
+        <input id="usersSearch" class="users-search" type="text" placeholder="Search by name, email, or role...">
+      </div>
+
+      <section class="users-table-wrap">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Budget Limit</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr data-email="john.smith@medicalclinic.com" data-search="john smith john.smith@medicalclinic.com admin">
+              <td><span class="user-id">JS</span><span class="user-name">John Smith</span></td>
+              <td>john.smith@medicalclinic.com</td>
+              <td><span class="role-badge admin">Admin</span></td>
+              <td class="js-budget-cell"></td>
+              <td>Jan 14, 2024</td>
+              <td>
+                <a class="table-action js-edit-user" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a class="table-action js-budget-action" href="#"><span class="glyphicon glyphicon-usd"></span></a>
+                <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
+              </td>
+            </tr>
+            <tr data-email="sarah.j@medicalclinic.com" data-search="sarah johnson sarah.j@medicalclinic.com manager">
+              <td><span class="user-id">SJ</span><span class="user-name">Sarah Johnson</span></td>
+              <td>sarah.j@medicalclinic.com</td>
+              <td><span class="role-badge manager">Manager</span></td>
+              <td class="js-budget-cell"></td>
+              <td>Mar 19, 2024</td>
+              <td>
+                <a class="table-action js-edit-user" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a class="table-action js-budget-action" href="#"><span class="glyphicon glyphicon-usd"></span></a>
+                <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
+              </td>
+            </tr>
+            <tr data-email="mchen@medicalclinic.com" data-search="michael chen mchen@medicalclinic.com user">
+              <td><span class="user-id">MC</span><span class="user-name">Michael Chen</span></td>
+              <td>mchen@medicalclinic.com</td>
+              <td><span class="role-badge user">User</span></td>
+              <td class="js-budget-cell"></td>
+              <td>May 9, 2024</td>
+              <td>
+                <a class="table-action js-edit-user" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a class="table-action js-budget-action" href="#"><span class="glyphicon glyphicon-usd"></span></a>
+                <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
+              </td>
+            </tr>
+            <tr data-email="emily.davis@medicalclinic.com" data-search="emily davis emily.davis@medicalclinic.com user">
+              <td><span class="user-id">ED</span><span class="user-name">Emily Davis</span></td>
+              <td>emily.davis@medicalclinic.com</td>
+              <td><span class="role-badge user">User</span></td>
+              <td class="js-budget-cell"></td>
+              <td>Dec 7, 2024</td>
+              <td>
+                <a class="table-action js-edit-user" href="#"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a class="table-action js-budget-action" href="#"><span class="glyphicon glyphicon-usd"></span></a>
+                <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="users-empty" id="usersEmpty">No team members match your search.</div>
+      </section>
+
+      <section class="permissions-card">
+        <h2 class="permissions-title">Role Permissions</h2>
+        <div class="permissions-grid">
+          <div class="permissions-col">
+            <span class="role-badge admin">Admin</span>
+            <ul>
+              <li>Full account access</li>
+              <li>Manage users and permissions</li>
+              <li>View all orders and invoices</li>
+              <li>Manage payment methods</li>
+            </ul>
+          </div>
+          <div class="permissions-col">
+            <span class="role-badge manager">Manager</span>
+            <ul>
+              <li>Place and manage orders</li>
+              <li>View team orders</li>
+              <li>Access invoices</li>
+              <li>Approve purchases</li>
+            </ul>
+          </div>
+          <div class="permissions-col">
+            <span class="role-badge user">User</span>
+            <ul>
+              <li>Place orders</li>
+              <li>View own orders</li>
+              <li>Create wish lists</li>
+              <li>Browse products</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal fade budget-modal" id="userBudgetModal" tabindex="-1" role="dialog" aria-labelledby="userBudgetModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="userBudgetModalTitle">Set Budget Limit</h2>
+        </div>
+        <div class="modal-body">
+          <div class="budget-field">
+            <label class="budget-label" for="budgetPerOrderInput">Spend per order (USD)</label>
+            <input id="budgetPerOrderInput" class="budget-input" type="number" min="0" step="1" placeholder="Enter per-order limit">
+          </div>
+          <div class="budget-field">
+            <label class="budget-label" for="budgetPerPeriodInput">Spend per period (USD)</label>
+            <input id="budgetPerPeriodInput" class="budget-input" type="number" min="0" step="1" placeholder="Enter period limit">
+          </div>
+          <div class="budget-field">
+            <label class="budget-label" for="budgetPeriodSelect">Period</label>
+            <select id="budgetPeriodSelect" class="budget-select">
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="quarterly">Quarterly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+          <p class="budget-hint">Set either one or both limits. Leave a field empty for no limit.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="budget-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="budget-btn primary" id="saveUserBudgetBtn">Save Budget</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade user-modal" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="editUserModalTitle">Edit Team Member</h2>
+        </div>
+        <div class="modal-body">
+          <div class="user-grid">
+            <div class="user-field full">
+              <label class="user-label" for="editUserName">Name</label>
+              <input id="editUserName" class="user-input" type="text" maxlength="80">
+            </div>
+            <div class="user-field full">
+              <label class="user-label" for="editUserEmail">Email</label>
+              <input id="editUserEmail" class="user-input" type="email" maxlength="120">
+            </div>
+            <div class="user-field">
+              <label class="user-label" for="editUserRole">Role</label>
+              <select id="editUserRole" class="user-select">
+                <option value="Admin">Admin</option>
+                <option value="Manager">Manager</option>
+                <option value="User">User</option>
+              </select>
+            </div>
+          </div>
+          <p class="user-error" id="editUserError"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="user-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="user-btn primary" id="saveUserEditBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade user-modal" id="inviteUserModal" tabindex="-1" role="dialog" aria-labelledby="inviteUserModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="inviteUserModalTitle">Invite Team Member</h2>
+        </div>
+        <div class="modal-body">
+          <div class="user-grid">
+            <div class="user-field full">
+              <label class="user-label" for="inviteUserName">Name</label>
+              <input id="inviteUserName" class="user-input" type="text" maxlength="80" placeholder="Enter full name">
+            </div>
+            <div class="user-field full">
+              <label class="user-label" for="inviteUserEmail">Email</label>
+              <input id="inviteUserEmail" class="user-input" type="email" maxlength="120" placeholder="name@company.com">
+            </div>
+            <div class="user-field">
+              <label class="user-label" for="inviteUserRole">Role</label>
+              <select id="inviteUserRole" class="user-select">
+                <option value="User">User</option>
+                <option value="Manager">Manager</option>
+                <option value="Admin">Admin</option>
+              </select>
+            </div>
+          </div>
+          <p class="user-error" id="inviteUserError"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="user-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="user-btn primary" id="sendUserInviteBtn">Send Invite</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade delete-modal" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="deleteUserModalTitle">Delete Team Member</h2>
+        </div>
+        <div class="modal-body">
+          <p class="delete-modal-copy" id="deleteUserModalCopy"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="delete-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="delete-btn danger" id="confirmDeleteUserBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      var STORAGE_KEY = "breg_user_budget_limits_v1";
+      var $search = $("#usersSearch");
+      var $empty = $("#usersEmpty");
+      var $tableBody = $("#usersTableBody");
+      var $budgetPerOrder = $("#budgetPerOrderInput");
+      var $budgetPerPeriod = $("#budgetPerPeriodInput");
+      var $budgetPeriod = $("#budgetPeriodSelect");
+      var $editName = $("#editUserName");
+      var $editEmail = $("#editUserEmail");
+      var $editRole = $("#editUserRole");
+      var $editError = $("#editUserError");
+      var $inviteName = $("#inviteUserName");
+      var $inviteEmail = $("#inviteUserEmail");
+      var $inviteRole = $("#inviteUserRole");
+      var $inviteError = $("#inviteUserError");
+      var $deleteCopy = $("#deleteUserModalCopy");
+      var currentBudgetEmail = "";
+      var $currentEditRow = null;
+      var $pendingDeleteRow = null;
+      var budgetLimits = loadBudgets();
+
+      var defaultBudgets = {
+        "john.smith@medicalclinic.com": { perOrderAmount: 2500, perPeriodAmount: 8000, period: "weekly" },
+        "sarah.j@medicalclinic.com": { perOrderAmount: 3000, perPeriodAmount: 12000, period: "monthly" },
+        "mchen@medicalclinic.com": { perOrderAmount: 600, perPeriodAmount: 1800, period: "weekly" },
+        "emily.davis@medicalclinic.com": { perOrderAmount: 600, perPeriodAmount: 2400, period: "monthly" }
+      };
+
+      function loadBudgets() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function saveBudgets() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(budgetLimits));
+        } catch (e) {}
+      }
+
+      function formatMoney(amount) {
+        var value = Number(amount || 0);
+        return "$" + value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      }
+
+      function getBudgetForEmail(email) {
+        var key = String(email || "").toLowerCase();
+        var fallback = { perOrderAmount: 0, perPeriodAmount: 0, period: "weekly" };
+        if (!key) return fallback;
+        var raw = budgetLimits[key] || defaultBudgets[key] || fallback;
+        // Backwards-compatible migration from older mode/amount shape.
+        if (raw && raw.mode && raw.amount != null) {
+          if (raw.mode === "per_period") {
+            return { perOrderAmount: 0, perPeriodAmount: Number(raw.amount || 0), period: String(raw.period || "weekly") };
+          }
+          return { perOrderAmount: Number(raw.amount || 0), perPeriodAmount: 0, period: String(raw.period || "weekly") };
+        }
+        return {
+          perOrderAmount: Number(raw.perOrderAmount || 0),
+          perPeriodAmount: Number(raw.perPeriodAmount || 0),
+          period: String(raw.period || "weekly")
+        };
+      }
+
+      function budgetSummaryHtml(budget) {
+        var perOrder = Number(budget && budget.perOrderAmount || 0);
+        var perPeriod = Number(budget && budget.perPeriodAmount || 0);
+        var period = String(budget && budget.period || "weekly");
+        var lines = [];
+        if (perOrder > 0) {
+          lines.push("<span class='budget-value'>" + formatMoney(perOrder) + " / order</span>");
+        }
+        if (perPeriod > 0) {
+          lines.push("<span class='budget-sub'>" + formatMoney(perPeriod) + " / " + period + "</span>");
+        }
+        if (!lines.length) {
+          return "<span class='budget-sub'>No limit set</span>";
+        }
+        return lines.join("");
+      }
+
+      function renderBudgetCells() {
+        $tableBody.find("tr").each(function () {
+          var $row = $(this);
+          var email = String($row.data("email") || "").toLowerCase();
+          var budget = getBudgetForEmail(email);
+          $row.find(".js-budget-cell").html(budgetSummaryHtml(budget));
+        });
+      }
+
+      function applySearchFilter() {
+        var query = $.trim($search.val().toLowerCase());
+        var visible = 0;
+        $tableBody.find("tr").each(function () {
+          var $row = $(this);
+          var haystack = String($row.data("search") || "").toLowerCase();
+          var match = !query || haystack.indexOf(query) !== -1;
+          $row.toggle(match);
+          if (match) visible++;
+        });
+        $empty.toggle(visible === 0);
+      }
+
+      function initialsFromName(name) {
+        var parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return "NA";
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+      }
+
+      function roleClass(roleText) {
+        var key = String(roleText || "").toLowerCase();
+        if (key === "admin") return "admin";
+        if (key === "manager") return "manager";
+        return "user";
+      }
+
+      function formatJoinedDate(date) {
+        return date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric"
+        });
+      }
+
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").toLowerCase());
+      }
+
+      function hasEmailCollision(email, $excludeRow) {
+        var target = String(email || "").toLowerCase();
+        var found = false;
+        $tableBody.find("tr").each(function () {
+          var $row = $(this);
+          if ($excludeRow && $excludeRow.length && $row.is($excludeRow)) return;
+          if (String($row.data("email") || "").toLowerCase() === target) {
+            found = true;
+            return false;
+          }
+        });
+        return found;
+      }
+
+      $search.on("input", applySearchFilter);
+
+      $("#inviteUserBtn").on("click", function (event) {
+        event.preventDefault();
+        $inviteName.val("");
+        $inviteEmail.val("");
+        $inviteRole.val("User");
+        $inviteError.hide().text("");
+        $("#inviteUserModal").modal("show");
+      });
+
+      $(document).on("click", ".js-budget-action", function (event) {
+        event.preventDefault();
+        var $row = $(this).closest("tr");
+        var email = String($row.data("email") || "").toLowerCase();
+        if (!email) return;
+        currentBudgetEmail = email;
+        var name = $.trim($row.find(".user-name").first().text() || "Team Member");
+        var budget = getBudgetForEmail(email);
+        $("#userBudgetModalTitle").text("Set Budget Limit - " + name);
+        $budgetPerOrder.val(Number(budget.perOrderAmount || 0) || "");
+        $budgetPerPeriod.val(Number(budget.perPeriodAmount || 0) || "");
+        $budgetPeriod.val(budget.period || "weekly");
+        $("#userBudgetModal").modal("show");
+      });
+
+      $("#saveUserBudgetBtn").on("click", function () {
+        if (!currentBudgetEmail) return;
+        var perOrderAmount = Number($budgetPerOrder.val() || 0);
+        var perPeriodAmount = Number($budgetPerPeriod.val() || 0);
+        if (!isFinite(perOrderAmount) || perOrderAmount < 0) perOrderAmount = 0;
+        if (!isFinite(perPeriodAmount) || perPeriodAmount < 0) perPeriodAmount = 0;
+        budgetLimits[currentBudgetEmail] = {
+          perOrderAmount: perOrderAmount,
+          perPeriodAmount: perPeriodAmount,
+          period: String($budgetPeriod.val() || "weekly")
+        };
+        saveBudgets();
+        renderBudgetCells();
+        $("#userBudgetModal").modal("hide");
+      });
+
+      $(document).on("click", ".js-edit-user", function (event) {
+        event.preventDefault();
+        var $row = $(this).closest("tr");
+        var name = $.trim($row.find(".user-name").first().text() || "");
+        var email = $.trim($row.children().eq(1).text() || "");
+        var role = $.trim($row.find(".role-badge").first().text() || "User");
+        $currentEditRow = $row;
+        $editName.val(name);
+        $editEmail.val(email);
+        $editRole.val(role);
+        $editError.hide().text("");
+        $("#editUserModal").modal("show");
+      });
+
+      $(document).on("click", ".js-delete-user", function (event) {
+        event.preventDefault();
+        var $row = $(this).closest("tr");
+        var name = $.trim($row.find(".user-name").first().text() || "this user");
+        $pendingDeleteRow = $row;
+        $deleteCopy.text("Are you sure you want to delete " + name + " from Team Members? This will also remove any budget limits set for this user.");
+        $("#deleteUserModal").modal("show");
+      });
+
+      $("#confirmDeleteUserBtn").on("click", function () {
+        if (!$pendingDeleteRow || !$pendingDeleteRow.length) {
+          $("#deleteUserModal").modal("hide");
+          return;
+        }
+        var $row = $pendingDeleteRow;
+        $pendingDeleteRow = null;
+        var email = String($row.data("email") || "").toLowerCase();
+        if (email && budgetLimits[email]) {
+          delete budgetLimits[email];
+          saveBudgets();
+        }
+        $row.remove();
+        applySearchFilter();
+        $("#deleteUserModal").modal("hide");
+      });
+
+      $("#deleteUserModal").on("hidden.bs.modal", function () {
+        $pendingDeleteRow = null;
+      });
+
+      $("#saveUserEditBtn").on("click", function () {
+        if (!$currentEditRow || !$currentEditRow.length) return;
+        var name = $.trim($editName.val() || "");
+        var email = $.trim(String($editEmail.val() || "").toLowerCase());
+        var role = $.trim($editRole.val() || "User");
+        if (!name || !email) {
+          $editError.text("Name and email are required.").show();
+          return;
+        }
+        if (!isValidEmail(email)) {
+          $editError.text("Enter a valid email address.").show();
+          return;
+        }
+        if (hasEmailCollision(email, $currentEditRow)) {
+          $editError.text("A team member with this email already exists.").show();
+          return;
+        }
+        var oldEmail = String($currentEditRow.data("email") || "").toLowerCase();
+        if (oldEmail && oldEmail !== email && budgetLimits[oldEmail] && !budgetLimits[email]) {
+          budgetLimits[email] = budgetLimits[oldEmail];
+          delete budgetLimits[oldEmail];
+          saveBudgets();
+        }
+        $currentEditRow.find(".user-id").first().text(initialsFromName(name));
+        $currentEditRow.find(".user-name").first().text(name);
+        $currentEditRow.children().eq(1).text(email);
+        $currentEditRow.find(".role-badge").first()
+          .removeClass("admin manager user")
+          .addClass(roleClass(role))
+          .text(role);
+        $currentEditRow.attr("data-email", email);
+        $currentEditRow.attr("data-search", (name + " " + email + " " + role).toLowerCase());
+        renderBudgetCells();
+        applySearchFilter();
+        $("#editUserModal").modal("hide");
+      });
+
+      $("#sendUserInviteBtn").on("click", function () {
+        var name = $.trim($inviteName.val() || "");
+        var email = $.trim(String($inviteEmail.val() || "").toLowerCase());
+        var role = $.trim($inviteRole.val() || "User");
+        if (!name || !email) {
+          $inviteError.text("Name and email are required.").show();
+          return;
+        }
+        if (!isValidEmail(email)) {
+          $inviteError.text("Enter a valid email address.").show();
+          return;
+        }
+        if (hasEmailCollision(email)) {
+          $inviteError.text("A team member with this email already exists.").show();
+          return;
+        }
+        var joined = formatJoinedDate(new Date());
+        var initials = initialsFromName(name);
+        var roleClassName = roleClass(role);
+        var search = (name + " " + email + " " + role).toLowerCase();
+        var rowHtml = ""
+          + "<tr data-email='" + $("<div>").text(email).html() + "' data-search='" + $("<div>").text(search).html() + "'>"
+          + "<td><span class='user-id'>" + $("<div>").text(initials).html() + "</span><span class='user-name'>" + $("<div>").text(name).html() + "</span></td>"
+          + "<td>" + $("<div>").text(email).html() + "</td>"
+          + "<td><span class='role-badge " + roleClassName + "'>" + $("<div>").text(role).html() + "</span></td>"
+          + "<td class='js-budget-cell'></td>"
+          + "<td>" + $("<div>").text(joined).html() + "</td>"
+          + "<td>"
+          + "<a class='table-action js-edit-user' href='#'><span class='glyphicon glyphicon-pencil'></span></a>"
+          + "<a class='table-action js-budget-action' href='#'><span class='glyphicon glyphicon-usd'></span></a>"
+          + "<a class='table-action delete js-delete-user' href='#'><span class='glyphicon glyphicon-trash'></span></a>"
+          + "</td>"
+          + "</tr>";
+        $tableBody.append(rowHtml);
+        renderBudgetCells();
+        applySearchFilter();
+        $("#inviteUserModal").modal("hide");
+      });
+
+      $("#inviteUserModal").on("hidden.bs.modal", function () {
+        $inviteError.hide().text("");
+      });
+
+      renderBudgetCells();
+      applySearchFilter();
+    })();
+  </script>
+</body>
+</html>

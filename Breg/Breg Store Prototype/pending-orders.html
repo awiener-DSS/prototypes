@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Pending Orders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    body { background: #EAEDED; }
+    .pending-page { margin: 12px 0 18px; }
+    .pending-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .pending-breadcrumb a { color: #007185; text-decoration: none; }
+    .pending-breadcrumb a:hover,.pending-breadcrumb a:focus { color: #005a6a; text-decoration: none; }
+    .pending-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .pending-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .pending-subtitle { margin: 4px 0 16px; font-size: 14px; color: #565959; line-height: 1.35; }
+    .pending-order-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .pending-order-head {
+      background: #f7f8f9;
+      border-bottom: 1px solid #d9dee2;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .pending-label {
+      display: block;
+      font-size: 13px;
+      color: #565959;
+      margin-bottom: 2px;
+      line-height: 1.2;
+      font-weight: 400;
+    }
+    .pending-value { display: block; font-size: 13px; color: #0f1111; line-height: 1.3; font-weight: 500; }
+    .pending-status-pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      line-height: 1.2;
+      background: #f3ebe0;
+      color: #d36211;
+    }
+    .pending-items { padding: 14px 16px 14px; }
+    .pending-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .pending-item:last-child { margin-bottom: 0; }
+    .pending-item img {
+      width: 74px;
+      height: 74px;
+      object-fit: cover;
+      border-radius: 7px;
+      background: #edf0f2;
+      border: 1px solid #d5d9d9;
+      flex: 0 0 auto;
+    }
+    .pending-item-title {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+      color: #0f1111;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .pending-item-title:hover,.pending-item-title:focus { color: #0f1111; text-decoration: none; }
+    .pending-item-meta { margin-top: 2px; font-size: 12px; color: #565959; line-height: 1.35; }
+    .pending-order-foot {
+      border-top: 1px solid #eaeded;
+      margin: 0;
+      padding: 14px 0 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pending-approver {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #565959;
+      font-size: 12px;
+    }
+    .pending-approver .glyphicon { font-size: 12px; color: #565959; top: 0; }
+    .pending-actions { display: flex; align-items: center; gap: 10px; }
+    .pending-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 6px 14px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .pending-btn:hover,
+    .pending-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
+    @media (max-width: 1199px) {
+      .pending-title { font-size: 30px; }
+      .pending-subtitle { font-size: 14px; }
+    }
+    @media (max-width: 767px) {
+      .pending-order-head { grid-template-columns: 1fr 1fr; }
+      .pending-title { font-size: 28px; }
+      .pending-subtitle { font-size: 13px; }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="pending-page">
+      <div class="pending-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Pending Orders</span></div>
+      <h1 class="pending-title">Pending Orders</h1>
+      <p class="pending-subtitle">3 orders pending approval</p>
+
+      <section class="pending-order-card">
+      <div class="pending-order-head">
+        <div><span class="pending-label">Order Number</span><span class="pending-value">PO-2024-001234</span></div>
+        <div><span class="pending-label">Order Date</span><span class="pending-value">December 8, 2024</span></div>
+        <div><span class="pending-label">Total</span><span class="pending-value">$1,249.97</span></div>
+        <div><span class="pending-label">Status</span><span class="pending-status-pill">Pending Approval</span></div>
+      </div>
+      <div class="pending-items">
+        <div class="pending-item">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
+          <div><a class="pending-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="pending-item-meta">Quantity: 2 | Price: $299.99</div></div>
+        </div>
+        <div class="pending-item">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace product">
+          <div><a class="pending-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="pending-item-meta">Quantity: 1 | Price: $449.99</div></div>
+        </div>
+        <div class="pending-order-foot">
+          <div class="pending-approver"><span class="glyphicon glyphicon-user"></span> Approver: Sarah Johnson</div>
+          <div class="pending-actions"><a class="pending-btn" href="#">View Details</a></div>
+        </div>
+      </div>
+      </section>
+
+      <section class="pending-order-card">
+      <div class="pending-order-head">
+        <div><span class="pending-label">Order Number</span><span class="pending-value">PO-2024-001198</span></div>
+        <div><span class="pending-label">Order Date</span><span class="pending-value">December 5, 2024</span></div>
+        <div><span class="pending-label">Total</span><span class="pending-value">$879.95</span></div>
+        <div><span class="pending-label">Status</span><span class="pending-status-pill">Pending Approval</span></div>
+      </div>
+      <div class="pending-items">
+        <div class="pending-item">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
+          <div><a class="pending-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a><div class="pending-item-meta">Quantity: 3 | Price: $89.99</div></div>
+        </div>
+        <div class="pending-item">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Physical Therapy Resistance Bands Set" alt="Resistance bands">
+          <div><a class="pending-item-title" href="#">Physical Therapy Resistance Bands Set</a><div class="pending-item-meta">Quantity: 5 | Price: $29.99</div></div>
+        </div>
+        <div class="pending-order-foot">
+          <div class="pending-approver"><span class="glyphicon glyphicon-user"></span> Approver: Michael Chen</div>
+          <div class="pending-actions"><a class="pending-btn" href="#">View Details</a></div>
+        </div>
+      </div>
+      </section>
+
+      <section class="pending-order-card">
+      <div class="pending-order-head">
+        <div><span class="pending-label">Order Number</span><span class="pending-value">PO-2024-001175</span></div>
+        <div><span class="pending-label">Order Date</span><span class="pending-value">December 3, 2024</span></div>
+        <div><span class="pending-label">Total</span><span class="pending-value">$1,599.96</span></div>
+        <div><span class="pending-label">Status</span><span class="pending-status-pill">Pending Approval</span></div>
+      </div>
+      <div class="pending-items">
+        <div class="pending-item">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace">
+          <div><a class="pending-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="pending-item-meta">Quantity: 3 | Price: $449.99</div></div>
+        </div>
+        <div class="pending-item">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy system">
+          <div><a class="pending-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="pending-item-meta">Quantity: 1 | Price: $299.99</div></div>
+        </div>
+        <div class="pending-order-foot">
+          <div class="pending-approver"><span class="glyphicon glyphicon-user"></span> Approver: Sarah Johnson</div>
+          <div class="pending-actions"><a class="pending-btn" href="#">View Details</a></div>
+        </div>
+      </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="analysis/catalog-data.js"></script>
+  <script src="assets/catalog-image-resolver.js"></script>
+  <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      if (window.BregCatalogImage) {
+        $(".pending-item").each(function () {
+          var $img = $(this).find("img").first();
+          var name = $img.attr("data-product-name") || $.trim($(this).find(".pending-item-title").first().text());
+          if (name) $img.attr("src", window.BregCatalogImage.byName(name));
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

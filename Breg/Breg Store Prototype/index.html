@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store Redesigned - Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <style>
+    .hero-wrap { background:#fff; padding-bottom:8px; }
+    .hero-panel { position:relative; height:380px; overflow:hidden; }
+    .hero-slide { position:absolute; inset:0; opacity:0; transition:opacity .45s ease; background-size:cover; background-position:center; }
+    .hero-slide.active { opacity:1; z-index:2; }
+    .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.2) 45%,rgba(0,0,0,.06) 100%); }
+    .hero-copy { position:absolute; z-index:3; top:50%; left:44px; transform:translateY(-50%); color:#fff; max-width:550px; }
+    .hero-copy h1 { margin:0 0 8px; font-size:46px; font-weight:700; font-family:var(--font-headline); letter-spacing:.2px; color:#fff; }
+    .hero-copy p { margin:0; font-size:22px; font-family:var(--font-body); opacity:.95; color:#fff; }
+    .hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:4; border:0; width:40px; height:40px; border-radius:999px; background:rgba(255,255,255,.9); color:#222; }
+    .hero-arrow.left { left:16px; }
+    .hero-arrow.right { right:16px; }
+    .hero-dots { position:absolute; z-index:4; left:50%; bottom:14px; transform:translateX(-50%); display:flex; gap:8px; }
+    .hero-dot { width:9px; height:9px; border-radius:999px; border:0; opacity:.65; background:#fff; }
+    .hero-dot.active { width:22px; opacity:1; }
+
+    .product-section { background:#fff; margin-top:12px; padding:16px 18px 12px; }
+    .product-section h2 { margin:0; font-size:24px; font-weight:600; font-family:var(--font-headline); color:var(--breg-darkest); }
+    .section-subtitle { color:var(--breg-darkest); opacity:.8; font-size:15px; font-family:var(--font-body); margin:4px 0 16px; }
+    .product-carousel-wrap { position:relative; margin-top:14px; padding:0 36px; }
+    .carousel-btn {
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:3;
+      width:30px;
+      height:30px;
+      border:1px solid var(--breg-primary);
+      border-radius:999px;
+      background:#fff;
+      color:var(--breg-primary);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 2px 8px rgba(0,71,187,.15);
+    }
+    .carousel-btn.left { left:0; }
+    .carousel-btn.right { right:0; }
+    .carousel-btn[disabled] { opacity:.35; cursor:not-allowed; }
+    .product-grid.product-carousel {
+      display:flex;
+      gap:12px;
+      overflow-x:auto;
+      scroll-snap-type:x mandatory;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+      padding-bottom:2px;
+    }
+    .product-grid.product-carousel::-webkit-scrollbar { display:none; }
+    .p-card { background:#fff; border:1px solid #d4dde5; border-radius:14px; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; display:flex; flex-direction:column; min-height:0; position:relative; font-family:var(--font-body); }
+    .product-grid.product-carousel .p-card { flex:0 0 calc((100% - 60px) / 6); scroll-snap-align:start; }
+    .p-card-link { display:flex; flex-direction:column; color:inherit; text-decoration:none; height:100%; }
+    .p-card-link:hover, .p-card-link:focus { color:inherit; text-decoration:none; }
+    .p-card:hover { transform:translateY(-2px); border-color:var(--breg-primary-light); box-shadow:0 8px 20px rgba(0,71,187,.15); }
+    .p-thumb { width:100%; aspect-ratio:1/1; object-fit:cover; background:#eef2f5; display:block; }
+    .p-body { padding:12px; display:flex; flex-direction:column; gap:8px; flex:1; }
+    .p-title { margin:0; font-size:14px; font-weight:600; font-family:var(--font-body); line-height:1.4; color:var(--breg-darkest); }
+
+    .promo-strip { margin-top:12px; background:linear-gradient(to right,var(--breg-primary-dark),var(--breg-primary)); color:#fff; padding:30px 0; font-family:var(--font-body); }
+    .promo-strip h3 { margin-top:0; font-size:34px; font-family:var(--font-headline); font-weight:700; }
+    .promo-strip p { color:rgba(255,255,255,.9); font-size:20px; margin-bottom:18px; }
+    .promo-strip img { width:250px; height:250px; object-fit:cover; border-radius:8px; box-shadow:0 8px 16px rgba(0,0,0,.25); }
+
+    @media (max-width:1199px){ .product-grid.product-carousel .p-card{flex-basis:calc((100% - 36px) / 4);} }
+    @media (max-width:991px){ .product-grid.product-carousel .p-card{flex-basis:calc((100% - 24px) / 3);} .hero-panel{height:330px;} .hero-copy h1{font-size:34px;} .hero-copy p{font-size:18px;} }
+    @media (max-width:767px){ .hero-panel{height:260px;} .hero-copy{left:18px; right:18px; max-width:none;} .hero-copy h1{font-size:28px;} .hero-copy p{font-size:16px;} .product-carousel-wrap{padding:0 30px;} .product-grid.product-carousel .p-card{flex-basis:calc((100% - 12px) / 2);} .promo-strip h3{font-size:28px;} .promo-strip p{font-size:16px;} .promo-strip img{width:180px;height:180px;margin-top:12px;} }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <section class="hero-wrap">
+      <div class="hero-panel" id="heroPanel">
+        <div class="hero-slide active" data-title="Keep Moving Forward" data-subtitle="Premium Medical Bracing Solutions" style="background-image:url('https://create-matter-17437700.figma.site/_assets/v11/d48d2f84cb49eabc90d3638a22a50b2aaa4d36e1.png');"></div>
+        <div class="hero-slide" data-title="Advanced Support Technology" data-subtitle="Trusted by Healthcare Professionals Worldwide" style="background-image:url('https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+        <div class="hero-slide" data-title="Recovery Made Simple" data-subtitle="Comprehensive Rehabilitation Solutions" style="background-image:url('https://images.unsplash.com/photo-1545463913-5083aa7359a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+        <div class="hero-slide" data-title="Return to Performance" data-subtitle="Athletic Recovery and Support" style="background-image:url('https://images.unsplash.com/photo-1754941622117-97957c5d669b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-copy"><h1 id="heroTitle">Keep Moving Forward</h1><p id="heroSubtitle">Premium Medical Bracing Solutions</p></div>
+        <button class="hero-arrow left" id="heroPrev"><span class="glyphicon glyphicon-chevron-left"></span></button>
+        <button class="hero-arrow right" id="heroNext"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        <div class="hero-dots" id="heroDots"></div>
+      </div>
+    </section>
+
+    <section class="product-section">
+      <h2>Recommended for you</h2>
+      <p class="section-subtitle">Frequently bought together based on your order history</p>
+      <div class="product-carousel-wrap" data-carousel="recommendedGrid">
+        <button type="button" class="carousel-btn left" data-target="recommendedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+        <div class="product-grid product-carousel" id="recommendedGrid"></div>
+        <button type="button" class="carousel-btn right" data-target="recommendedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+      </div>
+    </section>
+
+    <section class="promo-strip"><div class="container-fluid site-max"><div class="row"><div class="col-sm-8"><h3>Keep recovering with confidence</h3><p>Based on your recent views, we think you'll love our complete cold therapy systems</p><button class="btn btn-default btn-lg">Shop Cold Therapy</button></div><div class="col-sm-4 text-center"><img src="https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral" alt="Cold Therapy Products"></div></div></div></section>
+
+    <section class="product-section">
+      <h2>Your Previous Orders</h2>
+      <div class="product-carousel-wrap" data-carousel="previousOrdersGrid">
+        <button type="button" class="carousel-btn left" data-target="previousOrdersGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+        <div class="product-grid product-carousel" id="previousOrdersGrid"></div>
+        <button type="button" class="carousel-btn right" data-target="previousOrdersGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+      </div>
+    </section>
+    <section class="product-section">
+      <h2>Top Products</h2>
+      <div class="product-carousel-wrap" data-carousel="topRatedGrid">
+        <button type="button" class="carousel-btn left" data-target="topRatedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+        <div class="product-grid product-carousel" id="topRatedGrid"></div>
+        <button type="button" class="carousel-btn right" data-target="topRatedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script>
+    (function () {
+      var heroIndex = 0;
+      var $slides = $("#heroPanel .hero-slide");
+      var $title = $("#heroTitle");
+      var $subtitle = $("#heroSubtitle");
+      var $dots = $("#heroDots");
+      var heroTimer;
+
+      function setHero(index) {
+        heroIndex = (index + $slides.length) % $slides.length;
+        $slides.removeClass("active").eq(heroIndex).addClass("active");
+        var $active = $slides.eq(heroIndex);
+        $title.text($active.data("title"));
+        $subtitle.text($active.data("subtitle"));
+        $dots.find(".hero-dot").removeClass("active").eq(heroIndex).addClass("active");
+      }
+
+      function startHero() {
+        clearInterval(heroTimer);
+        heroTimer = setInterval(function () { setHero(heroIndex + 1); }, 5000);
+      }
+
+      for (var i = 0; i < $slides.length; i += 1) {
+        var $dot = $("<button type='button' class='hero-dot' aria-label='Go to slide'></button>");
+        (function (idx) { $dot.on("click", function () { setHero(idx); startHero(); }); })(i);
+        $dots.append($dot);
+      }
+
+      $("#heroPrev").on("click", function () { setHero(heroIndex - 1); startHero(); });
+      $("#heroNext").on("click", function () { setHero(heroIndex + 1); startHero(); });
+      setHero(0);
+      startHero();
+
+      var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
+      var catalog = window.BREG_CATALOG_ITEMS || [];
+      var sectionOrder = ["recommendedGrid", "previousOrdersGrid", "topRatedGrid"];
+      var sectionCounts = { recommendedGrid: 18, previousOrdersGrid: 18, topRatedGrid: 18 };
+
+      function validCatalogProduct(p) {
+        return p &&
+          p.id &&
+          p.name &&
+          p.image &&
+          p.category &&
+          p.category !== "Uncategorized" &&
+          p.subcategory !== "Uncategorized" &&
+          (p.type === "product" || p.type === "variation-master");
+      }
+
+      function parseJsonSafe(key) {
+        try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
+      }
+
+      function buildSectionsFromCatalog() {
+        var validProducts = catalog.filter(validCatalogProduct);
+        var byId = {};
+        var byCategory = {};
+        validProducts.forEach(function (item) {
+          byId[String(item.id || "")] = item;
+          byCategory[item.category] = byCategory[item.category] || [];
+          byCategory[item.category].push(item);
+        });
+        Object.keys(byCategory).forEach(function (category) {
+          byCategory[category].sort(function (a, b) {
+            return String(a.name || "").localeCompare(String(b.name || ""));
+          });
+        });
+
+        var lastOrder = parseJsonSafe("breg_last_order_v1");
+        var orderLines = (lastOrder && Array.isArray(lastOrder.lines)) ? lastOrder.lines.slice() : [];
+        var orderedCatalogProducts = [];
+        var orderedIds = {};
+        orderLines.forEach(function (line) {
+          var sku = String(line && line.sku ? line.sku : "");
+          if (!sku) return;
+          var matched = byId[sku];
+          if (!matched) return;
+          if (orderedIds[matched.id]) return;
+          orderedIds[matched.id] = true;
+          orderedCatalogProducts.push(matched);
+        });
+
+        function fillWithCatalog(target, count, disallowSet) {
+          validProducts.forEach(function (item) {
+            if (target.length >= count) return;
+            if (disallowSet[item.id]) return;
+            disallowSet[item.id] = true;
+            target.push(item);
+          });
+        }
+
+        function buildRecommended(count) {
+          var picks = [];
+          var used = {};
+          var categoryCursor = {};
+          orderedCatalogProducts.forEach(function (product) {
+            var cat = product.category;
+            if (!cat || !byCategory[cat] || !byCategory[cat].length) return;
+            categoryCursor[cat] = categoryCursor[cat] || 0;
+            var pool = byCategory[cat];
+            for (var i = 0; i < pool.length && picks.length < count; i += 1) {
+              var candidate = pool[(categoryCursor[cat] + i) % pool.length];
+              if (!candidate || orderedIds[candidate.id] || used[candidate.id]) continue;
+              used[candidate.id] = true;
+              picks.push(candidate);
+            }
+            categoryCursor[cat] += 1;
+          });
+          if (picks.length < count) {
+            fillWithCatalog(picks, count, used);
+          }
+          return picks.slice(0, count);
+        }
+
+        function buildPreviousOrders(count) {
+          var picks = [];
+          var used = {};
+          orderedCatalogProducts.forEach(function (product) {
+            if (picks.length >= count) return;
+            if (!product || used[product.id]) return;
+            used[product.id] = true;
+            picks.push(product);
+          });
+          if (picks.length < count) {
+            fillWithCatalog(picks, count, used);
+          }
+          return picks.slice(0, count);
+        }
+
+        function buildTopProducts(count, disallowIds) {
+          var picks = [];
+          var used = {};
+          validProducts.forEach(function (item) {
+            if (picks.length >= count) return;
+            if (disallowIds[item.id] || used[item.id]) return;
+            used[item.id] = true;
+            picks.push(item);
+          });
+          if (picks.length < count) {
+            fillWithCatalog(picks, count, used);
+          }
+          return picks.slice(0, count);
+        }
+
+        var sections = {};
+        sections.recommendedGrid = buildRecommended(sectionCounts.recommendedGrid || 6);
+        sections.previousOrdersGrid = buildPreviousOrders(sectionCounts.previousOrdersGrid || 6);
+        var disallowForTop = {};
+        sections.recommendedGrid.forEach(function (p) { disallowForTop[p.id] = true; });
+        sections.previousOrdersGrid.forEach(function (p) { disallowForTop[p.id] = true; });
+        sections.topRatedGrid = buildTopProducts(sectionCounts.topRatedGrid || 6, disallowForTop);
+        return sections;
+      }
+
+      function renderGrid(id, products) {
+        var $grid = $("#" + id);
+        $grid.empty();
+        products.forEach(function (p) {
+          var name = (p.name || "").replace(/'/g, "&#39;");
+          var category = encodeURIComponent(p.category || "Knee Bracing");
+          var productHref = "product-detail.html?category=" + category + "&id=" + encodeURIComponent(p.id);
+          var image = p.image || missingProductImage;
+          $grid.append(
+            "<article class='p-card'>" +
+              "<a class='p-card-link' href='" + productHref + "'>" +
+                "<img class='p-thumb' src='" + image + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + name + "'>" +
+                "<div class='p-body'>" +
+                  "<h3 class='p-title'>" + p.name + "</h3>" +
+                "</div>" +
+              "</a>" +
+            "</article>"
+          );
+        });
+      }
+
+      function updateCarouselButtons(targetId) {
+        var $track = $("#" + targetId);
+        if (!$track.length) return;
+        var node = $track.get(0);
+        var hasOverflow = node.scrollWidth > (node.clientWidth + 2);
+        $(".carousel-btn[data-target='" + targetId + "']").prop("disabled", !hasOverflow);
+      }
+
+      function initCarousels() {
+        $(".carousel-btn").off("click.homeCarousel").on("click.homeCarousel", function () {
+          var targetId = $(this).attr("data-target");
+          var dir = Number($(this).attr("data-dir") || 1);
+          var $track = $("#" + targetId);
+          if (!$track.length) return;
+          var node = $track.get(0);
+          var maxScroll = Math.max(0, node.scrollWidth - node.clientWidth);
+          if (maxScroll <= 2) return;
+          var atStart = node.scrollLeft <= 2;
+          var atEnd = (node.scrollLeft + node.clientWidth) >= (node.scrollWidth - 2);
+          if (dir > 0 && atEnd) {
+            node.scrollTo({ left: 0, behavior: "smooth" });
+            return;
+          }
+          if (dir < 0 && atStart) {
+            node.scrollTo({ left: maxScroll, behavior: "smooth" });
+            return;
+          }
+          var firstCard = node.querySelector(".p-card");
+          var cardStep = 0;
+          if (firstCard) {
+            var cardRect = firstCard.getBoundingClientRect();
+            var trackRect = node.getBoundingClientRect();
+            var cardWidth = cardRect.width;
+            var gap = 0;
+            if (node.children.length > 1) {
+              var secondCard = node.children[1];
+              if (secondCard) {
+                var secondRect = secondCard.getBoundingClientRect();
+                gap = Math.max(0, secondRect.left - cardRect.right);
+              }
+            }
+            cardStep = Math.max(1, Math.round(cardWidth + gap));
+          }
+          var amount = cardStep > 0 ? (cardStep * 6) : Math.max(240, Math.floor(node.clientWidth * 0.9));
+          node.scrollBy({ left: dir * amount, behavior: "smooth" });
+        });
+        $(".product-grid.product-carousel").each(function () {
+          var targetId = this.id;
+          if (!targetId) return;
+          var $track = $(this);
+          $track.off("scroll.homeCarousel").on("scroll.homeCarousel", function () {
+            updateCarouselButtons(targetId);
+          });
+          updateCarouselButtons(targetId);
+        });
+      }
+
+      var sections = buildSectionsFromCatalog();
+      sectionOrder.forEach(function (key) { renderGrid(key, sections[key] || []); });
+      initCarousels();
+      $(window).on("resize", function () {
+        sectionOrder.forEach(function (key) { updateCarouselButtons(key); });
+      });
+    })();
+  </script>
+</body>
+</html>

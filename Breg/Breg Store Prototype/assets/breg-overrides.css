@@ -1,0 +1,101 @@
+/**
+ * Breg Brand - Final overrides for inline styles
+ * Load this LAST to override page-specific inline styles
+ */
+body, p, span, div, label, input, select, textarea, button, td, th, li {
+  font-family: var(--font-body) !important;
+}
+.glyphicon, [class*="glyphicon"] { font-family: "Glyphicons Halflings" !important; }
+h1, h2, h3, .h1, .h2, .h3, .pl-title, .pdp-title {
+  font-family: var(--font-headline) !important;
+  color: var(--breg-darkest) !important;
+}
+/* Global link colors are defined in breg-brand.css.
+ * Avoid restyling <a> here so button-like anchors can control their own hover text color.
+ */
+body, .pl-subtitle, .pl-count, .pl-filter-title,
+[class*="subtitle"]:not(.top-header *):not(.all-drawer *),
+[class*="meta"]:not(.top-header *):not(.all-drawer *),
+[class*="muted"]:not(.action-muted):not(.top-header *) {
+  color: var(--breg-darkest) !important;
+}
+/* Header: ensure white text on dark background - overrides [class*="muted"] */
+.top-header .header-actions .action-muted,
+.top-header .header-actions .action-strong,
+.top-header .header-actions .action-box,
+.top-header .header-actions .cart-label,
+.top-header .header-actions a.action-box,
+.top-header .header-actions .lang-box,
+.top-header .header-actions .lang-box *,
+.top-header .header-actions .cart-box {
+  color: #fff !important;
+}
+.top-header .header-actions .action-muted { color: rgba(255,255,255,0.95) !important; }
+/* Dropdowns in header have white bg - keep dark text for readability */
+.country-dropdown .country-option,
+.country-dropdown .country-minor,
+.country-dropdown .country-title,
+.country-dropdown .country-note,
+.account-dropdown .account-link,
+.account-dropdown .account-logged,
+.account-dropdown .account-email,
+.account-dropdown .account-col-title,
+.account-dropdown .account-signout {
+  color: var(--breg-darkest) !important;
+}
+.account-dropdown .account-email,
+.country-dropdown .country-note { opacity: 0.85; }
+/* Drawer head: white text on dark */
+.all-drawer-head,
+.all-drawer-head * {
+  color: #fff !important;
+}
+/* Footer: light text on dark */
+.site-footer,
+.site-footer .site-footer-list a,
+.site-footer-copy {
+  color: #f3f3f3 !important;
+}
+.site-footer-title { color: var(--breg-accent-light, #9adbe8) !important; }
+body { background: var(--breg-gray) !important; }
+.btn-primary, .btn-login, .cart-checkout-btn, .checkout-place-order,
+.bulk-btn-add, .quick-order-submit, .confirm-btn.primary {
+  background: var(--breg-primary) !important;
+  border-color: var(--breg-primary) !important;
+  color: #fff !important;
+}
+.bulk-btn-primary {
+  background: var(--breg-primary) !important;
+  border-color: var(--breg-primary) !important;
+  color: #fff !important;
+}
+.bulk-btn-primary:hover,
+.bulk-btn-primary:focus {
+  background: var(--breg-primary-dark) !important;
+  border-color: var(--breg-primary-dark) !important;
+  color: #fff !important;
+}
+.btn-primary:hover, .cart-checkout-btn:hover, .checkout-place-order:hover {
+  background: var(--breg-primary-dark) !important;
+  border-color: var(--breg-primary-dark) !important;
+}
+input:focus, .form-control:focus, select:focus, textarea:focus {
+  border-color: var(--breg-primary) !important;
+  box-shadow: 0 0 0 2px rgba(0, 71, 187, 0.15) !important;
+}
+.pdp-tab.active, .pl-view-toggle button.active {
+  color: var(--breg-primary) !important;
+  border-color: var(--breg-primary) !important;
+}
+.pdp-tab.active { border-bottom-color: var(--breg-primary) !important; }
+.pdp-feature-grid div::before { color: var(--breg-primary) !important; }
+.border-primary, [style*="border-color: #007185"], [style*="border-color:#007185"] {
+  border-color: var(--breg-primary) !important;
+}
+.cart-added-item-price { color: var(--breg-primary) !important; }
+.bulk-btn-add, .quick-order-submit {
+  background: var(--breg-primary) !important;
+  border-color: var(--breg-primary) !important;
+  color: #fff !important;
+}
+.modal-header { background: #f6f8fa !important; }

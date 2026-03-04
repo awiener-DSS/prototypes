@@ -1222,13 +1222,14 @@
 
   function updateAccountStateUI() {
     var firstName = localStorage.getItem("bregFirstName") || "Medical";
-    var drawerTitle = isSignedIn ? ("Hello, " + firstName) : "Hello, sign in";
+    var displayName = localStorage.getItem("bregAccountName") || "Medical Clinic Inc.";
+    var email = localStorage.getItem("bregUserEmail") || "test@breg.com";
+    var nameLine = (firstName && displayName) ? (firstName + " \u2013 " + displayName) : (firstName || displayName || "");
+    var drawerTitle = isSignedIn ? ("Hello, " + nameLine) : "Hello, sign in";
     $("#allDrawerTitle").text(drawerTitle);
     $("#allDrawerTitle").toggleClass("is-link", !isSignedIn);
     if (isSignedIn) {
-      var displayName = localStorage.getItem("bregAccountName") || "Medical Clinic Inc.";
-      var email = localStorage.getItem("bregUserEmail") || "test@breg.com";
-      $accountGreeting.text("Hello " + firstName);
+      $accountGreeting.text("Hello " + nameLine);
       $accountName.text(displayName);
       $accountEmail.text(email);
       $("#accountSignoutLink").text("Sign out");

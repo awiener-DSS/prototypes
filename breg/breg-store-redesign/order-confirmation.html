@@ -6,7 +6,7 @@
   <title>Breg Store - Order Confirmation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -103,14 +103,15 @@
       text-decoration: none;
     }
     .confirm-btn.primary {
-      border-color: #fcd200;
-      background: #ffd814;
-      color: #0a0a0a;
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
     }
     @media (max-width: 900px) {
       .confirm-options-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">
@@ -306,8 +307,8 @@
           "<td>" + escapeHtml(line.name || line.sku || "Product") + "</td>" +
           "<td>" + escapeHtml(line.sku || "") + "</td>" +
           "<td>" + Number(line.qty || 0) + "</td>" +
-          "<td>$" + Number(line.price || 0).toFixed(2) + "</td>" +
-          "<td>$" + Number(line.lineTotal || 0).toFixed(2) + "</td>" +
+          "<td>$" + BregFormatMoney(Number(line.price || 0)) + "</td>" +
+          "<td>$" + BregFormatMoney(Number(line.lineTotal || 0)) + "</td>" +
         "</tr>";
       });
       $("#confirmTable").html(
@@ -316,7 +317,7 @@
           "<tbody>" + rows + "</tbody>" +
         "</table>"
       );
-      $("#confirmTotal").text("Order Total: $" + Number(order.total || 0).toFixed(2));
+      $("#confirmTotal").text("Order Total: $" + BregFormatMoney(Number(order.total || 0)));
       $(".cart-count").text("0");
     })();
   </script>

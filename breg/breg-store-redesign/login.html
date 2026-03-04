@@ -6,7 +6,7 @@
   <title>Breg Store - Sign In</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -119,9 +119,9 @@
     .signin-primary {
       width: 100%;
       border-radius: 22px;
-      border: 1px solid #fcd200;
-      background: #ffd814;
-      color: #0f1111;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
       height: 36px;
       font-size: 14px;
       font-weight: 400;
@@ -130,9 +130,9 @@
     }
     .signin-primary:hover,
     .signin-primary:focus {
-      background: #f7ca00;
-      border-color: #f2c100;
-      color: #0f1111;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .agreement-copy {
       margin-top: 12px;
@@ -193,9 +193,9 @@
       background: #e5e7eb;
     }
     .choice-btn.active {
-      border-color: #fcd200;
+      border-color: var(--breg-primary, #0047bb);
       box-shadow: 0 3px 8px rgba(15, 17, 17, 0.08);
-      background: #ffd814;
+      background: rgba(0, 71, 187, 0.08);
     }
     .benefits-box {
       margin-top: 12px;
@@ -300,6 +300,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">

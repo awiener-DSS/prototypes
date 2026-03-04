@@ -6,7 +6,7 @@
   <title>Breg Store - My Favorites</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -55,20 +55,21 @@
       font-size: 14px;
     }
     .btn-create-list {
-      border: 1px solid #fcd200;
-      background: #ffd814;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
       border-radius: 18px;
       padding: 7px 15px;
       font-size: 13px;
-      color: #0f1111;
+      color: #fff;
       font-weight: 600;
       text-decoration: none;
       white-space: nowrap;
     }
     .btn-create-list:hover {
-      background: #f7ca00;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
       text-decoration: none;
-      color: #0f1111;
+      color: #fff;
     }
     .lists-layout {
       display: grid;
@@ -205,7 +206,7 @@
       border-radius: 16px;
       background: #fff;
       color: #0f1111;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       padding: 5px 11px;
       text-decoration: none;
@@ -223,12 +224,18 @@
       pointer-events: none;
     }
     .preview-btn-primary {
-      border-color: #fcd200;
-      background: #ffd814;
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
       font-weight: 600;
+      border-radius: 18px;
+      font-size: 13px;
+      padding: 7px 15px;
     }
     .preview-btn-primary:hover {
-      background: #f7ca00;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .preview-items {
       display: grid;
@@ -312,17 +319,19 @@
       outline: none;
     }
     .preview-item-add {
-      border: 1px solid #fcd200;
-      background: #ffd814;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
       border-radius: 14px;
-      color: #0f1111;
+      color: #fff;
       font-size: 11px;
       font-weight: 600;
       padding: 3px 9px;
       margin-top: 7px;
     }
     .preview-item-add:hover {
-      background: #f7ca00;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .preview-empty {
       color: #565959;
@@ -397,16 +406,17 @@
     }
     .create-list-modal .btn-create-submit {
       border-radius: 16px;
-      border: 1px solid #fcd200;
-      background: #ffd814;
-      color: #0f1111;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
       font-size: 12px;
       font-weight: 600;
       padding: 6px 14px;
     }
     .create-list-modal .btn-create-submit:hover {
-      background: #f7ca00;
-      color: #0f1111;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .create-list-modal .btn-create-submit:disabled {
       background: #e9ecef;
@@ -477,16 +487,17 @@
     }
     .manage-list-modal .btn-manage-save {
       border-radius: 16px;
-      border: 1px solid #fcd200;
-      background: #ffd814;
-      color: #0f1111;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
       font-size: 12px;
       font-weight: 600;
       padding: 6px 14px;
     }
     .manage-list-modal .btn-manage-save:hover {
-      background: #f7ca00;
-      color: #0f1111;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .manage-list-modal .btn-manage-save:disabled {
       background: #e9ecef;
@@ -526,6 +537,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">
@@ -669,6 +681,8 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="analysis/catalog-data.js"></script>
+  <script src="assets/catalog-image-resolver.js"></script>
   <script src="assets/shell.js"></script>
   <script>
     (function () {
@@ -834,12 +848,14 @@
       function toCartLine(item, qtyOverride) {
         var cartApi = getCartApi();
         var qty = Math.max(1, parseInt(qtyOverride != null ? qtyOverride : item.qty, 10) || 1);
+        var resolver = window.BregCatalogImage;
+        var img = (resolver && (resolver.byId(item.id) || resolver.byName(item.name))) || item.image || (resolver ? resolver.missing : "");
         return {
           sku: String(item.id || "").trim(),
           qty: qty,
           name: item.name || item.id || "Product",
           price: (cartApi.parsePrice ? cartApi.parsePrice(item.price) : item.price),
-          image: item.image || "",
+          image: img,
           category: "My Favorites",
           variant: item.id || "",
           size: "Universal"
@@ -975,11 +991,13 @@
           manageListBtnEl.setAttribute("aria-disabled", "true");
           manageListBtnEl.setAttribute("title", "Only the list creator can manage this list");
         }
+        var resolver = window.BregCatalogImage || null;
         previewItemsEl.innerHTML = (list.items || []).map(function (item) {
           var qty = Math.max(1, parseInt(item.qty, 10) || 1);
+          var imgSrc = (resolver && (resolver.byId(item.id) || resolver.byName(item.name))) || item.image || "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
           return (
             "<div class='preview-item' data-item-id='" + item.id + "'>" +
-              "<img src='" + item.image + "' alt=''>" +
+              "<img src='" + imgSrc.replace(/'/g, "&#39;") + "' alt=''>" +
               "<div>" +
                 "<p class='preview-item-name'>" + item.name + "</p>" +
                 "<div class='preview-item-id'>Item #: " + item.id + "</div>" +

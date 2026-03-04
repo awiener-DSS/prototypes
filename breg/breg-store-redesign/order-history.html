@@ -6,7 +6,7 @@
   <title>Breg Store - Order History</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -214,25 +214,33 @@
     }
     .history-btn {
       display: inline-block;
-      border: 1px solid #d5d9d9;
+      border: 1px solid var(--breg-primary, #0047bb);
       border-radius: 8px;
       background: #fff;
-      color: #0f1111;
+      color: var(--breg-primary, #0047bb);
       font-size: 12px;
       line-height: 1.25;
       padding: 6px 12px;
       text-decoration: none;
       font-weight: 500;
     }
-    .history-btn:hover,.history-btn:focus { color: #0f1111; background: #f7f8f8; text-decoration: none; }
-    .history-btn.primary {
-      border-color: #fcd200;
-      background: #ffd814;
+    .history-btn:hover,
+    .history-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
     }
-    .history-btn.primary:hover,.history-btn.primary:focus {
-      border-color: #f2c200;
-      background: #f7ca00;
-      color: #0f1111;
+    .history-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .history-btn.primary:hover,
+    .history-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     @media (max-width: 1199px) {
       .history-title { font-size: 30px; }
@@ -245,6 +253,7 @@
       .history-order-head { grid-template-columns: 1fr 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <div class="page-loading-screen" id="pageLoadingScreen" aria-live="polite" aria-label="Loading order history">
@@ -345,14 +354,14 @@
         <div class="history-items">
           <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on December 9, 2024  ·  Tracking: UPS1234567890</div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" alt="Cold therapy product">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
             <div>
               <a class="history-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a>
               <div class="history-item-meta">Quantity: 2 | Price: $299.99</div>
             </div>
           </div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" alt="Knee brace product">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Knee brace product" data-product-name="T Scope Premier Post-Op Knee Brace">
             <div>
               <a class="history-item-title" href="#">T Scope Premier Post-Op Knee Brace</a>
               <div class="history-item-meta">Quantity: 1 | Price: $449.99</div>
@@ -377,7 +386,7 @@
         <div class="history-items">
           <div class="shipment-banner in-transit"><span class="glyphicon glyphicon-send"></span>Tracking: UPS9876543210<br>Estimated delivery: December 12, 2024</div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" alt="Shoulder immobilizer">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
             <div>
               <a class="history-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a>
               <div class="history-item-meta">Quantity: 3 | Price: $89.99</div>
@@ -385,7 +394,7 @@
             </div>
           </div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1714929818299-914d3114bcec.jpg" alt="Resistance bands">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Resistance bands" data-product-name="Physical Therapy Resistance Bands Set">
             <div>
               <a class="history-item-title" href="#">Physical Therapy Resistance Bands Set</a>
               <div class="history-item-meta">Quantity: 5 | Price: $29.99</div>
@@ -410,7 +419,7 @@
         <div class="history-items">
           <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on December 1, 2024  ·  Tracking: UPS5555666677</div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" alt="Cold therapy product">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
             <div>
               <a class="history-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a>
               <div class="history-item-meta">Quantity: 2 | Price: $299.99</div>
@@ -434,7 +443,7 @@
         <div class="history-items">
           <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on November 24, 2024  ·  Tracking: UPS4444333322</div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" alt="Knee brace product">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Knee brace product" data-product-name="T Scope Premier Post-Op Knee Brace">
             <div>
               <a class="history-item-title" href="#">T Scope Premier Post-Op Knee Brace</a>
               <div class="history-item-meta">Quantity: 4 | Price: $449.99</div>
@@ -442,7 +451,7 @@
             </div>
           </div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" alt="Shoulder immobilizer">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
             <div>
               <a class="history-item-title" href="#">Shoulder Immobilizer Sling</a>
               <div class="history-item-meta">Quantity: 1 | Price: $99.99</div>
@@ -467,7 +476,7 @@
         <div class="history-items">
           <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on November 18, 2024</div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1714929818299-914d3114bcec.jpg" alt="Resistance bands">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Resistance bands" data-product-name="Physical Therapy Resistance Bands Set">
             <div>
               <a class="history-item-title" href="#">Physical Therapy Resistance Bands Set</a>
               <div class="history-item-meta">Quantity: 10 | Price: $29.99</div>
@@ -475,7 +484,7 @@
             </div>
           </div>
           <div class="history-item">
-            <img src="assets/searchbar/photo-1533560777802-046814bc297c.jpg" alt="Lumbar support">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Lumbar support" data-product-name="Lumbar Support Back Brace">
             <div>
               <a class="history-item-title" href="#">Lumbar Support Belt</a>
               <div class="history-item-meta">Quantity: 2 | Price: $79.99</div>
@@ -494,6 +503,8 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="analysis/catalog-data.js"></script>
+  <script src="assets/catalog-image-resolver.js"></script>
   <script src="assets/shell.js"></script>
   <script>
     (function () {
@@ -509,6 +520,16 @@
           if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
         }, 320);
       }, delay);
+    })();
+
+    (function () {
+      if (window.BregCatalogImage) {
+        $(".history-item").each(function () {
+          var $img = $(this).find("img").first();
+          var name = $img.attr("data-product-name") || $.trim($(this).find(".history-item-title").first().text());
+          if (name) $img.attr("src", window.BregCatalogImage.byName(name));
+        });
+      }
     })();
 
     (function () {

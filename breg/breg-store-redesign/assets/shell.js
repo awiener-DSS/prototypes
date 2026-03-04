@@ -55,6 +55,21 @@
     return isFinite(parsed) ? parsed : 0;
   }
 
+  function formatMoney(value) {
+    var n = typeof value === "number" ? value : Number(value || 0);
+    if (!isFinite(n)) n = 0;
+    try {
+      return n.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    } catch (e) {
+      return n.toFixed(2);
+    }
+  }
+
+  window.BregFormatMoney = formatMoney;
+
   function normalizeCartLine(line) {
     var sku = String(line && line.sku ? line.sku : "").trim();
     if (!sku) return null;
@@ -124,32 +139,32 @@
           ".bulk-modal.open{display:flex;}" +
           ".bulk-dialog{width:min(980px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:12px;border:1px solid #dbe3ea;box-shadow:0 18px 50px rgba(15,23,42,.28);}" +
           ".bulk-head{padding:12px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:10px;}" +
-          ".bulk-head h3{margin:0;font-size:22px;line-height:1.2;color:#0f172a;}" +
-          ".bulk-close{border:0;background:transparent;font-size:28px;line-height:1;color:#475569;padding:0 4px;}" +
+          ".bulk-head h3{margin:0;font-size:22px;line-height:1.2;color:var(--breg-darkest,#071d49);font-family:var(--font-headline);}" +
+          ".bulk-close{border:0;background:transparent;font-size:28px;line-height:1;color:var(--breg-darkest,#071d49);opacity:.8;padding:0 4px;}" +
           ".cart-added-body{padding:14px 16px 16px;}" +
-          ".cart-added-note{margin:0 0 10px;font-size:14px;color:#0f172a;}" +
-          ".cart-added-sub{margin:0 0 12px;font-size:13px;color:#475569;}" +
+          ".cart-added-note{margin:0 0 10px;font-size:14px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
+          ".cart-added-sub{margin:0 0 12px;font-size:13px;color:var(--breg-darkest,#071d49);opacity:.85;font-family:var(--font-body);}" +
           ".cart-added-picked{margin:0 0 12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;padding:10px;}" +
-          ".cart-added-picked h4{margin:0 0 8px;font-size:14px;color:#0f172a;}" +
+          ".cart-added-picked h4{margin:0 0 8px;font-size:14px;color:var(--breg-darkest,#071d49);font-family:var(--font-headline);}" +
           ".cart-added-picked-list{margin:0;padding:0;list-style:none;display:grid;gap:6px;}" +
           ".cart-added-picked-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:baseline;border-bottom:1px solid #eef2f7;padding-bottom:6px;}" +
           ".cart-added-picked-row:last-child{border-bottom:0;padding-bottom:0;}" +
-          ".cart-added-picked-name{font-size:12px;color:#0f172a;line-height:1.35;}" +
-          ".cart-added-picked-sku,.cart-added-picked-qty{font-size:12px;color:#475569;white-space:nowrap;}" +
+          ".cart-added-picked-name{font-size:12px;color:var(--breg-darkest,#071d49);line-height:1.35;font-family:var(--font-body);}" +
+          ".cart-added-picked-sku,.cart-added-picked-qty{font-size:12px;color:var(--breg-darkest,#071d49);opacity:.8;white-space:nowrap;font-family:var(--font-body);}" +
           ".cart-added-related{border:1px solid #e5e7eb;border-radius:10px;background:#f8fafc;padding:10px;}" +
-          ".cart-added-related h4{margin:0 0 8px;font-size:14px;color:#0f172a;}" +
+          ".cart-added-related h4{margin:0 0 8px;font-size:14px;color:var(--breg-darkest,#071d49);font-family:var(--font-headline);}" +
           ".cart-added-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}" +
           ".cart-added-item{border:1px solid #dbe3ea;border-radius:8px;background:#fff;padding:8px;display:grid;grid-template-columns:64px 1fr;gap:8px;align-items:center;}" +
           ".cart-added-item img{width:64px;height:64px;object-fit:contain;border:1px solid #e5e7eb;border-radius:6px;background:#fff;padding:4px;}" +
-          ".cart-added-item-title{margin:0 0 4px;font-size:12px;line-height:1.35;color:#0f172a;}" +
-          ".cart-added-item-price{margin:0 0 6px;font-size:12px;color:#b12704;}" +
-          ".cart-added-add{border:1px solid #d1d5dc;background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;color:#0f172a;}" +
+          ".cart-added-item-title{margin:0 0 4px;font-size:12px;line-height:1.35;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
+          ".cart-added-item-price{margin:0 0 6px;font-size:12px;color:var(--breg-primary,#0047bb);font-family:var(--font-body);}" +
+          ".cart-added-add{border:1px solid var(--breg-primary,#0047bb);background:#fff;border-radius:999px;padding:4px 10px;font-size:12px;color:var(--breg-primary,#0047bb);font-family:var(--font-body);}" +
           ".bulk-foot{padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:flex-end;gap:10px;}" +
           ".bulk-btn-cancel,.bulk-btn-check,.bulk-btn-add{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:999px;font-size:13px;text-decoration:none;}" +
-          ".bulk-btn-cancel{border:1px solid #d1d5dc;background:#fff;color:#0f172a;}" +
-          ".bulk-btn-check{border:1px solid #c7ced4;background:#fff;color:#0f172a;}" +
-          ".bulk-btn-add{border:1px solid #fcd200;background:#ffd814;color:#0f172a;}" +
-          ".bulk-btn-check:hover,.bulk-btn-check:focus,.bulk-btn-cancel:hover,.bulk-btn-cancel:focus,.bulk-btn-add:hover,.bulk-btn-add:focus{text-decoration:none;color:#0f172a;}" +
+          ".bulk-btn-cancel{border:1px solid #d1d5dc;background:#fff;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
+          ".bulk-btn-check{border:1px solid var(--breg-primary,#0047bb);background:#fff;color:var(--breg-primary,#0047bb);font-family:var(--font-body);}" +
+          ".bulk-btn-add{border:1px solid var(--breg-primary,#0047bb);background:var(--breg-primary,#0047bb);color:#fff;font-family:var(--font-body);}" +
+          ".bulk-btn-check:hover,.bulk-btn-check:focus,.bulk-btn-cancel:hover,.bulk-btn-cancel:focus{text-decoration:none;color:var(--breg-darkest,#071d49);}.bulk-btn-add:hover,.bulk-btn-add:focus{text-decoration:none;color:#fff;background:var(--breg-primary-dark,#001E62);border-color:var(--breg-primary-dark,#001E62);}" +
           "@media (max-width:767px){.cart-added-list{grid-template-columns:1fr;}.bulk-foot{flex-wrap:wrap;}}" +
         "</style>";
       $("head").append(modalStyles);
@@ -278,7 +293,7 @@
         "<img src='" + escapeHtml(img) + "' onerror=\"this.onerror=null;this.src='" + missingImg + "';\" alt='" + escapeHtml(name) + "'>" +
         "<div>" +
           "<p class='cart-added-item-title'>" + escapeHtml(name) + "</p>" +
-          "<p class='cart-added-item-price'>$" + price.toFixed(2) + "</p>" +
+          "<p class='cart-added-item-price'>$" + formatMoney(price) + "</p>" +
           "<button type='button' class='cart-added-add js-shared-cart-added-add' data-sku='" + escapeHtml(sku) + "' data-name='" + escapeHtml(name) + "' data-price='" + price.toFixed(2) + "' data-image='" + escapeHtml(img) + "' data-category='" + escapeHtml(line.category || "") + "'>Add</button>" +
         "</div>" +
       "</div>";
@@ -434,32 +449,32 @@
           ".quick-order-modal.open{display:flex;}" +
           ".quick-order-dialog{width:min(980px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:12px;border:1px solid #dbe3ea;box-shadow:0 18px 50px rgba(15,23,42,.28);}" +
           ".quick-order-head{padding:12px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:10px;}" +
-          ".quick-order-head h3{margin:0;font-size:22px;line-height:1.2;color:#0f172a;}" +
-          ".quick-order-close{border:0;background:transparent;font-size:28px;line-height:1;color:#475569;padding:0 4px;}" +
+          ".quick-order-head h3{margin:0;font-size:22px;line-height:1.2;color:var(--breg-darkest,#071d49);font-family:var(--font-headline);}" +
+          ".quick-order-close{border:0;background:transparent;font-size:28px;line-height:1;color:var(--breg-darkest,#071d49);opacity:.8;padding:0 4px;}" +
           ".quick-order-body{padding:14px 16px 16px;}" +
-          ".quick-order-sub{margin:0 0 12px;font-size:13px;color:#475569;}" +
+          ".quick-order-sub{margin:0 0 12px;font-size:13px;color:var(--breg-darkest,#071d49);opacity:.85;font-family:var(--font-body);}" +
           ".quick-order-grid{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;}" +
           ".quick-order-cell{position:relative;}" +
-          ".quick-order-grid-head{font-size:12px;text-transform:uppercase;letter-spacing:.45px;color:#64748b;font-weight:600;margin-bottom:6px;}" +
+          ".quick-order-grid-head{font-size:12px;text-transform:uppercase;letter-spacing:.45px;color:var(--breg-darkest,#071d49);opacity:.8;font-weight:600;font-family:var(--font-headline);margin-bottom:6px;}" +
           ".quick-order-row{margin-bottom:8px;}" +
-          ".quick-order-input{width:100%;height:36px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:13px;color:#0f172a;}" +
-          ".quick-order-input:focus{outline:0;border-color:#2f6fed;box-shadow:0 0 0 3px rgba(47,111,237,.14);}" +
+          ".quick-order-input{width:100%;height:36px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:13px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
+          ".quick-order-input:focus{outline:0;border-color:var(--breg-primary,#0047bb);box-shadow:0 0 0 3px rgba(0,71,187,.15);}" +
           ".quick-order-suggest{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:3;background:#fff;border:1px solid #d6dee7;border-radius:10px;box-shadow:0 10px 20px rgba(15,23,42,.12);max-height:280px;overflow:auto;display:none;}" +
           ".quick-order-suggest.open{display:block;}" +
           ".quick-order-suggest-item{width:100%;border:0;background:#fff;padding:8px 10px;display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:center;text-align:left;border-bottom:1px solid #eef2f6;}" +
           ".quick-order-suggest-item:last-child{border-bottom:0;}" +
           ".quick-order-suggest-item:hover,.quick-order-suggest-item:focus{background:#f8fbff;outline:0;}" +
           ".quick-order-suggest-item img{width:44px;height:44px;object-fit:contain;border:1px solid #e4e8ee;border-radius:8px;background:#fff;padding:2px;}" +
-          ".quick-order-suggest-name{display:block;font-size:12px;font-weight:700;color:#0f172a;line-height:1.2;}" +
-          ".quick-order-suggest-sku{display:block;font-size:12px;color:#475569;line-height:1.3;margin-top:2px;}" +
-          ".quick-order-qty{width:86px;height:36px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:13px;color:#0f172a;}" +
-          ".quick-order-del{height:36px;width:36px;border:1px solid #d1d5dc;border-radius:8px;background:#fff;color:#0f172a;padding:0;font-size:14px;display:inline-flex;align-items:center;justify-content:center;}" +
-          ".quick-order-add-row{height:34px;border:1px solid #d1d5dc;border-radius:999px;background:#fff;color:#0f172a;padding:0 12px;font-size:12px;}" +
+          ".quick-order-suggest-name{display:block;font-size:12px;font-weight:700;color:var(--breg-darkest,#071d49);line-height:1.2;font-family:var(--font-body);}" +
+          ".quick-order-suggest-sku{display:block;font-size:12px;color:var(--breg-darkest,#071d49);opacity:.8;line-height:1.3;margin-top:2px;font-family:var(--font-body);}" +
+          ".quick-order-qty{width:86px;height:36px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:13px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
+          ".quick-order-del{height:36px;width:36px;border:1px solid #d1d5dc;border-radius:8px;background:#fff;color:var(--breg-darkest,#071d49);padding:0;font-size:14px;display:inline-flex;align-items:center;justify-content:center;}" +
+          ".quick-order-add-row{height:34px;border:1px solid var(--breg-primary,#0047bb);border-radius:999px;background:#fff;color:var(--breg-primary,#0047bb);padding:0 12px;font-size:12px;font-family:var(--font-body);}" +
           ".quick-order-foot{padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:flex-end;gap:10px;}" +
           ".quick-order-cancel,.quick-order-submit{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:999px;font-size:13px;text-decoration:none;}" +
-          ".quick-order-cancel{border:1px solid #d1d5dc;background:#fff;color:#0f172a;}" +
-          ".quick-order-submit{border:1px solid #fcd200;background:#ffd814;color:#0f172a;}" +
-          ".quick-order-cancel:hover,.quick-order-cancel:focus,.quick-order-submit:hover,.quick-order-submit:focus{text-decoration:none;color:#0f172a;}" +
+          ".quick-order-cancel{border:1px solid #d1d5dc;background:#fff;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
+          ".quick-order-submit{border:1px solid var(--breg-primary,#0047bb);background:var(--breg-primary,#0047bb);color:#fff;font-family:var(--font-body);}" +
+          ".quick-order-cancel:hover,.quick-order-cancel:focus{text-decoration:none;color:var(--breg-darkest,#071d49);}.quick-order-submit:hover,.quick-order-submit:focus{text-decoration:none;color:#fff;background:var(--breg-primary-dark,#001E62);border-color:var(--breg-primary-dark,#001E62);}" +
           "@media (max-width:767px){.quick-order-grid{grid-template-columns:1fr 92px 44px;}}" +
         "</style>";
       $("head").append(quickStyles);
@@ -721,73 +736,82 @@
   ];
   var RECENT_CATEGORIES_STORAGE_KEY = "breg_recent_categories_v1";
   var RECENT_CATEGORIES_MAX = 8;
-  var searchSuggestions = [
-    { text: "Polar Care Kodiak® Cold Therapy System", category: "Cold Therapy and DVT", image: "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" },
-    { text: "FreeSport Knee Brace - Premium Support", category: "Knee Bracing", image: "assets/searchbar/photo-1715531786135-5ac445758873.jpg" },
-    { text: "SlingShot 3 Shoulder Brace", category: "Shoulder Bracing", image: "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg" },
-    { text: "T Scope Premier Post-Op Knee Brace", category: "Knee Bracing", image: "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" },
-    { text: "Lumbar Support Back Brace", category: "Spine Bracing", image: "assets/searchbar/photo-1533560777802-046814bc297c.jpg" },
-    { text: "Ice Pack Replacement - Universal Fit", category: "Cold Therapy and DVT", image: "assets/searchbar/photo-1727947417960-cb361b15dc71.jpg" }
+  var SEARCH_MISSING_IMAGE = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
+  var SEARCH_IMAGE_PREFIX = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/";
+
+  function normalizeSearchImage(rawUrl) {
+    var url = String(rawUrl || "").trim();
+    if (!url) return SEARCH_MISSING_IMAGE;
+    if (/^https?:\/\//i.test(url)) return url;
+    if (url.indexOf("20260218-all-products.xml/") === 0) url = url.replace(/^20260218-all-products\.xml\//, "");
+    if (url.charAt(0) === "/") url = url.slice(1);
+    return url ? (SEARCH_IMAGE_PREFIX + url) : SEARCH_MISSING_IMAGE;
+  }
+
+  function getCatalogImageForCategory(category) {
+    var catalog = window.BREG_CATALOG_ITEMS;
+    if (!catalog || !Array.isArray(catalog)) return SEARCH_MISSING_IMAGE;
+    var cat = String(category || "").toLowerCase();
+    var found = catalog.find(function (p) {
+      return p && p.category && String(p.category).toLowerCase() === cat && p.image;
+    });
+    return found ? normalizeSearchImage(found.image) : SEARCH_MISSING_IMAGE;
+  }
+
+  function getCatalogProductsForCategory(category, limit) {
+    var catalog = window.BREG_CATALOG_ITEMS;
+    if (!catalog || !Array.isArray(catalog)) return [];
+    var cat = String(category || "").toLowerCase();
+    var valid = catalog.filter(function (p) {
+      return p && p.category && String(p.category).toLowerCase() === cat && p.name && p.category !== "Uncategorized";
+    });
+    return valid.slice(0, limit || 6).map(function (p) {
+      return { name: p.name, price: "$" + formatMoney(Number(p.price) || 0), image: normalizeSearchImage(p.image) };
+    });
+  }
+
+  function buildSearchSuggestionsFromCatalog() {
+    var catalog = window.BREG_CATALOG_ITEMS;
+    if (!catalog || !Array.isArray(catalog)) return [];
+    var seen = {};
+    var out = [];
+    catalog.forEach(function (p) {
+      if (!p || !p.name || !p.category || p.category === "Uncategorized" || seen[p.id]) return;
+      seen[p.id] = true;
+      out.push({ text: p.name, category: p.category, image: normalizeSearchImage(p.image) });
+    });
+    return out.slice(0, 12);
+  }
+
+  var searchSuggestionsFallback = [
+    { text: "Polar Care Kodiak® Cold Therapy System", category: "Cold Therapy and DVT", image: SEARCH_MISSING_IMAGE },
+    { text: "FreeSport Knee Brace - Premium Support", category: "Knee Bracing", image: SEARCH_MISSING_IMAGE },
+    { text: "SlingShot 3 Shoulder Brace", category: "Shoulder Bracing", image: SEARCH_MISSING_IMAGE },
+    { text: "T Scope Premier Post-Op Knee Brace", category: "Knee Bracing", image: SEARCH_MISSING_IMAGE },
+    { text: "Lumbar Support Back Brace", category: "Spine Bracing", image: SEARCH_MISSING_IMAGE },
+    { text: "Ice Pack Replacement - Universal Fit", category: "Cold Therapy and DVT", image: SEARCH_MISSING_IMAGE }
   ];
-  var previewByCategory = {
-    "Knee Bracing": [
-      { name: "T Scope Premier Post-Op Knee Brace", price: "$449.99", image: "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" },
-      { name: "FreeSport Knee Brace - Premium Support", price: "$119.99", image: "assets/searchbar/photo-1715531786135-5ac445758873.jpg" }
-    ],
-    "Shoulder Bracing": [
-      { name: "SlingShot 3 Shoulder Brace", price: "$89.99", image: "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg" },
-      { name: "Shoulder Immobilizer Sling", price: "$54.99", image: "assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" }
-    ],
-    "Cold Therapy and DVT": [
-      { name: "Polar Care Kodiak® Cold Therapy System", price: "$299.99", image: "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" },
-      { name: "Ice Pack System - Portable", price: "$59.99", image: "assets/searchbar/photo-1727947417960-cb361b15dc71.jpg" }
-    ],
-    "Spine Bracing": [
-      { name: "Lumbar Support Back Brace", price: "$79.99", image: "assets/searchbar/photo-1533560777802-046814bc297c.jpg" },
-      { name: "Spine Alignment Support", price: "$79.99", image: "assets/searchbar/photo-1714929818299-914d3114bcec.jpg" }
-    ],
-    "Walker/Ankle/Foot Bracing": [
-      { name: "Ankle Brace Sport", price: "$59.99", image: "assets/searchbar/photo-1637580678290-29617636bdc7.jpg" },
-      { name: "Lace-Up Ankle Brace", price: "$49.99", image: "assets/searchbar/photo-1637580678290-29617636bdc7.jpg" }
-    ],
-    "Elbow/Wrist Bracing": [
-      { name: "Wrist Brace Support", price: "$34.99", image: "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg" },
-      { name: "Elbow Support Strap", price: "$29.99", image: "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg" }
-    ],
-    "Hip Bracing": [
-      { name: "PAD INTELLI-FLO HIP Therapy Pad", price: "$159.99", image: "assets/searchbar/photo-1620148222862-b95cf7405a7b.jpg" },
-      { name: "Advanced Hip Support", price: "$219.99", image: "assets/searchbar/photo-1711188054107-18018e0f77a5.jpg" }
-    ],
-    "Splints and Fracture Management": [
-      { name: "Fracture Bracing Kit", price: "$189.99", image: "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" },
-      { name: "Splint and Fracture Management Set", price: "$149.99", image: "assets/searchbar/photo-1714929818299-914d3114bcec.jpg" }
-    ],
-    "Crutches, Canes & Walkers": [
-      { name: "Aluminum Push Button Crutches", price: "$79.99", image: "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg" },
-      { name: "Folding Walker", price: "$99.99", image: "assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" }
-    ],
-    "Home Therapy & Misc.": [
-      { name: "Home Therapy Kit", price: "$129.99", image: "assets/searchbar/photo-1714929818299-914d3114bcec.jpg" },
-      { name: "Recovery Essentials Bundle", price: "$89.99", image: "assets/searchbar/photo-1533560777802-046814bc297c.jpg" }
-    ],
-    "Pediatrics": [
-      { name: "Pediatric Knee Bracing", price: "$99.99", image: "assets/searchbar/photo-1715531786135-5ac445758873.jpg" },
-      { name: "Pediatric Walking Boot", price: "$119.99", image: "assets/searchbar/photo-1637580678290-29617636bdc7.jpg" }
-    ]
-  };
-  var categoryImage = {
-    "Knee Bracing": "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg",
-    "Shoulder Bracing": "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg",
-    "Cold Therapy and DVT": "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg",
-    "Spine Bracing": "assets/searchbar/photo-1533560777802-046814bc297c.jpg",
-    "Walker/Ankle/Foot Bracing": "assets/searchbar/photo-1637580678290-29617636bdc7.jpg",
-    "Elbow/Wrist Bracing": "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg",
-    "Hip Bracing": "assets/searchbar/photo-1620148222862-b95cf7405a7b.jpg",
-    "Splints and Fracture Management": "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg",
-    "Crutches, Canes & Walkers": "assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg",
-    "Home Therapy & Misc.": "assets/searchbar/photo-1714929818299-914d3114bcec.jpg",
-    "Pediatrics": "assets/searchbar/photo-1715531786135-5ac445758873.jpg"
-  };
+  var searchSuggestions = (function () {
+    var fromCatalog = buildSearchSuggestionsFromCatalog();
+    return fromCatalog.length ? fromCatalog : searchSuggestionsFallback;
+  })();
+
+  var previewByCategory = (function () {
+    var cats = ["Knee Bracing", "Shoulder Bracing", "Cold Therapy and DVT", "Spine Bracing", "Walker/Ankle/Foot Bracing", "Elbow/Wrist Bracing", "Hip Bracing", "Splints and Fracture Management", "Crutches, Canes & Walkers", "Home Therapy & Misc.", "Pediatrics"];
+    var out = {};
+    cats.forEach(function (c) {
+      var products = getCatalogProductsForCategory(c, 4);
+      out[c] = products.length ? products : [{ name: "Products in " + c, price: "", image: SEARCH_MISSING_IMAGE }];
+    });
+    return out;
+  })();
+
+  var categoryImage = (function () {
+    var cats = ["Knee Bracing", "Shoulder Bracing", "Cold Therapy and DVT", "Spine Bracing", "Walker/Ankle/Foot Bracing", "Elbow/Wrist Bracing", "Hip Bracing", "Splints and Fracture Management", "Crutches, Canes & Walkers", "Home Therapy & Misc.", "Pediatrics"];
+    var out = {};
+    cats.forEach(function (c) { out[c] = getCatalogImageForCategory(c); });
+    return out;
+  })();
 
   var storedAuth = localStorage.getItem("bregSignedIn");
   var isSignedIn = storedAuth === null ? true : storedAuth === "true";

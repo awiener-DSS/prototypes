@@ -6,7 +6,7 @@
   <title>Breg Store - Rejected Orders</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -154,25 +154,33 @@
     }
     .rejected-btn {
       display: inline-block;
-      border: 1px solid #d5d9d9;
+      border: 1px solid var(--breg-primary, #0047bb);
       border-radius: 16px;
       background: #fff;
-      color: #0f1111;
+      color: var(--breg-primary, #0047bb);
       font-size: 13px;
       line-height: 1.25;
       padding: 6px 14px;
       text-decoration: none;
       font-weight: 500;
     }
-    .rejected-btn:hover,.rejected-btn:focus { color: #0f1111; background: #f7f8f8; text-decoration: none; }
-    .rejected-btn.primary {
-      border-color: #fcd200;
-      background: #ffd814;
+    .rejected-btn:hover,
+    .rejected-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
     }
-    .rejected-btn.primary:hover,.rejected-btn.primary:focus {
-      border-color: #f2c200;
-      background: #f7ca00;
-      color: #0f1111;
+    .rejected-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .rejected-btn.primary:hover,
+    .rejected-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     @media (max-width: 1199px) {
       .rejected-title { font-size: 30px; }
@@ -184,6 +192,7 @@
       .rejected-subtitle { font-size: 13px; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">
@@ -264,11 +273,11 @@
             </div>
           </div>
           <div class="rejected-item">
-            <img src="assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" alt="Cold therapy product">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
             <div><a class="rejected-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="rejected-item-meta">Quantity: 5 | Price: $299.99</div></div>
           </div>
           <div class="rejected-item">
-            <img src="assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" alt="Knee brace product">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace product">
             <div><a class="rejected-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="rejected-item-meta">Quantity: 6 | Price: $449.99</div></div>
           </div>
           <div class="rejected-order-foot"><a class="rejected-btn primary" href="#">Resubmit Order</a><a class="rejected-btn" href="#">Contact Support</a></div>
@@ -292,7 +301,7 @@
             </div>
           </div>
           <div class="rejected-item">
-            <img src="assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" alt="Shoulder immobilizer">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
             <div><a class="rejected-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a><div class="rejected-item-meta">Quantity: 10 | Price: $89.99</div></div>
           </div>
           <div class="rejected-order-foot"><a class="rejected-btn primary" href="#">Resubmit Order</a><a class="rejected-btn" href="#">Contact Support</a></div>
@@ -316,7 +325,7 @@
             </div>
           </div>
           <div class="rejected-item">
-            <img src="assets/searchbar/photo-1714929818299-914d3114bcec.jpg" alt="Advanced hip recovery system">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Advanced Hip Recovery System" alt="Advanced hip recovery system">
             <div><a class="rejected-item-title" href="#">Advanced Hip Recovery System (Discontinued)</a><div class="rejected-item-meta">Quantity: 3 | Price: $399.99</div></div>
           </div>
           <div class="rejected-order-foot"><a class="rejected-btn primary" href="#">Resubmit Order</a><a class="rejected-btn" href="#">Contact Support</a></div>
@@ -327,7 +336,20 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="analysis/catalog-data.js"></script>
+  <script src="assets/catalog-image-resolver.js"></script>
   <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      if (window.BregCatalogImage) {
+        $(".rejected-item").each(function () {
+          var $img = $(this).find("img").first();
+          var name = $img.attr("data-product-name") || $.trim($(this).find(".rejected-item-title").first().text());
+          if (name) $img.attr("src", window.BregCatalogImage.byName(name));
+        });
+      }
+    })();
+  </script>
   <script>
     (function () {
       function fallbackCartApi() {

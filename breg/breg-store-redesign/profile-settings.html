@@ -6,7 +6,7 @@
   <title>Breg Store - Profile Settings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -78,27 +78,35 @@
     }
     .profile-btn {
       display: inline-block;
-      border: 1px solid #d5d9d9;
+      border: 1px solid var(--breg-primary, #0047bb);
       border-radius: 16px;
       background: #fff;
-      color: #0f1111;
+      color: var(--breg-primary, #0047bb);
       font-size: 13px;
       line-height: 1.25;
       padding: 8px 14px;
       text-decoration: none;
       font-weight: 500;
     }
-    .profile-btn:hover,.profile-btn:focus { color: #0f1111; background: #f7f8f8; text-decoration: none; }
+    .profile-btn:hover,
+    .profile-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
     .profile-btn.primary {
-      border-color: #fcd200;
-      background: #ffd814;
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
       padding-left: 20px;
       padding-right: 20px;
     }
-    .profile-btn.primary:hover,.profile-btn.primary:focus {
-      border-color: #f2c200;
-      background: #f7ca00;
-      color: #0f1111;
+    .profile-btn.primary:hover,
+    .profile-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .profile-security-copy {
       margin: 4px 0 0;
@@ -117,6 +125,7 @@
       .profile-card-head { align-items: flex-start; flex-direction: column; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">

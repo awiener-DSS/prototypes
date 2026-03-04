@@ -6,7 +6,7 @@
   <title>Breg Store - Checkout</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -58,7 +58,47 @@
       100% { transform: scale(1); opacity: .72; }
     }
 
-    body { background: #EAEDED; }
+    /* Match shopping cart background color */
+    body.checkout-page { background: #EAEDED; }
+    .checkout-min-header {
+      /* Use the same background as the global top header */
+      background: var(--breg-primary-dark, #001E62);
+      border-bottom: 1px solid #001E62;
+    }
+    .checkout-min-header .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 10px 0;
+    }
+    .checkout-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+    .checkout-header-title .glyphicon-lock {
+      color: #ffffff;
+      font-size: 18px;
+    }
+    .checkout-secure-info {
+      border: none;
+      background: transparent;
+      padding: 4px;
+      margin-left: 4px;
+      color: #e5e7eb;
+    }
+    .checkout-secure-info:hover,
+    .checkout-secure-info:focus {
+      color: #ffffff;
+      outline: none;
+    }
+    .checkout-cart-btn {
+      text-decoration: none;
+    }
     .checkout-wrap { margin: 18px 0 26px; }
     .checkout-title {
       margin: 0 0 8px;
@@ -68,14 +108,6 @@
       font-weight: 700;
       letter-spacing: .2px;
     }
-    .checkout-back {
-      display: inline-block;
-      margin-bottom: 14px;
-      color: #007185;
-      text-decoration: none;
-      font-size: 14px;
-    }
-    .checkout-back:hover, .checkout-back:focus { color: #007185; text-decoration: underline; }
     .checkout-layout { display: grid; grid-template-columns: minmax(0, 890px) minmax(0, 433px); gap: 24px; align-items: start; }
     .checkout-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
     .checkout-step {
@@ -98,7 +130,7 @@
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: #007185;
+      background: var(--breg-primary, #0047bb);
       color: #fff;
       font-size: 12px;
       line-height: 20px;
@@ -125,8 +157,18 @@
     .checkout-static-card strong { display: block; color: #0a0a0a; font-size: 16px; margin-bottom: 2px; font-weight: 500; }
     .checkout-step-note { margin: 10px 0 0; color: #6a7282; font-size: 12px; line-height: 1.35; }
     .checkout-options { display: flex; flex-direction: column; gap: 10px; }
+    .checkout-pay-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-items: flex-start;
+    }
     .checkout-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-    .checkout-actions .checkout-add-address { margin-top: 0; flex: 1; min-width: 220px; }
+    .checkout-actions .checkout-pill-btn {
+      flex: 1;
+      min-width: 0;
+      justify-content: center;
+    }
     .checkout-inline-field { margin-top: 10px; }
     .checkout-inline-field label { display: block; margin: 0 0 4px; font-size: 12px; color: #5f6b76; font-weight: 600; }
     .checkout-inline-field input {
@@ -140,17 +182,29 @@
       background: #fff;
     }
     .checkout-inline-field input:focus { outline: none; border-color: #007185; box-shadow: 0 0 0 2px rgba(0,113,133,.12); }
+    .checkout-ship-layout {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-items: flex-start;
+    }
     .checkout-pill-btn {
       height: 36px;
-      border: 1px solid #d1d5dc;
       border-radius: 999px;
+      border: 1px solid var(--breg-primary, #0047bb);
       background: #fff;
-      color: #007185;
+      color: var(--breg-primary, #0047bb);
       font-size: 13px;
       font-weight: 600;
       padding: 0 14px;
     }
-    .checkout-pill-btn:hover { background: #f7fafc; }
+    .checkout-pill-btn:hover,
+    .checkout-pill-btn:focus {
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
     .checkout-ship-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -212,14 +266,7 @@
       margin-top: 10px;
       width: 100%;
       height: 40px;
-      border: 1px solid #d1d5dc;
-      border-radius: 999px;
-      background: #fff;
-      color: #007185;
-      font-size: 14px;
-      font-weight: 600;
     }
-    .checkout-add-address:hover { background: #f7fafc; }
     .checkout-add-address .glyphicon { font-size: 14px; margin-right: 6px; top: 1px; }
     .checkout-lines {
       border: 1px solid #e3e9ef;
@@ -308,9 +355,9 @@
     .checkout-place {
       margin-top: 12px;
       width: 100%;
-      border: 1px solid #fcd200;
-      background: #ffd814;
-      color: #111;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
       border-radius: 999px;
       font-size: 14px;
       font-weight: 600;
@@ -340,9 +387,9 @@
     .checkout-modal .form-control:focus { border-color: #467ddb; box-shadow: 0 0 0 2px rgba(70,125,219,.12); }
     .checkout-modal .modal-footer { border-top: 1px solid #e8edf2; padding: 12px 16px; }
     .checkout-modal .btn-primary {
-      background: #ffd814;
-      border-color: #fcd200;
-      color: #111;
+      background: var(--breg-primary, #0047bb);
+      border-color: var(--breg-primary, #0047bb);
+      color: #fff;
       border-radius: 999px;
       padding: 8px 18px;
       font-weight: 600;
@@ -354,12 +401,15 @@
     @media (max-width: 1024px) {
       .checkout-layout { grid-template-columns: 1fr; }
       .checkout-summary { position: static; top: auto; }
+      .checkout-ship-layout { grid-template-columns: 1fr; }
       .checkout-ship-grid { grid-template-columns: 1fr; }
+      .checkout-pay-layout { grid-template-columns: 1fr; }
       .checkout-service-options { grid-template-columns: 1fr; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
-<body>
+<body class="checkout-page">
   <div class="checkout-loading-screen" id="checkoutLoadingScreen" aria-live="polite" aria-label="Loading checkout">
     <div class="checkout-loading-inner">
       <div class="checkout-loading-circle">
@@ -369,57 +419,57 @@
     </div>
   </div>
 
-  <header class="top-header">
+  <header class="top-header checkout-min-header">
     <div class="container site-max">
       <div class="top-row">
         <a class="logo-link" href="index.html">
           <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
         </a>
-        <div class="search-wrap">
-          <form class="search-box" id="searchForm">
-            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
-            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
-            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-          </form>
-          <div class="search-dropdown" id="searchDropdown">
-            <div class="search-left">
-              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
-              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
-            </div>
-            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
-          </div>
+        <div class="checkout-header-title">
+          <span class="glyphicon glyphicon-lock" aria-hidden="true"></span>
+          <span>Secure Checkout</span>
+          <button
+            type="button"
+            class="checkout-secure-info"
+            data-toggle="modal"
+            data-target="#secureInfoModal"
+            aria-label="Learn more about how your checkout is secured"
+          >
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+          </button>
         </div>
-        <div class="header-actions">
-          <div class="lang-wrap">
-            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
-            <div class="country-dropdown" id="countryDropdown">
-              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
-              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
-              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
-            </div>
-          </div>
-          <div class="account-wrap">
-            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
-            <div class="account-dropdown" id="accountDropdown">
-              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
-              <div class="account-grid">
-                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
-              </div>
-            </div>
-          </div>
-          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
-          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        <a class="action-box cart-box checkout-cart-btn" href="shopping-cart.html">
+          <span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span>
+          <span class="cart-label">Cart</span>
+          <span class="cart-count">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="modal fade checkout-modal" id="secureInfoModal" tabindex="-1" role="dialog" aria-labelledby="secureInfoTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title" id="secureInfoTitle">Secure checkout</h4>
+        </div>
+        <div class="modal-body">
+          <p class="checkout-modal-subtle">
+            Your information is encrypted and protected to keep your checkout secure.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Got it</button>
         </div>
       </div>
     </div>
-    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
-  </header>
+  </div>
 
   <main class="site-max">
     <section class="checkout-wrap">
-      <h1 class="checkout-title">Checkout</h1>
-      <a class="checkout-back" href="shopping-cart.html">Back to cart</a>
       <div id="checkoutContent"></div>
     </section>
   </main>
@@ -477,7 +527,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Address</button>
+          <button type="submit" class="btn btn-default">Save Address</button>
         </div>
       </form>
     </div>
@@ -497,7 +547,7 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-default" id="openAddShippingFromSelect">Add new address</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Use this address</button>
+          <button type="submit" class="btn btn-default">Use this address</button>
         </div>
       </form>
     </div>
@@ -517,7 +567,33 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-default" id="openAddCardFromSelect">Add new card</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Use this card</button>
+          <button type="submit" class="btn btn-default">Use this card</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal fade checkout-modal" id="selectShippingMethodModal" tabindex="-1" role="dialog" aria-labelledby="selectShippingMethodTitle">
+    <div class="modal-dialog" role="document">
+      <form class="modal-content" id="selectShippingMethodForm">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="selectShippingMethodTitle">Select Shipping Method</h4>
+        </div>
+        <div class="modal-body">
+          <p class="checkout-modal-subtle">Choose how this order should be shipped.</p>
+          <div class="checkout-choice-meta">Carrier</div>
+          <div id="shippingMethodCarrierList" class="checkout-modal-list"></div>
+          <div class="checkout-choice-meta" style="margin-top:10px;">Shipping Method</div>
+          <div id="shippingMethodOptionList" class="checkout-modal-list"></div>
+          <div class="checkout-check-wrap" style="margin-top:10px;">
+            <label><input type="checkbox" id="shippingResidentialInput"> Residential Delivery</label>
+            <label><input type="checkbox" id="shippingSignatureInput"> Signature Required</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-default">Use this method</button>
         </div>
       </form>
     </div>
@@ -609,7 +685,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Card</button>
+          <button type="submit" class="btn btn-default">Save Card</button>
         </div>
       </form>
     </div>
@@ -626,6 +702,20 @@
       var didHideInitialLoader = false;
       var loaderShownAt = Date.now();
       var LOADER_MIN_VISIBLE_MS = 3000;
+
+      // Ensure money formatting is available even if shell.js fails to load
+      var BregFormatMoney = window.BregFormatMoney || function (value) {
+        var n = typeof value === "number" ? value : Number(value || 0);
+        if (!isFinite(n)) n = 0;
+        try {
+          return n.toLocaleString("en-US", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          });
+        } catch (e) {
+          return n.toFixed(2);
+        }
+      };
 
       function hideInitialLoader() {
         if (didHideInitialLoader) return;
@@ -968,10 +1058,10 @@
           cardIdx = findCardIndex(cardOptions, defaults.defaultCard);
         }
         var attentionTo = String($("#shippingAttentionInput").val() || defaults.shippingAttentionTo || "").trim();
-        var shippingCarrier = String($("input[name='shippingCarrier']:checked").val() || defaults.shippingCarrier || "FedEx");
-        var shippingOption = String($("input[name='shippingOption']:checked").val() || defaults.shippingOption || "Ground");
-        var shippingResidential = $("#shippingResidentialInput").is(":checked");
-        var shippingSignature = $("#shippingSignatureInput").is(":checked");
+        var shippingCarrier = String(defaults.shippingCarrier || "FedEx");
+        var shippingOption = String(defaults.shippingOption || "Ground");
+        var shippingResidential = !!defaults.shippingResidential;
+        var shippingSignature = !!defaults.shippingSignature;
         var selectedShipping = shippingOptions[shippingIdx] || shippingOptions[0] || normalizeAddress(defaults.shipping);
         var shippingWithAttention = {
           name: selectedShipping.name,
@@ -1043,6 +1133,49 @@
         );
       }
 
+      function renderShippingMethodSelectionModal() {
+        var defaults = quickDefaults();
+        var currentCarrier = String(defaults.shippingCarrier || "FedEx");
+        var currentOption = String(defaults.shippingOption || "Ground");
+        var residential = !!defaults.shippingResidential;
+        var signature = !!defaults.shippingSignature;
+
+        var carriers = ["FedEx", "UPS"];
+        $("#shippingMethodCarrierList").html(
+          carriers.map(function (carrier) {
+            var active = carrier === currentCarrier ? " active" : "";
+            var checked = carrier === currentCarrier ? " checked" : "";
+            return "<label class='checkout-choice" + active + "'>" +
+              "<input type='radio' name='shippingCarrierModal' value='" + escapeHtml(carrier) + "'" + checked + ">" +
+              "<span class='checkout-choice-title'>" + escapeHtml(carrier) + "</span>" +
+            "</label>";
+          }).join("")
+        );
+
+        var methods = [
+          "Ground",
+          "Next Day Air",
+          "Next Day Air Saver",
+          "Air - 2nd Day Air",
+          "Air - 3 Day Select",
+          "Next Day Air Early AM",
+          "Saturday"
+        ];
+        $("#shippingMethodOptionList").html(
+          methods.map(function (method) {
+            var active = method === currentOption ? " active" : "";
+            var checked = method === currentOption ? " checked" : "";
+            return "<label class='checkout-choice" + active + "'>" +
+              "<input type='radio' name='shippingOptionModal' value='" + escapeHtml(method) + "'" + checked + ">" +
+              "<span class='checkout-choice-title'>" + escapeHtml(method) + "</span>" +
+            "</label>";
+          }).join("")
+        );
+
+        $("#shippingResidentialInput").prop("checked", residential);
+        $("#shippingSignatureInput").prop("checked", signature);
+      }
+
       function renderCreditCardSelectionModal() {
         var defaults = quickDefaults();
         var cards = loadCreditCardOptions(defaults.defaultCard);
@@ -1091,7 +1224,12 @@
         };
       }
 
+      var checkoutInitialRenderDone = false;
+
       function renderCheckout() {
+        if (!checkoutInitialRenderDone && window.history && "scrollRestoration" in window.history) {
+          window.history.scrollRestoration = "manual";
+        }
         var cart = loadCart();
         var defaults = quickDefaults();
         ensureSeedShippingAddresses(defaults.shipping);
@@ -1133,7 +1271,7 @@
 
         var summaryLines = "";
         var linesHtml = "";
-        cart.slice(0, 3).forEach(function (line) {
+        cart.forEach(function (line) {
           var name = escapeHtml(line.name || line.sku || "Product");
           var qty = Number(line.qty || 0);
           var image = escapeHtml(line.image || MISSING_IMAGE);
@@ -1152,7 +1290,7 @@
               "<p class='checkout-line-name'>" + escapeHtml(line.name || line.sku || "Product") + "</p>" +
               "<p class='checkout-line-meta'>SKU: " + escapeHtml(line.sku || "") + " | Qty: " + qty + "</p>" +
             "</div>" +
-            "<div class='checkout-line-price'>$" + (qty * price).toFixed(2) + "</div>" +
+            "<div class='checkout-line-price'>$" + BregFormatMoney(qty * price) + "</div>" +
           "</div>";
         });
 
@@ -1162,19 +1300,36 @@
               "<section class='checkout-step'>" +
                 "<div class='checkout-step-head'>" +
                   "<span class='checkout-step-num'>1</span>" +
-                  "<h2 class='checkout-step-title'>Shipping Address</h2>" +
+                  "<h2 class='checkout-step-title'>Shipping Address &amp; Method</h2>" +
                 "</div>" +
                 "<div class='checkout-step-body'>" +
-                  "<div class='checkout-static-card'>" +
-                    "<strong>" + escapeHtml((shippingOptions[defaultShippingIdx] || {}).name || "Shipping Address") + "</strong>" +
-                    formatAddress(shippingOptions[defaultShippingIdx] || {}) +
-                  "</div>" +
-                  "<div class='checkout-inline-field'>" +
-                    "<label for='shippingAttentionInput'>Attention To</label>" +
-                    "<input type='text' id='shippingAttentionInput' placeholder='Enter recipient or department' value='" + escapeHtml(defaults.shippingAttentionTo || "") + "'>" +
-                  "</div>" +
-                  "<div class='checkout-actions'>" +
-                    "<button type='button' class='checkout-add-address checkout-select-address'><span class='glyphicon glyphicon-map-marker'></span> Select another shipping address</button>" +
+                  "<div class='checkout-ship-layout'>" +
+                    "<div>" +
+                      "<div class='checkout-static-card'>" +
+                        "<div class='checkout-inline-field' style='margin:0 0 10px 0;'>" +
+                          "<label for='shippingAttentionInput'>Attention To</label>" +
+                          "<input type='text' id='shippingAttentionInput' placeholder='Enter recipient or department' value='" + escapeHtml(defaults.shippingAttentionTo || "") + "'>" +
+                        "</div>" +
+                        "<strong>" + escapeHtml((shippingOptions[defaultShippingIdx] || {}).name || "Shipping Address") + "</strong>" +
+                        formatAddress(shippingOptions[defaultShippingIdx] || {}) +
+                        "<div class='checkout-actions' style='margin-top:8px;'>" +
+                          "<button type='button' class='checkout-pill-btn checkout-add-address checkout-select-address'><span class='glyphicon glyphicon-map-marker'></span> Select another shipping address</button>" +
+                        "</div>" +
+                      "</div>" +
+                    "</div>" +
+                    "<div>" +
+                      "<div class='checkout-static-card'>" +
+                        "<strong>Shipping method</strong>" +
+                        "<div>" + escapeHtml(shippingCarrier) + " — " + escapeHtml(shippingOption) + "</div>" +
+                        "<div class='checkout-choice-meta' style='margin-top:4px;'>" +
+                          (shippingResidential ? "Residential delivery; " : "") +
+                          (shippingSignature ? "Signature required" : "No signature required") +
+                        "</div>" +
+                        "<div class='checkout-actions' style='margin-top:8px;'>" +
+                          "<button type='button' class='checkout-pill-btn' id='selectShippingMethodBtn'><span class='glyphicon glyphicon-plane'></span> Change shipping method</button>" +
+                        "</div>" +
+                      "</div>" +
+                    "</div>" +
                   "</div>" +
                 "</div>" +
               "</section>" +
@@ -1184,90 +1339,49 @@
                   "<h2 class='checkout-step-title'>Payment Method</h2>" +
                 "</div>" +
                 "<div class='checkout-step-body'>" +
-                  "<div class='checkout-options'>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='paymentMethodMode' value='invoice'" + (paymentMode === "invoice" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Invoice</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).name || "") + "</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).line1 || "") + "</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).cityStateZip || "") + "</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).country || "") + "</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='paymentMethodMode' value='credit'" + (paymentMode === "credit" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Credit Card</span>" +
-                      "<span class='checkout-choice-line'>" + escapeHtml(selectedCard ? formatCardLabel(selectedCard) : "No card selected") + "</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.name || "") + "</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.line1 || "") + "</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.cityStateZip || "") + "</span>" +
-                      "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.country || "") + "</span>" +
-                    "</label>" +
+                  "<div class='checkout-pay-layout'>" +
+                    "<div>" +
+                      "<div class='checkout-static-card'>" +
+                        "<strong>Invoice</strong>" +
+                        "<div class='checkout-options'>" +
+                          "<label class='checkout-choice'>" +
+                            "<input type='radio' name='paymentMethodMode' value='invoice'" + (paymentMode === "invoice" ? " checked" : "") + ">" +
+                            "<span class='checkout-choice-title'>Invoice</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).name || "") + "</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).line1 || "") + "</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).cityStateZip || "") + "</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml((invoiceOptions[0] || {}).country || "") + "</span>" +
+                          "</label>" +
+                        "</div>" +
+                      "</div>" +
+                    "</div>" +
+                    "<div>" +
+                      "<div class='checkout-static-card'>" +
+                        "<strong>Credit Card</strong>" +
+                        "<div class='checkout-options'>" +
+                          "<label class='checkout-choice'>" +
+                            "<input type='radio' name='paymentMethodMode' value='credit'" + (paymentMode === "credit" ? " checked" : "") + ">" +
+                            "<span class='checkout-choice-title'>Credit Card</span>" +
+                            "<span class='checkout-choice-line'>" + escapeHtml(selectedCard ? formatCardLabel(selectedCard) : "No card selected") + "</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.name || "") + "</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.line1 || "") + "</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.cityStateZip || "") + "</span>" +
+                            "<span class='checkout-choice-meta'>" + escapeHtml(cardBillingAddress.country || "") + "</span>" +
+                          "</label>" +
+                        "</div>" +
+                        (paymentMode === "credit"
+                          ? ("<div class='checkout-actions'>" +
+                              "<button type='button' class='checkout-pill-btn' id='selectCreditCardBtn'><span class='glyphicon glyphicon-credit-card'></span> Select a different credit card</button>" +
+                            "</div>")
+                          : "") +
+                      "</div>" +
+                    "</div>" +
                   "</div>" +
-                  (paymentMode === "credit"
-                    ? ("<div class='checkout-actions'>" +
-                        "<button type='button' class='checkout-pill-btn' id='selectCreditCardBtn'>Select a different credit card</button>" +
-                      "</div>")
-                    : "") +
                 "</div>" +
               "</section>" +
               "<section class='checkout-step'>" +
                 "<div class='checkout-step-head'>" +
                   "<span class='checkout-step-num'>3</span>" +
-                  "<h2 class='checkout-step-title'>Shipping Method</h2>" +
-                "</div>" +
-                "<div class='checkout-step-body'>" +
-                  "<div class='checkout-choice-meta' style='margin-bottom:6px;'>Carrier</div>" +
-                  "<div class='checkout-ship-grid'>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingCarrier' value='FedEx'" + (shippingCarrier === "FedEx" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>FedEx</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingCarrier' value='UPS'" + (shippingCarrier === "UPS" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>UPS</span>" +
-                    "</label>" +
-                  "</div>" +
-                  "<div class='checkout-choice-meta' style='margin:10px 0 6px;'>Shipping Method</div>" +
-                  "<div class='checkout-options'>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingOption' value='Ground'" + (shippingOption === "Ground" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Ground</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingOption' value='Next Day Air'" + (shippingOption === "Next Day Air" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Next Day Air</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingOption' value='Next Day Air Saver'" + (shippingOption === "Next Day Air Saver" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Next Day Air Saver</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingOption' value='Air - 2nd Day Air'" + (shippingOption === "Air - 2nd Day Air" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Air - 2nd Day Air</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingOption' value='Air - 3 Day Select'" + (shippingOption === "Air - 3 Day Select" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Air - 3 Day Select</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingOption' value='Next Day Air Early AM'" + (shippingOption === "Next Day Air Early AM" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Next Day Air Early AM</span>" +
-                    "</label>" +
-                    "<label class='checkout-choice'>" +
-                      "<input type='radio' name='shippingOption' value='Saturday'" + (shippingOption === "Saturday" ? " checked" : "") + ">" +
-                      "<span class='checkout-choice-title'>Saturday</span>" +
-                      "<span class='checkout-choice-meta'>Only available on Fridays based on FedEx availability.</span>" +
-                    "</label>" +
-                  "</div>" +
-                  "<div class='checkout-check-wrap'>" +
-                    "<label><input type='checkbox' id='shippingResidentialInput'" + (shippingResidential ? " checked" : "") + "> Residential Delivery</label>" +
-                    "<label><input type='checkbox' id='shippingSignatureInput'" + (shippingSignature ? " checked" : "") + "> Signature Required</label>" +
-                  "</div>" +
-                "</div>" +
-              "</section>" +
-              "<section class='checkout-step'>" +
-                "<div class='checkout-step-head'>" +
-                  "<span class='checkout-step-num'>4</span>" +
                   "<h2 class='checkout-step-title'>Items in this order</h2>" +
                 "</div>" +
                 "<div class='checkout-step-body'><div class='checkout-lines'>" + linesHtml + "</div></div>" +
@@ -1276,12 +1390,12 @@
             "<aside class='checkout-summary'>" +
               "<h3>Order Summary</h3>" +
               "<ul class='checkout-summary-list'>" +
-                "<li><span>Items (" + totalQty + ")</span><span>$" + total.toFixed(2) + "</span></li>" +
+                "<li><span>Items (" + totalQty + ")</span><span>$" + BregFormatMoney(total) + "</span></li>" +
                 "<li><span>Shipping &amp; handling</span><span style='color:#067d62;'>FREE</span></li>" +
-                "<li><span>Total before tax</span><span>$" + total.toFixed(2) + "</span></li>" +
+                "<li><span>Total before tax</span><span>$" + BregFormatMoney(total) + "</span></li>" +
                 "<li><span>Estimated tax</span><span>$0.00</span></li>" +
               "</ul>" +
-              "<div class='checkout-total'><span>Order total:</span><span>$" + total.toFixed(2) + "</span></div>" +
+              "<div class='checkout-total'><span>Order total:</span><span>$" + BregFormatMoney(total) + "</span></div>" +
               "<button type='button' class='checkout-place' id='placeOrderBtn'>Place your order</button>" +
               "<div class='checkout-step-note' style='text-align:center;margin-top:8px;'>By placing your order, you agree to Breg's privacy notice and conditions of use.</div>" +
               "<div class='checkout-order-lines'>" + summaryLines + "</div>" +
@@ -1290,15 +1404,18 @@
         );
         applyCheckoutSelectionState();
         hideInitialLoader();
+        // Ensure the checkout view starts at the top only on first load
+        if (!checkoutInitialRenderDone) {
+          checkoutInitialRenderDone = true;
+          setTimeout(function () {
+            window.scrollTo(0, 0);
+          }, 50);
+        }
       }
 
       $(document).on("change", "input[name='paymentMethodMode']", function () {
         try { localStorage.setItem("bregCheckoutPaymentMode", String($(this).val() || "invoice")); } catch (e) {}
         renderCheckout();
-      });
-
-      $(document).on("change", "input[name='shippingCarrier'], input[name='shippingOption'], #shippingResidentialInput, #shippingSignatureInput", function () {
-        applyCheckoutSelectionState();
       });
 
       $(document).on("input", "#shippingAttentionInput", function () {
@@ -1324,6 +1441,35 @@
         $("#addShippingAddressForm")[0].reset();
         $("#shipCountry").val("United States");
         $("#addShippingAddressModal").modal("show");
+      });
+
+      $(document).on("click", "#selectShippingMethodBtn", function () {
+        renderShippingMethodSelectionModal();
+        $("#selectShippingMethodModal").modal("show");
+      });
+
+      $(document).on("change", "input[name='shippingCarrierModal']", function () {
+        $("#shippingMethodCarrierList .checkout-choice").removeClass("active");
+        $(this).closest(".checkout-choice").addClass("active");
+      });
+
+      $(document).on("change", "input[name='shippingOptionModal']", function () {
+        $("#shippingMethodOptionList .checkout-choice").removeClass("active");
+        $(this).closest(".checkout-choice").addClass("active");
+      });
+
+      $(document).on("submit", "#selectShippingMethodForm", function (event) {
+        event.preventDefault();
+        var carrier = String($("input[name='shippingCarrierModal']:checked").val() || "FedEx");
+        var option = String($("input[name='shippingOptionModal']:checked").val() || "Ground");
+        var residential = $("#shippingResidentialInput").is(":checked");
+        var signature = $("#shippingSignatureInput").is(":checked");
+        try { localStorage.setItem("bregShippingCarrier", carrier); } catch (e) {}
+        try { localStorage.setItem("bregShippingOption", option); } catch (e) {}
+        try { localStorage.setItem("bregShippingResidential", residential ? "1" : "0"); } catch (e) {}
+        try { localStorage.setItem("bregShippingSignature", signature ? "1" : "0"); } catch (e) {}
+        $("#selectShippingMethodModal").modal("hide");
+        renderCheckout();
       });
 
       $(document).on("click", "#selectCreditCardBtn", function () {

@@ -6,7 +6,7 @@
   <title>Breg Store - Product Detail</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -101,14 +101,19 @@
     }
     .pdp-top-qty-label { margin: 0; font-size: 13px; line-height: 18px; color: #364153; }
     .pdp-top-cart-btn {
-      border: 1px solid #fcd200;
-      background: #ffd814;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
       border-radius: 999px;
       font-size: 15px;
       line-height: 1.1;
-      color: #0a0a0a;
+      color: #fff;
       width: 100%;
       height: 42px;
+    }
+    .pdp-top-cart-btn:hover {
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .pdp-top-cart-btn[disabled] { opacity: .55; cursor: not-allowed; }
     .pdp-top-bulk-btn {
@@ -229,7 +234,8 @@
       border-color: #007185;
       background: #e9f7f9;
     }
-    .pdp-btn-primary { border: 1px solid #fcd200; background: #ffd814; border-radius: 999px; font-size: 16px; line-height: 1.1; color: #0a0a0a; width: 100%; height: 42px; }
+    .pdp-btn-primary { border: 1px solid var(--breg-primary, #0047bb); background: var(--breg-primary, #0047bb); border-radius: 999px; font-size: 16px; line-height: 1.1; color: #fff; width: 100%; height: 42px; }
+    .pdp-btn-primary:hover { background: var(--breg-primary-dark, #001E62); border-color: var(--breg-primary-dark, #001E62); color: #fff; }
     .pdp-btn-primary[disabled] { opacity: .55; cursor: not-allowed; }
     .pdp-rail { border: 1px solid #d5dde4; border-radius: 10px; background: #fff; padding: 14px; position: sticky; top: 96px; }
     .pdp-rail h3 { margin: 0 0 16px; padding-bottom: 9px; border-bottom: 1px solid #e5e7eb; font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: -.31px; color: #0a0a0a; }
@@ -447,14 +453,14 @@
       font-size: 14px;
     }
     .bulk-btn-add {
-      border: 1px solid #fcd200;
-      background: #ffd814;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
       border-radius: 999px;
       height: 38px;
       padding: 0 18px;
       font-size: 14px;
       font-weight: 600;
-      color: #0a0a0a;
+      color: #fff;
     }
     .bulk-btn-check {
       border: 1px solid #d1d5dc;
@@ -883,6 +889,7 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">
@@ -1280,7 +1287,7 @@
                   "</div>" +
                 "</div>" +
 	                "<div class='pdp-price-wrap'>" +
-	                  "<p class='pdp-price' id='pdpPriceValue'>$" + Number(product.price || 0).toFixed(2) + "</p>" +
+	                  "<p class='pdp-price' id='pdpPriceValue'>$" + BregFormatMoney(Number(product.price || 0)) + "</p>" +
 	                  "<p class='pdp-inventory-msg' id='topInventoryMsg'></p>" +
 	                  "<div class='pdp-top-cart-row'>" +
 	                    "<div class='pdp-top-cart-controls'>" +
@@ -1393,7 +1400,7 @@
           var pImg = normalizeImage(p.image) || missingProductImage;
           railHtml += "<a class='pdp-rail-item' href='product-detail.html?category=" + encodeURIComponent(p.category) + "&id=" + encodeURIComponent(p.id) + "'>" +
             "<img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'>" +
-            "<div><div class='pdp-rail-name'>" + escapeHtml(p.name) + "</div>" + (isSignedIn ? ("<div class='pdp-rail-price'>$" + Number(p.price || 0).toFixed(2) + "</div>") : "") + "</div>" +
+            "<div><div class='pdp-rail-name'>" + escapeHtml(p.name) + "</div>" + (isSignedIn ? ("<div class='pdp-rail-price'>$" + BregFormatMoney(Number(p.price || 0)) + "</div>") : "") + "</div>" +
           "</a>";
         });
         $("#pdpRail").html(railHtml || "<div class='pdp-empty'>No related products found.</div>");
@@ -1553,8 +1560,8 @@
               "<td>" + escapeHtml(line.name || line.sku || "Product") + "</td>" +
               "<td>" + escapeHtml(String(line.sku || "")) + "</td>" +
               "<td>" + lineQty + "</td>" +
-              "<td>$" + linePrice.toFixed(2) + "</td>" +
-              "<td>$" + lineTotal.toFixed(2) + "</td>" +
+              "<td>$" + BregFormatMoney(linePrice) + "</td>" +
+              "<td>$" + BregFormatMoney(lineTotal) + "</td>" +
             "</tr>";
           });
           $("#buyNowOrder").html(
@@ -1563,7 +1570,7 @@
               "<thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead>" +
               "<tbody>" + rows + "</tbody>" +
             "</table>" +
-            "<div style='margin-top:8px;'><strong>Estimated Total: $" + total.toFixed(2) + "</strong></div>"
+            "<div style='margin-top:8px;'><strong>Estimated Total: $" + BregFormatMoney(total) + "</strong></div>"
           );
           $("#buyNowPlaceOrder").prop("disabled", false);
           $("#buyNowModal").addClass("open").attr("aria-hidden", "false");
@@ -1664,7 +1671,7 @@
             var pHref = "product-detail.html?category=" + encodeURIComponent(p.category || "") + "&id=" + encodeURIComponent(p.id || "");
             relatedHtml += "<div class='cart-added-item'>" +
               "<a href='" + pHref + "'><img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'></a>" +
-              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + Number(p.price || 0).toFixed(2) + "</p>" +
+              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + BregFormatMoney(Number(p.price || 0)) + "</p>" +
               "<button type='button' class='cart-added-add js-cart-added-add' data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-price='" + Number(p.price || 0).toFixed(2) + "' data-image='" + escapeHtml(pImg) + "' data-category='" + escapeHtml(p.category || "") + "'>Add</button></div>" +
             "</div>";
           });
@@ -1706,7 +1713,7 @@
             var pHref = "product-detail.html?category=" + encodeURIComponent(p.category || "") + "&id=" + encodeURIComponent(p.id || "");
             relatedHtml += "<div class='cart-added-item'>" +
               "<a href='" + pHref + "'><img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'></a>" +
-              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + Number(p.price || 0).toFixed(2) + "</p>" +
+              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + BregFormatMoney(Number(p.price || 0)) + "</p>" +
               "<button type='button' class='cart-added-add js-cart-added-add' data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-price='" + Number(p.price || 0).toFixed(2) + "' data-image='" + escapeHtml(pImg) + "' data-category='" + escapeHtml(p.category || "") + "'>Add</button></div>" +
             "</div>";
           });

@@ -6,7 +6,7 @@
   <title>Breg Store - Bulk Order</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -67,8 +67,15 @@
       border-color: #b7c0cc;
     }
     .bulk-btn-primary {
-      border-color: #fcd200;
-      background: #ffd814;
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .bulk-btn-primary:hover,
+    .bulk-btn-primary:focus {
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .bulk-btn-secondary {
       border-color: #c7ced4;
@@ -173,7 +180,8 @@
     }
     .bulk-suggest-item:last-child { border-bottom: 0; }
     .bulk-suggest-item:hover,
-    .bulk-suggest-item:focus {
+    .bulk-suggest-item:focus,
+    .bulk-suggest-item.is-active {
       background: #f8fbff;
       outline: 0;
     }
@@ -218,13 +226,14 @@
       gap: 8px;
     }
     .bulk-add-line.enabled {
-      background: #007185;
-      border-color: #007185;
+      background: var(--breg-primary, #0047bb);
+      border-color: var(--breg-primary, #0047bb);
+      color: #fff;
     }
     .bulk-add-line.enabled:hover,
     .bulk-add-line.enabled:focus {
-      background: #005f70;
-      border-color: #005f70;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
       color: #fff;
     }
     .bulk-divider {
@@ -308,7 +317,7 @@
       line-height: 16px;
       min-height: 66px;
       padding: 8px;
-      font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-family: var(--font-body);
       margin: 0;
     }
     .bulk-list {
@@ -683,6 +692,7 @@
       .bulk-btn { width: 100%; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">
@@ -734,14 +744,9 @@
 
   <main class="site-max">
     <section class="bulk-wrap">
-      <div class="bulk-head">
-        <div>
-          <h1 class="bulk-title">Bulk Order</h1>
-          <p class="bulk-sub">Add multiple products to your cart quickly</p>
-        </div>
-      </div>
+      <div class="bulk-head"></div>
       <div class="bulk-head-actions">
-        <button type="button" class="bulk-btn" id="bulkSaveListBtn"><span class="glyphicon glyphicon-heart-empty"></span> Add to List</button>
+        <button type="button" class="bulk-btn bulk-btn-primary" id="bulkSaveListBtn"><span class="glyphicon glyphicon-heart-empty"></span> Add to List</button>
         <button type="button" class="bulk-btn bulk-btn-secondary" id="bulkCheckAllInvBtn"><span class="glyphicon glyphicon-ok-circle"></span> Check Inventory</button>
         <button type="button" class="bulk-btn bulk-btn-primary" id="bulkAddAllBtn"><span class="glyphicon glyphicon-shopping-cart"></span> Add All to Cart (<span id="bulkTotalQty">0</span>)</button>
       </div>
@@ -924,8 +929,9 @@ FUSION-OA-PLUS,1</pre>
 
       function refreshAddToListButton() {
         var skus = currentSkuList();
+        var $btn = $("#bulkSaveListBtn");
         if (!skus.length) {
-          $("#bulkSaveListBtn").html("<span class='glyphicon glyphicon-heart-empty'></span> Add to List");
+          $btn.html("<span class='glyphicon glyphicon-heart-empty'></span> Add to List");
           return;
         }
         var coveredLists = 0;
@@ -935,9 +941,9 @@ FUSION-OA-PLUS,1</pre>
           if (allIncluded) coveredLists += 1;
         });
         if (coveredLists > 0) {
-          $("#bulkSaveListBtn").html("<span class='glyphicon glyphicon-heart'></span> Saved to List" + (coveredLists > 1 ? "s" : ""));
+          $btn.html("<span class='glyphicon glyphicon-heart'></span> Saved to List" + (coveredLists > 1 ? "s" : ""));
         } else {
-          $("#bulkSaveListBtn").html("<span class='glyphicon glyphicon-heart-empty'></span> Add to List");
+          $btn.html("<span class='glyphicon glyphicon-heart-empty'></span> Add to List");
         }
       }
 
@@ -998,7 +1004,7 @@ FUSION-OA-PLUS,1</pre>
         $("#bulkDetailName").text(item.name || item.sku || "Product");
         $("#bulkDetailSku").text(item.sku || "");
         $("#bulkDetailCategory").text(item.category || "Quick Order");
-        $("#bulkDetailPrice").text("$" + toPrice(item.price).toFixed(2));
+        $("#bulkDetailPrice").text("$" + BregFormatMoney(toPrice(item.price)));
         $("#bulkDetailDesc").text(getItemDescription(item));
         $("#bulkDetailImage")
           .attr("src", image)
@@ -1140,6 +1146,7 @@ FUSION-OA-PLUS,1</pre>
       function renderItems() {
         syncHeadActions();
         refreshAddToListButton();
+        saveDraftRows();
         if (!items.length) {
           $("#bulkList").html(
             "<div class='bulk-empty'>" +
@@ -1161,7 +1168,7 @@ FUSION-OA-PLUS,1</pre>
                   "<div><p class='bulk-item-name'><button type='button' class='bulk-item-open js-open-product-modal' data-index='" + index + "'>" + escapeHtml(item.name || item.sku) + "</button></p><p class='bulk-item-sku'>SKU: " + escapeHtml(item.sku) + "</p></div>" +
                 "</div>" +
               "</td>" +
-              "<td>$" + toPrice(item.price).toFixed(2) + "</td>" +
+              "<td>$" + BregFormatMoney(toPrice(item.price)) + "</td>" +
               "<td><input type='number' min='1' step='1' class='bulk-number js-item-qty' data-index='" + index + "' value='" + Math.max(1, Number(item.qty || 1)) + "' style='height:34px;width:92px;'></td>" +
               "<td><span class='bulk-inv-status " + statusClass(item.inventoryStatus) + "'>" + escapeHtml(item.inventoryStatus || "") + "</span></td>" +
               "<td><button type='button' class='bulk-remove js-remove-item' data-index='" + index + "'>Remove</button></td>" +
@@ -1198,6 +1205,13 @@ FUSION-OA-PLUS,1</pre>
         setManualSelected(null);
         closeManualSuggest();
         renderItems();
+        $("#manualSkuInput").trigger("focus");
+      }
+
+      function saveDraftRows() {
+        try {
+          sessionStorage.setItem(draftStorageKey, JSON.stringify(items || []));
+        } catch (e) {}
       }
 
       function readDraftRows() {
@@ -1215,22 +1229,17 @@ FUSION-OA-PLUS,1</pre>
 
       function hydrateFromDraft() {
         var rows = readDraftRows();
-        clearDraftRows();
         if (!rows.length) return;
-        rows.forEach(function (row) {
-          var qty = Math.max(1, Number(row && row.qty != null ? row.qty : 1));
-          var selected = row && row.selected ? row.selected : null;
-          var rawInput = row && row.input ? String(row.input) : "";
-          var resolved = resolveInputToMeta(rawInput, selected);
-          if (!resolved || !resolved.sku) return;
-          upsertItem({
-            sku: String(resolved.sku || ""),
-            name: String(resolved.name || resolved.sku || ""),
-            image: String(resolved.image || ""),
-            category: String(resolved.category || "Quick Order"),
-            qty: qty,
-            price: toPrice(resolved.price)
-          });
+        items = rows.map(function (row) {
+          return {
+            sku: String(row && row.sku || ""),
+            name: String(row && (row.name || row.sku) || ""),
+            image: String(row && row.image || ""),
+            category: String(row && row.category || "Quick Order"),
+            qty: Math.max(1, Number(row && row.qty != null ? row.qty : 1)),
+            price: toPrice(row && row.price),
+            inventoryStatus: String(row && row.inventoryStatus || "")
+          };
         });
       }
 
@@ -1261,6 +1270,9 @@ FUSION-OA-PLUS,1</pre>
       syncBulkStickyOffset();
       hydrateFromDraft();
       renderItems();
+      setTimeout(function () {
+        $("#manualSkuInput").trigger("focus");
+      }, 0);
 
       $(document).on("input", "#manualSkuInput", function () {
         var value = String($(this).val() || "").trim();
@@ -1276,15 +1288,31 @@ FUSION-OA-PLUS,1</pre>
       });
 
       $(document).on("keydown", "#manualSkuInput", function (event) {
-        if (event.key !== "Enter") return;
-        var $first = $("#manualSkuSuggest .js-manual-suggestion").first();
-        if ($first.length) {
+        var $items = $("#manualSkuSuggest .js-manual-suggestion");
+        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          if (!$items.length) return;
           event.preventDefault();
-          $first.trigger("click");
+          var $current = $items.filter(".is-active").first();
+          var index = $items.index($current);
+          if (index < 0) index = (event.key === "ArrowDown") ? -1 : $items.length;
+          index += (event.key === "ArrowDown") ? 1 : -1;
+          if (index < 0) index = $items.length - 1;
+          if (index >= $items.length) index = 0;
+          $items.removeClass("is-active");
+          $items.eq(index).addClass("is-active");
           return;
         }
-        event.preventDefault();
-        addManualLine();
+        if (event.key === "Enter") {
+          var $active = $("#manualSkuSuggest .js-manual-suggestion.is-active").first();
+          var $first = $active.length ? $active : $("#manualSkuSuggest .js-manual-suggestion").first();
+          if ($first.length) {
+            event.preventDefault();
+            $first.trigger("click");
+            return;
+          }
+          event.preventDefault();
+          addManualLine();
+        }
       });
 
       $(document).on("click", ".js-manual-suggestion", function () {
@@ -1298,7 +1326,7 @@ FUSION-OA-PLUS,1</pre>
         $("#manualSkuInput").val(item.name || item.sku);
         setManualSelected(item);
         closeManualSuggest();
-        $("#manualQtyInput").trigger("focus");
+        $("#manualQtyInput").trigger("focus").select();
       });
 
       $(document).on("mousedown", function (event) {
@@ -1308,6 +1336,12 @@ FUSION-OA-PLUS,1</pre>
       });
 
       $(document).on("click", "#manualAddBtn", function () {
+        addManualLine();
+      });
+
+      $(document).on("keydown", "#manualQtyInput", function (event) {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
         addManualLine();
       });
 
@@ -1370,6 +1404,7 @@ FUSION-OA-PLUS,1</pre>
         items[index].qty = Math.max(1, Number($(this).val() || 1));
         items[index].inventoryStatus = "";
         syncHeadActions();
+        saveDraftRows();
       });
       $(document).on("click", "#bulkCheckAllInvBtn", function () {
         if (!items.length) return;
@@ -1397,6 +1432,10 @@ FUSION-OA-PLUS,1</pre>
         });
         if (cartApi.addLines) cartApi.addLines(lines);
         if (cartApi.showAddedModal) cartApi.showAddedModal(lines);
+        items = [];
+        clearDraftRows();
+        renderItems();
+        $("#manualSkuInput").trigger("focus");
       });
 
       $(document).on("click", ".js-open-product-modal", function () {

@@ -6,7 +6,7 @@
   <title>Breg Store - Shopping Cart</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -177,10 +177,10 @@
     .cart-checkout-btn {
       display: flex;
       width: 100%;
-      border: 1px solid #fcd200;
-      background: #ffd814;
-      color: #111;
-      border-radius: 8px;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      border-radius: 999px;
       text-align: center;
       align-items: center;
       justify-content: center;
@@ -189,10 +189,15 @@
       line-height: 1;
       font-weight: 600;
       height: 40px;
-      border-radius: 999px;
       margin-bottom: 12px;
     }
-    .cart-checkout-btn:hover, .cart-checkout-btn:focus { text-decoration: none; color: #111; }
+    .cart-checkout-btn:hover,
+    .cart-checkout-btn:focus {
+      text-decoration: none;
+      color: #fff;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+    }
     .cart-summary-lines { margin: 0; padding: 0; list-style: none; }
     .cart-summary-lines { margin-top: 10px; }
     .cart-summary-lines li {
@@ -257,6 +262,7 @@
       .cart-checkout-btn { font-size: 14px; height: 40px; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">
@@ -421,7 +427,7 @@
                   "<button type='button' class='cart-link-btn cart-remove-saved' data-index='" + i + "'><span class='glyphicon glyphicon-trash' style='font-size:11px; margin-right:4px;'></span>Delete</button>" +
                 "</div>" +
               "</div>" +
-              "<div class='cart-item-price'>$" + (qty * price).toFixed(2) + "</div>" +
+              "<div class='cart-item-price'>$" + BregFormatMoney(qty * price) + "</div>" +
             "</article>";
           });
           savedHtml =
@@ -458,7 +464,7 @@
                 "<button type='button' class='cart-link-btn cart-save-later' data-index='" + i + "'>Save for later</button>" +
               "</div>" +
             "</div>" +
-            "<div class='cart-item-price'>$" + (qty * price).toFixed(2) + "</div>" +
+            "<div class='cart-item-price'>$" + BregFormatMoney(qty * price) + "</div>" +
           "</article>";
         });
         $("#cartContent").html(
@@ -466,19 +472,19 @@
             "<section class='cart-left'>" +
               "<div class='cart-left-card'>" +
               "<div>" + rows + "</div>" +
-              "<div class='cart-bottom-subtotal'>Subtotal (" + totalQty + " item" + (totalQty === 1 ? "" : "s") + "): <span class='accent'>$" + total.toFixed(2) + "</span></div>" +
+              "<div class='cart-bottom-subtotal'>Subtotal (" + totalQty + " item" + (totalQty === 1 ? "" : "s") + "): <span class='accent'>$" + BregFormatMoney(total) + "</span></div>" +
               "</div>" +
             "</section>" +
             "<aside class='cart-right'>" +
               "<div class='cart-summary'>" +
                 "<a class='cart-checkout-btn' href='checkout.html'>Proceed to Checkout</a>" +
                 "<ul class='cart-summary-lines'>" +
-                  "<li><span>Items:</span><span>$" + total.toFixed(2) + "</span></li>" +
+                  "<li><span>Items:</span><span>$" + BregFormatMoney(total) + "</span></li>" +
                   "<li><span>Shipping &amp; handling:</span><span>&mdash;</span></li>" +
                   "<li><span>Total before tax:</span><span>&mdash;</span></li>" +
                   "<li><span>Estimated tax:</span><span>&mdash;</span></li>" +
                 "</ul>" +
-                "<div class='cart-summary-total'><span>Order total:</span><span>$" + total.toFixed(2) + "</span></div>" +
+                "<div class='cart-summary-total'><span>Order total:</span><span>$" + BregFormatMoney(total) + "</span></div>" +
               "</div>" +
             "</aside>" +
           "</div>" +

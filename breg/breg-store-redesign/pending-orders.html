@@ -6,7 +6,7 @@
   <title>Breg Store - Pending Orders</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -106,17 +106,23 @@
     .pending-actions { display: flex; align-items: center; gap: 10px; }
     .pending-btn {
       display: inline-block;
-      border: 1px solid #d5d9d9;
+      border: 1px solid var(--breg-primary, #0047bb);
       border-radius: 16px;
       background: #fff;
-      color: #0f1111;
+      color: var(--breg-primary, #0047bb);
       font-size: 13px;
       line-height: 1.25;
       padding: 6px 14px;
       text-decoration: none;
       font-weight: 600;
     }
-    .pending-btn:hover,.pending-btn:focus { color: #0f1111; background: #f7f8f8; text-decoration: none; }
+    .pending-btn:hover,
+    .pending-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
     @media (max-width: 1199px) {
       .pending-title { font-size: 30px; }
       .pending-subtitle { font-size: 14px; }
@@ -127,6 +133,7 @@
       .pending-subtitle { font-size: 13px; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">
@@ -191,11 +198,11 @@
       </div>
       <div class="pending-items">
         <div class="pending-item">
-          <img src="assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" alt="Cold therapy product">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
           <div><a class="pending-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="pending-item-meta">Quantity: 2 | Price: $299.99</div></div>
         </div>
         <div class="pending-item">
-          <img src="assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" alt="Knee brace product">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace product">
           <div><a class="pending-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="pending-item-meta">Quantity: 1 | Price: $449.99</div></div>
         </div>
         <div class="pending-order-foot">
@@ -214,11 +221,11 @@
       </div>
       <div class="pending-items">
         <div class="pending-item">
-          <img src="assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" alt="Shoulder immobilizer">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
           <div><a class="pending-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a><div class="pending-item-meta">Quantity: 3 | Price: $89.99</div></div>
         </div>
         <div class="pending-item">
-          <img src="assets/searchbar/photo-1714929818299-914d3114bcec.jpg" alt="Resistance bands">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Physical Therapy Resistance Bands Set" alt="Resistance bands">
           <div><a class="pending-item-title" href="#">Physical Therapy Resistance Bands Set</a><div class="pending-item-meta">Quantity: 5 | Price: $29.99</div></div>
         </div>
         <div class="pending-order-foot">
@@ -237,11 +244,11 @@
       </div>
       <div class="pending-items">
         <div class="pending-item">
-          <img src="assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" alt="Knee brace">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace">
           <div><a class="pending-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="pending-item-meta">Quantity: 3 | Price: $449.99</div></div>
         </div>
         <div class="pending-item">
-          <img src="assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" alt="Cold therapy system">
+          <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy system">
           <div><a class="pending-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="pending-item-meta">Quantity: 1 | Price: $299.99</div></div>
         </div>
         <div class="pending-order-foot">
@@ -255,6 +262,19 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="analysis/catalog-data.js"></script>
+  <script src="assets/catalog-image-resolver.js"></script>
   <script src="assets/shell.js"></script>
+  <script>
+    (function () {
+      if (window.BregCatalogImage) {
+        $(".pending-item").each(function () {
+          var $img = $(this).find("img").first();
+          var name = $img.attr("data-product-name") || $.trim($(this).find(".pending-item-title").first().text());
+          if (name) $img.attr("src", window.BregCatalogImage.byName(name));
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

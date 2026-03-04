@@ -6,7 +6,7 @@
   <title>Breg Store - Saved Addresses</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
@@ -34,10 +34,10 @@
     .addresses-subtitle { margin: 4px 0 0; font-size: 14px; color: #565959; line-height: 1.35; }
     .addresses-add-btn {
       display: inline-block;
-      border: 1px solid #fcd200;
+      border: 1px solid var(--breg-primary, #0047bb);
       border-radius: 16px;
-      background: #ffd814;
-      color: #0f1111;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
       font-size: 13px;
       line-height: 1.25;
       padding: 8px 18px;
@@ -47,10 +47,11 @@
       margin-top: 8px;
     }
     .addresses-add-btn .glyphicon { margin-right: 6px; top: 2px; }
-    .addresses-add-btn:hover,.addresses-add-btn:focus {
-      border-color: #f2c200;
-      background: #f7ca00;
-      color: #0f1111;
+    .addresses-add-btn:hover,
+    .addresses-add-btn:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
       text-decoration: none;
     }
     .address-grid {
@@ -149,6 +150,7 @@
       .addresses-add-btn { margin-top: 0; }
     }
   </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
   <header class="top-header">

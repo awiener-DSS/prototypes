@@ -181,6 +181,46 @@ var EmployeeBulkImport = {
   processFile: function(file, partner) {
     var self = this;
     
+    // Normalize common date formats (e.g. 1/1/25, 10/02/2019, 1990-01-15) to ISO yyyy-mm-dd
+    function normalizeDateString(raw) {
+      if (!raw) return '';
+      var value = String(raw).trim();
+      if (!value) return '';
+      
+      // Already ISO yyyy-mm-dd
+      var isoMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+      if (isoMatch) {
+        return value;
+      }
+      
+      // Handle M/D/YY, M/D/YYYY, MM/DD/YY, MM/DD/YYYY (with or without leading zeros)
+      var mdYMatch = /^(\d{1,2})\/(\d{1,2})\/(\d{2}|\d{4})$/.exec(value);
+      if (mdYMatch) {
+        var month = parseInt(mdYMatch[1], 10);
+        var day = parseInt(mdYMatch[2], 10);
+        var yearPart = mdYMatch[3];
+        var year;
+        
+        if (yearPart.length === 4) {
+          year = parseInt(yearPart, 10);
+        } else {
+          // Interpret two-digit years in a reasonable way:
+          // 50-99 => 1900-1999, 00-49 => 2000-2049
+          var twoDigit = parseInt(yearPart, 10);
+          year = twoDigit >= 50 ? 1900 + twoDigit : 2000 + twoDigit;
+        }
+        
+        if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
+          var mm = String(month).padStart(2, '0');
+          var dd = String(day).padStart(2, '0');
+          return year + '-' + mm + '-' + dd;
+        }
+      }
+      
+      // Unknown format - caller can decide how to handle
+      return null;
+    }
+    
     var reader = new FileReader();
     
     reader.onload = function(e) {
@@ -230,8 +270,32 @@ var EmployeeBulkImport = {
           var lastName = lastNameIndex !== -1 ? (values[lastNameIndex] || '').trim() : '';
           var employeeId = employeeIdIndex !== -1 ? (values[employeeIdIndex] || '').trim() : '';
           var username = usernameIndex !== -1 ? (values[usernameIndex] || '').trim() : '';
-          var dateOfBirth = dateOfBirthIndex !== -1 ? (values[dateOfBirthIndex] || '').trim() : '';
-          var startDate = startDateIndex !== -1 ? (values[startDateIndex] || '').trim() : '';
+          var dateOfBirthRaw = dateOfBirthIndex !== -1 ? (values[dateOfBirthIndex] || '').trim() : '';
+          var startDateRaw = startDateIndex !== -1 ? (values[startDateIndex] || '').trim() : '';
+          
+          // Normalize date strings into ISO format so they work regardless of how Excel formats them
+          var dateOfBirth = dateOfBirthRaw;
+          var startDate = startDateRaw;
+          
+          if (dateOfBirthRaw) {
+            var normalizedDob = normalizeDateString(dateOfBirthRaw);
+            if (normalizedDob === null) {
+              errorCount++;
+              errors.push('Row ' + (index + 2) + ': Invalid Date of Birth "' + dateOfBirthRaw + '". Please use YYYY-MM-DD or MM/DD/YYYY.');
+              return;
+            }
+            dateOfBirth = normalizedDob;
+          }
+          
+          if (startDateRaw) {
+            var normalizedStart = normalizeDateString(startDateRaw);
+            if (normalizedStart === null) {
+              errorCount++;
+              errors.push('Row ' + (index + 2) + ': Invalid Start Date "' + startDateRaw + '". Please use YYYY-MM-DD or MM/DD/YYYY.');
+              return;
+            }
+            startDate = normalizedStart;
+          }
           
           // Convert empty strings to undefined for optional fields
           employeeId = employeeId || undefined;
@@ -499,11 +563,16 @@ var EmployeeBulkImport = {
           });
         }
         
-        AppState.updateCustomer(partner.id, {
+        var customerUpdates = {
           employees: allEmployees,
-          employeeCount: allEmployees.length,
-          groups: updatedGroups
-        });
+          employeeCount: allEmployees.length
+        };
+        // If we recalculated department employee counts, persist updated locations
+        if (updatedLocations) {
+          customerUpdates.locations = updatedLocations;
+        }
+        
+        AppState.updateCustomer(partner.id, customerUpdates);
         
         // Show results
         $('#import-progress').hide();

@@ -10,54 +10,6 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
-    .page-loading-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #eef1f4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity .28s ease, visibility .28s ease;
-      opacity: 1;
-      visibility: visible;
-    }
-    .page-loading-screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .page-loading-inner { text-align: center; }
-    .page-loading-circle {
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
-      background: #131653;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
-      box-shadow: 0 8px 22px rgba(19, 22, 83, .22);
-    }
-    .page-loading-logo {
-      width: 170px;
-      max-width: 46vw;
-      margin: 0;
-      display: block;
-      animation: pageLogoPulse 1.2s ease-in-out infinite;
-    }
-    .page-loading-copy {
-      margin: 0;
-      color: #334155;
-      font-size: 14px;
-      letter-spacing: .2px;
-    }
-    @keyframes pageLogoPulse {
-      0% { transform: scale(1); opacity: .72; }
-      50% { transform: scale(1.02); opacity: 1; }
-      100% { transform: scale(1); opacity: .72; }
-    }
-
     body { background: #EAEDED; }
     .invoices-page { margin: 12px 0 18px; }
     .invoices-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
@@ -85,6 +37,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      margin-bottom: 10px;
     }
     .invoice-filters-title {
       display: flex;
@@ -95,28 +48,11 @@
       font-weight: 500;
     }
     .invoice-filters-title .glyphicon { color: #0f1111; font-size: 14px; }
-    .invoice-filters-toggle {
-      border: 0;
-      background: transparent;
-      padding: 0;
-      font-size: 13px;
-      color: #007185;
-      font-weight: 500;
-    }
-    .invoice-filters-toggle:hover,.invoice-filters-toggle:focus {
-      color: #c7511f;
-      text-decoration: none;
-      outline: 0;
-    }
     .invoice-filters-body {
-      display: none;
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 1px solid #eaeded;
+      display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 10px;
     }
-    .invoice-filters.open .invoice-filters-body { display: grid; }
     .invoice-filter-group label {
       display: block;
       margin: 0 0 4px;
@@ -136,11 +72,118 @@
       border-color: #007185;
       box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
     }
+    .invoice-date-range {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .invoice-date-range > div {
+      display: flex;
+      flex-direction: column;
+    }
+    .invoice-date-range .form-control {
+      width: 100%;
+      height: 34px;
+      min-height: 34px;
+    }
+    .invoice-date-range input[type="date"].form-control {
+      padding: 6px 10px;
+      line-height: 1.42857143;
+    }
+    .invoice-date-range input[type="date"].form-control::-webkit-datetime-edit {
+      padding: 0;
+      color: #0f1111;
+    }
+    .invoice-date-range input[type="date"].form-control::-webkit-date-and-time-value {
+      text-align: left;
+      min-height: 20px;
+    }
+    .invoice-search-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .invoice-clear-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #c7ced4;
+      border-radius: 999px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 7px 14px;
+      text-decoration: none;
+    }
+    .invoice-download-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #c7ced4;
+      border-radius: 999px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 7px 14px;
+      text-decoration: none;
+    }
+    .invoice-download-btn:hover,
+    .invoice-download-btn:focus {
+      border-color: #8e9aa4;
+      background: #f7f8f8;
+      color: #0f1111;
+      text-decoration: none;
+      outline: 0;
+    }
+    .invoice-clear-btn:hover,
+    .invoice-clear-btn:focus {
+      border-color: #8e9aa4;
+      background: #f7f8f8;
+      color: #0f1111;
+      text-decoration: none;
+      outline: 0;
+    }
+    .invoice-search-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 999px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 7px 16px;
+      text-decoration: none;
+    }
+    .invoice-search-btn:hover,
+    .invoice-search-btn:focus {
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
+      text-decoration: none;
+      outline: 0;
+    }
     .invoice-count {
       margin: 0 0 10px;
       color: #565959;
       font-size: 13px;
       line-height: 1.35;
+    }
+    .invoice-row-download-note {
+      margin: -4px 0 10px;
+      color: #2f3f52;
+      font-size: 12px;
+      line-height: 1.35;
+      font-weight: 500;
     }
     .invoice-table-wrap {
       border: 1px solid #d5d9d9;
@@ -169,6 +212,32 @@
       color: #0f1111;
     }
     .invoice-table tbody tr:last-child td { border-bottom: 0; }
+    .invoice-table tbody tr {
+      cursor: pointer;
+    }
+    .invoice-table tbody tr:hover td {
+      background: #f7fbff;
+    }
+    .invoice-view-btn {
+      border: 1px solid #c7d2e2;
+      background: #fff;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      line-height: 1.2;
+      color: #0057a3;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .invoice-view-btn:hover,
+    .invoice-view-btn:focus {
+      color: #003d75;
+      border-color: #9eb7d6;
+      background: #eef5ff;
+      text-decoration: none;
+      outline: 0;
+    }
     .invoice-link {
       color: #007185;
       text-decoration: none;
@@ -210,12 +279,11 @@
   <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
-  <div class="page-loading-screen" id="pageLoadingScreen" aria-live="polite" aria-label="Loading invoices">
-    <div class="page-loading-inner">
-      <div class="page-loading-circle">
-        <img class="page-loading-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+  <div class="breg-page-loader" id="pageLoadingScreen" aria-live="polite" aria-label="Loading invoices">
+    <div class="breg-page-loader-inner">
+      <div class="breg-page-loader-circle">
+        <img class="breg-page-loader-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
       </div>
-      <p class="page-loading-copy">Loading invoices...</p>
     </div>
   </div>
 
@@ -254,7 +322,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -274,8 +342,7 @@
 
       <section class="invoice-filters" id="invoiceFilters">
         <div class="invoice-filters-head">
-          <div class="invoice-filters-title"><span class="glyphicon glyphicon-filter"></span> Search Filters</div>
-          <button type="button" class="invoice-filters-toggle" id="invoiceFiltersToggle">Show Filters</button>
+          <div class="invoice-filters-title"><span class="glyphicon glyphicon-search"></span> Search Invoices</div>
         </div>
         <div class="invoice-filters-body" id="invoiceFiltersBody">
           <div class="invoice-filter-group">
@@ -287,7 +354,22 @@
             <input id="invoiceFilterOrder" type="text" class="form-control" placeholder="ORD-">
           </div>
           <div class="invoice-filter-group">
-            <label for="invoiceFilterStatus">Status</label>
+            <label for="invoiceFilterPo">PO #</label>
+            <input id="invoiceFilterPo" type="text" class="form-control" placeholder="PO-">
+          </div>
+          <div class="invoice-filter-group">
+            <label for="invoiceFilterDateFrom">Transaction Date</label>
+            <div class="invoice-date-range">
+              <div>
+                <input id="invoiceFilterDateFrom" type="date" class="form-control" aria-label="Transaction date from" placeholder="From">
+              </div>
+              <div>
+                <input id="invoiceFilterDateTo" type="date" class="form-control" aria-label="Transaction date to" placeholder="To">
+              </div>
+            </div>
+          </div>
+          <div class="invoice-filter-group">
+            <label for="invoiceFilterStatus">Payment Status</label>
             <select id="invoiceFilterStatus" class="form-control">
               <option>All</option>
               <option>Paid</option>
@@ -296,88 +378,106 @@
             </select>
           </div>
           <div class="invoice-filter-group">
-            <label for="invoiceFilterDate">Invoice Date</label>
-            <input id="invoiceFilterDate" type="text" class="form-control" placeholder="MM/DD/YYYY">
+            <label for="invoiceFilterShipAddress">Shipping Address</label>
+            <select id="invoiceFilterShipAddress" class="form-control">
+              <option value="all">All saved addresses</option>
+              <option value="medical-clinic-inc">Medical Clinic Inc. - 123 Healthcare Blvd, Los Angeles, CA 90001</option>
+              <option value="john-smith">John Smith - 456 Residential St, Santa Monica, CA 90401</option>
+              <option value="west-coast-distribution-center">West Coast Distribution Center - 789 Warehouse Way, Long Beach, CA 90802</option>
+            </select>
+          </div>
+          <div class="invoice-search-actions">
+            <button type="button" class="invoice-download-btn" id="invoiceDownloadBtn">Export Invoice List</button>
+            <button type="button" class="invoice-clear-btn" id="invoiceClearBtn">Clear Search</button>
+            <button type="button" class="invoice-search-btn" id="invoiceSearchBtn">Search</button>
           </div>
         </div>
       </section>
 
-      <p class="invoice-count">Showing 6 of 6 invoices</p>
+      <p class="invoice-count">Showing 6 of 6 matching invoices</p>
+      <p class="invoice-row-download-note">Tip: Click any invoice row to open that invoice in a new tab.</p>
 
       <section class="invoice-table-wrap">
         <table class="invoice-table">
           <thead>
             <tr>
               <th>Invoice #</th>
-              <th>Order #</th>
+              <th>Invoice Type</th>
               <th>PO #</th>
-              <th>Date</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Ship To</th>
-              <th>Actions</th>
+              <th>Shipping Address</th>
+              <th>Transaction Date</th>
+              <th>Due Date</th>
+              <th>Payment Status</th>
+              <th>Invoice Amount</th>
+              <th>Amount Balance</th>
             </tr>
           </thead>
           <tbody>
-            <tr>
+            <tr data-order-no="ORD-2024-5678" data-ship-address-key="medical-clinic-inc">
               <td>INV-2024-12-001</td>
-              <td><a class="invoice-link" href="#">ORD-2024-5678</a></td>
+              <td>Commercial Invoice</td>
               <td>PO-2024-001234</td>
-              <td>Dec 4, 2024</td>
+              <td>Medical Clinic Inc.<br>123 Healthcare Blvd<br>Los Angeles, CA 90001</td>
+              <td>Apr 18, 2026</td>
+              <td>May 18, 2026</td>
+              <td><span class="invoice-status paid">Paid</span></td>
               <td>$1,249.97</td>
-              <td><span class="invoice-status paid">Paid</span></td>
-              <td>Los Angeles, CA</td>
-              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+              <td>$0.00</td>
             </tr>
-            <tr>
+            <tr data-order-no="ORD-2024-5679" data-ship-address-key="john-smith">
               <td>INV-2024-12-002</td>
-              <td><a class="invoice-link" href="#">ORD-2024-5679</a></td>
+              <td>Credit Memo</td>
               <td>PO-2024-001235</td>
-              <td>Dec 5, 2024</td>
-              <td>$879.95</td>
+              <td>John Smith<br>456 Residential St<br>Santa Monica, CA 90401</td>
+              <td>Apr 10, 2026</td>
+              <td>May 10, 2026</td>
               <td><span class="invoice-status pending">Pending</span></td>
-              <td>New York, NY</td>
-              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+              <td>$879.95</td>
+              <td>$879.95</td>
             </tr>
-            <tr>
+            <tr data-order-no="ORD-2024-5680" data-ship-address-key="west-coast-distribution-center">
               <td>INV-2024-12-003</td>
-              <td><a class="invoice-link" href="#">ORD-2024-5680</a></td>
+              <td>Commercial Invoice</td>
               <td>PO-2024-001236</td>
-              <td>Dec 6, 2024</td>
+              <td>West Coast Distribution Center<br>789 Warehouse Way<br>Long Beach, CA 90802</td>
+              <td>Mar 25, 2026</td>
+              <td>Apr 24, 2026</td>
+              <td><span class="invoice-status paid">Paid</span></td>
               <td>$1,599.96</td>
-              <td><span class="invoice-status paid">Paid</span></td>
-              <td>Chicago, IL</td>
-              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+              <td>$0.00</td>
             </tr>
-            <tr>
+            <tr data-order-no="ORD-2024-5601" data-ship-address-key="medical-clinic-inc">
               <td>INV-2024-11-045</td>
-              <td><a class="invoice-link" href="#">ORD-2024-5601</a></td>
+              <td>Commercial Invoice</td>
               <td>PO-2024-001180</td>
-              <td>Nov 27, 2024</td>
-              <td>$2,349.85</td>
+              <td>Medical Clinic Inc.<br>123 Healthcare Blvd<br>Los Angeles, CA 90001</td>
+              <td>Mar 12, 2026</td>
+              <td>Apr 11, 2026</td>
               <td><span class="invoice-status overdue">Overdue</span></td>
-              <td>Houston, TX</td>
-              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+              <td>$2,349.85</td>
+              <td>$1,174.93</td>
             </tr>
-            <tr>
+            <tr data-order-no="ORD-2024-5598" data-ship-address-key="john-smith">
               <td>INV-2024-11-044</td>
-              <td><a class="invoice-link" href="#">ORD-2024-5598</a></td>
+              <td>Commercial Invoice</td>
               <td>PO-2024-001175</td>
-              <td>Nov 24, 2024</td>
+              <td>John Smith<br>456 Residential St<br>Santa Monica, CA 90401</td>
+              <td>Feb 28, 2026</td>
+              <td>Mar 30, 2026</td>
+              <td><span class="invoice-status paid">Paid</span></td>
               <td>$459.99</td>
-              <td><span class="invoice-status paid">Paid</span></td>
-              <td>Phoenix, AZ</td>
-              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+              <td>$0.00</td>
             </tr>
-            <tr>
+            <tr data-order-no="ORD-2024-5590" data-ship-address-key="west-coast-distribution-center">
               <td>INV-2024-11-040</td>
-              <td><a class="invoice-link" href="#">ORD-2024-5590</a></td>
+              <td>Commercial Invoice</td>
               <td>PO-2024-001168</td>
-              <td>Nov 19, 2024</td>
-              <td>$3,299.70</td>
+              <td>West Coast Distribution Center<br>789 Warehouse Way<br>Long Beach, CA 90802</td>
+              <td>Feb 5, 2026</td>
+              <td>Mar 7, 2026</td>
               <td><span class="invoice-status paid">Paid</span></td>
-              <td>Los Angeles, CA</td>
-              <td><a class="invoice-action" href="#"><span class="glyphicon glyphicon-download-alt"></span>View PDF</a></td>
+              <td>$3,299.70</td>
+              <td>$0.00</td>
             </tr>
           </tbody>
         </table>
@@ -390,28 +490,237 @@
   <script src="assets/shell.js"></script>
   <script>
     (function () {
-      var loaderShownAt = Date.now();
-      var LOADER_MIN_VISIBLE_MS = 3000;
-      function hideInitialLoader() {
-        var loader = document.getElementById("pageLoadingScreen");
-        if (!loader) return;
-        var elapsed = Date.now() - loaderShownAt;
-        var delay = Math.max(0, LOADER_MIN_VISIBLE_MS - elapsed);
-        setTimeout(function () {
-          loader.classList.add("hidden");
-          setTimeout(function () {
-            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-          }, 320);
-        }, delay);
+      var pageLoader = window.BregPageLoader && typeof window.BregPageLoader.for === "function"
+        ? window.BregPageLoader.for("#pageLoadingScreen", { minVisibleMs: 3000, removeOnHide: true })
+        : { show: function () {}, hide: function () {} };
+      var $rows = $(".invoice-table tbody tr");
+      var totalRows = $rows.length;
+      var $count = $(".invoice-count");
+      var $invoiceNumber = $("#invoiceFilterNumber");
+      var $orderNumber = $("#invoiceFilterOrder");
+      var $poNumber = $("#invoiceFilterPo");
+      var $dateFrom = $("#invoiceFilterDateFrom");
+      var $dateTo = $("#invoiceFilterDateTo");
+      var $status = $("#invoiceFilterStatus");
+      var $shipAddress = $("#invoiceFilterShipAddress");
+      var $searchBtn = $("#invoiceSearchBtn");
+      var $clearBtn = $("#invoiceClearBtn");
+      var $downloadBtn = $("#invoiceDownloadBtn");
+
+      function normalize(value) {
+        return String(value || "").toLowerCase().trim();
       }
 
-      var $filters = $("#invoiceFilters");
-      var $toggle = $("#invoiceFiltersToggle");
-      $toggle.on("click", function () {
-        $filters.toggleClass("open");
-        $toggle.text($filters.hasClass("open") ? "Hide Filters" : "Show Filters");
-      });
+      function parseRowDate(value) {
+        var parsed = new Date(String(value || "").trim());
+        if (!isFinite(parsed.getTime())) return null;
+        return parsed;
+      }
 
+      function parseDateValue(value) {
+        var parsed = new Date(String(value || "").trim());
+        if (!isFinite(parsed.getTime())) return null;
+        parsed.setHours(0, 0, 0, 0);
+        return parsed;
+      }
+
+      function toDateInputValue(date) {
+        if (!(date instanceof Date) || !isFinite(date.getTime())) return "";
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, "0");
+        var day = String(date.getDate()).padStart(2, "0");
+        return year + "-" + month + "-" + day;
+      }
+
+      function includesText(haystack, needle) {
+        if (!needle) return true;
+        return normalize(haystack).indexOf(needle) > -1;
+      }
+
+      function updateCount(visibleCount) {
+        $count.text("Showing " + visibleCount + " of " + totalRows + " matching invoices");
+      }
+
+      function applyInvoiceFilters() {
+        var invoiceFilter = normalize($invoiceNumber.val());
+        var orderFilter = normalize($orderNumber.val());
+        var poFilter = normalize($poNumber.val());
+        var fromDate = parseDateValue($dateFrom.val());
+        var toDate = parseDateValue($dateTo.val());
+        var statusFilter = normalize($status.val());
+        var addressFilter = normalize($shipAddress.val());
+        var visible = 0;
+
+        $rows.each(function () {
+          var $row = $(this);
+          var invoiceNo = $row.children().eq(0).text();
+          var orderNo = $row.attr("data-order-no") || "";
+          var poNo = $row.children().eq(2).text();
+          var transactionDateText = $row.children().eq(4).text();
+          var statusText = $row.find(".invoice-status").text();
+          var shipToText = $row.children().eq(3).text();
+          var shipSlug = normalize($row.attr("data-ship-address-key"));
+          var rowDate = parseRowDate(transactionDateText);
+          var isMatch = true;
+          if (rowDate) rowDate.setHours(0, 0, 0, 0);
+
+          if (!includesText(invoiceNo, invoiceFilter)) isMatch = false;
+          if (!includesText(orderNo, orderFilter)) isMatch = false;
+          if (!includesText(poNo, poFilter)) isMatch = false;
+          if (statusFilter && statusFilter !== "all" && normalize(statusText) !== statusFilter) isMatch = false;
+          if (addressFilter && addressFilter !== "all" && shipSlug !== addressFilter) isMatch = false;
+          if (fromDate && (!rowDate || rowDate < fromDate)) isMatch = false;
+          if (toDate && (!rowDate || rowDate > toDate)) isMatch = false;
+
+          $row.toggle(isMatch);
+          if (isMatch) visible += 1;
+        });
+
+        updateCount(visible);
+      }
+
+      function clearInvoiceSearch() {
+        $invoiceNumber.val("");
+        $orderNumber.val("");
+        $poNumber.val("");
+        $dateFrom.val("");
+        $dateTo.val("");
+        $status.val("All");
+        $shipAddress.val("all");
+        applyInvoiceFilters();
+      }
+
+      function csvEscape(value) {
+        var text = String(value == null ? "" : value);
+        return "\"" + text.replace(/"/g, "\"\"") + "\"";
+      }
+
+      function downloadInvoiceList() {
+        var headers = ["Invoice #", "Invoice Type", "PO #", "Shipping Address", "Transaction Date", "Due Date", "Payment Status", "Invoice Amount", "Amount Balance"];
+        var lines = [headers.map(csvEscape).join(",")];
+        var visibleRows = 0;
+        $rows.filter(":visible").each(function () {
+          var $cells = $(this).children("td");
+          var row = [
+            $cells.eq(0).text().trim(),
+            $cells.eq(1).text().trim(),
+            $cells.eq(2).text().trim(),
+            $cells.eq(3).text().trim(),
+            $cells.eq(4).text().trim(),
+            $cells.eq(5).text().trim(),
+            $cells.eq(6).text().trim(),
+            $cells.eq(7).text().trim(),
+            $cells.eq(8).text().trim()
+          ];
+          lines.push(row.map(csvEscape).join(","));
+          visibleRows += 1;
+        });
+        if (!visibleRows) return;
+        var blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+        var url = URL.createObjectURL(blob);
+        var link = document.createElement("a");
+        var timestamp = new Date();
+        var dateStamp = [
+          timestamp.getFullYear(),
+          String(timestamp.getMonth() + 1).padStart(2, "0"),
+          String(timestamp.getDate()).padStart(2, "0")
+        ].join("-");
+        link.href = url;
+        link.download = "invoices-" + dateStamp + ".csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      }
+
+      function hideInitialLoader() {
+        pageLoader.hide({ remove: true });
+      }
+
+      $searchBtn.on("click", applyInvoiceFilters);
+      $clearBtn.on("click", clearInvoiceSearch);
+      $downloadBtn.on("click", downloadInvoiceList);
+      function openInvoiceInNewTab($row) {
+        var invoiceNo = String($row.children().eq(0).text() || "").trim();
+        var invoiceType = String($row.children().eq(1).text() || "").trim();
+        var poNo = String($row.children().eq(2).text() || "").trim();
+        var shipTo = String($row.children().eq(3).text() || "").trim();
+        var txnDate = String($row.children().eq(4).text() || "").trim();
+        var dueDate = String($row.children().eq(5).text() || "").trim();
+        var paymentStatus = String($row.children().eq(6).text() || "").trim();
+        var invoiceAmount = String($row.children().eq(7).text() || "").trim();
+        var amountBalance = String($row.children().eq(8).text() || "").trim();
+        var orderNo = String($row.attr("data-order-no") || "").trim();
+        var safeInvoiceNo = invoiceNo || "invoice";
+        var escaped = function (value) {
+          return String(value || "").replace(/[&<>"]/g, function (char) {
+            return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" })[char];
+          });
+        };
+        var html = "" +
+          "<!doctype html><html><head><meta charset='utf-8'><title>" + escaped(safeInvoiceNo) + "</title>" +
+          "<style>body{font-family:Arial,sans-serif;background:#f4f6f8;margin:0;padding:24px;color:#0f1111;} .sheet{max-width:900px;margin:0 auto;background:#fff;border:1px solid #d5d9d9;border-radius:10px;padding:20px;} h1{margin:0 0 12px;font-size:28px;} .meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;margin-bottom:16px;} .meta div{font-size:14px;line-height:1.4;} .meta strong{display:block;font-size:12px;color:#4b5563;text-transform:uppercase;letter-spacing:.03em;} .foot{margin-top:18px;color:#4b5563;font-size:12px;}</style></head><body>" +
+          "<div class='sheet'>" +
+          "<h1>Invoice " + escaped(safeInvoiceNo) + "</h1>" +
+          "<div class='meta'>" +
+          "<div><strong>Invoice Type</strong>" + escaped(invoiceType) + "</div>" +
+          "<div><strong>Order #</strong>" + escaped(orderNo) + "</div>" +
+          "<div><strong>PO #</strong>" + escaped(poNo) + "</div>" +
+          "<div><strong>Shipping Address</strong>" + escaped(shipTo) + "</div>" +
+          "<div><strong>Transaction Date</strong>" + escaped(txnDate) + "</div>" +
+          "<div><strong>Due Date</strong>" + escaped(dueDate) + "</div>" +
+          "<div><strong>Payment Status</strong>" + escaped(paymentStatus) + "</div>" +
+          "<div><strong>Invoice Amount</strong>" + escaped(invoiceAmount) + "</div>" +
+          "<div><strong>Amount Balance</strong>" + escaped(amountBalance) + "</div>" +
+          "</div>" +
+          "<div class='foot'>Generated preview from invoice list.</div>" +
+          "</div></body></html>";
+        var invoiceWindow = window.open("", "_blank");
+        if (!invoiceWindow) return;
+        invoiceWindow.document.open();
+        invoiceWindow.document.write(html);
+        invoiceWindow.document.close();
+      }
+
+      function enhanceInvoiceViewActions() {
+        var $headRow = $(".invoice-table thead tr").first();
+        if ($headRow.length && !$headRow.find(".invoice-view-col").length) {
+          $headRow.append("<th class='invoice-view-col' aria-label='Invoice actions'></th>");
+        }
+        $(".invoice-table tbody tr").each(function () {
+          var $row = $(this);
+          if ($row.find(".invoice-view-cell").length) return;
+          $row.append(
+            "<td class='invoice-view-cell'>" +
+              "<button type='button' class='invoice-view-btn js-invoice-view-btn'>View Invoice</button>" +
+            "</td>"
+          );
+        });
+      }
+
+      $(".invoice-table tbody").on("click", "tr", function () {
+        openInvoiceInNewTab($(this));
+      });
+      $(".invoice-table tbody").on("click", ".js-invoice-view-btn", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        openInvoiceInNewTab($(this).closest("tr"));
+      });
+      $("#invoiceFiltersBody").on("keydown", "input, select", function (event) {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        applyInvoiceFilters();
+      });
+      (function setInitialNinetyDayRange() {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var from = new Date(today);
+        from.setDate(from.getDate() - 90);
+        $dateFrom.val(toDateInputValue(from));
+        $dateTo.val(toDateInputValue(today));
+      })();
+      enhanceInvoiceViewActions();
+      applyInvoiceFilters();
       hideInitialLoader();
     })();
   </script>

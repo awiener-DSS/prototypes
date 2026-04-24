@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Breg Store - Pending Orders</title>
+  <title>Breg Store - Pending & Rejected Orders</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -25,6 +25,251 @@
       letter-spacing: -0.5px;
     }
     .pending-subtitle { margin: 4px 0 16px; font-size: 14px; color: #565959; line-height: 1.35; }
+    .orders-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 12px 0 14px;
+      flex-wrap: wrap;
+    }
+    .orders-filter-btn {
+      border: 1px solid #cfd4d8;
+      background: #fff;
+      color: #0f1111;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+      line-height: 1.25;
+      font-weight: 500;
+    }
+    .orders-filter-btn:hover,
+    .orders-filter-btn:focus {
+      border-color: #aeb7c0;
+      background: #f7f8f9;
+      color: #0f1111;
+      text-decoration: none;
+      outline: 0;
+    }
+    .orders-filter-btn.active {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .orders-section-title {
+      margin: 0 0 10px;
+      font-size: 21px;
+      line-height: 1.2;
+      font-weight: 500;
+      color: #0f1111;
+    }
+    .orders-section-title.rejected {
+      margin-top: 22px;
+    }
+    .orders-section-title.approvals {
+      margin-top: 6px;
+    }
+    .approve-order-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .approve-order-head {
+      background: #eef4ff;
+      border-bottom: 1px solid #d9dee2;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .approve-label { display: block; font-size: 13px; color: #565959; margin-bottom: 2px; line-height: 1.2; font-weight: 400; }
+    .approve-value { display: block; font-size: 13px; color: #0f1111; line-height: 1.3; font-weight: 500; }
+    .approve-status-pill {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 12px;
+      line-height: 1.2;
+      background: #e8f1ff;
+      color: #0047bb;
+    }
+    .approve-items { padding: 14px 16px 14px; }
+    .approve-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .approve-item:last-child { margin-bottom: 0; }
+    .approve-item img {
+      width: 74px;
+      height: 74px;
+      object-fit: cover;
+      border-radius: 7px;
+      background: #edf0f2;
+      border: 1px solid #d5d9d9;
+      flex: 0 0 auto;
+    }
+    .approve-item-title {
+      display: block;
+      font-size: 13px;
+      line-height: 1.3;
+      color: #0f1111;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .approve-item-title:hover,.approve-item-title:focus { color: #0f1111; text-decoration: none; }
+    .approve-item-meta { margin-top: 2px; font-size: 12px; color: #565959; line-height: 1.35; }
+    .order-detail-grid {
+      margin-top: 10px;
+      display: none;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 12px;
+      padding-top: 10px;
+      border-top: 1px solid #eaeded;
+    }
+    .order-detail-grid.open {
+      display: grid;
+    }
+    .order-detail {
+      font-size: 12px;
+      line-height: 1.35;
+      color: #565959;
+    }
+    .order-detail strong {
+      display: block;
+      color: #0f1111;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .order-detail-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #cfd8e3;
+      border-radius: 999px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 12px;
+      line-height: 1.2;
+      padding: 5px 10px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .order-detail-toggle:hover,
+    .order-detail-toggle:focus {
+      color: #0f1111;
+      border-color: #aeb7c0;
+      background: #f7f8f9;
+      text-decoration: none;
+      outline: 0;
+    }
+    .approve-order-foot {
+      border-top: 1px solid #eaeded;
+      margin-top: 12px;
+      padding-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .approve-actions { display: flex; align-items: center; gap: 8px; }
+    .approve-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 6px 14px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .approve-btn:hover,.approve-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
+    .approve-btn.reject {
+      border-color: #d13212;
+      color: #d13212;
+      background: #fff;
+    }
+    .approve-btn.reject:hover,.approve-btn.reject:focus {
+      border-color: #aa2a10;
+      color: #aa2a10;
+      background: #fff4f2;
+    }
+    .approve-resolution {
+      display: none;
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #565959;
+    }
+    .approve-resolution.visible { display: block; }
+    .approve-resolution.approved { color: #0b6b39; }
+    .approve-resolution.rejected { color: #8a260f; }
+    .reject-comment-modal .modal-dialog {
+      width: min(620px, calc(100% - 30px));
+      margin: 72px auto;
+    }
+    .reject-comment-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+    }
+    .reject-comment-modal .modal-header {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 14px 16px;
+    }
+    .reject-comment-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: #0f1111;
+      font-weight: 400;
+    }
+    .reject-comment-modal .modal-body { padding: 14px 16px 12px; }
+    .reject-comment-modal label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 600;
+    }
+    .reject-comment-modal textarea {
+      width: 100%;
+      min-height: 104px;
+      resize: vertical;
+      border: 1px solid #cfd8e3;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 13px;
+      color: #0f1111;
+      font-family: var(--font-body);
+    }
+    .reject-comment-modal .reject-helper { margin: 8px 0 0; font-size: 12px; color: #565959; }
+    .reject-comment-modal .reject-error {
+      display: none;
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: #b12704;
+      font-weight: 600;
+    }
+    .reject-comment-modal .reject-error.visible { display: block; }
+    .reject-comment-modal .modal-footer {
+      border-top: 1px solid #e5e7eb;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
     .pending-order-card {
       border: 1px solid #d5d9d9;
       border-radius: 12px;
@@ -123,12 +368,96 @@
       border-color: var(--breg-primary-dark, #001E62);
       text-decoration: none;
     }
+    .rejected-order-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .rejected-order-head {
+      background: #f6f1ec;
+      border-bottom: 1px solid #d9dee2;
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .rejected-label { display: block; font-size: 13px; color: #565959; margin-bottom: 2px; line-height: 1.2; font-weight: 400; }
+    .rejected-value { display: block; font-size: 13px; color: #0f1111; line-height: 1.3; font-weight: 500; }
+    .rejected-items { padding: 12px 16px 12px; }
+    .rejection-reason {
+      border: 1px solid #efc1bf;
+      border-radius: 10px;
+      background: #fff2f2;
+      padding: 11px 12px;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .rejection-reason .glyphicon { color: #c73c2f; font-size: 13px; margin-top: 2px; }
+    .rejection-title { margin: 0 0 2px; font-size: 13px; color: #0f1111; line-height: 1.25; font-weight: 500; }
+    .rejection-copy { margin: 0; font-size: 13px; color: #565959; line-height: 1.35; }
+    .rejection-date { margin: 2px 0 0; font-size: 12px; color: #565959; line-height: 1.3; }
+    .rejected-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .rejected-item:last-child { margin-bottom: 0; }
+    .rejected-item img {
+      width: 74px; height: 74px; object-fit: cover; border-radius: 7px;
+      background: #edf0f2; border: 1px solid #d5d9d9; flex: 0 0 auto;
+    }
+    .rejected-item-title {
+      display: block; font-size: 13px; line-height: 1.3; color: #0f1111;
+      text-decoration: none; font-weight: 500;
+    }
+    .rejected-item-title:hover,.rejected-item-title:focus { color: #0f1111; text-decoration: none; }
+    .rejected-item-meta { margin-top: 2px; font-size: 12px; color: #565959; line-height: 1.35; }
+    .rejected-order-foot {
+      border-top: 1px solid #eaeded;
+      margin-top: 12px;
+      padding-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .rejected-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 6px 14px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .rejected-btn:hover,.rejected-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
+    .rejected-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .rejected-btn.primary:hover,.rejected-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
     @media (max-width: 1199px) {
       .pending-title { font-size: 30px; }
       .pending-subtitle { font-size: 14px; }
     }
     @media (max-width: 767px) {
+      .order-detail-grid { grid-template-columns: 1fr; }
+      .approve-order-head { grid-template-columns: 1fr 1fr; }
       .pending-order-head { grid-template-columns: 1fr 1fr; }
+      .rejected-order-head { grid-template-columns: 1fr 1fr; }
       .pending-title { font-size: 28px; }
       .pending-subtitle { font-size: 13px; }
     }
@@ -171,7 +500,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -185,13 +514,85 @@
 
   <main class="site-max">
     <div class="pending-page">
-      <div class="pending-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Pending Orders</span></div>
-      <h1 class="pending-title">Pending Orders</h1>
-      <p class="pending-subtitle">3 orders pending approval</p>
+      <div class="pending-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Pending &amp; Rejected Orders</span></div>
+      <h1 class="pending-title">Pending &amp; Rejected Orders</h1>
+      <div class="orders-filter" role="group" aria-label="Filter order status">
+        <button type="button" class="orders-filter-btn active" data-order-filter="all">All</button>
+        <button type="button" class="orders-filter-btn" data-order-filter="approve">Orders to Approve</button>
+        <button type="button" class="orders-filter-btn" data-order-filter="pending">Pending</button>
+        <button type="button" class="orders-filter-btn" data-order-filter="rejected">Rejected</button>
+      </div>
+      <h2 class="orders-section-title approvals" id="approveOrdersHeading">Orders to Approve</h2>
+
+      <section class="approve-order-card" data-req-id="REQ-240198">
+        <div class="approve-order-head">
+          <div><span class="approve-label">Requisition Number</span><span class="approve-value">REQ-240198</span></div>
+          <div><span class="approve-label">Submitted By</span><span class="approve-value">Jordan Miller</span></div>
+          <div><span class="approve-label">Total</span><span class="approve-value">$612.00</span></div>
+          <div><span class="approve-label">Status</span><span class="approve-status-pill">Awaiting Your Decision</span></div>
+        </div>
+        <div class="approve-items">
+          <div class="approve-item">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace product">
+            <div><a class="approve-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="approve-item-meta">Quantity: 1 | Price: $449.99</div></div>
+          </div>
+          <div class="approve-item">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
+            <div><a class="approve-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="approve-item-meta">Quantity: 1 | Price: $162.01</div></div>
+          </div>
+          <div class="order-detail-grid">
+            <div class="order-detail"><strong>Shipping Address</strong>Outpatient Rehab Team<br>1234 Medical Center Dr<br>Carlsbad, CA 92008</div>
+            <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+            <div class="order-detail"><strong>Payment Method</strong>Corporate Visa ending in 4581</div>
+            <div class="order-detail"><strong>PO Number</strong>PO-REHAB-240198</div>
+            <div class="order-detail"><strong>Requested Delivery</strong>Dec 12, 2024 (Expedited)</div>
+            <div class="order-detail"><strong>Shipping Method</strong>UPS 2nd Day Air</div>
+          </div>
+          <div class="approve-order-foot">
+            <div class="approve-actions">
+              <button type="button" class="approve-btn js-approve-order">Approve</button>
+              <button type="button" class="approve-btn reject js-reject-order">Reject</button>
+            </div>
+          </div>
+          <div class="approve-resolution" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="approve-order-card" data-req-id="REQ-240173">
+        <div class="approve-order-head">
+          <div><span class="approve-label">Requisition Number</span><span class="approve-value">REQ-240173</span></div>
+          <div><span class="approve-label">Submitted By</span><span class="approve-value">Avery Stone</span></div>
+          <div><span class="approve-label">Total</span><span class="approve-value">$189.00</span></div>
+          <div><span class="approve-label">Status</span><span class="approve-status-pill">Awaiting Your Decision</span></div>
+        </div>
+        <div class="approve-items">
+          <div class="approve-item">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
+            <div><a class="approve-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a><div class="approve-item-meta">Quantity: 2 | Price: $89.99</div></div>
+          </div>
+          <div class="order-detail-grid">
+            <div class="order-detail"><strong>Shipping Address</strong>Sports Medicine Unit<br>88 Arena Blvd<br>Irvine, CA 92618</div>
+            <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+            <div class="order-detail"><strong>Payment Method</strong>Net 30 Terms</div>
+            <div class="order-detail"><strong>PO Number</strong>PO-SPORTS-240173</div>
+            <div class="order-detail"><strong>Requested Delivery</strong>Dec 10, 2024</div>
+            <div class="order-detail"><strong>Shipping Method</strong>Ground</div>
+          </div>
+          <div class="approve-order-foot">
+            <div class="approve-actions">
+              <button type="button" class="approve-btn js-approve-order">Approve</button>
+              <button type="button" class="approve-btn reject js-reject-order">Reject</button>
+            </div>
+          </div>
+          <div class="approve-resolution" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <h2 class="orders-section-title" id="pendingOrdersHeading">Pending Approval</h2>
 
       <section class="pending-order-card">
       <div class="pending-order-head">
-        <div><span class="pending-label">Order Number</span><span class="pending-value">PO-2024-001234</span></div>
+        <div><span class="pending-label">Requisition Number</span><span class="pending-value">PO-2024-001234</span></div>
         <div><span class="pending-label">Order Date</span><span class="pending-value">December 8, 2024</span></div>
         <div><span class="pending-label">Total</span><span class="pending-value">$1,249.97</span></div>
         <div><span class="pending-label">Status</span><span class="pending-status-pill">Pending Approval</span></div>
@@ -205,16 +606,23 @@
           <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace product">
           <div><a class="pending-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="pending-item-meta">Quantity: 1 | Price: $449.99</div></div>
         </div>
+        <div class="order-detail-grid">
+          <div class="order-detail"><strong>Shipping Address</strong>North County Surgical Center<br>4550 Wellness Pkwy<br>Oceanside, CA 92056</div>
+          <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+          <div class="order-detail"><strong>Payment Method</strong>Corporate Visa ending in 4581</div>
+          <div class="order-detail"><strong>PO Number</strong>PO-2024-001234</div>
+          <div class="order-detail"><strong>Requested Delivery</strong>Dec 13, 2024</div>
+          <div class="order-detail"><strong>Shipping Method</strong>UPS Ground</div>
+        </div>
         <div class="pending-order-foot">
           <div class="pending-approver"><span class="glyphicon glyphicon-user"></span> Approver: Sarah Johnson</div>
-          <div class="pending-actions"><a class="pending-btn" href="#">View Details</a></div>
         </div>
       </div>
       </section>
 
       <section class="pending-order-card">
       <div class="pending-order-head">
-        <div><span class="pending-label">Order Number</span><span class="pending-value">PO-2024-001198</span></div>
+        <div><span class="pending-label">Requisition Number</span><span class="pending-value">PO-2024-001198</span></div>
         <div><span class="pending-label">Order Date</span><span class="pending-value">December 5, 2024</span></div>
         <div><span class="pending-label">Total</span><span class="pending-value">$879.95</span></div>
         <div><span class="pending-label">Status</span><span class="pending-status-pill">Pending Approval</span></div>
@@ -228,16 +636,23 @@
           <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Physical Therapy Resistance Bands Set" alt="Resistance bands">
           <div><a class="pending-item-title" href="#">Physical Therapy Resistance Bands Set</a><div class="pending-item-meta">Quantity: 5 | Price: $29.99</div></div>
         </div>
+        <div class="order-detail-grid">
+          <div class="order-detail"><strong>Shipping Address</strong>Orthopedic Recovery Clinic<br>220 Harbor St<br>Newport Beach, CA 92660</div>
+          <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+          <div class="order-detail"><strong>Payment Method</strong>Net 30 Terms</div>
+          <div class="order-detail"><strong>PO Number</strong>PO-2024-001198</div>
+          <div class="order-detail"><strong>Requested Delivery</strong>Dec 11, 2024</div>
+          <div class="order-detail"><strong>Shipping Method</strong>FedEx Ground</div>
+        </div>
         <div class="pending-order-foot">
           <div class="pending-approver"><span class="glyphicon glyphicon-user"></span> Approver: Michael Chen</div>
-          <div class="pending-actions"><a class="pending-btn" href="#">View Details</a></div>
         </div>
       </div>
       </section>
 
       <section class="pending-order-card">
       <div class="pending-order-head">
-        <div><span class="pending-label">Order Number</span><span class="pending-value">PO-2024-001175</span></div>
+        <div><span class="pending-label">Requisition Number</span><span class="pending-value">PO-2024-001175</span></div>
         <div><span class="pending-label">Order Date</span><span class="pending-value">December 3, 2024</span></div>
         <div><span class="pending-label">Total</span><span class="pending-value">$1,599.96</span></div>
         <div><span class="pending-label">Status</span><span class="pending-status-pill">Pending Approval</span></div>
@@ -251,14 +666,144 @@
           <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy system">
           <div><a class="pending-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="pending-item-meta">Quantity: 1 | Price: $299.99</div></div>
         </div>
+        <div class="order-detail-grid">
+          <div class="order-detail"><strong>Shipping Address</strong>Valley Ambulatory Surgery<br>7000 Main St<br>Los Angeles, CA 90045</div>
+          <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+          <div class="order-detail"><strong>Payment Method</strong>Corporate Visa ending in 4581</div>
+          <div class="order-detail"><strong>PO Number</strong>PO-2024-001175</div>
+          <div class="order-detail"><strong>Requested Delivery</strong>Dec 9, 2024</div>
+          <div class="order-detail"><strong>Shipping Method</strong>UPS Next Day Air</div>
+        </div>
         <div class="pending-order-foot">
           <div class="pending-approver"><span class="glyphicon glyphicon-user"></span> Approver: Sarah Johnson</div>
-          <div class="pending-actions"><a class="pending-btn" href="#">View Details</a></div>
         </div>
       </div>
       </section>
+
+      <h2 class="orders-section-title rejected" id="rejectedOrdersHeading">Rejected Orders</h2>
+
+      <section class="rejected-order-card">
+        <div class="rejected-order-head">
+          <div><span class="rejected-label">Requisition Number</span><span class="rejected-value">ORD-2024-5432</span></div>
+          <div><span class="rejected-label">Order Date</span><span class="rejected-value">December 2, 2024</span></div>
+          <div><span class="rejected-label">Total</span><span class="rejected-value">$4,249.97</span></div>
+          <div><span class="rejected-label">Rejected By</span><span class="rejected-value">Finance Department</span></div>
+        </div>
+        <div class="rejected-items">
+          <div class="rejection-reason">
+            <span class="glyphicon glyphicon-remove-sign"></span>
+            <div>
+              <p class="rejection-title">Rejection Reason:</p>
+              <p class="rejection-copy">Budget limit exceeded for this quarter</p>
+              <p class="rejection-date">Rejected on December 3, 2024</p>
+            </div>
+          </div>
+          <div class="rejected-item">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
+            <div><a class="rejected-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a><div class="rejected-item-meta">Quantity: 5 | Price: $299.99</div></div>
+          </div>
+          <div class="rejected-item">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="T Scope Premier Post-Op Knee Brace" alt="Knee brace product">
+            <div><a class="rejected-item-title" href="#">T Scope Premier Post-Op Knee Brace</a><div class="rejected-item-meta">Quantity: 6 | Price: $449.99</div></div>
+          </div>
+          <div class="order-detail-grid">
+            <div class="order-detail"><strong>Shipping Address</strong>Eastside Sports Rehab<br>1090 Canyon Rd<br>Temecula, CA 92590</div>
+            <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+            <div class="order-detail"><strong>Payment Method</strong>Corporate Visa ending in 4581</div>
+            <div class="order-detail"><strong>PO Number</strong>PO-REJ-5432</div>
+            <div class="order-detail"><strong>Requested Delivery</strong>Dec 6, 2024</div>
+            <div class="order-detail"><strong>Shipping Method</strong>UPS 2nd Day Air</div>
+          </div>
+          <div class="rejected-order-foot"><a class="rejected-btn primary" href="#">Resubmit Order</a></div>
+        </div>
+      </section>
+
+      <section class="rejected-order-card">
+        <div class="rejected-order-head">
+          <div><span class="rejected-label">Requisition Number</span><span class="rejected-value">ORD-2024-5401</span></div>
+          <div><span class="rejected-label">Order Date</span><span class="rejected-value">November 28, 2024</span></div>
+          <div><span class="rejected-label">Total</span><span class="rejected-value">$899.98</span></div>
+          <div><span class="rejected-label">Rejected By</span><span class="rejected-value">Procurement Manager</span></div>
+        </div>
+        <div class="rejected-items">
+          <div class="rejection-reason">
+            <span class="glyphicon glyphicon-remove-sign"></span>
+            <div>
+              <p class="rejection-title">Rejection Reason:</p>
+              <p class="rejection-copy">Duplicate order detected</p>
+              <p class="rejection-date">Rejected on November 29, 2024</p>
+            </div>
+          </div>
+          <div class="rejected-item">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
+            <div><a class="rejected-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a><div class="rejected-item-meta">Quantity: 10 | Price: $89.99</div></div>
+          </div>
+          <div class="order-detail-grid">
+            <div class="order-detail"><strong>Shipping Address</strong>Coastal Orthopedics<br>700 Harbor Ave<br>Long Beach, CA 90802</div>
+            <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+            <div class="order-detail"><strong>Payment Method</strong>Net 30 Terms</div>
+            <div class="order-detail"><strong>PO Number</strong>PO-REJ-5401</div>
+            <div class="order-detail"><strong>Requested Delivery</strong>Dec 2, 2024</div>
+            <div class="order-detail"><strong>Shipping Method</strong>Ground</div>
+          </div>
+          <div class="rejected-order-foot"><a class="rejected-btn primary" href="#">Resubmit Order</a></div>
+        </div>
+      </section>
+
+      <section class="rejected-order-card">
+        <div class="rejected-order-head">
+          <div><span class="rejected-label">Requisition Number</span><span class="rejected-value">ORD-2024-5389</span></div>
+          <div><span class="rejected-label">Order Date</span><span class="rejected-value">November 22, 2024</span></div>
+          <div><span class="rejected-label">Total</span><span class="rejected-value">$1,299.95</span></div>
+          <div><span class="rejected-label">Rejected By</span><span class="rejected-value">System</span></div>
+        </div>
+        <div class="rejected-items">
+          <div class="rejection-reason">
+            <span class="glyphicon glyphicon-remove-sign"></span>
+            <div>
+              <p class="rejection-title">Rejection Reason:</p>
+              <p class="rejection-copy">Item no longer available from vendor</p>
+              <p class="rejection-date">Rejected on November 23, 2024</p>
+            </div>
+          </div>
+          <div class="rejected-item">
+            <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Advanced Hip Recovery System" alt="Advanced hip recovery system">
+            <div><a class="rejected-item-title" href="#">Advanced Hip Recovery System (Discontinued)</a><div class="rejected-item-meta">Quantity: 3 | Price: $399.99</div></div>
+          </div>
+          <div class="order-detail-grid">
+            <div class="order-detail"><strong>Shipping Address</strong>Central Rehab Partners<br>410 Wellness Loop<br>Riverside, CA 92501</div>
+            <div class="order-detail"><strong>Billing Address</strong>Medical Clinic Inc. AP Dept<br>301 Finance Way<br>San Diego, CA 92121</div>
+            <div class="order-detail"><strong>Payment Method</strong>Corporate Visa ending in 4581</div>
+            <div class="order-detail"><strong>PO Number</strong>PO-REJ-5389</div>
+            <div class="order-detail"><strong>Requested Delivery</strong>Nov 27, 2024</div>
+            <div class="order-detail"><strong>Shipping Method</strong>FedEx Express Saver</div>
+          </div>
+          <div class="rejected-order-foot"><a class="rejected-btn primary" href="#">Resubmit Order</a></div>
+        </div>
+      </section>
     </div>
   </main>
+
+  <div class="modal fade reject-comment-modal" id="rejectCommentModal" tabindex="-1" role="dialog" aria-labelledby="rejectCommentTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h3 class="modal-title" id="rejectCommentTitle">Reject Order</h3>
+        </div>
+        <div class="modal-body">
+          <label for="rejectCommentInput">Comments (required)</label>
+          <textarea id="rejectCommentInput" placeholder="Explain why this order is being rejected."></textarea>
+          <p class="reject-helper">Comments are required for rejected orders.</p>
+          <p class="reject-error" id="rejectCommentError">Please enter a rejection comment before submitting.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="pending-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="rejected-btn primary" id="submitRejectOrderBtn">Submit Rejection</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -267,13 +812,301 @@
   <script src="assets/shell.js"></script>
   <script>
     (function () {
+      function attachOrderDetailToggles() {
+        $(".approve-order-foot, .pending-order-foot, .rejected-order-foot").each(function () {
+          var $foot = $(this);
+          var $items = $foot.closest(".approve-items, .pending-items, .rejected-items");
+          var $details = $items.children(".order-detail-grid").first();
+          var $btn;
+          var $targetWrap;
+          if (!$details.length || $foot.find(".js-order-detail-toggle").length) return;
+          $btn = $("<button type='button' class='order-detail-toggle js-order-detail-toggle' aria-expanded='false'>Show order details</button>");
+          $targetWrap = $foot.find(".approve-actions, .pending-actions").first();
+          if ($targetWrap.length) {
+            $targetWrap.prepend($btn);
+          } else if ($foot.find(".pending-approver").length) {
+            $targetWrap = $("<div class='pending-actions'></div>");
+            $targetWrap.append($btn);
+            $foot.append($targetWrap);
+          } else {
+            $foot.prepend($btn);
+          }
+        });
+      }
+
+      $(document).on("click", ".js-order-detail-toggle", function () {
+        var $btn = $(this);
+        var $foot = $btn.closest(".approve-order-foot, .pending-order-foot, .rejected-order-foot");
+        var $items = $foot.closest(".approve-items, .pending-items, .rejected-items");
+        var $details = $items.children(".order-detail-grid").first();
+        var isOpen;
+        if (!$details.length) return;
+        $details.toggleClass("open");
+        isOpen = $details.hasClass("open");
+        $btn.attr("aria-expanded", isOpen ? "true" : "false");
+        $btn.text(isOpen ? "Hide order details" : "Show order details");
+      });
+
+      attachOrderDetailToggles();
+    })();
+  </script>
+  <script>
+    (function () {
+      var $filterButtons = $(".orders-filter-btn");
+      var $approvalCards = $(".approve-order-card");
+      var $approveHeading = $("#approveOrdersHeading");
+      var $pendingCards = $(".pending-order-card");
+      var $rejectedCards = $(".rejected-order-card");
+      var $pendingHeading = $("#pendingOrdersHeading");
+      var $rejectedHeading = $("#rejectedOrdersHeading");
+
+      function applyOrderFilter(filter) {
+        var selected = filter === "approve" || filter === "pending" || filter === "rejected" ? filter : "all";
+        $filterButtons.removeClass("active").filter("[data-order-filter='" + selected + "']").addClass("active");
+        if (selected === "approve") {
+          $approvalCards.show();
+          $approveHeading.show();
+          $pendingCards.hide();
+          $rejectedCards.hide();
+          $pendingHeading.hide();
+          $rejectedHeading.hide();
+          return;
+        }
+        if (selected === "pending") {
+          $approvalCards.hide();
+          $approveHeading.hide();
+          $pendingCards.show();
+          $rejectedCards.hide();
+          $pendingHeading.show();
+          $rejectedHeading.hide();
+          return;
+        }
+        if (selected === "rejected") {
+          $approvalCards.hide();
+          $approveHeading.hide();
+          $pendingCards.hide();
+          $rejectedCards.show();
+          $pendingHeading.hide();
+          $rejectedHeading.show();
+          return;
+        }
+        $approvalCards.show();
+        $approveHeading.show();
+        $pendingCards.show();
+        $rejectedCards.show();
+        $pendingHeading.show();
+        $rejectedHeading.show();
+      }
+
+      $filterButtons.on("click", function () {
+        applyOrderFilter($(this).attr("data-order-filter"));
+      });
+
+      function getInitialFilterFromQuery() {
+        try {
+          var params = new URLSearchParams(window.location.search || "");
+          var filter = String(params.get("filter") || "").toLowerCase();
+          return filter === "approve" || filter === "pending" || filter === "rejected" ? filter : "all";
+        } catch (e) {
+          return "all";
+        }
+      }
+
+      function focusRequestedRequisition() {
+        try {
+          var params = new URLSearchParams(window.location.search || "");
+          var reqId = String(params.get("req") || "").trim();
+          if (!reqId) return;
+          var $target = $(".approve-order-card[data-req-id='" + reqId.replace(/'/g, "\\'") + "']").first();
+          if (!$target.length) return;
+          $target.get(0).scrollIntoView({ behavior: "smooth", block: "start" });
+          $target.css("box-shadow", "0 0 0 3px rgba(0, 71, 187, 0.25)");
+          window.setTimeout(function () {
+            $target.css("box-shadow", "");
+          }, 2000);
+        } catch (e) {}
+      }
+
+      applyOrderFilter(getInitialFilterFromQuery());
+      focusRequestedRequisition();
+    })();
+  </script>
+  <script>
+    (function () {
+      var $rejectModal = $("#rejectCommentModal");
+      var $rejectInput = $("#rejectCommentInput");
+      var $rejectError = $("#rejectCommentError");
+      var $rejectSubmit = $("#submitRejectOrderBtn");
+      var rejectTargetCard = null;
+
+      function applyApprovalDecision($card, isApproved, comment) {
+        var $resolution = $card.find(".approve-resolution").first();
+        var $actions = $card.find(".approve-actions").first();
+        var $status = $card.find(".approve-status-pill").first();
+        if (isApproved) {
+          $status.text("Approved").css({ background: "#e7f6ed", color: "#0b6b39" });
+          $resolution
+            .removeClass("rejected")
+            .addClass("approved visible")
+            .text("Approved by you just now.");
+        } else {
+          $status.text("Rejected").css({ background: "#fdecea", color: "#8a260f" });
+          $resolution
+            .removeClass("approved")
+            .addClass("rejected visible")
+            .text("Rejected with comment: " + comment);
+        }
+        $actions.find(".approve-btn").prop("disabled", true).css({ opacity: 0.55, cursor: "default" });
+      }
+
+      $(document).on("click", ".js-approve-order", function () {
+        var $card = $(this).closest(".approve-order-card");
+        applyApprovalDecision($card, true, "");
+      });
+
+      $(document).on("click", ".js-reject-order", function () {
+        rejectTargetCard = $(this).closest(".approve-order-card");
+        $rejectInput.val("");
+        $rejectError.removeClass("visible");
+        $rejectModal.modal("show");
+      });
+
+      $rejectSubmit.on("click", function () {
+        var comment = $.trim($rejectInput.val() || "");
+        if (!comment) {
+          $rejectError.addClass("visible");
+          $rejectInput.trigger("focus");
+          return;
+        }
+        if (!rejectTargetCard || !rejectTargetCard.length) {
+          $rejectModal.modal("hide");
+          return;
+        }
+        applyApprovalDecision(rejectTargetCard, false, comment);
+        $rejectModal.modal("hide");
+      });
+
+      $rejectModal.on("hidden.bs.modal", function () {
+        $rejectError.removeClass("visible");
+        rejectTargetCard = null;
+      });
+    })();
+  </script>
+  <script>
+    (function () {
       if (window.BregCatalogImage) {
-        $(".pending-item").each(function () {
+        $(".approve-item, .pending-item, .rejected-item").each(function () {
           var $img = $(this).find("img").first();
-          var name = $img.attr("data-product-name") || $.trim($(this).find(".pending-item-title").first().text());
+          var name = $img.attr("data-product-name")
+            || $.trim($(this).find(".approve-item-title").first().text())
+            || $.trim($(this).find(".pending-item-title").first().text())
+            || $.trim($(this).find(".rejected-item-title").first().text());
           if (name) $img.attr("src", window.BregCatalogImage.byName(name));
         });
       }
+    })();
+  </script>
+  <script>
+    (function () {
+      function fallbackCartApi() {
+        function parsePrice(value) {
+          var cleaned = String(value || "").replace(/[^0-9.-]/g, "");
+          var parsed = parseFloat(cleaned);
+          return isFinite(parsed) ? parsed : 0;
+        }
+        function read() {
+          try {
+            var parsed = JSON.parse(localStorage.getItem("breg_cart_v1") || "[]");
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            return [];
+          }
+        }
+        function save(lines) {
+          try { localStorage.setItem("breg_cart_v1", JSON.stringify(lines)); } catch (e) {}
+        }
+        function sync() {
+          var total = read().reduce(function (sum, line) { return sum + Number(line && line.qty ? line.qty : 0); }, 0);
+          $(".cart-count").text(total);
+        }
+        function addLines(lines) {
+          var cart = read();
+          (Array.isArray(lines) ? lines : []).forEach(function (line) {
+            var sku = String(line && line.sku ? line.sku : "").trim();
+            var qty = Math.max(1, parseInt(line && line.qty, 10) || 1);
+            if (!sku) return;
+            var existing = cart.find(function (x) { return String(x && x.sku ? x.sku : "") === sku; });
+            if (existing) {
+              existing.qty = Number(existing.qty || 0) + qty;
+            } else {
+              cart.push({
+                sku: sku,
+                qty: qty,
+                name: String((line && line.name) || sku),
+                price: parsePrice(line && line.price),
+                image: String((line && line.image) || ""),
+                category: "Rejected Orders",
+                variant: "",
+                size: ""
+              });
+            }
+          });
+          save(cart);
+          sync();
+          return cart;
+        }
+        return { parsePrice: parsePrice, addLines: addLines };
+      }
+
+      function getCartApi() {
+        if (window.BregCart && typeof window.BregCart.addLines === "function") return window.BregCart;
+        return fallbackCartApi();
+      }
+
+      function showAddedModal(lines) {
+        if (window.BregCart && typeof window.BregCart.showAddedModal === "function") {
+          window.BregCart.showAddedModal(lines);
+        }
+      }
+
+      function toSkuFromName(name) {
+        return String(name || "").toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      }
+
+      function parseRejectedItem($item, cartApi) {
+        var name = $.trim($item.find(".rejected-item-title").first().text() || "Product");
+        var meta = $.trim($item.find(".rejected-item-meta").first().text() || "");
+        var qtyMatch = meta.match(/Quantity:\s*(\d+)/i);
+        var priceMatch = meta.match(/Price:\s*\$?\s*([0-9]+(?:\.[0-9]+)?)/i);
+        var qty = qtyMatch ? Math.max(1, parseInt(qtyMatch[1], 10) || 1) : 1;
+        var price = priceMatch ? (cartApi.parsePrice ? cartApi.parsePrice(priceMatch[1]) : Number(priceMatch[1] || 0)) : 0;
+        return {
+          sku: toSkuFromName(name),
+          qty: qty,
+          name: name,
+          price: price,
+          image: String($item.find("img").attr("src") || ""),
+          category: "Rejected Orders",
+          variant: "",
+          size: ""
+        };
+      }
+
+      $(".rejected-order-card").on("click", ".rejected-btn.primary", function (event) {
+        var $btn = $(this);
+        var $card = $btn.closest(".rejected-order-card");
+        var cartApi = getCartApi();
+        var lines = [];
+        event.preventDefault();
+        $card.find(".rejected-item").each(function () {
+          lines.push(parseRejectedItem($(this), cartApi));
+        });
+        if (!lines.length) return;
+        cartApi.addLines(lines);
+        showAddedModal(lines);
+        $btn.text("Added to Cart");
+        setTimeout(function () { $btn.text("Resubmit Order"); }, 1200);
+      });
     })();
   </script>
 </body>

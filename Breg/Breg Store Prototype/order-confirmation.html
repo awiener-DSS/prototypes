@@ -85,12 +85,51 @@
       color: #0f172a;
     }
     .confirm-table th { color: #475569; font-weight: 600; }
+    .confirm-table tbody tr.is-selectable { cursor: pointer; }
+    .confirm-table tbody tr.is-selectable:hover td { background: #f8fafc; }
+    .confirm-table tbody tr.line-selected td { background: #eef5ff; }
     .confirm-total {
       margin-top: 10px;
       text-align: right;
       font-size: 16px;
       color: #0f172a;
       font-weight: 600;
+    }
+    .confirm-line-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .confirm-line-btn {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 14px;
+      color: #0f172a;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .confirm-line-btn:hover,
+    .confirm-line-btn:focus {
+      text-decoration: none;
+      color: #0f172a;
+      background: #f8fafc;
+      border-color: #9aa7b8;
+      outline: 0;
+    }
+    .confirm-line-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .confirm-line-btn.primary:hover,
+    .confirm-line-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
     }
     .confirm-actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
     .confirm-btn {
@@ -107,6 +146,57 @@
       background: var(--breg-primary, #0047bb);
       color: #fff;
     }
+    .list-picker-modal .modal-dialog {
+      width: min(620px, calc(100% - 30px));
+      margin: 70px auto;
+    }
+    .list-picker-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      overflow: hidden;
+    }
+    .list-picker-modal .modal-header {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 14px 16px;
+    }
+    .list-picker-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: #0f172a;
+      font-weight: 400;
+    }
+    .list-picker-modal .modal-body { padding: 14px 16px 12px; }
+    .list-picker-copy {
+      margin: 0 0 10px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #475569;
+    }
+    .list-picker-group { margin-bottom: 10px; }
+    .list-picker-group label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 12px;
+      color: #475569;
+      font-weight: 600;
+    }
+    .list-picker-group .form-control {
+      height: 34px;
+      border-radius: 8px;
+      border-color: #c7ced4;
+      font-size: 13px;
+      color: #0f172a;
+      box-shadow: none;
+    }
+    .list-picker-error {
+      display: none;
+      margin: 0;
+      font-size: 12px;
+      color: #b12704;
+      font-weight: 600;
+    }
+    .list-picker-error.visible { display: block; }
     @media (max-width: 900px) {
       .confirm-options-grid { grid-template-columns: 1fr; }
     }
@@ -149,7 +239,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -171,19 +261,126 @@
         <div id="confirmCheckoutSelections"></div>
         <div id="confirmTable"></div>
         <div class="confirm-total" id="confirmTotal"></div>
+        <div class="confirm-line-actions" id="confirmLineActions"></div>
         <div class="confirm-actions">
-          <a class="confirm-btn primary" href="index.html">Continue Shopping</a>
-          <a class="confirm-btn" href="order-history.html">View Order History</a>
+          <a class="confirm-btn primary" href="order-history.html">Back to Order History</a>
         </div>
       </div>
     </section>
   </main>
+
+  <div class="modal fade list-picker-modal" id="confirmListPickerModal" tabindex="-1" role="dialog" aria-labelledby="confirmListPickerTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="confirmListPickerTitle">Add Selected Items to List</h2>
+        </div>
+        <div class="modal-body">
+          <p class="list-picker-copy">Choose an existing list or create a new one.</p>
+          <div class="list-picker-group">
+            <label for="confirmExistingListSelect">Existing list</label>
+            <select id="confirmExistingListSelect" class="form-control"></select>
+          </div>
+          <div class="list-picker-group">
+            <label for="confirmNewListInput">Or create new list</label>
+            <input id="confirmNewListInput" type="text" class="form-control" placeholder="Enter new list name">
+          </div>
+          <p class="list-picker-error" id="confirmListPickerError">Please select a list or enter a new list name.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="confirm-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="confirm-btn primary" id="confirmListPickerSaveBtn">Add to List</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js"></script>
   <script>
     (function () {
+      function getHistoryOrderPreset(orderNumber) {
+        var presets = {
+          "ORD-2024-5690": {
+            orderNumber: "ORD-2024-5690",
+            placedAt: "2024-12-07T14:12:00Z",
+            shippingAddress: { name: "Medical Clinic Inc.", line1: "123 Healthcare Blvd", cityStateZip: "Los Angeles, CA 90001", country: "United States", phone: "(555) 123-4567" },
+            invoiceAddress: { name: "Medical Clinic Inc. AP Dept", line1: "301 Finance Way", cityStateZip: "San Diego, CA 92121", country: "United States", phone: "(555) 123-4567" },
+            paymentMode: "credit",
+            paymentType: "Corporate Visa ending in 4581",
+            shippingMethod: { carrier: "UPS", option: "Ground" },
+            purchaser: "Test User",
+            lines: [
+              { name: "Breg Polar Care Kodiak Cold Therapy System", sku: "POLAR-CARE-KODIAK", qty: 2, price: 299.99, lineTotal: 599.98 },
+              { name: "T Scope Premier Post-Op Knee Brace", sku: "T-SCOPE-PREMIER", qty: 1, price: 449.99, lineTotal: 449.99 }
+            ],
+            total: 1049.97
+          },
+          "ORD-2024-5665": {
+            orderNumber: "ORD-2024-5665",
+            placedAt: "2024-12-03T10:03:00Z",
+            shippingAddress: { name: "Medical Clinic Inc.", line1: "123 Healthcare Blvd", cityStateZip: "Los Angeles, CA 90001", country: "United States", phone: "(555) 123-4567" },
+            invoiceAddress: { name: "Medical Clinic Inc. AP Dept", line1: "301 Finance Way", cityStateZip: "San Diego, CA 92121", country: "United States", phone: "(555) 123-4567" },
+            paymentMode: "invoice",
+            paymentType: "Net 30 Terms",
+            shippingMethod: { carrier: "UPS", option: "Ground" },
+            purchaser: "Test User",
+            lines: [
+              { name: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "SHOULDER-IMMOBILIZER", qty: 3, price: 89.99, lineTotal: 269.97 },
+              { name: "Physical Therapy Resistance Bands Set", sku: "PT-BANDS-SET", qty: 5, price: 29.99, lineTotal: 149.95 }
+            ],
+            total: 419.92
+          },
+          "ORD-2024-5623": {
+            orderNumber: "ORD-2024-5623",
+            placedAt: "2024-11-27T16:22:00Z",
+            shippingAddress: { name: "Medical Clinic Inc.", line1: "123 Healthcare Blvd", cityStateZip: "Los Angeles, CA 90001", country: "United States", phone: "(555) 123-4567" },
+            invoiceAddress: { name: "Medical Clinic Inc. AP Dept", line1: "301 Finance Way", cityStateZip: "San Diego, CA 92121", country: "United States", phone: "(555) 123-4567" },
+            paymentMode: "credit",
+            paymentType: "Corporate Visa ending in 4581",
+            shippingMethod: { carrier: "UPS", option: "2nd Day Air" },
+            purchaser: "Test User",
+            lines: [
+              { name: "Breg Polar Care Kodiak Cold Therapy System", sku: "POLAR-CARE-KODIAK", qty: 2, price: 299.99, lineTotal: 599.98 }
+            ],
+            total: 599.98
+          },
+          "ORD-2024-5598": {
+            orderNumber: "ORD-2024-5598",
+            placedAt: "2024-11-19T08:41:00Z",
+            shippingAddress: { name: "Medical Clinic Inc.", line1: "123 Healthcare Blvd", cityStateZip: "Los Angeles, CA 90001", country: "United States", phone: "(555) 123-4567" },
+            invoiceAddress: { name: "Medical Clinic Inc. AP Dept", line1: "301 Finance Way", cityStateZip: "San Diego, CA 92121", country: "United States", phone: "(555) 123-4567" },
+            paymentMode: "invoice",
+            paymentType: "Net 30 Terms",
+            shippingMethod: { carrier: "UPS", option: "Ground" },
+            purchaser: "Test User",
+            lines: [
+              { name: "T Scope Premier Post-Op Knee Brace", sku: "T-SCOPE-PREMIER", qty: 4, price: 449.99, lineTotal: 1799.96 },
+              { name: "Shoulder Immobilizer Sling", sku: "SHOULDER-SLING", qty: 1, price: 99.99, lineTotal: 99.99 }
+            ],
+            total: 1899.95
+          },
+          "ORD-2024-5572": {
+            orderNumber: "ORD-2024-5572",
+            placedAt: "2024-11-14T13:35:00Z",
+            shippingAddress: { name: "Medical Clinic Inc.", line1: "123 Healthcare Blvd", cityStateZip: "Los Angeles, CA 90001", country: "United States", phone: "(555) 123-4567" },
+            invoiceAddress: { name: "Medical Clinic Inc. AP Dept", line1: "301 Finance Way", cityStateZip: "San Diego, CA 92121", country: "United States", phone: "(555) 123-4567" },
+            paymentMode: "credit",
+            paymentType: "Corporate Visa ending in 4581",
+            shippingMethod: { carrier: "UPS", option: "Ground" },
+            purchaser: "Test User",
+            lines: [
+              { name: "Physical Therapy Resistance Bands Set", sku: "PT-BANDS-SET", qty: 10, price: 29.99, lineTotal: 299.90 },
+              { name: "Lumbar Support Belt", sku: "LUMBAR-SUPPORT-BELT", qty: 2, price: 79.99, lineTotal: 159.98 }
+            ],
+            total: 459.88
+          }
+        };
+        return presets[String(orderNumber || "").trim()] || null;
+      }
+
       function escapeHtml(text) {
         return String(text || "")
           .replace(/&/g, "&amp;")
@@ -193,7 +390,17 @@
           .replace(/'/g, "&#39;");
       }
       var order = null;
+      var requestedOrder = "";
+      var isHistoryDetail = false;
+      try { requestedOrder = new URLSearchParams(window.location.search || "").get("order") || ""; } catch (e) {}
+      if (requestedOrder) {
+        order = getHistoryOrderPreset(requestedOrder);
+      }
       try { order = JSON.parse(localStorage.getItem("breg_last_order_v1") || "null"); } catch (e) {}
+      if (requestedOrder) {
+        order = getHistoryOrderPreset(requestedOrder) || order;
+      }
+      isHistoryDetail = !!requestedOrder;
       if (!order || !Array.isArray(order.lines) || !order.lines.length) {
         $("#confirmMeta").text("No recent order details were found.");
         $("#confirmTable").html("<div class='pdp-empty'>Order details unavailable.</div>");
@@ -302,8 +509,9 @@
       $("#confirmCheckoutSelections").html(selectionsHtml);
 
       var rows = "";
-      order.lines.forEach(function (line) {
+      order.lines.forEach(function (line, idx) {
         rows += "<tr>" +
+          (isHistoryDetail ? ("<td><input type='checkbox' class='confirm-line-check' data-line-index='" + idx + "'></td>") : "") +
           "<td>" + escapeHtml(line.name || line.sku || "Product") + "</td>" +
           "<td>" + escapeHtml(line.sku || "") + "</td>" +
           "<td>" + Number(line.qty || 0) + "</td>" +
@@ -313,12 +521,177 @@
       });
       $("#confirmTable").html(
         "<table class='confirm-table'>" +
-          "<thead><tr><th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead>" +
+          "<thead><tr>" + (isHistoryDetail ? "<th>Select</th>" : "") + "<th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead>" +
           "<tbody>" + rows + "</tbody>" +
         "</table>"
       );
       $("#confirmTotal").text("Order Total: $" + BregFormatMoney(Number(order.total || 0)));
+      if (isHistoryDetail) {
+        $("#confirmLineActions").html(
+          "<button type='button' class='confirm-line-btn' id='addSelectedToListBtn'>Add Selected to List</button>" +
+          "<button type='button' class='confirm-line-btn primary' id='addSelectedToCartBtn'>Add Selected to Cart</button>"
+        );
+        $("#confirmTable .confirm-table tbody tr").addClass("is-selectable");
+      }
       $(".cart-count").text("0");
+
+      function getSelectedLineItems() {
+        var selected = [];
+        $(".confirm-line-check:checked").each(function () {
+          var idx = Number($(this).attr("data-line-index"));
+          var line = order.lines[idx];
+          if (!line) return;
+          selected.push(line);
+        });
+        return selected;
+      }
+
+      function toCartLine(line) {
+        return {
+          sku: String(line && line.sku ? line.sku : ""),
+          qty: Math.max(1, Number(line && line.qty ? line.qty : 1)),
+          name: String(line && line.name ? line.name : (line.sku || "Product")),
+          price: Number(line && line.price ? line.price : 0),
+          image: String(line && line.image ? line.image : ""),
+          category: "Order History",
+          variant: String(line && line.variant ? line.variant : ""),
+          size: String(line && line.size ? line.size : "")
+        };
+      }
+
+      function addLinesToCart(lines) {
+        if (!lines.length) return;
+        if (window.BregCart && typeof window.BregCart.addLines === "function") {
+          window.BregCart.addLines(lines);
+          if (typeof window.BregCart.showAddedModal === "function") {
+            window.BregCart.showAddedModal(lines);
+          }
+          return;
+        }
+        try {
+          var cart = JSON.parse(localStorage.getItem("breg_cart_v1") || "[]");
+          if (!Array.isArray(cart)) cart = [];
+          lines.forEach(function (line) { cart.push(line); });
+          localStorage.setItem("breg_cart_v1", JSON.stringify(cart));
+        } catch (e) {}
+      }
+
+      function readFavoriteListsState() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem("breg_saved_lists_v1") || "{}");
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function saveFavoriteListsState(state) {
+        try { localStorage.setItem("breg_saved_lists_v1", JSON.stringify(state || {})); } catch (e) {}
+      }
+
+      function readFavoriteItemMeta() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem("breg_saved_list_items_v1") || "{}");
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function saveFavoriteItemMeta(state) {
+        try { localStorage.setItem("breg_saved_list_items_v1", JSON.stringify(state || {})); } catch (e) {}
+      }
+
+      function ensureFavoriteList(state, listName) {
+        var name = String(listName || "").trim() || "Shopping List";
+        if (!Array.isArray(state[name])) state[name] = [];
+        return name;
+      }
+
+      function addLinesToFavoriteList(listName, lines) {
+        var lists = readFavoriteListsState();
+        var items = readFavoriteItemMeta();
+        var target = ensureFavoriteList(lists, listName);
+        var skuList = lists[target];
+        (lines || []).forEach(function (line) {
+          var sku = String(line && line.sku ? line.sku : "").trim();
+          if (!sku) return;
+          if (skuList.indexOf(sku) === -1) skuList.push(sku);
+          items[sku] = {
+            sku: sku,
+            name: String(line && line.name ? line.name : sku),
+            image: String(line && line.image ? line.image : ""),
+            category: "Order History",
+            price: Number(line && line.price ? line.price : 0)
+          };
+        });
+        saveFavoriteListsState(lists);
+        saveFavoriteItemMeta(items);
+      }
+
+      function renderListPickerOptions() {
+        var lists = readFavoriteListsState();
+        var names = Object.keys(lists);
+        var html = "";
+        if (!names.length) {
+          html = "<option value='Shopping List'>Shopping List</option>";
+        } else {
+          names.forEach(function (name) {
+            html += "<option value='" + escapeHtml(name) + "'>" + escapeHtml(name) + "</option>";
+          });
+        }
+        $("#confirmExistingListSelect").html(html);
+      }
+
+      $(document).on("click", "#addSelectedToCartBtn", function () {
+        var $btn = $(this);
+        var selected = getSelectedLineItems().map(toCartLine).filter(function (line) { return !!line.sku; });
+        if (!selected.length) return;
+        addLinesToCart(selected);
+        $btn.text("Added");
+        setTimeout(function () { $btn.text("Add Selected to Cart"); }, 1200);
+      });
+
+      $(document).on("click", ".confirm-line-check", function (event) {
+        event.stopPropagation();
+      });
+
+      $(document).on("click", ".confirm-table tbody tr.is-selectable", function (event) {
+        var $target = $(event.target);
+        var $check = $(this).find(".confirm-line-check").first();
+        if (!$check.length) return;
+        if ($target.is("input, label, a, button")) return;
+        $check.prop("checked", !$check.prop("checked")).trigger("change");
+      });
+
+      $(document).on("change", ".confirm-line-check", function () {
+        $(this).closest("tr").toggleClass("line-selected", $(this).is(":checked"));
+      });
+
+      $(document).on("click", "#addSelectedToListBtn", function () {
+        var selected = getSelectedLineItems();
+        if (!selected.length) return;
+        renderListPickerOptions();
+        $("#confirmNewListInput").val("");
+        $("#confirmListPickerError").removeClass("visible");
+        $("#confirmListPickerModal").data("selectedLines", selected).modal("show");
+      });
+
+      $(document).on("click", "#confirmListPickerSaveBtn", function () {
+        var selected = $("#confirmListPickerModal").data("selectedLines") || [];
+        var newListName = String($("#confirmNewListInput").val() || "").trim();
+        var existingList = String($("#confirmExistingListSelect").val() || "").trim();
+        var targetList = newListName || existingList;
+        if (!selected.length) return;
+        if (!targetList) {
+          $("#confirmListPickerError").addClass("visible");
+          return;
+        }
+        addLinesToFavoriteList(targetList, selected);
+        $("#confirmListPickerModal").modal("hide");
+        $("#addSelectedToListBtn").text("Added");
+        setTimeout(function () { $("#addSelectedToListBtn").text("Add Selected to List"); }, 1200);
+      });
     })();
   </script>
 </body>

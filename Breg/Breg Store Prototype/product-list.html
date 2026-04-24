@@ -339,6 +339,37 @@
       min-height: 0;
       position: relative;
     }
+    .p-heart-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 3;
+      width: 36px;
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid #c7d0d8;
+      background: rgba(255, 255, 255, 0.95);
+      color: #536271;
+      font-size: 17px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .p-heart-btn.hearted {
+      animation: heartPop .34s ease-out;
+    }
+    .p-heart-btn.active {
+      color: #c7511f;
+      border-color: #c7511f;
+      background: #fff8f0;
+    }
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.26); }
+      100% { transform: scale(1); }
+    }
     .p-card-link {
       display: flex;
       flex-direction: column;
@@ -514,7 +545,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -1058,8 +1089,13 @@
 
         filtered.forEach(function (p, idx) {
           var fallbackImage = missingProductImage;
+          var inShoppingList = !!(window.BregFavorites && window.BregFavorites.isInShoppingList && window.BregFavorites.isInShoppingList(p.id));
           html += "" +
             "<article class='p-card'>" +
+              "<button type='button' class='p-heart-btn js-heart-toggle" + (inShoppingList ? " active" : "") + "' " +
+                "data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-image='" + escapeHtml(p.image) + "' " +
+                "data-price='" + Number(p.price || 0).toFixed(2) + "' data-category='" + escapeHtml(p.category || category) + "' " +
+                "aria-label='Save to Shopping List'>" + (inShoppingList ? "&#10084;" : "&#9825;") + "</button>" +
               "<a class='p-card-link' href='product-detail.html?category=" + encodeURIComponent(category) + "&id=" + encodeURIComponent(p.id) + "'>" +
                 "<img class='p-thumb' src='" + p.image + "' onerror=\"this.onerror=null;this.src='" + fallbackImage + "';\" alt='" + escapeHtml(p.name) + "'>" +
                 "<div class='p-body'>" +
@@ -1212,6 +1248,26 @@
         })
         .on("click", "#filterBackdrop", function () {
           toggleMobileFilters(false);
+        })
+        .on("click", ".js-heart-toggle", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if (!window.BregFavorites || typeof window.BregFavorites.toggleShoppingListItem !== "function") return;
+          var $btn = $(this);
+          var item = {
+            sku: String($btn.attr("data-sku") || ""),
+            name: String($btn.attr("data-name") || ""),
+            image: String($btn.attr("data-image") || ""),
+            price: Number($btn.attr("data-price") || 0),
+            category: String($btn.attr("data-category") || category)
+          };
+          var saved = window.BregFavorites.toggleShoppingListItem(item);
+          $btn.toggleClass("active", saved).html(saved ? "&#10084;" : "&#9825;");
+          if (saved) {
+            $btn.removeClass("hearted");
+            if ($btn.length && $btn.get(0)) $btn.get(0).offsetWidth;
+            $btn.addClass("hearted");
+          }
         });
 
       $(window).on("resize", function () {

@@ -23,8 +23,26 @@
   var $accountSectionTitle = $(".account-col-title");
   var $returnsOrdersLink = $('a.action-box[href="order-history.html"]');
   var $cartLink = $("a.cart-box");
+  var $headerActions = $(".header-actions").first();
+  if ($headerActions.length && !$headerActions.find(".top-quick-order-link").length) {
+    $headerActions.prepend(
+      "<a class='action-box top-quick-order-link js-quick-order-link' href='#'>" +
+        "<span class='action-strong'>Quick Order</span>" +
+      "</a>"
+    );
+  }
   var $subNav = $(".sub-nav .site-max").first();
-  var $allToggle = $(".sub-nav-inner .sub-nav-link").first();
+  var $allToggle = $(".sub-nav-inner .sub-nav-link").filter(function () {
+    return $(this).find(".glyphicon-menu-hamburger").length > 0;
+  }).first();
+  if ($allToggle.length) {
+    $allToggle.remove();
+    $allToggle = $();
+  }
+  var $quickOrderLink = $(".sub-nav-inner .sub-nav-link.quick-order").first();
+  if ($quickOrderLink.length) {
+    $quickOrderLink.remove();
+  }
   var allToggleOriginalHtml = $allToggle.length ? $allToggle.html() : "";
   var $allDrawerOverlay = $();
   var allMenuState = { expandedParent: null };
@@ -1478,6 +1496,114 @@
   window.BregQuickOrder.readRows = readQuickOrderRows;
   window.BregQuickOrder.saveDraft = saveQuickOrderDraft;
 
+  var FAVORITES_LISTS_STORAGE_KEY = "breg_saved_lists_v1";
+  var FAVORITES_ITEMS_STORAGE_KEY = "breg_saved_list_items_v1";
+  var FAVORITES_SHOPPING_LIST = "Shopping List";
+
+  function readFavoriteLists() {
+    var state = {};
+    try {
+      var parsed = JSON.parse(localStorage.getItem(FAVORITES_LISTS_STORAGE_KEY) || "{}");
+      if (!parsed || typeof parsed !== "object") return state;
+      Object.keys(parsed).forEach(function (listName) {
+        var entries = parsed[listName];
+        if (!Array.isArray(entries)) return;
+        state[listName] = entries.map(function (entry) {
+          return String(entry || "").trim();
+        }).filter(Boolean);
+      });
+    } catch (e) {}
+    return state;
+  }
+
+  function saveFavoriteLists(state) {
+    try { localStorage.setItem(FAVORITES_LISTS_STORAGE_KEY, JSON.stringify(state || {})); } catch (e) {}
+  }
+
+  function readFavoriteItemMeta() {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(FAVORITES_ITEMS_STORAGE_KEY) || "{}");
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveFavoriteItemMeta(state) {
+    try { localStorage.setItem(FAVORITES_ITEMS_STORAGE_KEY, JSON.stringify(state || {})); } catch (e) {}
+  }
+
+  function normalizeFavoriteMeta(item) {
+    var sku = String(item && (item.sku || item.id) ? (item.sku || item.id) : "").trim();
+    if (!sku) return null;
+    return {
+      sku: sku,
+      name: String(item && item.name ? item.name : sku),
+      image: String(item && item.image ? item.image : ""),
+      category: String(item && item.category ? item.category : ""),
+      price: toPriceNumber(item && item.price)
+    };
+  }
+
+  function ensureFavoriteList(state, listName) {
+    var name = String(listName || "").trim() || FAVORITES_SHOPPING_LIST;
+    if (!Array.isArray(state[name])) state[name] = [];
+    return name;
+  }
+
+  function toggleFavoriteSku(listName, item) {
+    var meta = normalizeFavoriteMeta(item);
+    if (!meta) return false;
+    var lists = readFavoriteLists();
+    var items = readFavoriteItemMeta();
+    var targetList = ensureFavoriteList(lists, listName);
+    var list = lists[targetList];
+    var idx = list.indexOf(meta.sku);
+    var isSaved = idx > -1;
+    if (isSaved) {
+      list.splice(idx, 1);
+    } else {
+      list.push(meta.sku);
+      items[meta.sku] = meta;
+    }
+    saveFavoriteLists(lists);
+    saveFavoriteItemMeta(items);
+    return !isSaved;
+  }
+
+  function favoriteListItems(listName) {
+    var lists = readFavoriteLists();
+    var items = readFavoriteItemMeta();
+    var targetList = ensureFavoriteList(lists, listName);
+    return (lists[targetList] || []).map(function (sku) {
+      var meta = items[sku] || {};
+      return {
+        sku: sku,
+        id: sku,
+        name: String(meta.name || sku),
+        image: String(meta.image || ""),
+        category: String(meta.category || ""),
+        price: toPriceNumber(meta.price)
+      };
+    });
+  }
+
+  window.BregFavorites = window.BregFavorites || {};
+  window.BregFavorites.shoppingListName = FAVORITES_SHOPPING_LIST;
+  window.BregFavorites.readLists = readFavoriteLists;
+  window.BregFavorites.readItems = readFavoriteItemMeta;
+  window.BregFavorites.toggleShoppingListItem = function (item) {
+    return toggleFavoriteSku(FAVORITES_SHOPPING_LIST, item);
+  };
+  window.BregFavorites.isInShoppingList = function (sku) {
+    var lists = readFavoriteLists();
+    var list = lists[FAVORITES_SHOPPING_LIST] || [];
+    return list.indexOf(String(sku || "").trim()) > -1;
+  };
+  window.BregFavorites.getShoppingListItems = function () {
+    return favoriteListItems(FAVORITES_SHOPPING_LIST);
+  };
+
   window.addEventListener("storage", function (event) {
     if (!event || event.key === CART_STORAGE_KEY || event.key === null) {
       syncCartCountBadge();
@@ -1487,8 +1613,77 @@
 
 // Scroll-to-top button (site-wide, independent of header/search)
 (function () {
+  function getLoaderElement(target) {
+    if (typeof target === "string") return document.querySelector(target);
+    return target && target.nodeType === 1 ? target : null;
+  }
+
+  function createNoopController() {
+    return { show: function () {}, hide: function () {} };
+  }
+
+  function createLoaderController(target, options) {
+    var loader = getLoaderElement(target);
+    if (!loader) return createNoopController();
+    if (loader.__bregLoaderController) return loader.__bregLoaderController;
+
+    var opts = options && typeof options === "object" ? options : {};
+    var minVisibleMs = Number(opts.minVisibleMs);
+    if (!isFinite(minVisibleMs) || minVisibleMs < 0) minVisibleMs = 350;
+    var removeOnHideDefault = !!opts.removeOnHide;
+    var shownAt = loader.classList.contains("hidden") ? 0 : Date.now();
+    var hideTimer = null;
+    var removeTimer = null;
+
+    function clearTimers() {
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      }
+      if (removeTimer) {
+        clearTimeout(removeTimer);
+        removeTimer = null;
+      }
+    }
+
+    function show() {
+      if (!loader || !loader.parentNode) return;
+      clearTimers();
+      shownAt = Date.now();
+      loader.classList.remove("hidden");
+    }
+
+    function hide(config) {
+      if (!loader || !loader.parentNode) return;
+      var cfg = config && typeof config === "object" ? config : {};
+      var removeOnHide = Object.prototype.hasOwnProperty.call(cfg, "remove")
+        ? !!cfg.remove
+        : removeOnHideDefault;
+      var elapsed = shownAt ? Date.now() - shownAt : minVisibleMs;
+      var wait = Math.max(0, minVisibleMs - elapsed);
+      clearTimers();
+      hideTimer = setTimeout(function () {
+        if (!loader || !loader.parentNode) return;
+        loader.classList.add("hidden");
+        if (!removeOnHide) return;
+        removeTimer = setTimeout(function () {
+          if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
+        }, 320);
+      }, wait);
+    }
+
+    loader.__bregLoaderController = { show: show, hide: hide };
+    return loader.__bregLoaderController;
+  }
+
+  window.BregPageLoader = window.BregPageLoader || {};
+  window.BregPageLoader.for = createLoaderController;
+})();
+
+(function () {
   function initScrollTop() {
     var btn = document.querySelector(".scroll-top-btn");
+    var quickOrderBtn = document.querySelector(".scroll-quick-order-btn");
     if (!btn) {
       btn = document.createElement("button");
       btn.type = "button";
@@ -1497,6 +1692,14 @@
       btn.innerHTML = "<span class='glyphicon glyphicon-chevron-up'></span>";
       document.body.appendChild(btn);
     }
+    if (!quickOrderBtn) {
+      quickOrderBtn = document.createElement("a");
+      quickOrderBtn.href = "#";
+      quickOrderBtn.className = "scroll-quick-order-btn js-quick-order-link";
+      quickOrderBtn.setAttribute("aria-label", "Open Quick Order");
+      quickOrderBtn.textContent = "Quick Order";
+      document.body.appendChild(quickOrderBtn);
+    }
     if (btn._bregScrollTopInited) return;
     btn._bregScrollTopInited = true;
 
@@ -1504,8 +1707,10 @@
       var y = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
       if (y > 240) {
         btn.classList.add("visible");
+        quickOrderBtn.classList.add("visible");
       } else {
         btn.classList.remove("visible");
+        quickOrderBtn.classList.remove("visible");
       }
     }
 

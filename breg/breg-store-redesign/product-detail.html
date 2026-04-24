@@ -48,6 +48,13 @@
     .pdp-top-actions { display: flex; gap: 12px; }
     .pdp-mini-btn { height: 38px; border-radius: 8px; border: 1px solid #d1d5dc; background: #fff; color: #364153; font-size: 14px; line-height: 20px; padding: 8px 16px; }
     .pdp-mini-btn.warm { border-color: #c7511f; background: #fff8f0; color: #c7511f; }
+    .pdp-heart-btn { width: 38px; min-width: 38px; padding: 0; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; }
+    .pdp-heart-btn.hearted { animation: heartPop .34s ease-out; }
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.26); }
+      100% { transform: scale(1); }
+    }
     .pdp-list-wrap { position: relative; }
     .pdp-list-btn { min-width: 132px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
     .pdp-list-popover {
@@ -927,7 +934,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -1273,6 +1280,7 @@
                 "<div class='pdp-sku'>Item #: " + escapeHtml(product.id) + "</div>" +
                 "<div class='pdp-shortdesc'>" + escapeHtml(shortDesc) + "</div>" +
                 "<div class='pdp-top-actions'>" +
+                  "<button type='button' id='topHeartBtn' class='pdp-mini-btn pdp-heart-btn' aria-label='Save to Shopping List'>&#9825;</button>" +
                   "<div class='pdp-list-wrap' id='pdpListWrap'>" +
                     "<button type='button' id='topListBtn' class='pdp-mini-btn pdp-list-btn'><span id='topListBtnText'>Add to List</span><span class='caret'></span></button>" +
                     "<div class='pdp-list-popover' id='topListPanel'>" +
@@ -1432,6 +1440,10 @@
           try { localStorage.setItem(LIST_STORAGE_KEY, JSON.stringify(listState)); } catch (e) {}
         }
         function getListTargetSku() {
+          var hasConfigurableOptions = product.type === "variation-master" && requiredFacets.length > 0;
+          if (hasConfigurableOptions) {
+            return String(product.id || "");
+          }
           return String(currentResolvedSku || product.id || "");
         }
         function listsContainingSku(sku) {
@@ -1447,6 +1459,12 @@
           var label = cnt > 0 ? (cnt === 1 ? "Saved to List" : "Saved to Lists") : "Add to List";
           $("#topListBtnText").text(label);
           $("#topListBtn").toggleClass("warm", cnt > 0);
+        }
+        function refreshHeartButton() {
+          if (!window.BregFavorites || typeof window.BregFavorites.isInShoppingList !== "function") return;
+          var sku = getListTargetSku();
+          var saved = window.BregFavorites.isInShoppingList(sku);
+          $("#topHeartBtn").toggleClass("warm", saved).html(saved ? "&#10084;" : "&#9825;");
         }
         function renderListPanel() {
           var sku = getListTargetSku();
@@ -1911,6 +1929,7 @@
             $("#topBulkOrderBtn").hide();
           }
           refreshListButton();
+          refreshHeartButton();
           renderListPanel();
         }
 
@@ -2002,6 +2021,26 @@
         });
         $(document).on("click", "#topListBtn", function () {
           $("#topListPanel").toggleClass("open");
+        });
+        $(document).on("click", "#topHeartBtn", function () {
+          if (!window.BregFavorites || typeof window.BregFavorites.toggleShoppingListItem !== "function") return;
+          var sku = getListTargetSku();
+          if (!sku) return;
+          var $btn = $(this);
+          var item = {
+            sku: sku,
+            name: product.name,
+            image: String($("#pdpMainImage").attr("src") || image),
+            price: Number(product.price || 0),
+            category: product.category || category
+          };
+          var saved = window.BregFavorites.toggleShoppingListItem(item);
+          refreshHeartButton();
+          if (saved) {
+            $btn.removeClass("hearted");
+            if ($btn.length && $btn.get(0)) $btn.get(0).offsetWidth;
+            $btn.addClass("hearted");
+          }
         });
         $(document).on("click", "#closeListBtn", function () {
           $("#topListPanel").removeClass("open");

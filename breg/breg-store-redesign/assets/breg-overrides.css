@@ -92,6 +92,29 @@ input:focus, .form-control:focus, select:focus, textarea:focus {
 .border-primary, [style*="border-color: #007185"], [style*="border-color:#007185"] {
   border-color: var(--breg-primary) !important;
 }
+.pl-breadcrumb,
+.pdp-breadcrumb,
+[class$="-breadcrumb"] {
+  color: #2f3f52 !important;
+}
+.pl-breadcrumb a,
+.pdp-breadcrumb a,
+[class$="-breadcrumb"] a {
+  color: #003a8c !important;
+}
+.pl-breadcrumb a:hover,
+.pl-breadcrumb a:focus,
+.pdp-breadcrumb a:hover,
+.pdp-breadcrumb a:focus,
+[class$="-breadcrumb"] a:hover,
+[class$="-breadcrumb"] a:focus {
+  color: #001e62 !important;
+}
+.pl-breadcrumb .sep,
+.pdp-breadcrumb .sep,
+[class$="-breadcrumb"] .sep {
+  color: #566579 !important;
+}
 .cart-added-item-price { color: var(--breg-primary) !important; }
 .bulk-btn-add, .quick-order-submit {
   background: var(--breg-primary) !important;

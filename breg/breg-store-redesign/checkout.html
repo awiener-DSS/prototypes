@@ -10,54 +10,6 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
-    .checkout-loading-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #eef1f4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity .28s ease, visibility .28s ease;
-      opacity: 1;
-      visibility: visible;
-    }
-    .checkout-loading-screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .checkout-loading-inner { text-align: center; }
-    .checkout-loading-circle {
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
-      background: #131653;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
-      box-shadow: 0 8px 22px rgba(19, 22, 83, .22);
-    }
-    .checkout-loading-logo {
-      width: 170px;
-      max-width: 46vw;
-      margin: 0;
-      display: block;
-      animation: checkoutLogoPulse 1.2s ease-in-out infinite;
-    }
-    .checkout-loading-copy {
-      margin: 0;
-      color: #334155;
-      font-size: 14px;
-      letter-spacing: .2px;
-    }
-    @keyframes checkoutLogoPulse {
-      0% { transform: scale(1); opacity: .72; }
-      50% { transform: scale(1.02); opacity: 1; }
-      100% { transform: scale(1); opacity: .72; }
-    }
-
     /* Match shopping cart background color */
     body.checkout-page { background: #EAEDED; }
     .checkout-min-header {
@@ -410,12 +362,11 @@
   <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body class="checkout-page">
-  <div class="checkout-loading-screen" id="checkoutLoadingScreen" aria-live="polite" aria-label="Loading checkout">
-    <div class="checkout-loading-inner">
-      <div class="checkout-loading-circle">
-        <img class="checkout-loading-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+  <div class="breg-page-loader" id="checkoutLoadingScreen" aria-live="polite" aria-label="Loading checkout">
+    <div class="breg-page-loader-inner">
+      <div class="breg-page-loader-circle">
+        <img class="breg-page-loader-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
       </div>
-      <p class="checkout-loading-copy">Preparing your checkout...</p>
     </div>
   </div>
 
@@ -700,8 +651,9 @@
       var ORDER_STORAGE_KEY = "breg_last_order_v1";
       var MISSING_IMAGE = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
       var didHideInitialLoader = false;
-      var loaderShownAt = Date.now();
-      var LOADER_MIN_VISIBLE_MS = 3000;
+      var pageLoader = window.BregPageLoader && typeof window.BregPageLoader.for === "function"
+        ? window.BregPageLoader.for("#checkoutLoadingScreen", { minVisibleMs: 3000, removeOnHide: true })
+        : { show: function () {}, hide: function () {} };
 
       // Ensure money formatting is available even if shell.js fails to load
       var BregFormatMoney = window.BregFormatMoney || function (value) {
@@ -720,16 +672,7 @@
       function hideInitialLoader() {
         if (didHideInitialLoader) return;
         didHideInitialLoader = true;
-        var loader = document.getElementById("checkoutLoadingScreen");
-        if (!loader) return;
-        var elapsed = Date.now() - loaderShownAt;
-        var delay = Math.max(0, LOADER_MIN_VISIBLE_MS - elapsed);
-        setTimeout(function () {
-          loader.classList.add("hidden");
-          setTimeout(function () {
-            if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-          }, 320);
-        }, delay);
+        pageLoader.hide({ remove: true });
       }
 
       function escapeHtml(text) {

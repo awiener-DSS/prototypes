@@ -200,6 +200,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      justify-content: flex-start;
     }
     .preview-btn {
       border: 1px solid #d5d9d9;
@@ -237,35 +238,106 @@
       border-color: var(--breg-primary-dark, #001E62);
       color: #fff;
     }
+    .preview-items-shell {
+      position: relative;
+    }
+    .preview-menu-wrap {
+      position: relative;
+    }
+    .preview-menu-trigger {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid #d5d9d9;
+      background: #fff;
+      color: #0f1111;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .preview-menu-trigger:hover {
+      background: #f7f8f8;
+    }
+    .preview-menu {
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      min-width: 190px;
+      border: 1px solid #d5d9d9;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 8px 18px rgba(15, 17, 17, 0.14);
+      padding: 6px;
+      z-index: 30;
+      display: none;
+    }
+    .preview-menu.open {
+      display: block;
+    }
+    .preview-menu-item {
+      width: 100%;
+      text-align: left;
+      border: 0;
+      background: transparent;
+      color: #0f1111;
+      font-size: 13px;
+      padding: 8px 9px;
+      border-radius: 7px;
+    }
+    .preview-menu-item:hover {
+      background: #f6f7f8;
+    }
+    .preview-menu-item.is-disabled {
+      color: #9aa3aa;
+      cursor: not-allowed;
+    }
+    .preview-menu-item.is-disabled:hover {
+      background: transparent;
+    }
     .preview-items {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 10px;
       margin-top: 6px;
     }
     .preview-item {
       border: 1px solid #d5d9d9;
       border-radius: 10px;
-      padding: 9px;
+      padding: 12px;
       display: grid;
-      grid-template-columns: 74px 1fr;
-      gap: 10px;
+      grid-template-columns: 84px minmax(260px, 1fr) minmax(230px, 320px);
+      gap: 14px;
       background: #fff;
-      min-height: 130px;
+      min-height: 120px;
     }
     .preview-item img {
-      width: 74px;
-      height: 74px;
+      width: 84px;
+      height: 84px;
       border-radius: 7px;
       object-fit: cover;
       border: 1px solid #d5d9d9;
     }
+    .preview-item-main {
+      min-width: 0;
+    }
     .preview-item-name {
       margin: 0 0 2px;
       color: #0f1111;
-      font-size: 13px;
+      font-size: 14px;
       line-height: 1.3;
       font-weight: 500;
+    }
+    .preview-item-name-link {
+      color: inherit;
+      text-decoration: none;
+    }
+    .preview-item-name-link:hover,
+    .preview-item-name-link:focus {
+      color: #0f1111;
+      text-decoration: underline;
     }
     .preview-item-id {
       color: #565959;
@@ -282,10 +354,57 @@
     .preview-item-price {
       color: #0f1111;
       font-weight: 600;
-      margin-top: 2px;
+      margin-top: 4px;
+      font-size: 12px;
+    }
+    .preview-item-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: flex-start;
+      min-width: 0;
+      gap: 8px;
+    }
+    .preview-item-actions .preview-item-add {
+      margin-top: 0;
+    }
+    .preview-item-remove {
+      border: 1px solid #d5d9d9;
+      background: #fff;
+      color: #0f1111;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+    }
+    .preview-item-remove:hover {
+      background: #f7f8f8;
+    }
+    .preview-item-bulk {
+      border: 1px solid #d5d9d9;
+      background: #fff;
+      color: #0f1111;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+    }
+    .preview-item-bulk:hover {
+      background: #f7f8f8;
+    }
+    .preview-item-accessories {
+      border: 1px solid #d5d9d9;
+      background: #fff;
+      color: #0f1111;
+      border-radius: 14px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+    }
+    .preview-item-accessories:hover {
+      background: #f7f8f8;
     }
     .preview-item-qty {
-      margin-top: 7px;
       display: inline-flex;
       align-items: center;
       border: 1px solid #d5d9d9;
@@ -332,6 +451,85 @@
       background: var(--breg-primary-dark, #001E62);
       border-color: var(--breg-primary-dark, #001E62);
       color: #fff;
+    }
+    .preview-item-add[disabled] {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .preview-item-config {
+      border: 1px solid #d5d9d9;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fafbfc;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .preview-item-config-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 8px;
+    }
+    .preview-item-config-group {
+      display: none;
+      margin-bottom: 7px;
+      border: 1px solid #d5dde4;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+    }
+    .preview-item-config-group.show {
+      display: block;
+    }
+    .preview-item-config-group.active-step {
+      border-color: #ff9900;
+      box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.12);
+    }
+    .preview-item-config-group.completed-step {
+      border-color: #8ec6d0;
+      background: #f7fdff;
+    }
+    .preview-item-config-group.locked {
+      opacity: .66;
+      background: #f7f8f9;
+    }
+    .preview-item-config-group.locked .preview-config-chip {
+      pointer-events: none;
+    }
+    .preview-item-config-label {
+      display: block;
+      font-size: 10px;
+      color: #55616d;
+      line-height: 14px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin: 0 0 5px;
+      font-weight: 600;
+    }
+    .preview-config-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .preview-config-chip {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #364153;
+      padding: 4px 9px;
+      min-height: 30px;
+      line-height: 1.2;
+    }
+    .preview-config-chip.active {
+      border-color: #007185;
+      background: #e6f7fb;
+      color: #0b5f73;
+    }
+    .preview-item-config-status {
+      font-size: 11px;
+      color: #565959;
+      margin: 4px 0 0;
+      line-height: 1.35;
     }
     .preview-empty {
       color: #565959;
@@ -519,6 +717,450 @@
       color: #b12704;
       border-color: #b12704;
     }
+    .confirmActionModal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 8px 22px rgba(15, 17, 17, 0.16);
+    }
+    .confirmActionModal .modal-header {
+      border-bottom: 1px solid #eaeded;
+      padding: 12px 16px;
+    }
+    .confirmActionModal .modal-title {
+      color: #0f1111;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+    }
+    .confirmActionModal .modal-body {
+      padding: 14px 16px;
+    }
+    .confirmActionModal .modal-copy {
+      color: #565959;
+      font-size: 13px;
+      margin: 0;
+    }
+    .confirmActionModal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 10px 16px 14px;
+    }
+    .confirmActionModal .btn-default {
+      border-radius: 16px;
+      border-color: #d5d9d9;
+      color: #0f1111;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+    }
+    .confirmActionModal .btn-default:hover {
+      background: #F7F8F8;
+      color: #0f1111;
+      border-color: #c4cbd1;
+    }
+    .confirmActionModal .btn-manage-save {
+      border-radius: 16px;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+    }
+    .confirmActionModal .btn-manage-save:hover {
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    .accessoriesModal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 8px 22px rgba(15, 17, 17, 0.16);
+    }
+    .accessoriesModal .modal-header {
+      border-bottom: 1px solid #eaeded;
+      padding: 12px 16px;
+    }
+    .accessoriesModal .modal-title {
+      color: #0f1111;
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.3px;
+    }
+    .accessoriesModal .modal-body {
+      padding: 14px 16px;
+      max-height: 70vh;
+      overflow: auto;
+    }
+    .accessoriesModal .modal-copy {
+      color: #565959;
+      font-size: 13px;
+      margin: 0 0 10px;
+      font-weight: 600;
+    }
+    .accessories-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .accessories-item {
+      border: 1px solid #d5d9d9;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .accessories-item img {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .accessories-item-name {
+      margin: 0 0 2px;
+      font-size: 12px;
+      line-height: 1.3;
+      color: #0f1111;
+      font-weight: 600;
+    }
+    .accessories-item-id {
+      margin: 0 0 3px;
+      font-size: 11px;
+      color: #565959;
+    }
+    .accessories-item-price {
+      margin: 0 0 6px;
+      font-size: 12px;
+      color: #b12704;
+      font-weight: 600;
+    }
+    .accessories-add-btn {
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      border-radius: 14px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+    }
+    .accessories-add-btn:hover {
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    @media (max-width: 991px) {
+      .accessories-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .bulkVariantsModal .modal-dialog {
+      width: min(1280px, 100%);
+    }
+    .bulkVariantsModal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5dde4;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      max-height: 86vh;
+      overflow: hidden;
+    }
+    .bulkVariantsModal .modal-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .bulkVariantsModal .modal-header .close {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      font-size: 22px;
+      line-height: 1;
+      color: #4b5563;
+      opacity: 1;
+      float: none;
+      margin: 0 0 0 auto;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bulkVariantsModal .modal-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 24px;
+      color: #0a0a0a;
+      font-weight: 500;
+      letter-spacing: 0;
+    }
+    .bulkVariantsModal .modal-body {
+      padding: 10px 16px 16px;
+      overflow: auto;
+    }
+    .bulkVariantsModal .modal-copy {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: #4a5565;
+      font-weight: 600;
+    }
+    .bulkVariantsModal .modal-footer {
+      padding: 12px 16px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fff;
+    }
+    .bulkVariantsModal .modal-footer .btn-default {
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      border-radius: 999px;
+      height: 38px;
+      padding: 0 16px;
+      font-size: 14px;
+      color: #0f172a;
+    }
+    .bulkVariantsModal .modal-footer .btn-manage-save {
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      border-radius: 999px;
+      height: 38px;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .bulkVariantsModal .modal-footer .btn-default:hover {
+      background: #f7f8f8;
+      color: #0f172a;
+      border-color: #c4cbd1;
+    }
+    .bulkVariantsModal .modal-footer .btn-manage-save:hover {
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    .bulkVariantsModal .modal-footer .btn-manage-save:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .bulk-variants-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .bulk-variants-filters {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin: 0 0 12px;
+      padding: 10px;
+      border: 1px solid #e5e9ef;
+      border-radius: 10px;
+      background: #f9fbfc;
+    }
+    .bulk-variants-filter {
+      min-width: 0;
+    }
+    .bulk-variants-filter label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 11px;
+      line-height: 14px;
+      font-weight: 600;
+      color: #5b6572;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+    }
+    .bulk-variants-filter-input {
+      width: 100%;
+      height: 34px;
+      border: 1px solid #cdd6df;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 13px;
+      color: #0f172a;
+      background: #fff;
+    }
+    .bulk-variants-count {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #607080;
+    }
+    .bulk-variants-table th,
+    .bulk-variants-table td {
+      border-bottom: 1px solid #eceff3;
+      padding: 10px 8px;
+      font-size: 13px;
+      vertical-align: top;
+      text-align: left;
+    }
+    .bulk-variants-table th {
+      color: #4a5565;
+      font-weight: 600;
+    }
+    .bulk-variants-sort {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font: inherit;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .bulk-variants-sort span {
+      font-size: 10px;
+      line-height: 1;
+      color: #64748b;
+    }
+    .bulk-variants-sku {
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .bulk-variants-price {
+      color: #b12704;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .bulk-variants-stock {
+      color: #166534;
+      white-space: nowrap;
+    }
+    .bulk-variants-qty {
+      width: 88px;
+      height: 34px;
+      border: 1px solid #cdd6df;
+      border-radius: 8px;
+      padding: 0 8px;
+      font-size: 14px;
+    }
+    .bulk-variants-mobile-list { display: none; }
+    .bulk-variants-mobile-card {
+      border: 1px solid #e4e8ee;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+    .bulk-variants-mobile-card:last-child { margin-bottom: 0; }
+    .bulk-variants-mobile-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .bulk-variants-mobile-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 10px;
+      margin-bottom: 8px;
+    }
+    .bulk-variants-mobile-kv {
+      font-size: 12px;
+      color: #5b6572;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .bulk-variants-mobile-kv strong {
+      display: block;
+      color: #4a5565;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      margin: 0 0 4px;
+      font-weight: 600;
+    }
+    .bulk-variants-mobile-qty-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .bulk-variants-mobile-qty-label {
+      margin: 0;
+      font-size: 12px;
+      color: #4a5565;
+    }
+    @media (max-width: 991px) {
+      .bulk-variants-filters {
+        grid-template-columns: 1fr;
+      }
+      .bulk-variants-table {
+        display: none;
+      }
+      .bulk-variants-mobile-list {
+        display: block;
+      }
+      #bulkVariantsModal .modal-dialog {
+        margin: 0;
+        width: 100%;
+      }
+      #bulkVariantsModal .modal-content {
+        max-height: 94vh;
+        border-radius: 14px 14px 0 0;
+        border-left: 0;
+        border-right: 0;
+      }
+      #bulkVariantsModal .modal-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #fff;
+        padding: 12px 14px;
+      }
+      #bulkVariantsModal .modal-title {
+        font-size: 16px;
+        line-height: 1.25;
+      }
+      #bulkVariantsModal .modal-body {
+        padding: 10px 12px 12px;
+      }
+      #bulkVariantsModal .modal-copy {
+        font-size: 12px;
+        margin-bottom: 8px;
+      }
+      #bulkVariantsModal .bulk-variants-filter-input {
+        height: 38px;
+        font-size: 13px;
+      }
+      #bulkVariantsModal .bulk-variants-mobile-grid {
+        grid-template-columns: 1fr;
+      }
+      #bulkVariantsModal .bulk-variants-qty {
+        width: 100%;
+        height: 38px;
+      }
+      #bulkVariantsModal .modal-footer {
+        position: sticky;
+        bottom: 0;
+        z-index: 2;
+        background: #fff;
+        border-top: 1px solid #e5e7eb;
+        padding: 10px 12px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      #bulkVariantsModal .modal-footer .btn-default,
+      #bulkVariantsModal .modal-footer .btn-manage-save {
+        width: 100%;
+        height: 40px;
+        font-size: 14px;
+      }
+    }
     @media (max-width: 991px) {
       .lists-layout {
         grid-template-columns: 1fr;
@@ -534,6 +1176,16 @@
       }
       .preview-actions {
         margin-top: 10px;
+      }
+      .preview-item {
+        grid-template-columns: 84px 1fr;
+      }
+      .preview-item-actions {
+        grid-column: 1 / -1;
+        align-items: flex-start;
+      }
+      .preview-item-config-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -575,7 +1227,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -619,11 +1271,21 @@
                 <div class="preview-owner" id="previewOwner"></div>
               </div>
               <div class="preview-actions">
-                <a href="#" class="preview-btn preview-btn-primary">Add All to Cart</a>
-                <a href="#" class="preview-btn" id="manageListBtn">Manage List</a>
+                <a href="#" class="preview-btn preview-btn-primary" id="addAllToCartBtn">Add All to Cart</a>
+                <div class="preview-menu-wrap">
+                  <button type="button" class="preview-menu-trigger" id="listActionsToggle" aria-label="List actions" aria-expanded="false">⋯</button>
+                  <div class="preview-menu" id="listActionsMenu" role="menu">
+                    <button type="button" class="preview-menu-item" data-action="rename">Rename List</button>
+                    <button type="button" class="preview-menu-item" data-action="copy">Copy to a New List</button>
+                    <button type="button" class="preview-menu-item" data-action="print">Print List</button>
+                    <button type="button" class="preview-menu-item" data-action="delete">Delete List</button>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="preview-items" id="previewItems"></div>
+            <div class="preview-items-shell">
+              <div class="preview-items" id="previewItems"></div>
+            </div>
             <div class="preview-empty" id="previewEmpty" style="display:none;">
               This list has no saved items yet.
               <div><button class="preview-empty-btn" type="button">Browse products</button></div>
@@ -679,9 +1341,65 @@
     </div>
   </div>
 
+  <div class="modal fade bulkVariantsModal" id="bulkVariantsModal" tabindex="-1" role="dialog" aria-labelledby="bulkVariantsModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="bulkVariantsModalTitle">Bulk Order Multiple Variants</h2>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-copy" id="bulkVariantsProductName"></p>
+          <div id="bulkVariantsFilters"></div>
+          <p class="bulk-variants-count" id="bulkVariantsCount"></p>
+          <div id="bulkVariantsContent"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button id="bulkVariantsCheckInventoryBtn" type="button" class="btn btn-default">Check Inventory</button>
+          <button id="bulkVariantsAddBtn" type="button" class="btn btn-manage-save">Add Selected to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade confirmActionModal" id="confirmActionModal" tabindex="-1" role="dialog" aria-labelledby="confirmActionModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="confirmActionModalTitle">Confirm Action</h2>
+        </div>
+        <div class="modal-body">
+          <p class="modal-copy" id="confirmActionModalCopy">Are you sure?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button id="confirmActionBtn" type="button" class="btn btn-manage-save">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade accessoriesModal" id="accessoriesModal" tabindex="-1" role="dialog" aria-labelledby="accessoriesModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="accessoriesModalTitle">View Accessories</h2>
+        </div>
+        <div class="modal-body">
+          <p class="modal-copy" id="accessoriesModalCopy"></p>
+          <div id="accessoriesModalContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="analysis/catalog-data.js"></script>
+  <script src="analysis/variant-data.js?v=20260218a"></script>
   <script src="assets/catalog-image-resolver.js"></script>
   <script src="assets/shell.js"></script>
   <script>
@@ -697,14 +1415,9 @@
           title: "Shopping List",
           owner: "You",
           scope: "mine",
-          count: 12,
-          updated: "Updated 2 days ago",
-          items: [
-            { id: "BRG-100247", name: "Polar Care Kodiak Cold Therapy", qty: 2, price: "$299.99", image: "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" },
-            { id: "BRG-401532", name: "FreeSport Knee Brace - Premium", qty: 4, price: "$119.99", image: "assets/searchbar/photo-1715531786135-5ac445758873.jpg" },
-            { id: "BRG-209114", name: "SlingShot 3 Shoulder Brace", qty: 1, price: "$89.99", image: "assets/searchbar/photo-1709136494561-d98ea74c9431.jpg" },
-            { id: "BRG-305881", name: "Fusion OA Plus Knee Brace", qty: 5, price: "$479.99", image: "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" }
-          ]
+          count: 0,
+          updated: "Updated just now",
+          items: []
         },
         {
           id: "recovery",
@@ -713,11 +1426,7 @@
           scope: "team",
           count: 8,
           updated: "Updated yesterday",
-          items: [
-            { id: "BRG-601332", name: "PAD INTELLI-FLO HIP Therapy Pad", qty: 2, price: "$159.99", image: "assets/searchbar/photo-1620148222862-b95cf7405a7b.jpg" },
-            { id: "BRG-199873", name: "Ice Pack System - Portable", qty: 5, price: "$59.99", image: "assets/searchbar/photo-1727947417960-cb361b15dc71.jpg" },
-            { id: "BRG-784210", name: "Polar Care Cube Therapy Unit", qty: 1, price: "$199.99", image: "assets/searchbar/photo-1626880493853-19fa8ed90a75.jpg" }
-          ]
+          items: []
         },
         {
           id: "postop",
@@ -726,11 +1435,7 @@
           scope: "mine",
           count: 15,
           updated: "Updated 5 days ago",
-          items: [
-            { id: "BRG-330201", name: "T Scope Premier Post-Op Knee Brace", qty: 3, price: "$449.99", image: "assets/searchbar/photo-1715531786031-7c4e30a45c62.jpg" },
-            { id: "BRG-442715", name: "Shoulder Immobilizer Sling", qty: 2, price: "$54.99", image: "assets/searchbar/photo-1727784070850-eb8c08b94eda.jpg" },
-            { id: "BRG-883219", name: "Lumbar Support Back Brace", qty: 10, price: "$79.99", image: "assets/searchbar/photo-1533560777802-046814bc297c.jpg" }
-          ]
+          items: []
         },
         {
           id: "athletic",
@@ -739,10 +1444,7 @@
           scope: "team",
           count: 6,
           updated: "Updated 1 week ago",
-          items: [
-            { id: "BRG-120879", name: "Ankle Brace Sport", qty: 3, price: "$59.99", image: "assets/searchbar/photo-1637580678290-29617636bdc7.jpg" },
-            { id: "BRG-667110", name: "Advanced Hip Support", qty: 3, price: "$219.99", image: "assets/searchbar/photo-1711188054107-18018e0f77a5.jpg" }
-          ]
+          items: []
         },
         {
           id: "clinic",
@@ -762,7 +1464,9 @@
       var previewOwnerEl = document.getElementById("previewOwner");
       var previewItemsEl = document.getElementById("previewItems");
       var previewEmptyEl = document.getElementById("previewEmpty");
-      var manageListBtnEl = document.getElementById("manageListBtn");
+      var addAllBtnEl = document.querySelector(".preview-btn-primary");
+      var listActionsToggleEl = document.getElementById("listActionsToggle");
+      var listActionsMenuEl = document.getElementById("listActionsMenu");
       var listScope = "all";
       var $createListModal = $("#createListModal");
       var $createListName = $("#createListName");
@@ -773,11 +1477,246 @@
       var $manageListName = $("#manageListName");
       var $manageListSave = $("#manageListSave");
       var $deleteListBtn = $("#deleteListBtn");
+      var $confirmActionModal = $("#confirmActionModal");
+      var $confirmActionModalTitle = $("#confirmActionModalTitle");
+      var $confirmActionModalCopy = $("#confirmActionModalCopy");
+      var $confirmActionBtn = $("#confirmActionBtn");
+      var $accessoriesModal = $("#accessoriesModal");
+      var $accessoriesModalCopy = $("#accessoriesModalCopy");
+      var $accessoriesModalContent = $("#accessoriesModalContent");
+      var $bulkVariantsModal = $("#bulkVariantsModal");
+      var $bulkVariantsProductName = $("#bulkVariantsProductName");
+      var $bulkVariantsFilters = $("#bulkVariantsFilters");
+      var $bulkVariantsCount = $("#bulkVariantsCount");
+      var $bulkVariantsContent = $("#bulkVariantsContent");
+      var $bulkVariantsCheckInventoryBtn = $("#bulkVariantsCheckInventoryBtn");
+      var $bulkVariantsAddBtn = $("#bulkVariantsAddBtn");
       var $listsFilterBar = $("#listsFilterBar");
       var currentFirstName = localStorage.getItem("bregFirstName") || "Medical";
       var currentOwnerLabel = currentFirstName + " (You)";
       var manageTargetId = null;
       var manageOriginalName = "";
+      var createModalMode = "create";
+      var copySourceListId = null;
+      var pendingConfirmAction = null;
+      var activeAccessoriesItemId = "";
+      var variantsByMaster = window.BREG_VARIANTS_BY_MASTER || {};
+      var configStateByItemId = {};
+      var bulkVariantState = {
+        itemId: "",
+        qtyBySku: {},
+        inventoryBySku: {},
+        variants: [],
+        optionFacets: [],
+        filterFacets: [],
+        search: "",
+        facetFilters: {},
+        sortKey: "sku",
+        sortDir: "asc"
+      };
+      var shoppingListName = (window.BregFavorites && window.BregFavorites.shoppingListName) || "Shopping List";
+
+      function getCatalogBySku(sku) {
+        var key = String(sku || "").trim();
+        if (!key || !Array.isArray(window.BREG_CATALOG_ITEMS)) return null;
+        return window.BREG_CATALOG_ITEMS.find(function (entry) { return String(entry && entry.id ? entry.id : "").trim() === key; }) || null;
+      }
+      function buildSeedItemsFromCatalog(desiredCount, categoryHints) {
+        var source = Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : [];
+        if (!source.length) return [];
+        var used = {};
+        var hints = (categoryHints || []).map(function (h) { return String(h || "").toLowerCase(); }).filter(Boolean);
+
+        function inHint(item) {
+          var cat = String(item && item.category ? item.category : "").toLowerCase();
+          if (!hints.length) return cat !== "uncategorized";
+          return hints.some(function (hint) { return cat.indexOf(hint) > -1; });
+        }
+        function isConfigurableMaster(item) {
+          if (!item || item.type !== "variation-master") return false;
+          var optionGroups = [
+            item.sizeOptions || [],
+            item.optionOptions || [],
+            item.colorOptions || [],
+            item.genderOptions || [],
+            item.orientationOptions || [],
+            item.uomOptions || []
+          ];
+          return optionGroups.some(function (list) { return Array.isArray(list) && list.length > 1; });
+        }
+        function toSeedItem(item, index) {
+          return {
+            id: String(item.id || ""),
+            name: String(item.name || item.id || "Product"),
+            qty: (index % 3) + 1,
+            price: formatMoney(Number(item.price || 0)),
+            image: String(item.image || "")
+          };
+        }
+
+        var configMasters = source.filter(function (item) { return inHint(item) && isConfigurableMaster(item); });
+        var standardProducts = source.filter(function (item) { return inHint(item) && item.type !== "variation-product"; });
+        var picked = [];
+
+        configMasters.forEach(function (item) {
+          var id = String(item && item.id ? item.id : "");
+          if (!id || used[id] || picked.length >= desiredCount) return;
+          used[id] = true;
+          picked.push(toSeedItem(item, picked.length));
+        });
+        standardProducts.forEach(function (item) {
+          var id = String(item && item.id ? item.id : "");
+          if (!id || used[id] || picked.length >= desiredCount) return;
+          used[id] = true;
+          picked.push(toSeedItem(item, picked.length));
+        });
+        return picked.slice(0, desiredCount);
+      }
+
+      function formatMoney(value) {
+        var n = Number(value || 0);
+        if (!isFinite(n)) n = 0;
+        if (window.BregFormatMoney) return "$" + window.BregFormatMoney(n);
+        return "$" + n.toFixed(2);
+      }
+      function encodeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+      function uniq(values) {
+        var seen = {};
+        var out = [];
+        (values || []).forEach(function (value) {
+          var cleaned = String(value || "").trim();
+          if (!cleaned || seen[cleaned]) return;
+          seen[cleaned] = true;
+          out.push(cleaned);
+        });
+        return out;
+      }
+      function getMasterConfig(itemId) {
+        var catalogItem = getCatalogBySku(itemId);
+        if (!catalogItem || catalogItem.type !== "variation-master") return null;
+        var facetDefs = [
+          { key: "size", label: "Size", values: uniq(catalogItem.sizeOptions || []) },
+          { key: "option", label: "Model", values: uniq(catalogItem.optionOptions || []) },
+          { key: "color", label: "Color", values: uniq(catalogItem.colorOptions || []) },
+          { key: "gender", label: "Gender", values: uniq(catalogItem.genderOptions || []) },
+          { key: "orientation", label: "Orientation", values: uniq(catalogItem.orientationOptions || []) },
+          { key: "uom", label: "UOM", values: uniq(catalogItem.uomOptions || []) }
+        ].filter(function (facet) { return facet.values.length > 0; });
+        var requiredFacets = facetDefs.filter(function (facet) { return facet.values.length > 1; });
+        if (!requiredFacets.length) return null;
+        return {
+          masterId: itemId,
+          facets: facetDefs,
+          requiredFacets: requiredFacets
+        };
+      }
+      function getConfigState(itemId, config) {
+        var key = String(itemId || "");
+        var current = configStateByItemId[key] || {};
+        if (!current.selected) current.selected = {};
+        if (typeof current.expanded !== "boolean") current.expanded = false;
+        (config && config.facets || []).forEach(function (facet) {
+          if (!current.selected[facet.key]) {
+            current.selected[facet.key] = facet.values.length === 1 ? String(facet.values[0] || "") : "";
+          }
+        });
+        configStateByItemId[key] = current;
+        return current;
+      }
+      function getConfigFlow(config, selected) {
+        var flowFacets = (config && config.requiredFacets) ? config.requiredFacets.slice() : [];
+        var firstPending = null;
+        var stepByFacet = {};
+        flowFacets.forEach(function (facet, idx) {
+          stepByFacet[facet.key] = idx + 1;
+          if (!firstPending && !selected[facet.key]) firstPending = facet;
+        });
+        return {
+          flowFacets: flowFacets,
+          firstPending: firstPending,
+          stepByFacet: stepByFacet
+        };
+      }
+      function normalizeOptionValue(value) {
+        return String(value || "").trim().toLowerCase();
+      }
+      function resolveVariantSku(masterId, selected, config) {
+        var variants = Array.isArray(variantsByMaster[masterId]) ? variantsByMaster[masterId] : [];
+        if (!variants.length) return "";
+        var selectedMap = selected || {};
+        var requiredKeys = ((config && config.requiredFacets) || []).map(function (facet) { return facet.key; });
+
+        function variantMatches(variant, keys) {
+          return (keys || []).every(function (facetKey) {
+            var value = normalizeOptionValue(selectedMap[facetKey]);
+            if (!value) return true;
+            var attrs = (variant.attributes && variant.attributes[facetKey]) || [];
+            return attrs.some(function (attrValue) { return normalizeOptionValue(attrValue) === value; });
+          });
+        }
+
+        var matches = variants.filter(function (variant) {
+          return variantMatches(variant, Object.keys(selectedMap));
+        });
+        if (!matches.length && requiredKeys.length) {
+          matches = variants.filter(function (variant) {
+            return variantMatches(variant, requiredKeys);
+          });
+        }
+        return matches.length ? String(matches[0].sku || "") : "";
+      }
+      function buildConfigRows(itemId, config, selected) {
+        var flow = getConfigFlow(config, selected);
+        var firstPending = flow.firstPending;
+        var firstPendingStep = firstPending ? flow.stepByFacet[firstPending.key] : 0;
+        return (config.facets || []).map(function (facet) {
+          var step = flow.stepByFacet[facet.key] || 0;
+          var isSelected = !!selected[facet.key];
+          var isLocked = !!(firstPending && step > firstPendingStep);
+          var classes = "preview-item-config-group show";
+          if (isLocked) classes += " locked";
+          else if (isSelected) classes += " completed-step";
+          else if (firstPending && facet.key === firstPending.key) classes += " active-step";
+          var chipsHtml = facet.values.map(function (value) {
+            var chipActive = selected[facet.key] === value;
+            return "<button type='button' class='preview-config-chip" + (chipActive ? " active" : "") + "' data-item-id='" + itemId + "' data-facet='" + facet.key + "' data-value='" + value.replace(/'/g, "&#39;") + "'>" + value + "</button>";
+          }).join("");
+          return "" +
+            "<div class='" + classes + "' data-item-id='" + itemId + "' data-group='" + facet.key + "'>" +
+              "<span class='preview-item-config-label'>" + facet.label + "</span>" +
+              "<div class='preview-config-chips'>" + chipsHtml + "</div>" +
+            "</div>";
+        }).join("");
+      }
+
+      function loadShoppingListItems() {
+        var favoritesApi = window.BregFavorites;
+        var rows = [];
+        if (favoritesApi && typeof favoritesApi.getShoppingListItems === "function") {
+          rows = favoritesApi.getShoppingListItems();
+        }
+        return (rows || []).map(function (entry) {
+          var sku = String(entry && (entry.sku || entry.id) ? (entry.sku || entry.id) : "").trim();
+          var catalogItem = getCatalogBySku(sku);
+          var fallbackPrice = Number(entry && entry.price != null ? entry.price : (catalogItem ? catalogItem.price : 0));
+          var name = String(entry && entry.name ? entry.name : (catalogItem && catalogItem.name ? catalogItem.name : sku));
+          var image = String(entry && entry.image ? entry.image : (catalogItem && catalogItem.image ? catalogItem.image : ""));
+          return {
+            id: sku,
+            name: name,
+            qty: 1,
+            price: formatMoney(fallbackPrice),
+            image: image
+          };
+        }).filter(function (entry) { return !!entry.id; });
+      }
 
       function fallbackCartApi() {
         function parsePrice(value) {
@@ -861,10 +1800,66 @@
           size: "Universal"
         };
       }
+      function toConfiguredCartLine(item, qtyOverride, skuOverride) {
+        var line = toCartLine(item, qtyOverride);
+        var sku = String(skuOverride || "").trim();
+        if (!sku) return line;
+        var catalogItem = getCatalogBySku(sku);
+        line.sku = sku;
+        line.variant = sku;
+        if (catalogItem && catalogItem.name) line.name = catalogItem.name;
+        if (catalogItem && catalogItem.price != null) line.price = Number(catalogItem.price || 0);
+        return line;
+      }
+      function getAddAllCartLines(list) {
+        var result = {
+          lines: [],
+          hasUnresolvedConfig: false
+        };
+        if (!list || !Array.isArray(list.items) || !list.items.length) return result;
+        list.items.forEach(function (item) {
+          var config = getMasterConfig(item.id);
+          if (!config) {
+            result.lines.push(toCartLine(item, item.qty));
+            return;
+          }
+          var configState = getConfigState(item.id, config);
+          var selected = configState.selected || {};
+          var hasAllRequired = config.requiredFacets.every(function (facet) { return !!selected[facet.key]; });
+          var resolvedSku = hasAllRequired ? resolveVariantSku(item.id, selected, config) : "";
+          if (!resolvedSku) {
+            result.hasUnresolvedConfig = true;
+            return;
+          }
+          result.lines.push(toConfiguredCartLine(item, item.qty, resolvedSku));
+        });
+        return result;
+      }
 
       lists.forEach(function (list) {
         if (list.owner === "You") list.owner = currentOwnerLabel;
       });
+      var shoppingList = lists.find(function (list) { return list.id === "shopping"; });
+      if (shoppingList) {
+        shoppingList.title = shoppingListName;
+        shoppingList.items = loadShoppingListItems();
+      }
+      var recoveryList = lists.find(function (list) { return list.id === "recovery"; });
+      var postopList = lists.find(function (list) { return list.id === "postop"; });
+      var athleticList = lists.find(function (list) { return list.id === "athletic"; });
+      var clinicList = lists.find(function (list) { return list.id === "clinic"; });
+      if (recoveryList && !recoveryList.items.length) {
+        recoveryList.items = buildSeedItemsFromCatalog(4, ["cold therapy", "knee", "shoulder"]);
+      }
+      if (postopList && !postopList.items.length) {
+        postopList.items = buildSeedItemsFromCatalog(4, ["knee", "shoulder", "spine"]);
+      }
+      if (athleticList && !athleticList.items.length) {
+        athleticList.items = buildSeedItemsFromCatalog(3, ["ankle", "foot", "knee", "hip"]);
+      }
+      if (clinicList && !clinicList.items.length) {
+        clinicList.items = buildSeedItemsFromCatalog(5, ["walker", "elbow", "wrist", "crutches"]);
+      }
       lists.forEach(function (list) {
         if (!Array.isArray(list.items) || !list.items.length) return;
         list.count = list.items.reduce(function (total, item) {
@@ -887,6 +1882,331 @@
         list.count = list.items.reduce(function (total, item) {
           return total + Math.max(1, parseInt(item.qty, 10) || 1);
         }, 0);
+      }
+      function duplicateListItems(items) {
+        return (Array.isArray(items) ? items : []).map(function (item) {
+          return {
+            id: String(item && item.id ? item.id : ""),
+            name: String(item && item.name ? item.name : ""),
+            qty: Math.max(1, parseInt(item && item.qty, 10) || 1),
+            price: String(item && item.price ? item.price : "$0.00"),
+            image: String(item && item.image ? item.image : "")
+          };
+        });
+      }
+      function closeListActionsMenu() {
+        if (listActionsMenuEl) listActionsMenuEl.classList.remove("open");
+        if (listActionsToggleEl) listActionsToggleEl.setAttribute("aria-expanded", "false");
+      }
+      function openRenameListModal(list) {
+        if (!list) return;
+        manageTargetId = list.id;
+        manageOriginalName = list.title;
+        $manageListName.val(manageOriginalName);
+        $deleteListBtn.hide();
+        $(".manage-list-modal .modal-copy").text("Rename this list.");
+        setManageListState();
+        $manageListModal.modal("show");
+      }
+      function deleteListById(listId) {
+        var list = getListById(listId);
+        var visibleLists;
+        if (!list) return;
+        if (list.scope !== "mine") return;
+        lists = lists.filter(function (item) { return item.id !== list.id; });
+        visibleLists = getVisibleLists();
+        if (!visibleLists.length && lists.length) {
+          activeListId = lists[0].id;
+        } else if (visibleLists.length) {
+          activeListId = visibleLists[0].id;
+        }
+        updateFilterButtons();
+        ensureActiveListVisible();
+        renderRows();
+        renderPreview();
+      }
+      function openConfirmModal(title, copy, onConfirm) {
+        pendingConfirmAction = typeof onConfirm === "function" ? onConfirm : null;
+        $confirmActionModalTitle.text(title || "Confirm Action");
+        $confirmActionModalCopy.text(copy || "Are you sure?");
+        $confirmActionModal.modal("show");
+      }
+      function openCreateListModal(mode, sourceListId) {
+        createModalMode = mode || "create";
+        copySourceListId = sourceListId || null;
+        var source = sourceListId ? getListById(sourceListId) : null;
+        var defaultName = source && source.title ? (source.title + " Copy") : "";
+        $createListName.val(defaultName);
+        $(".create-list-modal .modal-title").text(createModalMode === "copy" ? "Copy to a New List" : "Create a List");
+        $(".create-list-modal .modal-copy").text(createModalMode === "copy" ? "Name your copied list." : "Name your new favorites list.");
+        setCreateListState();
+        $createListModal.modal("show");
+      }
+      function printList(list) {
+        if (!list) return;
+        var rows = (list.items || []).map(function (item) {
+          var qty = Math.max(1, parseInt(item.qty, 10) || 1);
+          return "<tr><td>" + item.id + "</td><td>" + item.name + "</td><td>" + qty + "</td><td>" + item.price + "</td></tr>";
+        }).join("");
+        var popup = window.open("", "_blank", "width=900,height=700");
+        if (!popup) return;
+        popup.document.write("<!doctype html><html><head><title>" + list.title + "</title><style>body{font-family:Arial,sans-serif;padding:20px;}h1{margin:0 0 8px;}table{width:100%;border-collapse:collapse;margin-top:12px;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f5f5f5;}</style></head><body><h1>" + list.title + "</h1><p>" + list.count + " items</p><table><thead><tr><th>Item #</th><th>Name</th><th>Qty</th><th>Price</th></tr></thead><tbody>" + rows + "</tbody></table></body></html>");
+        popup.document.close();
+        popup.focus();
+        popup.print();
+      }
+      function getAccessoriesForItem(item) {
+        var source = getCatalogBySku(item && item.id);
+        if (!source || !Array.isArray(window.BREG_CATALOG_ITEMS)) return [];
+        var sourceCategory = String(source.category || "").trim().toLowerCase();
+        var sourceSubcategory = String(source.subcategory || "").trim().toLowerCase();
+        var sku = String(source.id || "");
+        var pool = window.BREG_CATALOG_ITEMS.filter(function (entry) {
+          if (!entry || !entry.id || String(entry.id) === sku) return false;
+          if (entry.type === "variation-product") return false;
+          var cat = String(entry.category || "").trim().toLowerCase();
+          var sub = String(entry.subcategory || "").trim().toLowerCase();
+          if (sourceSubcategory && sub && sub === sourceSubcategory) return true;
+          if (sourceCategory && cat && cat === sourceCategory) return true;
+          return false;
+        });
+        return pool.slice(0, 12).map(function (entry) {
+          return {
+            id: String(entry.id || ""),
+            name: String(entry.name || entry.id || "Accessory"),
+            price: formatMoney(Number(entry.price || 0)),
+            image: String(entry.image || "")
+          };
+        });
+      }
+      function openAccessoriesModal(item) {
+        var resolver = window.BregCatalogImage || null;
+        var list = getAccessoriesForItem(item);
+        activeAccessoriesItemId = String(item && item.id ? item.id : "");
+        $accessoriesModalCopy.text("Accessories associated with " + String(item && item.name ? item.name : "this item") + ":");
+        if (!list.length) {
+          $accessoriesModalContent.html("<div class='preview-empty'>No accessories found for this product.</div>");
+          $accessoriesModal.modal("show");
+          return;
+        }
+        var html = "<div class='accessories-grid'>" + list.map(function (entry) {
+          var img = (resolver && resolver.byId(entry.id)) || entry.image || (resolver ? resolver.missing : "");
+          return "<div class='accessories-item'>" +
+            "<img src='" + encodeHtml(img) + "' alt='" + encodeHtml(entry.name) + "'>" +
+            "<div>" +
+              "<p class='accessories-item-name'>" + encodeHtml(entry.name) + "</p>" +
+              "<p class='accessories-item-id'>Item #: " + encodeHtml(entry.id) + "</p>" +
+              "<p class='accessories-item-price'>" + encodeHtml(entry.price) + "</p>" +
+              "<button type='button' class='accessories-add-btn' data-sku='" + encodeHtml(entry.id) + "' data-name='" + encodeHtml(entry.name) + "' data-price='" + encodeHtml(entry.price) + "' data-image='" + encodeHtml(img) + "'>Add to Cart</button>" +
+            "</div>" +
+          "</div>";
+        }).join("") + "</div>";
+        $accessoriesModalContent.html(html);
+        $accessoriesModal.modal("show");
+      }
+      function summarizeVariantOptions(variant, config) {
+        var facets = (config && config.facets) || [];
+        var parts = [];
+        facets.forEach(function (facet) {
+          var vals = (variant && variant.attributes && variant.attributes[facet.key]) || [];
+          if (vals.length) parts.push(facet.label + ": " + vals[0]);
+        });
+        return parts.join(" | ");
+      }
+      function getBulkVariantFacetValue(variant, facetKey) {
+        var vals = (variant && variant.attributes && variant.attributes[facetKey]) || [];
+        return vals.length ? String(vals[0]) : "";
+      }
+      function getBulkVariantFilterFacets(variants, config) {
+        var facets = (config && config.facets) || [];
+        return facets.filter(function (facet) {
+          var seen = {};
+          var count = 0;
+          (variants || []).forEach(function (variant) {
+            var val = getBulkVariantFacetValue(variant, facet.key);
+            if (!val || seen[val]) return;
+            seen[val] = true;
+            count += 1;
+          });
+          return count > 1;
+        });
+      }
+      function getBulkVariantOptionFacets(variants, config) {
+        var facets = (config && config.facets) || [];
+        return facets.filter(function (facet) {
+          return (variants || []).some(function (variant) {
+            return !!getBulkVariantFacetValue(variant, facet.key);
+          });
+        });
+      }
+      function getBulkVariantFacetValues(variants, facetKey) {
+        var seen = {};
+        var out = [];
+        (variants || []).forEach(function (variant) {
+          var value = getBulkVariantFacetValue(variant, facetKey);
+          if (!value || seen[value]) return;
+          seen[value] = true;
+          out.push(value);
+        });
+        return out.sort();
+      }
+      function renderBulkVariantFilters() {
+        var filters = "<div class='bulk-variants-filters'>" +
+          "<div class='bulk-variants-filter'>" +
+            "<label for='bulkVariantsSearch'>Search</label>" +
+            "<input id='bulkVariantsSearch' class='bulk-variants-filter-input' type='text' placeholder='Search SKU or option' value='" + encodeHtml(bulkVariantState.search || "") + "'>" +
+          "</div>";
+        (bulkVariantState.filterFacets || []).forEach(function (facet) {
+          var selectedVal = bulkVariantState.facetFilters[facet.key] || "";
+          var options = "<option value=''>All " + encodeHtml(facet.label) + "</option>";
+          getBulkVariantFacetValues(bulkVariantState.variants, facet.key).forEach(function (value) {
+            options += "<option value='" + encodeHtml(value) + "'" + (selectedVal === value ? " selected" : "") + ">" + encodeHtml(value) + "</option>";
+          });
+          filters += "<div class='bulk-variants-filter'>" +
+            "<label for='bulkFacet_" + facet.key + "'>" + encodeHtml(facet.label) + "</label>" +
+            "<select id='bulkFacet_" + facet.key + "' class='bulk-variants-filter-input bulk-variants-facet-filter' data-facet='" + facet.key + "'>" + options + "</select>" +
+          "</div>";
+        });
+        filters += "</div>";
+        $bulkVariantsFilters.html(filters);
+      }
+      function getBulkVariantFilteredRows() {
+        var q = String(bulkVariantState.search || "").trim().toLowerCase();
+        return (bulkVariantState.variants || []).filter(function (variant) {
+          var haystack = (String(variant && variant.sku ? variant.sku : "") + " " + summarizeVariantOptions(variant, { facets: bulkVariantState.optionFacets || [] })).toLowerCase();
+          if (q && haystack.indexOf(q) === -1) return false;
+          var keys = Object.keys(bulkVariantState.facetFilters || {});
+          for (var i = 0; i < keys.length; i += 1) {
+            var key = keys[i];
+            var wanted = String(bulkVariantState.facetFilters[key] || "");
+            if (!wanted) continue;
+            if (getBulkVariantFacetValue(variant, key) !== wanted) return false;
+          }
+          return true;
+        });
+      }
+      function getBulkVariantSortValue(variant, sortKey) {
+        if (sortKey === "sku") return String(variant && variant.sku ? variant.sku : "");
+        if (sortKey === "price") return Number(variant && variant.price != null ? variant.price : 0);
+        if (sortKey === "qty") return Number(bulkVariantState.qtyBySku[String(variant && variant.sku ? variant.sku : "")] || 0);
+        if (sortKey === "inventory") return String(bulkVariantState.inventoryBySku[String(variant && variant.sku ? variant.sku : "")] || "");
+        if (sortKey.indexOf("facet:") === 0) return String(getBulkVariantFacetValue(variant, sortKey.slice(6)) || "");
+        return "";
+      }
+      function sortBulkVariantRows(rows) {
+        var key = bulkVariantState.sortKey || "sku";
+        var dir = bulkVariantState.sortDir === "desc" ? -1 : 1;
+        return rows.slice().sort(function (a, b) {
+          var av = getBulkVariantSortValue(a, key);
+          var bv = getBulkVariantSortValue(b, key);
+          var cmp = 0;
+          if (typeof av === "number" && typeof bv === "number") cmp = av - bv;
+          else cmp = String(av).localeCompare(String(bv), undefined, { numeric: true, sensitivity: "base" });
+          return cmp * dir;
+        });
+      }
+      function bulkVariantSortHeader(label, key) {
+        var active = bulkVariantState.sortKey === key;
+        var arrow = active ? (bulkVariantState.sortDir === "desc" ? "▼" : "▲") : "↕";
+        return "<button type='button' class='bulk-variants-sort' data-sort='" + encodeHtml(key) + "'>" + encodeHtml(label) + " <span>" + arrow + "</span></button>";
+      }
+      function renderBulkVariantTable() {
+        var rowsData = sortBulkVariantRows(getBulkVariantFilteredRows());
+        $bulkVariantsCount.text(rowsData.length + " variant" + (rowsData.length === 1 ? "" : "s") + " shown");
+        if (!rowsData.length) {
+          $bulkVariantsContent.html("<div class='preview-empty'>No variants match the current filters.</div>");
+          return;
+        }
+        var headers = "<th>" + bulkVariantSortHeader("SKU", "sku") + "</th>";
+        (bulkVariantState.optionFacets || []).forEach(function (facet) {
+          headers += "<th>" + bulkVariantSortHeader(facet.label, "facet:" + facet.key) + "</th>";
+        });
+        headers += "<th>" + bulkVariantSortHeader("Price", "price") + "</th>";
+        headers += "<th>" + bulkVariantSortHeader("Inventory", "inventory") + "</th>";
+        headers += "<th>" + bulkVariantSortHeader("Quantity", "qty") + "</th>";
+        var rows = rowsData.map(function (variant) {
+          var sku = String(variant && variant.sku ? variant.sku : "");
+          var price = formatMoney(Number(variant && variant.price != null ? variant.price : 0));
+          var qty = Number(bulkVariantState.qtyBySku[sku] || 0);
+          var stock = String(bulkVariantState.inventoryBySku[sku] || "");
+          var html = "<tr><td><div class='bulk-variants-sku'>" + encodeHtml(sku) + "</div></td>";
+          (bulkVariantState.optionFacets || []).forEach(function (facet) {
+            html += "<td>" + encodeHtml(getBulkVariantFacetValue(variant, facet.key) || "-") + "</td>";
+          });
+          html += "<td><div class='bulk-variants-price'>" + price + "</div></td>" +
+            "<td><div class='bulk-variants-stock'>" + encodeHtml(stock) + "</div></td>" +
+            "<td><input type='number' class='bulk-variants-qty' min='0' step='1' value='" + qty + "' data-sku='" + encodeHtml(sku) + "'></td></tr>";
+          return html;
+        }).join("");
+        var mobileRows = rowsData.map(function (variant) {
+          var sku = String(variant && variant.sku ? variant.sku : "");
+          var price = formatMoney(Number(variant && variant.price != null ? variant.price : 0));
+          var qty = Number(bulkVariantState.qtyBySku[sku] || 0);
+          var stock = String(bulkVariantState.inventoryBySku[sku] || "-");
+          var details = (bulkVariantState.optionFacets || []).map(function (facet) {
+            var val = getBulkVariantFacetValue(variant, facet.key) || "-";
+            return "<div class='bulk-variants-mobile-kv'><strong>" + encodeHtml(facet.label) + "</strong>" + encodeHtml(val) + "</div>";
+          }).join("");
+          details += "<div class='bulk-variants-mobile-kv'><strong>Inventory</strong><span class='bulk-variants-stock'>" + encodeHtml(stock) + "</span></div>";
+          return "<div class='bulk-variants-mobile-card'>" +
+            "<div class='bulk-variants-mobile-top'>" +
+              "<div class='bulk-variants-sku'>" + encodeHtml(sku) + "</div>" +
+              "<div class='bulk-variants-price'>" + price + "</div>" +
+            "</div>" +
+            "<div class='bulk-variants-mobile-grid'>" + details + "</div>" +
+            "<div class='bulk-variants-mobile-qty-row'>" +
+              "<p class='bulk-variants-mobile-qty-label'>Quantity</p>" +
+              "<input type='number' class='bulk-variants-qty' min='0' step='1' value='" + qty + "' data-sku='" + encodeHtml(sku) + "'>" +
+            "</div>" +
+          "</div>";
+        }).join("");
+        $bulkVariantsContent.html(
+          "<table class='bulk-variants-table'>" +
+            "<thead><tr>" + headers + "</tr></thead>" +
+            "<tbody>" + rows + "</tbody>" +
+          "</table>" +
+          "<div class='bulk-variants-mobile-list'>" + mobileRows + "</div>"
+        );
+      }
+      function getBulkSelectedLines() {
+        var lines = [];
+        Object.keys(bulkVariantState.qtyBySku || {}).forEach(function (sku) {
+          var qty = Number(bulkVariantState.qtyBySku[sku] || 0);
+          if (qty > 0) lines.push({ sku: sku, qty: qty });
+        });
+        return lines;
+      }
+      function syncBulkAddButtonState() {
+        var hasSelected = getBulkSelectedLines().length > 0;
+        $bulkVariantsAddBtn.prop("disabled", !hasSelected);
+      }
+      function checkBulkVariantInventory(lines) {
+        var next = {};
+        (lines || []).forEach(function (line) {
+          next[String(line.sku || "")] = "In stock";
+        });
+        bulkVariantState.inventoryBySku = next;
+        renderBulkVariantTable();
+      }
+      function openBulkVariantsModal(item) {
+        var config = item ? getMasterConfig(item.id) : null;
+        var variants = item && variantsByMaster[item.id] ? variantsByMaster[item.id] : [];
+        if (!item || !config || !Array.isArray(variants) || !variants.length) return;
+        bulkVariantState.itemId = item.id;
+        bulkVariantState.qtyBySku = {};
+        bulkVariantState.inventoryBySku = {};
+        bulkVariantState.variants = variants.slice();
+        bulkVariantState.optionFacets = getBulkVariantOptionFacets(variants, config);
+        bulkVariantState.filterFacets = getBulkVariantFilterFacets(variants, config);
+        bulkVariantState.search = "";
+        bulkVariantState.facetFilters = {};
+        bulkVariantState.sortKey = "sku";
+        bulkVariantState.sortDir = "asc";
+        $bulkVariantsProductName.text(item.name || item.id || "Product");
+        renderBulkVariantFilters();
+        renderBulkVariantTable();
+        syncBulkAddButtonState();
+        $bulkVariantsModal.modal("show");
       }
 
       function getVisibleLists() {
@@ -967,9 +2287,11 @@
           previewTitleEl.textContent = "No Lists Available";
           previewMetaEl.textContent = "Create a list or switch filters to view available lists.";
           previewOwnerEl.textContent = "";
-          manageListBtnEl.classList.add("is-disabled");
-          manageListBtnEl.setAttribute("aria-disabled", "true");
-          manageListBtnEl.setAttribute("title", "Only the list creator can manage this list");
+          if (listActionsToggleEl) {
+            listActionsToggleEl.disabled = true;
+            listActionsToggleEl.setAttribute("aria-expanded", "false");
+          }
+          if (listActionsMenuEl) listActionsMenuEl.classList.remove("open");
           previewItemsEl.innerHTML = "";
           previewEmptyEl.style.display = "";
           return;
@@ -982,33 +2304,72 @@
         previewTitleEl.textContent = list.title;
         previewMetaEl.textContent = list.count + " items · " + list.updated;
         previewOwnerEl.textContent = "Created by " + list.owner;
-        if (list.scope === "mine") {
-          manageListBtnEl.classList.remove("is-disabled");
-          manageListBtnEl.setAttribute("aria-disabled", "false");
-          manageListBtnEl.removeAttribute("title");
-        } else {
-          manageListBtnEl.classList.add("is-disabled");
-          manageListBtnEl.setAttribute("aria-disabled", "true");
-          manageListBtnEl.setAttribute("title", "Only the list creator can manage this list");
+        if (listActionsMenuEl) {
+          var $deleteAction = $(listActionsMenuEl).find("[data-action='delete']");
+          var allowDelete = list.scope === "mine";
+          $deleteAction.toggleClass("is-disabled", !allowDelete).attr("aria-disabled", allowDelete ? "false" : "true");
+        }
+        if (listActionsToggleEl) {
+          listActionsToggleEl.disabled = false;
+        }
+        var addAllState = getAddAllCartLines(list);
+        var disableAddAll = !addAllState.lines.length;
+        if (addAllBtnEl) {
+          addAllBtnEl.classList.toggle("is-disabled", disableAddAll);
+          addAllBtnEl.setAttribute("aria-disabled", disableAddAll ? "true" : "false");
+          addAllBtnEl.removeAttribute("title");
         }
         var resolver = window.BregCatalogImage || null;
         previewItemsEl.innerHTML = (list.items || []).map(function (item) {
           var qty = Math.max(1, parseInt(item.qty, 10) || 1);
           var imgSrc = (resolver && (resolver.byId(item.id) || resolver.byName(item.name))) || item.image || "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
+          var catalogItem = getCatalogBySku(item.id);
+          var categoryParam = catalogItem && catalogItem.category ? ("&category=" + encodeURIComponent(catalogItem.category)) : "";
+          var productHref = "product-detail.html?id=" + encodeURIComponent(item.id) + categoryParam;
+          var config = getMasterConfig(item.id);
+          var configPanelHtml = "";
+          var configActionHtml = "";
+          var accessoriesButtonHtml = "<button type='button' class='preview-item-accessories' data-item-id='" + item.id + "'>View Accessories</button>";
+          var removeButtonHtml = list.scope === "mine"
+            ? "<button type='button' class='preview-item-remove' data-item-id='" + item.id + "'>Delete Item</button>"
+            : "";
+          var addButtonHtml = "<button type='button' class='preview-item-add'>Add to Cart</button>";
+          var bulkButtonHtml = "";
+          if (config) {
+            var configState = getConfigState(item.id, config);
+            var selected = configState.selected || {};
+            var hasAllRequired = config.requiredFacets.every(function (facet) { return !!selected[facet.key]; });
+            var resolvedSku = hasAllRequired ? resolveVariantSku(item.id, selected, config) : "";
+            configPanelHtml = "" +
+              "<div class='preview-item-config' data-item-id='" + item.id + "'>" +
+                "<div class='preview-item-config-grid'>" + buildConfigRows(item.id, config, selected) + "</div>" +
+              "</div>";
+            configActionHtml = "" +
+              "<p class='preview-item-config-status'>" + (resolvedSku ? ("Ready to add SKU " + resolvedSku) : "Select required options to add this product to cart.") + "</p>" +
+              "<button type='button' class='preview-item-add preview-item-config-add' data-item-id='" + item.id + "' data-sku='" + resolvedSku + "' " + (resolvedSku ? "" : "disabled") + ">Add to Cart</button>";
+            bulkButtonHtml = "<button type='button' class='preview-item-bulk' data-item-id='" + item.id + "'>Bulk Order Multiple Variants</button>";
+            addButtonHtml = "";
+          }
           return (
             "<div class='preview-item' data-item-id='" + item.id + "'>" +
               "<img src='" + imgSrc.replace(/'/g, "&#39;") + "' alt=''>" +
-              "<div>" +
-                "<p class='preview-item-name'>" + item.name + "</p>" +
+              "<div class='preview-item-main'>" +
+                "<p class='preview-item-name'><a class='preview-item-name-link' href='" + productHref + "'>" + item.name + "</a></p>" +
                 "<div class='preview-item-id'>Item #: " + item.id + "</div>" +
-                "<div class='preview-item-note'>Qty " + qty + "</div>" +
+                configPanelHtml +
+              "</div>" +
+              "<div class='preview-item-actions'>" +
                 "<div class='preview-item-price'>" + item.price + "</div>" +
                 "<div class='preview-item-qty'>" +
                   "<button type='button' class='preview-item-qty-btn qty-dec'>-</button>" +
                   "<input type='number' min='1' max='999' class='preview-item-qty-input qty-input' value='" + qty + "'>" +
                   "<button type='button' class='preview-item-qty-btn qty-inc'>+</button>" +
                 "</div>" +
-                "<button type='button' class='preview-item-add'>Add to Cart</button>" +
+                addButtonHtml +
+                configActionHtml +
+                bulkButtonHtml +
+                accessoriesButtonHtml +
+                removeButtonHtml +
               "</div>" +
             "</div>"
           );
@@ -1036,6 +2397,57 @@
         itemId = itemWrap.getAttribute("data-item-id");
         item = (list.items || []).find(function (entry) { return entry.id === itemId; });
         if (!item) return;
+        if (event.target.closest(".preview-item-accessories")) {
+          openAccessoriesModal(item);
+          return;
+        }
+        if (event.target.closest(".preview-item-bulk")) {
+          openBulkVariantsModal(item);
+          return;
+        }
+        if (event.target.closest(".preview-item-remove")) {
+          openConfirmModal(
+            "Delete Item",
+            "Remove this item from the list?",
+            function () {
+              var idxToRemove = (list.items || []).findIndex(function (entry) { return entry.id === itemId; });
+              if (idxToRemove > -1) {
+                list.items.splice(idxToRemove, 1);
+                recalcListCount(list);
+                list.updated = "Updated just now";
+                renderRows();
+                renderPreview();
+              }
+            }
+          );
+          return;
+        }
+        if (event.target.closest(".preview-config-chip")) {
+          var chipEl = event.target.closest(".preview-config-chip");
+          var chipItemId = String(chipEl.getAttribute("data-item-id") || "");
+          var facetKey = String(chipEl.getAttribute("data-facet") || "");
+          var value = String(chipEl.getAttribute("data-value") || "");
+          if (!chipItemId || !facetKey) return;
+          var config = getMasterConfig(chipItemId);
+          if (!config) return;
+          var chipState = getConfigState(chipItemId, config);
+          var flow = getConfigFlow(config, chipState.selected || {});
+          var firstPending = flow.firstPending;
+          var firstPendingStep = firstPending ? flow.stepByFacet[firstPending.key] : 0;
+          var currentStep = flow.stepByFacet[facetKey] || 0;
+          if (firstPending && currentStep > firstPendingStep) return;
+          chipState.selected[facetKey] = value;
+          if (currentStep > 0) {
+            flow.flowFacets.forEach(function (facet) {
+              if (flow.stepByFacet[facet.key] > currentStep) {
+                chipState.selected[facet.key] = "";
+              }
+            });
+          }
+          configStateByItemId[chipItemId] = chipState;
+          renderPreview();
+          return;
+        }
         if (event.target.closest(".preview-item-add")) {
           inputEl = itemWrap.querySelector(".qty-input");
           nextQty = Math.max(1, parseInt(inputEl && inputEl.value, 10) || parseInt(item.qty, 10) || 1);
@@ -1043,7 +2455,9 @@
           recalcListCount(list);
           list.updated = "Updated just now";
           cartApi = getCartApi();
-          var addedLine = toCartLine(item, nextQty);
+          var configuredAddBtn = event.target.closest(".preview-item-config-add");
+          var variantSku = configuredAddBtn ? String(configuredAddBtn.getAttribute("data-sku") || "") : "";
+          var addedLine = toConfiguredCartLine(item, nextQty, variantSku);
           cartApi.addLines([addedLine]);
           showAddedModal([addedLine]);
           renderRows();
@@ -1083,6 +2497,91 @@
         renderRows();
         renderPreview();
       });
+      $bulkVariantsContent.on("input", ".bulk-variants-qty", function () {
+        var sku = String($(this).attr("data-sku") || "");
+        var qty = Math.max(0, parseInt($(this).val(), 10) || 0);
+        if (!sku) return;
+        bulkVariantState.qtyBySku[sku] = qty;
+        delete bulkVariantState.inventoryBySku[sku];
+        syncBulkAddButtonState();
+      });
+      $bulkVariantsFilters.on("input", "#bulkVariantsSearch", function () {
+        bulkVariantState.search = String($(this).val() || "");
+        renderBulkVariantTable();
+      });
+      $bulkVariantsFilters.on("change", ".bulk-variants-facet-filter", function () {
+        var facet = String($(this).attr("data-facet") || "");
+        if (!facet) return;
+        bulkVariantState.facetFilters[facet] = String($(this).val() || "");
+        renderBulkVariantTable();
+      });
+      $bulkVariantsContent.on("click", ".bulk-variants-sort", function () {
+        var key = String($(this).attr("data-sort") || "sku");
+        if (bulkVariantState.sortKey === key) {
+          bulkVariantState.sortDir = bulkVariantState.sortDir === "asc" ? "desc" : "asc";
+        } else {
+          bulkVariantState.sortKey = key;
+          bulkVariantState.sortDir = "asc";
+        }
+        renderBulkVariantTable();
+      });
+      $bulkVariantsCheckInventoryBtn.on("click", function () {
+        var lines = getBulkSelectedLines();
+        checkBulkVariantInventory(lines);
+      });
+      $bulkVariantsAddBtn.on("click", function () {
+        var list = getListById(activeListId);
+        var targetItem = null;
+        var lines = getBulkSelectedLines();
+        var cartApi = getCartApi();
+        if (!list || !bulkVariantState.itemId) return;
+        targetItem = (list.items || []).find(function (entry) { return entry.id === bulkVariantState.itemId; }) || null;
+        if (!targetItem) return;
+        if (!lines.length) return;
+        var cartLines = lines.map(function (line) {
+          return toConfiguredCartLine(targetItem, Number(line.qty || 0), String(line.sku || ""));
+        }).filter(Boolean);
+        if (!cartLines.length) return;
+        cartApi.addLines(cartLines);
+        showAddedModal(cartLines);
+        $bulkVariantsModal.modal("hide");
+      });
+      $bulkVariantsModal.on("hidden.bs.modal", function () {
+        bulkVariantState.itemId = "";
+        bulkVariantState.qtyBySku = {};
+        bulkVariantState.inventoryBySku = {};
+        bulkVariantState.variants = [];
+        bulkVariantState.optionFacets = [];
+        bulkVariantState.filterFacets = [];
+        bulkVariantState.search = "";
+        bulkVariantState.facetFilters = {};
+        bulkVariantState.sortKey = "sku";
+        bulkVariantState.sortDir = "asc";
+        $bulkVariantsProductName.text("");
+        $bulkVariantsFilters.empty();
+        $bulkVariantsCount.text("");
+        $bulkVariantsContent.empty();
+        $bulkVariantsAddBtn.prop("disabled", true);
+      });
+      $accessoriesModalContent.on("click", ".accessories-add-btn", function () {
+        var cartApi = getCartApi();
+        var line = {
+          sku: String($(this).attr("data-sku") || ""),
+          qty: 1,
+          name: String($(this).attr("data-name") || ""),
+          price: Number(String($(this).attr("data-price") || "").replace(/[^0-9.-]/g, "")) || 0,
+          image: String($(this).attr("data-image") || ""),
+          category: "Accessories"
+        };
+        if (!line.sku) return;
+        cartApi.addLines([line]);
+        showAddedModal([line]);
+      });
+      $accessoriesModal.on("hidden.bs.modal", function () {
+        activeAccessoriesItemId = "";
+        $accessoriesModalCopy.text("");
+        $accessoriesModalContent.empty();
+      });
       $listsFilterBar.on("click", ".list-filter-btn", function () {
         listScope = $(this).data("scope") || "all";
         updateFilterButtons();
@@ -1093,19 +2592,54 @@
 
       document.getElementById("createListBtn").addEventListener("click", function (event) {
         event.preventDefault();
-        $createListName.val("");
-        setCreateListState();
-        $createListModal.modal("show");
+        openCreateListModal("create", null);
       });
-      manageListBtnEl.addEventListener("click", function (event) {
-        var activeList = getListById(activeListId);
-        event.preventDefault();
-        if (!activeList || activeList.scope !== "mine") return;
-        manageTargetId = activeList.id;
-        manageOriginalName = activeList.title;
-        $manageListName.val(manageOriginalName);
-        setManageListState();
-        $manageListModal.modal("show");
+      if (listActionsToggleEl) {
+        listActionsToggleEl.addEventListener("click", function () {
+          var isOpen = listActionsMenuEl && listActionsMenuEl.classList.contains("open");
+          if (isOpen) {
+            closeListActionsMenu();
+          } else {
+            if (listActionsMenuEl) listActionsMenuEl.classList.add("open");
+            listActionsToggleEl.setAttribute("aria-expanded", "true");
+          }
+        });
+      }
+      if (listActionsMenuEl) {
+        listActionsMenuEl.addEventListener("click", function (event) {
+          var actionBtn = event.target.closest(".preview-menu-item");
+          var activeList = getListById(activeListId);
+          var action = actionBtn ? String(actionBtn.getAttribute("data-action") || "") : "";
+          if (!actionBtn || !activeList) return;
+          if (action === "delete" && activeList.scope !== "mine") return;
+          closeListActionsMenu();
+          if (action === "rename") {
+            openRenameListModal(activeList);
+            return;
+          }
+          if (action === "copy") {
+            openCreateListModal("copy", activeList.id);
+            return;
+          }
+          if (action === "print") {
+            printList(activeList);
+            return;
+          }
+          if (action === "delete") {
+            openConfirmModal(
+              "Delete List",
+              "Delete this list? This cannot be undone.",
+              function () {
+                deleteListById(activeList.id);
+              }
+            );
+          }
+        });
+      }
+      $(document).on("mousedown", function (event) {
+        if (!$(event.target).closest(".preview-menu-wrap").length) {
+          closeListActionsMenu();
+        }
       });
 
       $createListName.on("input", setCreateListState);
@@ -1116,19 +2650,29 @@
       $manageListModal.on("shown.bs.modal", function () {
         $manageListName.trigger("focus");
       });
+      $createListModal.on("hidden.bs.modal", function () {
+        createModalMode = "create";
+        copySourceListId = null;
+        $(".create-list-modal .modal-title").text("Create a List");
+        $(".create-list-modal .modal-copy").text("Name your new favorites list.");
+      });
       $createListForm.on("submit", function (event) {
         var name;
+        var sourceList;
+        var copiedItems;
         event.preventDefault();
         name = $createListName.val().trim();
         if (!name) return;
+        sourceList = createModalMode === "copy" ? getListById(copySourceListId) : null;
+        copiedItems = sourceList ? duplicateListItems(sourceList.items) : [];
         lists.unshift({
           id: "custom_" + Date.now(),
           title: name,
           owner: currentOwnerLabel,
           scope: "mine",
-          count: 0,
+          count: copiedItems.reduce(function (sum, item) { return sum + Math.max(1, parseInt(item.qty, 10) || 1); }, 0),
           updated: "Updated just now",
-          items: []
+          items: copiedItems
         });
         listScope = "mine";
         activeListId = lists[0].id;
@@ -1143,7 +2687,7 @@
         var nextName;
         event.preventDefault();
         list = getListById(manageTargetId);
-        if (!list || list.scope !== "mine") return;
+        if (!list) return;
         nextName = $manageListName.val().trim();
         if (!nextName || nextName === list.title) return;
         list.title = nextName;
@@ -1153,37 +2697,42 @@
         $manageListModal.modal("hide");
       });
       $deleteListBtn.on("click", function () {
-        var list = getListById(manageTargetId);
-        var visibleLists;
-        if (!list || list.scope !== "mine") return;
-        if (!window.confirm("Delete this list? This cannot be undone.")) return;
-        lists = lists.filter(function (item) { return item.id !== list.id; });
-        visibleLists = getVisibleLists();
-        if (!visibleLists.length && lists.length) {
-          activeListId = lists[0].id;
-        } else if (visibleLists.length) {
-          activeListId = visibleLists[0].id;
-        }
-        updateFilterButtons();
-        ensureActiveListVisible();
-        renderRows();
-        renderPreview();
+        var targetId = manageTargetId;
         $manageListModal.modal("hide");
+        openConfirmModal(
+          "Delete List",
+          "Delete this list? This cannot be undone.",
+          function () {
+            deleteListById(targetId);
+          }
+        );
+      });
+      $confirmActionBtn.on("click", function () {
+        if (typeof pendingConfirmAction === "function") {
+          pendingConfirmAction();
+        }
+        $confirmActionModal.modal("hide");
+      });
+      $confirmActionModal.on("hidden.bs.modal", function () {
+        pendingConfirmAction = null;
       });
       $manageListModal.on("hidden.bs.modal", function () {
         manageTargetId = null;
         manageOriginalName = "";
+        $deleteListBtn.show();
+        $(".manage-list-modal .modal-copy").text("Rename your list or delete it from your account.");
       });
 
       $(".preview-btn-primary").on("click", function (event) {
         event.preventDefault();
         var list = getListById(activeListId);
         var cartApi = getCartApi();
-        var lines;
+        var addAllState;
         if (!list || !Array.isArray(list.items) || !list.items.length) return;
-        lines = list.items.map(function (item) { return toCartLine(item, item.qty); });
-        cartApi.addLines(lines);
-        showAddedModal(lines);
+        addAllState = getAddAllCartLines(list);
+        if (!addAllState.lines.length) return;
+        cartApi.addLines(addAllState.lines);
+        showAddedModal(addAllState.lines);
       });
       $(".preview-empty-btn").on("click", function (event) {
         event.preventDefault();

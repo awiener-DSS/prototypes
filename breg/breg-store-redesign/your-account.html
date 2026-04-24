@@ -51,10 +51,20 @@
     .account-title-main {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      min-width: 0;
+    }
+    .account-title-side {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      text-align: right;
     }
     .account-user-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
       font-size: 14px;
       line-height: 1.25;
       color: #565959;
@@ -165,6 +175,18 @@
       justify-content: space-between;
       gap: 10px;
     }
+    .dashboard-req-link {
+      color: inherit;
+      text-decoration: none;
+      transition: border-color .15s ease, background-color .15s ease;
+    }
+    .dashboard-req-link:hover,
+    .dashboard-req-link:focus {
+      color: inherit;
+      text-decoration: none;
+      border-color: #8e9aa4;
+      background: #eef3f8;
+    }
     .dashboard-req strong {
       display: block;
       font-size: 13px;
@@ -195,7 +217,7 @@
     }
     .account-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
     }
     .account-tile {
@@ -376,6 +398,10 @@
       .account-title-row {
         margin-bottom: 16px;
       }
+      .account-title-side,
+      .account-user-meta {
+        align-items: flex-end;
+      }
       .account-section-title {
         font-size: 19px;
       }
@@ -446,7 +472,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -479,53 +505,38 @@
       <div class="account-title-row">
         <div class="account-title-main">
           <h1>Your Account</h1>
-          <span class="account-user-meta" id="accountUserMeta">Test User • Account Administrator</span>
         </div>
-        <a href="#" id="pageSignOutTile" class="account-page-signout">Sign Out</a>
+        <div class="account-title-side">
+          <span class="account-user-meta">
+            <span id="accountUserName">Test User</span>
+            <span id="accountUserRole">Account Administrator</span>
+            <span id="accountUserCompany">Medical Clinic Inc.</span>
+          </span>
+          <a href="#" id="pageSignOutTile" class="account-page-signout">Sign Out</a>
+        </div>
       </div>
 
       <section class="account-dashboard" aria-label="Account Dashboard">
         <article class="dashboard-card">
           <div class="dashboard-head">
-            <h2 class="dashboard-title">My Budget</h2>
-          </div>
-          <div class="dashboard-metrics">
-            <div class="dashboard-metric">
-              <p class="dashboard-label">Spending limit per order</p>
-              <p class="dashboard-value">$2,500</p>
-            </div>
-            <div class="dashboard-metric">
-              <p class="dashboard-label">Budget (weekly)</p>
-              <p class="dashboard-value">$8,000</p>
-            </div>
-            <div class="dashboard-metric">
-              <p class="dashboard-label">Already spent</p>
-              <p class="dashboard-value">$3,420</p>
-            </div>
-          </div>
-          <p class="dashboard-copy">$4,580 remaining this week.</p>
-        </article>
-
-        <article class="dashboard-card">
-          <div class="dashboard-head">
-            <h2 class="dashboard-title">My Requisitions</h2>
-            <a class="dashboard-link" href="pending-orders.html">View all pending orders</a>
+            <h2 class="dashboard-title">Orders to Approve</h2>
+            <a class="dashboard-link" href="pending-orders.html">View all approvals</a>
           </div>
           <div class="dashboard-requisitions">
-            <div class="dashboard-req">
+            <a class="dashboard-req dashboard-req-link" href="pending-orders.html?filter=approve&req=REQ-240198">
               <div>
                 <strong>REQ-240198</strong>
                 <span>Submitted today • 4 items • $612.00</span>
               </div>
               <span class="dashboard-req-status">Awaiting Approval</span>
-            </div>
-            <div class="dashboard-req">
+            </a>
+            <a class="dashboard-req dashboard-req-link" href="pending-orders.html?filter=approve&req=REQ-240173">
               <div>
                 <strong>REQ-240173</strong>
                 <span>Submitted yesterday • 2 items • $189.00</span>
               </div>
               <span class="dashboard-req-status">Awaiting Approval</span>
-            </div>
+            </a>
           </div>
         </article>
       </section>
@@ -534,11 +545,9 @@
         <h2 class="account-section-title">Purchases</h2>
         <div class="account-grid">
           <a class="account-tile" href="my-favorites.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-heart"></use></svg><div><h3 class="tile-title">My Favorites</h3><p class="tile-copy">View and manage your saved product lists and favorites</p></div></div></a>
-          <a class="account-tile" href="pending-orders.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-clock"></use></svg><div><h3 class="tile-title">Pending Orders</h3><p class="tile-copy">Review orders waiting for approval or processing</p></div></div></a>
-          <a class="account-tile" href="rejected-orders.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-x-circle"></use></svg><div><h3 class="tile-title">Rejected Orders</h3><p class="tile-copy">View orders that have been declined or rejected</p></div></div></a>
+          <a class="account-tile" href="pending-orders.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-clock"></use></svg><div><h3 class="tile-title">Pending &amp; Rejected Orders</h3><p class="tile-copy">Review orders waiting for approval and declined orders in one place</p></div></div></a>
           <a class="account-tile" href="invoices.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-invoice"></use></svg><div><h3 class="tile-title">Invoices</h3><p class="tile-copy">Access and download your purchase invoices</p></div></div></a>
           <a class="account-tile" href="order-history.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-box"></use></svg><div><h3 class="tile-title">Order History</h3><p class="tile-copy">Track packages and view all your past orders</p></div></div></a>
-          <a class="account-tile" href="order-history.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-return"></use></svg><div><h3 class="tile-title">Returns</h3><p class="tile-copy">Return or replace items from your recent orders</p></div></div></a>
         </div>
       </section>
 
@@ -605,10 +614,18 @@
     (function () {
       function renderAccountUserMeta() {
         var firstName = "Test";
+        var lastName = "User";
         var role = "Account Administrator";
+        var company = "Medical Clinic Inc.";
         try { firstName = localStorage.getItem("bregFirstName") || "Test"; } catch (e) {}
+        try { lastName = localStorage.getItem("bregLastName") || "User"; } catch (e) {}
         try { role = localStorage.getItem("bregUserRole") || "Account Administrator"; } catch (e) {}
-        $("#accountUserMeta").text(firstName + " • " + role);
+        try { company = localStorage.getItem("bregAccountName") || "Medical Clinic Inc."; } catch (e) {}
+        var fullName = (String(firstName || "").trim() + " " + String(lastName || "").trim()).trim();
+        if (!fullName) fullName = "Test User";
+        $("#accountUserName").text(fullName);
+        $("#accountUserRole").text(String(role || "Account Administrator"));
+        $("#accountUserCompany").text(String(company || "Medical Clinic Inc."));
       }
 
       $(document).on("click", "#pageSignOutTile", function (event) {

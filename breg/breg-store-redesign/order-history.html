@@ -10,54 +10,6 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
-    .page-loading-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: #eef1f4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: opacity .28s ease, visibility .28s ease;
-      opacity: 1;
-      visibility: visible;
-    }
-    .page-loading-screen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .page-loading-inner { text-align: center; }
-    .page-loading-circle {
-      width: 190px;
-      height: 190px;
-      border-radius: 50%;
-      background: #131653;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
-      box-shadow: 0 8px 22px rgba(19, 22, 83, .22);
-    }
-    .page-loading-logo {
-      width: 170px;
-      max-width: 46vw;
-      margin: 0;
-      display: block;
-      animation: pageLogoPulse 1.2s ease-in-out infinite;
-    }
-    .page-loading-copy {
-      margin: 0;
-      color: #334155;
-      font-size: 14px;
-      letter-spacing: .2px;
-    }
-    @keyframes pageLogoPulse {
-      0% { transform: scale(1); opacity: .72; }
-      50% { transform: scale(1.02); opacity: 1; }
-      100% { transform: scale(1); opacity: .72; }
-    }
-
     body { background: #EAEDED; }
     .history-page { margin: 12px 0 18px; }
     .history-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
@@ -80,8 +32,12 @@
       padding: 10px;
       margin-bottom: 10px;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
+      align-items: start;
+    }
+    .history-filter-group {
+      min-width: 0;
     }
     .history-filter-group label {
       display: block;
@@ -102,6 +58,66 @@
       border-color: #007185;
       box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
     }
+    .history-date-range {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: stretch;
+    }
+    .history-date-range > div {
+      display: flex;
+      flex-direction: row;
+    }
+    .history-date-range .form-control {
+      width: 100%;
+      height: 34px;
+      min-height: 34px;
+    }
+    .history-search-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 2px;
+    }
+    .history-clear-btn,
+    .history-search-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 7px 14px;
+      text-decoration: none;
+    }
+    .history-clear-btn {
+      border: 1px solid #c7ced4;
+      background: #fff;
+      color: #0f1111;
+    }
+    .history-clear-btn:hover,
+    .history-clear-btn:focus {
+      border-color: #8e9aa4;
+      background: #f7f8f8;
+      color: #0f1111;
+      text-decoration: none;
+      outline: 0;
+    }
+    .history-search-btn {
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .history-search-btn:hover,
+    .history-search-btn:focus {
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      color: #fff;
+      text-decoration: none;
+      outline: 0;
+    }
     .history-count {
       margin: 0 0 10px;
       color: #565959;
@@ -120,7 +136,7 @@
       border-bottom: 1px solid #d9dee2;
       padding: 10px 14px;
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       gap: 12px;
     }
     .history-label {
@@ -138,20 +154,89 @@
       line-height: 1.3;
       font-weight: 500;
     }
-    .history-status {
+    .history-order-head a {
+      color: #0057a3;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+    .history-order-head a:hover,
+    .history-order-head a:focus {
+      color: #003d75;
+      text-decoration-thickness: 2px;
+    }
+    .history-item-status {
       display: inline-block;
+      margin-top: 0;
       border-radius: 999px;
       padding: 3px 8px;
       font-size: 11px;
       line-height: 1.2;
-      font-weight: 500;
+      font-weight: 600;
     }
-    .history-status.delivered { background: #eaf3ea; color: #22803b; }
-    .history-status.transit { background: #e7f1f7; color: #0b7796; }
+    .history-item-status.delivered { background: #eaf3ea; color: #22803b; }
+    .history-item-status.transit { background: #e7f1f7; color: #0b7796; }
+    .history-items-toggle-wrap {
+      padding: 8px 14px;
+      border-bottom: 1px solid #eaeded;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .history-items-toggle {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid #c7ced4;
+      border-radius: 999px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 12px;
+      line-height: 1.2;
+      padding: 5px 10px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .history-items-toggle:hover,
+    .history-items-toggle:focus {
+      text-decoration: none;
+      color: #0f1111;
+      border-color: #9aa7b8;
+      background: #f8fafc;
+      outline: 0;
+    }
+    .history-order-tracking-value {
+      font-size: 12px;
+      color: #334155;
+      line-height: 1.35;
+      font-weight: 500;
+      word-break: break-word;
+    }
+    .history-order-tracking-value a,
+    .history-item-tracking a {
+      color: #0057a3;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+    .history-order-tracking-value a:hover,
+    .history-order-tracking-value a:focus,
+    .history-item-tracking a:hover,
+    .history-item-tracking a:focus {
+      color: #003d75;
+      text-decoration-thickness: 2px;
+    }
     .history-items { padding: 10px 14px 12px; }
+    .history-order-card.items-collapsed .history-items { display: none; }
+    .history-order-card .js-history-add-entire {
+      margin-left: auto;
+    }
     .shipment-banner {
-      border: 1px solid #2e9d38;
-      background: #edf6ed;
+      display: none;
+      border: 1px solid #2a9ec5;
+      background: #edf7fb;
       border-radius: 8px;
       padding: 8px 10px;
       font-size: 12px;
@@ -166,17 +251,49 @@
     .shipment-banner .glyphicon {
       font-size: 12px;
       margin-right: 5px;
-      color: #22803b;
+      color: #0b7796;
       top: 0;
     }
     .shipment-banner.in-transit .glyphicon { color: #0b7796; }
     .history-item {
       display: flex;
-      align-items: flex-start;
-      gap: 10px;
+      align-items: stretch;
+      gap: 12px;
       margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      background: #f8fafc;
+      transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .history-item:hover {
+      background: #f7fbff;
+      border-color: #cddff4;
+      box-shadow: inset 0 0 0 1px rgba(73, 128, 197, 0.08);
     }
     .history-item:last-child { margin-bottom: 0; }
+    .history-item > div {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(240px, 1.8fr) minmax(220px, 1fr);
+      grid-template-areas:
+        "title status"
+        "sku tracking"
+        "meta tracking"
+        "config select";
+      align-items: center;
+      column-gap: 12px;
+      row-gap: 6px;
+    }
+    .history-item-check {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      flex: 0 0 auto;
+      align-self: flex-start;
+      cursor: pointer;
+    }
     .history-item img {
       width: 74px;
       height: 74px;
@@ -185,25 +302,163 @@
       background: #edf0f2;
       border: 1px solid #d5d9d9;
       flex: 0 0 auto;
+      align-self: flex-start;
     }
     .history-item-title {
-      display: block;
+      display: inline;
+      grid-area: title;
+      min-width: 0;
+      justify-self: start;
+      width: fit-content;
+      max-width: 100%;
       font-size: 13px;
       line-height: 1.3;
-      color: #0f1111;
-      text-decoration: none;
+      color: #0057a3;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      font-weight: 600;
+    }
+    .history-item-title:hover,
+    .history-item-title:focus {
+      color: #003d75;
+      text-decoration-thickness: 2px;
+    }
+    .history-item-meta {
+      grid-area: meta;
+      margin-top: 0;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.35;
+      white-space: nowrap;
+    }
+    .history-item-sku {
+      grid-area: sku;
+      margin: 0;
+      font-size: 11px;
+      line-height: 1.3;
+      color: #64748b;
+      font-weight: 600;
+      letter-spacing: .1px;
+    }
+    .history-item-status {
+      grid-area: status;
+      justify-self: end;
+      white-space: nowrap;
+    }
+    .history-item-tracking {
+      grid-area: tracking;
+      margin-top: 0;
+      padding: 4px 8px;
+      border: 1px solid #d9dee2;
+      border-radius: 8px;
+      background: #f7f8f9;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #334155;
+      justify-self: end;
+      max-width: 100%;
+    }
+    .history-item-tracking .glyphicon {
+      margin-right: 5px;
+      top: 1px;
+      color: #0b7796;
+      font-size: 11px;
+    }
+    .history-config {
+      grid-area: config;
+      margin-top: 0;
+      font-size: 11px;
+      color: #0057a3;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      display: inline-block;
+      font-weight: 600;
+    }
+    .history-config:hover,
+    .history-config:focus {
+      color: #003d75;
+      text-decoration-thickness: 2px;
+    }
+    .history-inline-config {
+      grid-column: 1 / -1;
+      margin-top: 8px;
+      border: 1px solid #d8e1eb;
+      border-radius: 10px;
+      background: #f8fafc;
+      padding: 10px;
+      display: none;
+    }
+    .history-inline-config.open {
+      display: block;
+    }
+    .history-inline-config-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .history-inline-config-group {
+      border: 1px solid #d8e1eb;
+      border-radius: 8px;
+      padding: 8px;
+      background: #fff;
+      display: none;
+    }
+    .history-inline-config-group.show { display: block; }
+    .history-inline-config-group.active-step {
+      border-color: #86aee8;
+      box-shadow: 0 0 0 1px rgba(0, 71, 187, 0.15);
+    }
+    .history-inline-config-group.completed-step {
+      border-color: #b8c7da;
+      background: #f3f7fc;
+    }
+    .history-inline-config-group.locked {
+      opacity: .55;
+      background: #f2f4f7;
+    }
+    .history-inline-config-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 11px;
+      color: #334155;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .25px;
+    }
+    .history-inline-config-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .history-inline-config-chip {
+      border: 1px solid #ccd6e2;
+      background: #fff;
+      border-radius: 999px;
+      font-size: 11px;
+      line-height: 1.2;
+      padding: 4px 10px;
+      color: #1f2937;
+      font-weight: 600;
+    }
+    .history-inline-config-chip.active {
+      border-color: #0047bb;
+      background: #e8f0ff;
+      color: #003d75;
+    }
+    .history-inline-config-status {
+      margin: 8px 0 0;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #334155;
       font-weight: 500;
     }
-    .history-item-title:hover,.history-item-title:focus { color: #0f1111; text-decoration: none; }
-    .history-item-meta { margin-top: 2px; font-size: 12px; color: #565959; line-height: 1.35; }
-    .history-config {
-      margin-top: 2px;
-      font-size: 11px;
-      color: #007185;
-      text-decoration: none;
-      display: inline-block;
+    .history-inline-config-itemno {
+      margin: 8px 0 0;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #0f172a;
+      font-weight: 700;
     }
-    .history-config:hover,.history-config:focus { color: #c7511f; text-decoration: none; }
     .history-order-foot {
       border-top: 1px solid #eaeded;
       margin-top: 10px;
@@ -242,26 +497,142 @@
       background: var(--breg-primary-dark, #001E62);
       color: #fff;
     }
+    .history-btn.is-disabled,
+    .history-btn.is-disabled:hover,
+    .history-btn.is-disabled:focus {
+      border-color: #c7ced4;
+      background: #eef1f4;
+      color: #8a94a3;
+      cursor: not-allowed;
+      pointer-events: none;
+      text-decoration: none;
+    }
+    .history-config-modal .modal-dialog {
+      width: min(860px, calc(100% - 30px));
+      margin: 70px auto;
+    }
+    .history-config-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      overflow: hidden;
+    }
+    .history-config-modal .modal-header {
+      border-bottom: 1px solid #e5e7eb;
+      padding: 14px 16px;
+    }
+    .history-config-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+      color: #0f1111;
+      font-weight: 400;
+    }
+    .history-config-modal .modal-body {
+      padding: 14px 16px 12px;
+      max-height: 60vh;
+      overflow: auto;
+    }
+    .history-config-copy {
+      margin: 0 0 10px;
+      font-size: 13px;
+      line-height: 1.35;
+      color: #565959;
+    }
+    .history-config-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+    .history-config-row {
+      border: 1px solid #e3e7ea;
+      border-radius: 10px;
+      background: #f7f8f8;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .history-config-name {
+      font-size: 13px;
+      line-height: 1.35;
+      color: #0f1111;
+      font-weight: 600;
+    }
+    .history-config-sku {
+      font-size: 12px;
+      line-height: 1.3;
+      color: #565959;
+      margin-top: 2px;
+    }
+    .history-config-select {
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-size: 12px;
+      line-height: 1.2;
+      font-weight: 600;
+      padding: 6px 12px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .history-config-select:hover,
+    .history-config-select:focus {
+      color: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      text-decoration: none;
+      outline: 0;
+    }
     @media (max-width: 1199px) {
       .history-title { font-size: 30px; }
       .history-subtitle { font-size: 14px; }
-      .history-filters { grid-template-columns: 1fr; }
+      .history-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .history-item > div {
+        grid-template-columns: minmax(170px, 1.4fr) minmax(190px, 1fr);
+      }
+      .history-inline-config-grid {
+        grid-template-columns: 1fr;
+      }
     }
     @media (max-width: 767px) {
       .history-title { font-size: 28px; }
       .history-subtitle { font-size: 13px; }
+      .history-filters { grid-template-columns: 1fr; }
       .history-order-head { grid-template-columns: 1fr 1fr; }
+      .history-item {
+        align-items: flex-start;
+      }
+      .history-item-check {
+        margin-top: 4px;
+      }
+      .history-item > div {
+        display: block;
+      }
+      .history-item-title {
+        display: inline;
+        min-width: 0;
+        width: fit-content;
+        max-width: 100%;
+      }
+      .history-item-meta { margin-top: 2px; white-space: normal; }
+      .history-item-sku { margin-top: 2px; }
+      .history-item-status { margin-top: 5px; }
+      .history-item-tracking { margin-top: 5px; }
+      .history-config { margin-top: 2px; }
     }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
 <body>
-  <div class="page-loading-screen" id="pageLoadingScreen" aria-live="polite" aria-label="Loading order history">
-    <div class="page-loading-inner">
-      <div class="page-loading-circle">
-        <img class="page-loading-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+  <div class="breg-page-loader hidden" id="pageLoadingScreen" aria-live="polite" aria-label="Loading order history">
+    <div class="breg-page-loader-inner">
+      <div class="breg-page-loader-circle">
+        <img class="breg-page-loader-logo" src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
       </div>
-      <p class="page-loading-copy">Loading order history...</p>
     </div>
   </div>
 
@@ -300,7 +671,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending Orders</a><a class="account-link account-only" data-auth-required="1" href="rejected-orders.html">Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
               </div>
             </div>
           </div>
@@ -320,76 +691,103 @@
 
       <section class="history-filters">
         <div class="history-filter-group">
-          <label for="orderSearch">Search Orders</label>
-          <input id="orderSearch" type="text" class="form-control" placeholder="Search by order number...">
+          <label for="orderSearchNumber">Order Number</label>
+          <input id="orderSearchNumber" type="text" class="form-control" placeholder="ORD-">
         </div>
         <div class="history-filter-group">
-          <label for="orderStatus">Order Status</label>
-          <select id="orderStatus" class="form-control">
-            <option>All Orders</option>
-            <option>Delivered</option>
-            <option>In Transit</option>
-          </select>
+          <label for="orderSearchDateFrom">Ordered Date</label>
+          <div class="history-date-range">
+            <div>
+              <input id="orderSearchDateFrom" type="date" class="form-control" aria-label="Ordered date from" placeholder="From">
+            </div>
+            <div>
+              <input id="orderSearchDateTo" type="date" class="form-control" aria-label="Ordered date to" placeholder="To">
+            </div>
+          </div>
         </div>
         <div class="history-filter-group">
-          <label for="orderPeriod">Time Period</label>
-          <select id="orderPeriod" class="form-control">
-            <option>All Time</option>
-            <option>Last 30 days</option>
-            <option>Last 90 days</option>
-            <option>2024</option>
+          <label for="orderSearchPo">PO Number</label>
+          <input id="orderSearchPo" type="text" class="form-control" placeholder="PO-">
+        </div>
+        <div class="history-filter-group">
+          <label for="orderSearchPart">Part Number</label>
+          <input id="orderSearchPart" type="text" class="form-control" placeholder="Part #">
+        </div>
+        <div class="history-filter-group">
+          <label for="orderSearchChannel">Channel</label>
+          <select id="orderSearchChannel" class="form-control">
+            <option value="all">All Channels</option>
+            <option value="Breg Billing Claim Center">Breg Billing Claim Center</option>
+            <option value="Customer Care">Customer Care</option>
+            <option value="eCommerce">eCommerce</option>
+            <option value="EDI">EDI</option>
+            <option value="Vision">Vision</option>
           </select>
+        </div>
+        <div class="history-search-actions">
+          <button type="button" class="history-clear-btn" id="orderSearchClearBtn">Clear Search</button>
+          <button type="button" class="history-search-btn" id="orderSearchBtn">Search</button>
         </div>
       </section>
 
       <p class="history-count">Showing 5 of 5 orders</p>
 
-      <section class="history-order-card">
+      <section class="history-order-card" data-order-number="ORD-2024-5690" data-order-date="2026-04-18" data-po-number="PO-2024-001234" data-channel="eCommerce">
         <div class="history-order-head">
-          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5690</span></div>
-          <div><span class="history-label">Order Date</span><span class="history-value">December 7, 2024</span></div>
-          <div><span class="history-label">Total</span><span class="history-value">$1,249.97</span></div>
-          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+          <div><span class="history-label">Order Number</span><span class="history-value"><a class="history-item-title" href="order-confirmation.html?order=ORD-2024-5690">ORD-2024-5690</a></span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">April 18, 2026</span></div>
+          <div><span class="history-label">Channel</span><span class="history-value">eCommerce</span></div>
+          <div><span class="history-label">PO Number</span><span class="history-value">PO-2024-001234</span></div>
+          <div><span class="history-label">Shipping Address</span><span class="history-value">Medical Clinic Inc., 123 Healthcare Blvd, Los Angeles, CA 90001</span></div>
+          <div><span class="history-label">Amount</span><span class="history-value">$1,249.97</span></div>
+          <div><span class="history-label">Tracking</span><span class="history-order-tracking-value">UPS1234567890</span></div>
         </div>
         <div class="history-items">
-          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on December 9, 2024  ·  Tracking: UPS1234567890</div>
+          <div class="shipment-banner"><span class="glyphicon glyphicon-send"></span>Order Tracking Reference: UPS1234567890</div>
           <div class="history-item">
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
             <div>
               <a class="history-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a>
-              <div class="history-item-meta">Quantity: 2 | Price: $299.99</div>
+              <div class="history-item-meta">Ordered: 2 | Shipped: 2 | Backordered: 0 | Price: $299.99</div>
+              <span class="history-item-status delivered">Delivered</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS1234567890</div>
             </div>
           </div>
           <div class="history-item">
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Knee brace product" data-product-name="T Scope Premier Post-Op Knee Brace">
             <div>
               <a class="history-item-title" href="#">T Scope Premier Post-Op Knee Brace</a>
-              <div class="history-item-meta">Quantity: 1 | Price: $449.99</div>
+              <div class="history-item-meta">Ordered: 1 | Shipped: 1 | Backordered: 0 | Price: $449.99</div>
+              <span class="history-item-status delivered">Delivered</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS1234567904</div>
               <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
             </div>
           </div>
           <div class="history-order-foot">
-            <a class="history-btn" href="#">Download Invoice</a>
-            <a class="history-btn" href="#">Return Items</a>
             <a class="history-btn primary" href="#">Buy Again</a>
           </div>
         </div>
       </section>
 
-      <section class="history-order-card">
+      <section class="history-order-card" data-order-number="ORD-2024-5665" data-order-date="2026-04-02" data-po-number="PO-2024-001235" data-channel="Customer Care">
         <div class="history-order-head">
-          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5665</span></div>
-          <div><span class="history-label">Order Date</span><span class="history-value">December 3, 2024</span></div>
-          <div><span class="history-label">Total</span><span class="history-value">$879.95</span></div>
-          <div><span class="history-label">Status</span><span class="history-status transit">In Transit</span></div>
+          <div><span class="history-label">Order Number</span><span class="history-value"><a class="history-item-title" href="order-confirmation.html?order=ORD-2024-5665">ORD-2024-5665</a></span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">April 2, 2026</span></div>
+          <div><span class="history-label">Channel</span><span class="history-value">Customer Care</span></div>
+          <div><span class="history-label">PO Number</span><span class="history-value">PO-2024-001235</span></div>
+          <div><span class="history-label">Shipping Address</span><span class="history-value">Ortho Group West, 4420 Sunset Ave, San Diego, CA 92103</span></div>
+          <div><span class="history-label">Amount</span><span class="history-value">$879.95</span></div>
+          <div><span class="history-label">Tracking</span><span class="history-order-tracking-value">UPS9876543210</span></div>
         </div>
         <div class="history-items">
-          <div class="shipment-banner in-transit"><span class="glyphicon glyphicon-send"></span>Tracking: UPS9876543210<br>Estimated delivery: December 12, 2024</div>
+          <div class="shipment-banner in-transit"><span class="glyphicon glyphicon-send"></span>Order Tracking Reference: UPS9876543210</div>
           <div class="history-item">
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
             <div>
               <a class="history-item-title" href="#">Shoulder Immobilizer Sling with Abduction Pillow</a>
-              <div class="history-item-meta">Quantity: 3 | Price: $89.99</div>
+              <div class="history-item-meta">Ordered: 3 | Shipped: 2 | Backordered: 1 | Price: $89.99</div>
+              <span class="history-item-status transit">In Transit</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS9876543210</div>
               <a class="history-config" href="#">&rsaquo; See other configurations (3 options available)</a>
             </div>
           </div>
@@ -397,56 +795,64 @@
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Resistance bands" data-product-name="Physical Therapy Resistance Bands Set">
             <div>
               <a class="history-item-title" href="#">Physical Therapy Resistance Bands Set</a>
-              <div class="history-item-meta">Quantity: 5 | Price: $29.99</div>
+              <div class="history-item-meta">Ordered: 5 | Shipped: 3 | Backordered: 2 | Price: $29.99</div>
+              <span class="history-item-status transit">In Transit</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS9876543299</div>
               <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
             </div>
           </div>
           <div class="history-order-foot">
-            <a class="history-btn" href="#">Download Invoice</a>
-            <a class="history-btn" href="#">Track Package</a>
             <a class="history-btn primary" href="#">Buy Again</a>
           </div>
         </div>
       </section>
 
-      <section class="history-order-card">
+      <section class="history-order-card" data-order-number="ORD-2024-5623" data-order-date="2026-03-16" data-po-number="PO-2024-001236" data-channel="EDI">
         <div class="history-order-head">
-          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5623</span></div>
-          <div><span class="history-label">Order Date</span><span class="history-value">November 27, 2024</span></div>
-          <div><span class="history-label">Total</span><span class="history-value">$649.98</span></div>
-          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+          <div><span class="history-label">Order Number</span><span class="history-value"><a class="history-item-title" href="order-confirmation.html?order=ORD-2024-5623">ORD-2024-5623</a></span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">March 16, 2026</span></div>
+          <div><span class="history-label">Channel</span><span class="history-value">EDI</span></div>
+          <div><span class="history-label">PO Number</span><span class="history-value">PO-2024-001236</span></div>
+          <div><span class="history-label">Shipping Address</span><span class="history-value">Rehab Partners, 77 Market St, Phoenix, AZ 85004</span></div>
+          <div><span class="history-label">Amount</span><span class="history-value">$649.98</span></div>
+          <div><span class="history-label">Tracking</span><span class="history-order-tracking-value">UPS5555666677</span></div>
         </div>
         <div class="history-items">
-          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on December 1, 2024  ·  Tracking: UPS5555666677</div>
+          <div class="shipment-banner"><span class="glyphicon glyphicon-send"></span>Order Tracking Reference: UPS5555666677</div>
           <div class="history-item">
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Breg Polar Care Kodiak Cold Therapy System" alt="Cold therapy product">
             <div>
               <a class="history-item-title" href="#">Breg Polar Care Kodiak Cold Therapy System</a>
-              <div class="history-item-meta">Quantity: 2 | Price: $299.99</div>
+              <div class="history-item-meta">Ordered: 2 | Shipped: 2 | Backordered: 0 | Price: $299.99</div>
+              <span class="history-item-status delivered">Delivered</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS5555666677</div>
             </div>
           </div>
           <div class="history-order-foot">
-            <a class="history-btn" href="#">Download Invoice</a>
-            <a class="history-btn" href="#">Return Items</a>
             <a class="history-btn primary" href="#">Buy Again</a>
           </div>
         </div>
       </section>
 
-      <section class="history-order-card">
+      <section class="history-order-card" data-order-number="ORD-2024-5598" data-order-date="2026-02-24" data-po-number="PO-2024-001175" data-channel="Vision">
         <div class="history-order-head">
-          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5598</span></div>
-          <div><span class="history-label">Order Date</span><span class="history-value">November 19, 2024</span></div>
-          <div><span class="history-label">Total</span><span class="history-value">$1,899.94</span></div>
-          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+          <div><span class="history-label">Order Number</span><span class="history-value"><a class="history-item-title" href="order-confirmation.html?order=ORD-2024-5598">ORD-2024-5598</a></span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">February 24, 2026</span></div>
+          <div><span class="history-label">Channel</span><span class="history-value">Vision</span></div>
+          <div><span class="history-label">PO Number</span><span class="history-value">PO-2024-001175</span></div>
+          <div><span class="history-label">Shipping Address</span><span class="history-value">Northside Surgical, 940 Lake Dr, Seattle, WA 98104</span></div>
+          <div><span class="history-label">Amount</span><span class="history-value">$1,899.94</span></div>
+          <div><span class="history-label">Tracking</span><span class="history-order-tracking-value">UPS4444333322</span></div>
         </div>
         <div class="history-items">
-          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on November 24, 2024  ·  Tracking: UPS4444333322</div>
+          <div class="shipment-banner"><span class="glyphicon glyphicon-send"></span>Order Tracking Reference: UPS4444333322</div>
           <div class="history-item">
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Knee brace product" data-product-name="T Scope Premier Post-Op Knee Brace">
             <div>
               <a class="history-item-title" href="#">T Scope Premier Post-Op Knee Brace</a>
-              <div class="history-item-meta">Quantity: 4 | Price: $449.99</div>
+              <div class="history-item-meta">Ordered: 4 | Shipped: 4 | Backordered: 0 | Price: $449.99</div>
+              <span class="history-item-status delivered">Delivered</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS4444333322</div>
               <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
             </div>
           </div>
@@ -454,32 +860,37 @@
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" data-product-name="Shoulder Immobilizer" alt="Shoulder immobilizer">
             <div>
               <a class="history-item-title" href="#">Shoulder Immobilizer Sling</a>
-              <div class="history-item-meta">Quantity: 1 | Price: $99.99</div>
+              <div class="history-item-meta">Ordered: 1 | Shipped: 1 | Backordered: 0 | Price: $99.99</div>
+              <span class="history-item-status delivered">Delivered</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS4444333391</div>
               <a class="history-config" href="#">&rsaquo; See other configurations (1 options available)</a>
             </div>
           </div>
           <div class="history-order-foot">
-            <a class="history-btn" href="#">Download Invoice</a>
-            <a class="history-btn" href="#">Return Items</a>
             <a class="history-btn primary" href="#">Buy Again</a>
           </div>
         </div>
       </section>
 
-      <section class="history-order-card">
+      <section class="history-order-card" data-order-number="ORD-2024-5572" data-order-date="2026-01-30" data-po-number="PO-2024-001168" data-channel="Breg Billing Claim Center">
         <div class="history-order-head">
-          <div><span class="history-label">Order Number</span><span class="history-value">ORD-2024-5572</span></div>
-          <div><span class="history-label">Order Date</span><span class="history-value">November 14, 2024</span></div>
-          <div><span class="history-label">Total</span><span class="history-value">$459.98</span></div>
-          <div><span class="history-label">Status</span><span class="history-status delivered">Delivered</span></div>
+          <div><span class="history-label">Order Number</span><span class="history-value"><a class="history-item-title" href="order-confirmation.html?order=ORD-2024-5572">ORD-2024-5572</a></span></div>
+          <div><span class="history-label">Order Date</span><span class="history-value">January 30, 2026</span></div>
+          <div><span class="history-label">Channel</span><span class="history-value">Breg Billing Claim Center</span></div>
+          <div><span class="history-label">PO Number</span><span class="history-value">PO-2024-001168</span></div>
+          <div><span class="history-label">Shipping Address</span><span class="history-value">Summit Ortho Clinic, 510 River Rd, Denver, CO 80203</span></div>
+          <div><span class="history-label">Amount</span><span class="history-value">$459.98</span></div>
+          <div><span class="history-label">Tracking</span><span class="history-order-tracking-value">UPS2222111100</span></div>
         </div>
         <div class="history-items">
-          <div class="shipment-banner"><span class="glyphicon glyphicon-ok-circle"></span>Delivered on November 18, 2024</div>
+          <div class="shipment-banner"><span class="glyphicon glyphicon-send"></span>Order Tracking Reference: UPS2222111100</div>
           <div class="history-item">
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Resistance bands" data-product-name="Physical Therapy Resistance Bands Set">
             <div>
               <a class="history-item-title" href="#">Physical Therapy Resistance Bands Set</a>
-              <div class="history-item-meta">Quantity: 10 | Price: $29.99</div>
+              <div class="history-item-meta">Ordered: 10 | Shipped: 8 | Backordered: 2 | Price: $29.99</div>
+              <span class="history-item-status delivered">Delivered</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS2222111100</div>
               <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
             </div>
           </div>
@@ -487,19 +898,34 @@
             <img src="https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png" alt="Lumbar support" data-product-name="Lumbar Support Back Brace">
             <div>
               <a class="history-item-title" href="#">Lumbar Support Belt</a>
-              <div class="history-item-meta">Quantity: 2 | Price: $79.99</div>
+              <div class="history-item-meta">Ordered: 2 | Shipped: 2 | Backordered: 0 | Price: $79.99</div>
+              <span class="history-item-status delivered">Delivered</span>
+              <div class="history-item-tracking"><span class="glyphicon glyphicon-send"></span>Item Tracking: UPS2222111133</div>
               <a class="history-config" href="#">&rsaquo; See other configurations (4 options available)</a>
             </div>
           </div>
           <div class="history-order-foot">
-            <a class="history-btn" href="#">Download Invoice</a>
-            <a class="history-btn" href="#">Return Items</a>
             <a class="history-btn primary" href="#">Buy Again</a>
           </div>
         </div>
       </section>
     </div>
   </main>
+
+  <div class="modal fade history-config-modal" id="historyConfigModal" tabindex="-1" role="dialog" aria-labelledby="historyConfigTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="historyConfigTitle">Other Configurations</h2>
+        </div>
+        <div class="modal-body">
+          <p class="history-config-copy" id="historyConfigCopy">Select one of the available configurations.</p>
+          <ul class="history-config-list" id="historyConfigList"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -508,28 +934,391 @@
   <script src="assets/shell.js"></script>
   <script>
     (function () {
-      var loaderShownAt = Date.now();
-      var LOADER_MIN_VISIBLE_MS = 3000;
-      var loader = document.getElementById("pageLoadingScreen");
-      if (!loader) return;
-      var elapsed = Date.now() - loaderShownAt;
-      var delay = Math.max(0, LOADER_MIN_VISIBLE_MS - elapsed);
-      setTimeout(function () {
-        loader.classList.add("hidden");
-        setTimeout(function () {
-          if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
-        }, 320);
-      }, delay);
+      var pageLoader = window.BregPageLoader && typeof window.BregPageLoader.for === "function"
+        ? window.BregPageLoader.for("#pageLoadingScreen", { minVisibleMs: 350 })
+        : { show: function () {}, hide: function () {} };
+      var $cards = $(".history-order-card");
+      var totalCards = $cards.length;
+      var $count = $(".history-count");
+      var $orderNo = $("#orderSearchNumber");
+      var $dateFrom = $("#orderSearchDateFrom");
+      var $dateTo = $("#orderSearchDateTo");
+      var $poNo = $("#orderSearchPo");
+      var $partNo = $("#orderSearchPart");
+      var $channel = $("#orderSearchChannel");
+      var $searchBtn = $("#orderSearchBtn");
+      var $clearBtn = $("#orderSearchClearBtn");
+
+      function normalize(value) {
+        return String(value || "").toLowerCase().trim();
+      }
+
+      function showHistoryLoader() {
+        pageLoader.show();
+      }
+
+      function hideHistoryLoader() {
+        pageLoader.hide();
+      }
+
+      function parseDateValue(value) {
+        var parsed = new Date(String(value || "").trim());
+        if (!isFinite(parsed.getTime())) return null;
+        parsed.setHours(0, 0, 0, 0);
+        return parsed;
+      }
+
+      function toDateInputValue(date) {
+        if (!(date instanceof Date) || !isFinite(date.getTime())) return "";
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, "0");
+        var day = String(date.getDate()).padStart(2, "0");
+        return year + "-" + month + "-" + day;
+      }
+
+      function updateCount(visibleCount) {
+        $count.text("Showing " + visibleCount + " of " + totalCards + " orders");
+      }
+
+      function cardMatchesPart($card, partNeedle) {
+        var matched = false;
+        if (!partNeedle) return true;
+        $card.find(".history-item").each(function () {
+          var itemName = normalize($(this).find(".history-item-title").first().text());
+          var pseudoPart = itemName.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+          if (normalize(pseudoPart).indexOf(partNeedle) > -1 || itemName.indexOf(partNeedle) > -1) {
+            matched = true;
+            return false;
+          }
+        });
+        return matched;
+      }
+
+      function applyHistorySearch(showLoader) {
+        var orderNeedle = normalize($orderNo.val());
+        var poNeedle = normalize($poNo.val());
+        var partNeedle = normalize($partNo.val());
+        var channelNeedle = normalize($channel.val());
+        var fromDate = parseDateValue($dateFrom.val());
+        var toDate = parseDateValue($dateTo.val());
+        var visible = 0;
+        var runSearch = function () {
+          $cards.each(function () {
+            var $card = $(this);
+            var cardOrderNo = normalize($card.attr("data-order-number"));
+            var cardPoNo = normalize($card.attr("data-po-number"));
+            var cardChannel = normalize($card.attr("data-channel"));
+            var cardDate = parseDateValue($card.attr("data-order-date"));
+            var isMatch = true;
+
+            if (orderNeedle && cardOrderNo.indexOf(orderNeedle) === -1) isMatch = false;
+            if (poNeedle && cardPoNo.indexOf(poNeedle) === -1) isMatch = false;
+            if (channelNeedle && channelNeedle !== "all" && cardChannel !== normalize(channelNeedle)) isMatch = false;
+            if (fromDate && (!cardDate || cardDate < fromDate)) isMatch = false;
+            if (toDate && (!cardDate || cardDate > toDate)) isMatch = false;
+            if (!cardMatchesPart($card, partNeedle)) isMatch = false;
+
+            $card.toggle(isMatch);
+            if (isMatch) visible += 1;
+          });
+          updateCount(visible);
+          if (showLoader) hideHistoryLoader();
+        };
+        if (showLoader) {
+          showHistoryLoader();
+          setTimeout(runSearch, 0);
+          return;
+        }
+        runSearch();
+      }
+
+      function clearHistorySearch() {
+        $orderNo.val("");
+        $dateFrom.val("");
+        $dateTo.val("");
+        $poNo.val("");
+        $partNo.val("");
+        $channel.val("all");
+        applyHistorySearch(true);
+      }
+
+      $searchBtn.on("click", function () { applyHistorySearch(true); });
+      $clearBtn.on("click", clearHistorySearch);
+      $(".history-filters").on("keydown", "input, select", function (event) {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        applyHistorySearch(true);
+      });
+
+      (function setInitialNinetyDayRange() {
+        var today = new Date();
+        today.setHours(0, 0, 0, 0);
+        var from = new Date(today);
+        from.setDate(from.getDate() - 90);
+        $dateFrom.val(toDateInputValue(from));
+        $dateTo.val(toDateInputValue(today));
+      })();
+
+      applyHistorySearch(true);
     })();
 
     (function () {
-      if (window.BregCatalogImage) {
-        $(".history-item").each(function () {
-          var $img = $(this).find("img").first();
-          var name = $img.attr("data-product-name") || $.trim($(this).find(".history-item-title").first().text());
-          if (name) $img.attr("src", window.BregCatalogImage.byName(name));
+      function extractTrackingCode(text) {
+        var match = String(text || "").match(/\b((?:1Z[0-9A-Z]+)|(?:UPS[0-9A-Z]+)|(?:FEDEX[0-9A-Z]+)|(?:FDX[0-9A-Z]+)|(?:[0-9]{12,22}))\b/i);
+        return match ? String(match[1] || "").trim() : "";
+      }
+
+      function trackingHrefFromText(text) {
+        var source = String(text || "");
+        var code = extractTrackingCode(source);
+        if (!code) return "";
+        var normalized = code.toUpperCase();
+        if (normalized.indexOf("UPS") === 0 || normalized.indexOf("1Z") === 0) {
+          return "https://www.ups.com/track?tracknum=" + encodeURIComponent(code);
+        }
+        if (normalized.indexOf("FEDEX") === 0 || normalized.indexOf("FDX") === 0 || /^[0-9]{12,22}$/.test(code)) {
+          return "https://www.fedex.com/fedextrack/?trknbr=" + encodeURIComponent(code);
+        }
+        return "";
+      }
+
+      function decorateTrackingLinks() {
+        $(".history-order-tracking-value, .history-item-tracking").each(function () {
+          var $el = $(this);
+          if ($el.find("a").length) return;
+          var rawText = $.trim($el.text() || "");
+          var code = extractTrackingCode(rawText);
+          var href = trackingHrefFromText(rawText);
+          if (!code || !href) return;
+          var linked = rawText.replace(code, "<a href='" + href + "' target='_blank' rel='noopener noreferrer'>" + code + "</a>");
+          $el.html(linked);
         });
       }
+
+      function normalizeName(value) {
+        return String(value || "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      var PDP_ITEM_NUMBER_OVERRIDES = {
+        "physical therapy resistance bands set": "PF010YXX"
+      };
+
+      function resolveCatalogItemByName(name) {
+        var list = Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : [];
+        var target = normalizeName(name);
+        if (!target) return null;
+        var exact = null;
+        var partial = null;
+        list.some(function (item) {
+          var candidateName = normalizeName(item && item.name);
+          if (!candidateName) return false;
+          if (candidateName === target) {
+            exact = item;
+            return true;
+          }
+          if (!partial && (candidateName.indexOf(target) > -1 || target.indexOf(candidateName) > -1)) {
+            partial = item;
+          }
+          return false;
+        });
+        return exact || partial;
+      }
+
+      function resolvePdpItemNumber(sourceName, displayName) {
+        var catalogItem = resolveCatalogItemByName(sourceName) || resolveCatalogItemByName(displayName);
+        var sourceKey = normalizeName(sourceName);
+        var displayKey = normalizeName(displayName);
+        var itemNo = catalogItem ? String(catalogItem.sku || catalogItem.id || "") : "";
+        if (itemNo) return itemNo;
+        if (sourceKey && PDP_ITEM_NUMBER_OVERRIDES[sourceKey]) return PDP_ITEM_NUMBER_OVERRIDES[sourceKey];
+        if (displayKey && PDP_ITEM_NUMBER_OVERRIDES[displayKey]) return PDP_ITEM_NUMBER_OVERRIDES[displayKey];
+        return "";
+      }
+
+      function buildPdpHrefFromItem($item) {
+        var displayName = $.trim($item.find(".history-item-title").first().text());
+        var sourceName = $item.find("img").attr("data-product-name") || displayName;
+        var catalogItem = resolveCatalogItemByName(sourceName) || resolveCatalogItemByName(displayName);
+        var sku = resolvePdpItemNumber(sourceName, displayName);
+        if (!sku) return "#";
+        var href = "product-detail.html?id=" + encodeURIComponent(sku);
+        if (catalogItem && catalogItem.category) {
+          href += "&category=" + encodeURIComponent(String(catalogItem.category));
+        }
+        return href;
+      }
+
+      $(".history-item").each(function () {
+        var $item = $(this);
+        var $img = $item.find("img").first();
+        var name = $img.attr("data-product-name") || $.trim($item.find(".history-item-title").first().text());
+        if (window.BregCatalogImage && name) {
+          $img.attr("src", window.BregCatalogImage.byName(name));
+        }
+        var itemNo = resolvePdpItemNumber(name, $.trim($item.find(".history-item-title").first().text()));
+        if (itemNo) $item.attr("data-item-number", itemNo);
+        $item.find(".history-item-title").first().attr("href", buildPdpHrefFromItem($item));
+      });
+      decorateTrackingLinks();
+    })();
+
+    (function () {
+      var configStateByItemId = {};
+
+      function escapeHtml(value) {
+        return String(value || "").replace(/[&<>"']/g, function (char) {
+          return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" })[char];
+        });
+      }
+
+      function getConfigTemplate() {
+        return [
+          { key: "size", label: "Size", values: ["XS", "S", "M", "L", "XL"] },
+          { key: "side", label: "Side", values: ["Left", "Right"] },
+          { key: "color", label: "Color", values: ["Black", "Gray"] }
+        ];
+      }
+
+      function getState(itemId) {
+        if (!configStateByItemId[itemId]) configStateByItemId[itemId] = { selected: {} };
+        return configStateByItemId[itemId];
+      }
+
+      function getFlow(template, selected) {
+        var activeIdx = -1;
+        var i;
+        for (i = 0; i < template.length; i += 1) {
+          if (!selected[template[i].key]) {
+            activeIdx = i;
+            break;
+          }
+        }
+        return {
+          activeIdx: activeIdx,
+          complete: activeIdx === -1
+        };
+      }
+
+      function getBaseItemNumber($item) {
+        return String($item.find(".history-item-sku").first().text() || "")
+          .replace(/^Item\s*#:\s*/i, "")
+          .trim();
+      }
+
+      function sanitizeOptionValue(value) {
+        return String(value || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]+/g, "")
+          .trim();
+      }
+
+      function getConfiguredItemNumber($item, template, selected) {
+        var base = getBaseItemNumber($item) || "ITEM";
+        var chosen = [];
+        template.forEach(function (facet) {
+          var val = sanitizeOptionValue(selected[facet.key]);
+          if (val) chosen.push(val);
+        });
+        if (!chosen.length) return base;
+        return base + "-" + chosen.join("-");
+      }
+
+      function buildInlineConfigGroups(itemId, template, selected) {
+        var flow = getFlow(template, selected);
+        return template.map(function (facet, index) {
+          var classes = ["history-inline-config-group", "show"];
+          if (index < flow.activeIdx || flow.complete) classes.push("completed-step");
+          if (index === flow.activeIdx) classes.push("active-step");
+          if (flow.activeIdx !== -1 && index > flow.activeIdx) classes.push("locked");
+          var chips = facet.values.map(function (value) {
+            var active = selected[facet.key] === value;
+            return "<button type='button' class='history-inline-config-chip" + (active ? " active" : "") + "' data-item-id='" + escapeHtml(itemId) + "' data-facet='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(value) + "'>" + escapeHtml(value) + "</button>";
+          }).join("");
+          return (
+            "<div class='" + classes.join(" ") + "'>" +
+              "<span class='history-inline-config-label'>" + escapeHtml(facet.label) + "</span>" +
+              "<div class='history-inline-config-chips'>" + chips + "</div>" +
+            "</div>"
+          );
+        }).join("");
+      }
+
+      function renderInlineConfig($item) {
+        var itemId = String($item.attr("data-history-item-id") || "");
+        if (!itemId) return;
+        var state = getState(itemId);
+        var template = getConfigTemplate();
+        var flow = getFlow(template, state.selected || {});
+        var itemNo = getConfiguredItemNumber($item, template, state.selected || {});
+        var itemNoHtml = flow.complete
+          ? ("<p class='history-inline-config-itemno'>Item #: " + escapeHtml(itemNo) + "</p>")
+          : "";
+        var status = flow.complete
+          ? "Configuration selected. You can proceed with this variant."
+          : "Select options to configure this item.";
+        var html =
+          "<div class='history-inline-config-grid'>" +
+            buildInlineConfigGroups(itemId, template, state.selected || {}) +
+          "</div>" +
+          itemNoHtml +
+          "<p class='history-inline-config-status'>" + status + "</p>";
+        var $content = $item.children("div").first();
+        var $panel = $content.find(".history-inline-config").first();
+        if (!$panel.length) {
+          $panel = $("<div class='history-inline-config'></div>");
+          $content.append($panel);
+        }
+        $panel.html(html).addClass("open");
+        if (flow.complete) {
+          var $check = $item.find(".js-history-item-select").first();
+          if ($check.length && !$check.is(":checked")) {
+            $check.prop("checked", true).trigger("change");
+          }
+        }
+      }
+
+      $(".history-page").on("click", ".history-config", function (event) {
+        var $link = $(this);
+        var $item = $link.closest(".history-item");
+        var $panel = $item.find(".history-inline-config").first();
+        event.preventDefault();
+        if ($panel.length && $panel.hasClass("open")) {
+          $panel.removeClass("open");
+          $link.text($link.text().replace("Hide", "See"));
+          return;
+        }
+        renderInlineConfig($item);
+        $link.text($link.text().replace("See", "Hide"));
+      });
+
+      $(".history-page").on("click", ".history-inline-config-chip", function (event) {
+        var $chip = $(this);
+        var itemId = String($chip.attr("data-item-id") || "");
+        var facet = String($chip.attr("data-facet") || "");
+        var value = String($chip.attr("data-value") || "");
+        var state;
+        var template;
+        var facetIdx = -1;
+        event.preventDefault();
+        if (!itemId || !facet || !value) return;
+        state = getState(itemId);
+        template = getConfigTemplate();
+        template.forEach(function (f, idx) {
+          if (f.key === facet) facetIdx = idx;
+        });
+        if (facetIdx < 0) return;
+        state.selected[facet] = value;
+        template.forEach(function (f, idx) {
+          if (idx > facetIdx) state.selected[f.key] = "";
+        });
+        renderInlineConfig($(".history-item").filter(function () {
+          return String($(this).attr("data-history-item-id") || "") === itemId;
+        }).first());
+      });
     })();
 
     (function () {
@@ -606,15 +1395,17 @@
           .replace(/^-+|-+$/g, "");
       }
 
-      function parseOrderItem($item, cartApi) {
+      function parseOrderItem($item) {
+        var cartApi = getCartApi();
         var name = $.trim($item.find(".history-item-title").first().text() || "Product");
         var meta = $.trim($item.find(".history-item-meta").first().text() || "");
-        var qtyMatch = meta.match(/Quantity:\s*(\d+)/i);
+        var itemNo = $.trim($item.find(".history-item-sku").first().text() || "").replace(/^Item\s*#:\s*/i, "");
+        var qtyMatch = meta.match(/(?:Ordered|Quantity):\s*(\d+)/i);
         var priceMatch = meta.match(/Price:\s*\$?\s*([0-9]+(?:\.[0-9]+)?)/i);
         var qty = qtyMatch ? Math.max(1, parseInt(qtyMatch[1], 10) || 1) : 1;
         var price = priceMatch ? (cartApi.parsePrice ? cartApi.parsePrice(priceMatch[1]) : Number(priceMatch[1] || 0)) : 0;
         return {
-          sku: toSkuFromName(name),
+          sku: itemNo || toSkuFromName(name),
           qty: qty,
           name: name,
           price: price,
@@ -625,23 +1416,128 @@
         };
       }
 
-      $(".history-order-card").on("click", ".history-btn.primary", function (event) {
-        var $btn = $(this);
-        var $card = $btn.closest(".history-order-card");
-        var cartApi = getCartApi();
-        var lines = [];
-        event.preventDefault();
-        $card.find(".history-item").each(function () {
-          lines.push(parseOrderItem($(this), cartApi));
-        });
+      function addLinesToCartAndFlash($btn, lines, defaultLabel) {
         if (!lines.length) return;
+        var cartApi = getCartApi();
         cartApi.addLines(lines);
         showAddedModal(lines);
         $btn.text("Added to Cart");
         setTimeout(function () {
-          $btn.text("Buy Again");
+          $btn.text(defaultLabel);
         }, 1200);
+      }
+
+      function getItemNumberForDisplay($item) {
+        var explicit = String($item.attr("data-item-number") || "").trim();
+        if (explicit) return explicit;
+        var href = String($item.find(".history-item-title").first().attr("href") || "");
+        var match = href.match(/[?&]id=([^&]+)/i);
+        var fromHref = match ? decodeURIComponent(match[1]) : "";
+        if (fromHref) return fromHref;
+        return toSkuFromName($.trim($item.find(".history-item-title").first().text() || ""));
+      }
+
+      function syncAddSelectedButtonState($card) {
+        var $btn = $card.find(".js-history-add-selected").first();
+        var hasSelection = $card.find(".js-history-item-select:checked").length > 0;
+        if (!$btn.length) return;
+        $btn.toggleClass("is-disabled", !hasSelection);
+        $btn.attr("aria-disabled", hasSelection ? "false" : "true");
+        $btn.attr("tabindex", hasSelection ? "0" : "-1");
+      }
+
+      function setupOrderSelectionUi() {
+        $(".history-order-card").each(function () {
+          var $card = $(this);
+          var $head = $card.find(".history-order-head").first();
+          var $items = $card.find(".history-items").first();
+          var $footer = $card.find(".history-order-foot").first();
+          if (!$footer.length) return;
+          if ($head.length && $items.length && !$card.find(".js-history-items-toggle").length) {
+            $head.after(
+              "<div class='history-items-toggle-wrap'>" +
+                "<button type='button' class='history-items-toggle js-history-items-toggle' aria-expanded='false'>Show line items</button>" +
+                "<a class='history-btn primary js-history-add-entire' href='#'>Add Order to Cart</a>" +
+              "</div>"
+            );
+          }
+          if ($items.length) {
+            $card.addClass("items-collapsed");
+          }
+
+          $card.find(".history-item").each(function () {
+            var $item = $(this);
+            var itemName = $.trim($item.find(".history-item-title").first().text() || "");
+            var orderedSku = getItemNumberForDisplay($item) || toSkuFromName(itemName);
+            var itemId = String($card.attr("data-order-number") || "order") + "-" + String($item.index());
+            if (!$item.attr("data-history-item-id")) {
+              $item.attr("data-history-item-id", itemId);
+            }
+            if (!$item.find(".history-item-sku").length) {
+              $item.find(".history-item-title").first().after(
+                "<div class='history-item-sku'>Item #: " + orderedSku + "</div>"
+              );
+            }
+            if ($item.find(".js-history-item-select").length) return;
+            $item.prepend("<input type='checkbox' class='js-history-item-select history-item-check' aria-label='Select item'>");
+          });
+
+          if (!$footer.find(".js-history-add-selected").length) {
+            $footer.prepend("<a class='history-btn js-history-add-selected' href='#'>Add Selected Items to Cart</a>");
+          }
+
+          $footer.find(".history-btn.primary").first().remove();
+          syncAddSelectedButtonState($card);
+        });
+      }
+
+      $(".history-order-card").on("click", ".js-history-items-toggle", function () {
+        var $btn = $(this);
+        var $card = $btn.closest(".history-order-card");
+        var isCollapsed = $card.hasClass("items-collapsed");
+        $card.toggleClass("items-collapsed", !isCollapsed);
+        $btn.attr("aria-expanded", isCollapsed ? "true" : "false");
+        $btn.text(isCollapsed ? "Hide line items" : "Show line items");
       });
+
+      $(".history-order-card").on("click", ".js-history-add-entire", function (event) {
+        var $btn = $(this);
+        var $card = $btn.closest(".history-order-card");
+        var lines = [];
+        event.preventDefault();
+        $card.find(".history-item").each(function () {
+          lines.push(parseOrderItem($(this)));
+        });
+        addLinesToCartAndFlash($btn, lines, "Add Order to Cart");
+      });
+
+      $(".history-order-card").on("click", ".js-history-add-selected", function (event) {
+        var $btn = $(this);
+        var $card = $btn.closest(".history-order-card");
+        var lines = [];
+        event.preventDefault();
+        if ($btn.hasClass("is-disabled")) return;
+        $card.find(".history-item").each(function () {
+          var $item = $(this);
+          if (!$item.find(".js-history-item-select").is(":checked")) return;
+          lines.push(parseOrderItem($item));
+        });
+        addLinesToCartAndFlash($btn, lines, "Add Selected Items to Cart");
+      });
+
+      $(".history-order-card").on("change", ".js-history-item-select", function () {
+        syncAddSelectedButtonState($(this).closest(".history-order-card"));
+      });
+
+      $(".history-order-card").on("click", ".history-item", function (event) {
+        var $target = $(event.target);
+        var $check = $(this).find(".js-history-item-select").first();
+        if (!$check.length) return;
+        if ($target.is("input, a, button, label")) return;
+        $check.prop("checked", !$check.prop("checked")).trigger("change");
+      });
+
+      setupOrderSelectionUi();
     })();
   </script>
 </body>

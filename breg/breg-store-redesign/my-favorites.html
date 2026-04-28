@@ -238,8 +238,25 @@
       border-color: var(--breg-primary-dark, #001E62);
       color: #fff;
     }
+    .preview-btn-secondary {
+      border-color: #9fb2d6;
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-weight: 600;
+    }
+    .preview-btn-secondary:hover {
+      border-color: #86a1d1;
+      background: #f5f9ff;
+      color: var(--breg-primary, #0047bb);
+    }
     .preview-items-shell {
       position: relative;
+    }
+    .preview-actions-bottom {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #eaeded;
+      justify-content: flex-end;
     }
     .preview-menu-wrap {
       position: relative;
@@ -308,10 +325,23 @@
       border-radius: 10px;
       padding: 12px;
       display: grid;
-      grid-template-columns: 84px minmax(260px, 1fr) minmax(230px, 320px);
+      grid-template-columns: 30px 84px minmax(260px, 1fr) minmax(230px, 320px);
       gap: 14px;
       background: #fff;
       min-height: 120px;
+    }
+    .preview-item-select-wrap {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 4px;
+    }
+    .preview-item-select {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--breg-primary, #0047bb);
+      cursor: pointer;
     }
     .preview-item img {
       width: 84px;
@@ -1178,7 +1208,11 @@
         margin-top: 10px;
       }
       .preview-item {
-        grid-template-columns: 84px 1fr;
+        grid-template-columns: 24px 84px 1fr;
+      }
+      .preview-item-select-wrap {
+        padding-top: 0;
+        align-items: center;
       }
       .preview-item-actions {
         grid-column: 1 / -1;
@@ -1272,6 +1306,7 @@
               </div>
               <div class="preview-actions">
                 <a href="#" class="preview-btn preview-btn-primary" id="addAllToCartBtn">Add All to Cart</a>
+                <a href="#" class="preview-btn preview-btn-secondary preview-btn-add-selected is-disabled" id="addSelectedToCartBtn" aria-disabled="true">Add Selected to Cart (0)</a>
                 <div class="preview-menu-wrap">
                   <button type="button" class="preview-menu-trigger" id="listActionsToggle" aria-label="List actions" aria-expanded="false">⋯</button>
                   <div class="preview-menu" id="listActionsMenu" role="menu">
@@ -1285,6 +1320,10 @@
             </div>
             <div class="preview-items-shell">
               <div class="preview-items" id="previewItems"></div>
+              <div class="preview-actions preview-actions-bottom">
+                <a href="#" class="preview-btn preview-btn-primary">Add All to Cart</a>
+                <a href="#" class="preview-btn preview-btn-secondary preview-btn-add-selected is-disabled" aria-disabled="true">Add Selected to Cart (0)</a>
+              </div>
             </div>
             <div class="preview-empty" id="previewEmpty" style="display:none;">
               This list has no saved items yet.
@@ -1465,6 +1504,7 @@
       var previewItemsEl = document.getElementById("previewItems");
       var previewEmptyEl = document.getElementById("previewEmpty");
       var addAllBtnEl = document.querySelector(".preview-btn-primary");
+      var addSelectedBtnEl = document.getElementById("addSelectedToCartBtn");
       var listActionsToggleEl = document.getElementById("listActionsToggle");
       var listActionsMenuEl = document.getElementById("listActionsMenu");
       var listScope = "all";
@@ -1500,6 +1540,7 @@
       var copySourceListId = null;
       var pendingConfirmAction = null;
       var activeAccessoriesItemId = "";
+      var selectedItemIdsByList = {};
       var variantsByMaster = window.BREG_VARIANTS_BY_MASTER || {};
       var configStateByItemId = {};
       var bulkVariantState = {
@@ -1876,6 +1917,65 @@
       }
       function getListById(id) {
         return lists.find(function (list) { return list.id === id; }) || null;
+      }
+      function getSelectedItemIds(listId) {
+        var key = String(listId || "");
+        if (!key) return [];
+        if (!Array.isArray(selectedItemIdsByList[key])) selectedItemIdsByList[key] = [];
+        return selectedItemIdsByList[key];
+      }
+      function isItemSelectable(item) {
+        if (!item || !item.id) return false;
+        var config = getMasterConfig(item.id);
+        if (!config) return true;
+        var configState = getConfigState(item.id, config);
+        var selected = configState.selected || {};
+        var hasAllRequired = config.requiredFacets.every(function (facet) { return !!selected[facet.key]; });
+        if (!hasAllRequired) return false;
+        return !!resolveVariantSku(item.id, selected, config);
+      }
+      function setSelectedItemIds(listId, nextIds) {
+        var key = String(listId || "");
+        if (!key) return;
+        selectedItemIdsByList[key] = (Array.isArray(nextIds) ? nextIds : []).filter(function (id, index, arr) {
+          return !!id && arr.indexOf(id) === index;
+        });
+      }
+      function syncSelectedItemsWithList(list) {
+        var existingIds = (list && Array.isArray(list.items) ? list.items : []).filter(function (item) {
+          return isItemSelectable(item);
+        }).map(function (item) {
+          return String(item && item.id ? item.id : "");
+        });
+        var existingLookup = {};
+        existingIds.forEach(function (id) {
+          if (id) existingLookup[id] = true;
+        });
+        var selected = getSelectedItemIds(list && list.id);
+        setSelectedItemIds(list && list.id, selected.filter(function (id) { return !!existingLookup[id]; }));
+      }
+      function getSelectedCartLines(list) {
+        if (!list || !Array.isArray(list.items) || !list.items.length) return [];
+        syncSelectedItemsWithList(list);
+        var selectedLookup = {};
+        getSelectedItemIds(list.id).forEach(function (id) {
+          selectedLookup[id] = true;
+        });
+        return list.items.map(function (item) {
+          if (!selectedLookup[String(item.id || "")]) return null;
+          return toCartLine(item, item.qty);
+        }).filter(Boolean);
+      }
+      function syncAddSelectedButtonState(list) {
+        var addSelectedButtons = document.querySelectorAll(".preview-btn-add-selected");
+        var count = getSelectedItemIds(list && list.id).length;
+        var disabled = !count;
+        if (!addSelectedButtons.length) return;
+        addSelectedButtons.forEach(function (button) {
+          button.textContent = "Add Selected to Cart (" + count + ")";
+          button.classList.toggle("is-disabled", disabled);
+          button.setAttribute("aria-disabled", disabled ? "true" : "false");
+        });
       }
       function recalcListCount(list) {
         if (!list || !Array.isArray(list.items) || !list.items.length) return;
@@ -2294,6 +2394,7 @@
           if (listActionsMenuEl) listActionsMenuEl.classList.remove("open");
           previewItemsEl.innerHTML = "";
           previewEmptyEl.style.display = "";
+          syncAddSelectedButtonState(null);
           return;
         }
         if (!list) {
@@ -2301,6 +2402,7 @@
           list = getListById(activeListId);
         }
         if (!list) return;
+        syncSelectedItemsWithList(list);
         previewTitleEl.textContent = list.title;
         previewMetaEl.textContent = list.count + " items · " + list.updated;
         previewOwnerEl.textContent = "Created by " + list.owner;
@@ -2320,8 +2422,14 @@
           addAllBtnEl.removeAttribute("title");
         }
         var resolver = window.BregCatalogImage || null;
+        var selectedLookup = {};
+        getSelectedItemIds(list.id).forEach(function (id) {
+          selectedLookup[id] = true;
+        });
         previewItemsEl.innerHTML = (list.items || []).map(function (item) {
           var qty = Math.max(1, parseInt(item.qty, 10) || 1);
+          var canSelect = isItemSelectable(item);
+          var isChecked = canSelect && !!selectedLookup[String(item.id || "")];
           var imgSrc = (resolver && (resolver.byId(item.id) || resolver.byName(item.name))) || item.image || "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
           var catalogItem = getCatalogBySku(item.id);
           var categoryParam = catalogItem && catalogItem.category ? ("&category=" + encodeURIComponent(catalogItem.category)) : "";
@@ -2352,6 +2460,9 @@
           }
           return (
             "<div class='preview-item' data-item-id='" + item.id + "'>" +
+              "<div class='preview-item-select-wrap'>" +
+                "<input type='checkbox' class='preview-item-select' data-item-id='" + item.id + "' aria-label='Select " + item.name.replace(/'/g, "&#39;") + "' " + (isChecked ? "checked" : "") + " " + (canSelect ? "" : "disabled") + ">" +
+              "</div>" +
               "<img src='" + imgSrc.replace(/'/g, "&#39;") + "' alt=''>" +
               "<div class='preview-item-main'>" +
                 "<p class='preview-item-name'><a class='preview-item-name-link' href='" + productHref + "'>" + item.name + "</a></p>" +
@@ -2376,6 +2487,7 @@
         }).join("");
         var empty = !list.items || !list.items.length;
         previewEmptyEl.style.display = empty ? "" : "none";
+        syncAddSelectedButtonState(list);
       }
 
       rowsEl.addEventListener("click", function (event) {
@@ -2413,6 +2525,7 @@
               var idxToRemove = (list.items || []).findIndex(function (entry) { return entry.id === itemId; });
               if (idxToRemove > -1) {
                 list.items.splice(idxToRemove, 1);
+                syncSelectedItemsWithList(list);
                 recalcListCount(list);
                 list.updated = "Updated just now";
                 renderRows();
@@ -2478,13 +2591,28 @@
         renderPreview();
       });
       previewItemsEl.addEventListener("change", function (event) {
+        var checkbox = event.target.closest(".preview-item-select");
         var input = event.target.closest(".qty-input");
         var list = getListById(activeListId);
         var itemWrap;
         var itemId;
         var item;
         var nextQty;
-        if (!input || !list) return;
+        if (!list) return;
+        if (checkbox) {
+          var selectedIds = getSelectedItemIds(list.id).slice();
+          var selectedItemId = String(checkbox.getAttribute("data-item-id") || "");
+          var existingIndex = selectedIds.indexOf(selectedItemId);
+          if (checkbox.checked && existingIndex === -1) {
+            selectedIds.push(selectedItemId);
+          } else if (!checkbox.checked && existingIndex > -1) {
+            selectedIds.splice(existingIndex, 1);
+          }
+          setSelectedItemIds(list.id, selectedIds);
+          syncAddSelectedButtonState(list);
+          return;
+        }
+        if (!input) return;
         itemWrap = input.closest(".preview-item");
         if (!itemWrap) return;
         itemId = itemWrap.getAttribute("data-item-id");
@@ -2733,6 +2861,17 @@
         if (!addAllState.lines.length) return;
         cartApi.addLines(addAllState.lines);
         showAddedModal(addAllState.lines);
+      });
+      $(".preview-btn-add-selected").on("click", function (event) {
+        event.preventDefault();
+        var list = getListById(activeListId);
+        var cartApi = getCartApi();
+        var selectedLines;
+        if (!list) return;
+        selectedLines = getSelectedCartLines(list);
+        if (!selectedLines.length) return;
+        cartApi.addLines(selectedLines);
+        showAddedModal(selectedLines);
       });
       $(".preview-empty-btn").on("click", function (event) {
         event.preventDefault();

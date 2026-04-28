@@ -310,6 +310,36 @@
       gap: 12px;
       margin-bottom: 14px;
     }
+    .order-item-select-wrap {
+      padding-top: 3px;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+    .order-item-select {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      cursor: pointer;
+      accent-color: var(--breg-primary, #0047bb);
+    }
+    .order-item-qty-editor {
+      margin-top: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #565959;
+    }
+    .order-item-qty-input {
+      width: 58px;
+      height: 28px;
+      border: 1px solid #cfd4d8;
+      border-radius: 8px;
+      padding: 0 6px;
+      color: #0f1111;
+      font-size: 12px;
+      line-height: 1.2;
+    }
     .pending-item:last-child { margin-bottom: 0; }
     .pending-item img {
       width: 74px;
@@ -448,6 +478,11 @@
       border-color: var(--breg-primary-dark, #001E62);
       background: var(--breg-primary-dark, #001E62);
       color: #fff;
+    }
+    .order-add-selected-btn[aria-disabled="true"] {
+      opacity: 0.55;
+      cursor: not-allowed;
+      pointer-events: none;
     }
     @media (max-width: 1199px) {
       .pending-title { font-size: 30px; }
@@ -1072,13 +1107,21 @@
       function toSkuFromName(name) {
         return String(name || "").toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       }
+      function getMetaQuantity(metaText) {
+        var qtyMatch = String(metaText || "").match(/Quantity:\s*(\d+)/i);
+        return qtyMatch ? Math.max(1, parseInt(qtyMatch[1], 10) || 1) : 1;
+      }
+      function getItemQty($item, metaSelector) {
+        var inputQty = Math.max(1, parseInt($item.find(".order-item-qty-input").first().val(), 10) || 0);
+        if (inputQty > 0) return inputQty;
+        return getMetaQuantity($.trim($item.find(metaSelector).first().text() || ""));
+      }
 
       function parseRejectedItem($item, cartApi) {
         var name = $.trim($item.find(".rejected-item-title").first().text() || "Product");
         var meta = $.trim($item.find(".rejected-item-meta").first().text() || "");
-        var qtyMatch = meta.match(/Quantity:\s*(\d+)/i);
         var priceMatch = meta.match(/Price:\s*\$?\s*([0-9]+(?:\.[0-9]+)?)/i);
-        var qty = qtyMatch ? Math.max(1, parseInt(qtyMatch[1], 10) || 1) : 1;
+        var qty = getItemQty($item, ".rejected-item-meta");
         var price = priceMatch ? (cartApi.parsePrice ? cartApi.parsePrice(priceMatch[1]) : Number(priceMatch[1] || 0)) : 0;
         return {
           sku: toSkuFromName(name),
@@ -1091,6 +1134,119 @@
           size: ""
         };
       }
+      function parsePendingItem($item, cartApi) {
+        var name = $.trim($item.find(".pending-item-title").first().text() || "Product");
+        var meta = $.trim($item.find(".pending-item-meta").first().text() || "");
+        var priceMatch = meta.match(/Price:\s*\$?\s*([0-9]+(?:\.[0-9]+)?)/i);
+        var qty = getItemQty($item, ".pending-item-meta");
+        var price = priceMatch ? (cartApi.parsePrice ? cartApi.parsePrice(priceMatch[1]) : Number(priceMatch[1] || 0)) : 0;
+        return {
+          sku: toSkuFromName(name),
+          qty: qty,
+          name: name,
+          price: price,
+          image: String($item.find("img").attr("src") || ""),
+          category: "Pending Orders",
+          variant: "",
+          size: ""
+        };
+      }
+      function updateAddSelectedButtonState($card) {
+        var selectedCount = $card.find(".order-item-select:checked").length;
+        var $btn = $card.find(".order-add-selected-btn").first();
+        if (!$btn.length) return;
+        $btn.text("Add Selected to Cart (" + selectedCount + ")");
+        $btn.attr("aria-disabled", selectedCount ? "false" : "true");
+      }
+      function ensureSelectableOrderItems() {
+        $(".pending-order-card, .rejected-order-card").each(function () {
+          var $card = $(this);
+          var isRejected = $card.hasClass("rejected-order-card");
+          var itemSelector = isRejected ? ".rejected-item" : ".pending-item";
+          var footSelector = isRejected ? ".rejected-order-foot" : ".pending-order-foot";
+          var btnClass = isRejected ? "rejected-btn" : "pending-btn";
+          var $foot = $card.find(footSelector).first();
+          if (!$foot.length) return;
+          $card.find(itemSelector).each(function (index) {
+            var $item = $(this);
+            var metaSelector = isRejected ? ".rejected-item-meta" : ".pending-item-meta";
+            var titleSelector = isRejected ? ".rejected-item-title" : ".pending-item-title";
+            var qty = getMetaQuantity($.trim($item.find(metaSelector).first().text() || ""));
+            var labelText = $.trim(
+              $item.find(titleSelector).first().text() || "item " + (index + 1)
+            );
+            if ($item.find(".order-item-select").length) return;
+            $item.prepend(
+              "<div class='order-item-select-wrap'>" +
+                "<input type='checkbox' class='order-item-select' aria-label='Select " + labelText.replace(/'/g, "&#39;") + "'>" +
+              "</div>"
+            );
+            if (!$item.find(".order-item-qty-input").length) {
+              $item.find(metaSelector).first().after(
+                "<div class='order-item-qty-editor'>" +
+                  "<span>Qty</span>" +
+                  "<input type='number' min='1' step='1' class='order-item-qty-input' value='" + qty + "' aria-label='Quantity for " + labelText.replace(/'/g, "&#39;") + "'>" +
+                "</div>"
+              );
+            }
+          });
+          if (!$foot.find(".order-add-selected-btn").length) {
+            if (isRejected) {
+              $foot.prepend("<a href='#' class='rejected-btn order-add-selected-btn' aria-disabled='true'>Add Selected to Cart (0)</a>");
+            } else {
+              var $actions = $foot.find(".pending-actions").first();
+              if (!$actions.length) {
+                $actions = $("<div class='pending-actions'></div>");
+                $foot.append($actions);
+              }
+              $actions.prepend("<a href='#' class='" + btnClass + " order-add-selected-btn' aria-disabled='true'>Add Selected to Cart (0)</a>");
+            }
+          }
+          updateAddSelectedButtonState($card);
+        });
+      }
+      function getSelectedOrderLines($card, cartApi) {
+        var lines = [];
+        if ($card.hasClass("rejected-order-card")) {
+          $card.find(".rejected-item").each(function () {
+            var $item = $(this);
+            if (!$item.find(".order-item-select").prop("checked")) return;
+            lines.push(parseRejectedItem($item, cartApi));
+          });
+          return lines;
+        }
+        $card.find(".pending-item").each(function () {
+          var $item = $(this);
+          if (!$item.find(".order-item-select").prop("checked")) return;
+          lines.push(parsePendingItem($item, cartApi));
+        });
+        return lines;
+      }
+
+      ensureSelectableOrderItems();
+
+      $(document).on("change", ".order-item-select", function () {
+        var $card = $(this).closest(".pending-order-card, .rejected-order-card");
+        if (!$card.length) return;
+        updateAddSelectedButtonState($card);
+      });
+      $(document).on("change", ".order-item-qty-input", function () {
+        var next = Math.max(1, parseInt($(this).val(), 10) || 1);
+        $(this).val(next);
+      });
+
+      $(document).on("click", ".order-add-selected-btn", function (event) {
+        var $btn = $(this);
+        var $card = $btn.closest(".pending-order-card, .rejected-order-card");
+        var cartApi = getCartApi();
+        var lines;
+        event.preventDefault();
+        if ($btn.attr("aria-disabled") === "true" || !$card.length) return;
+        lines = getSelectedOrderLines($card, cartApi);
+        if (!lines.length) return;
+        cartApi.addLines(lines);
+        showAddedModal(lines);
+      });
 
       $(".rejected-order-card").on("click", ".rejected-btn.primary", function (event) {
         var $btn = $(this);

@@ -330,10 +330,10 @@
 
     .p-card {
       background: #fff;
-      border: 1px solid #d4dde5;
+      border: 0;
       border-radius: 14px;
       overflow: hidden;
-      transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+      transition: transform .16s ease, box-shadow .16s ease;
       display: flex;
       flex-direction: column;
       min-height: 0;
@@ -385,7 +385,6 @@
 
     .p-card:hover {
       transform: translateY(-2px);
-      border-color: #b7c3ce;
       box-shadow: 0 8px 20px rgba(16, 26, 35, .12);
     }
 
@@ -1091,7 +1090,7 @@
           var fallbackImage = missingProductImage;
           var inShoppingList = !!(window.BregFavorites && window.BregFavorites.isInShoppingList && window.BregFavorites.isInShoppingList(p.id));
           html += "" +
-            "<article class='p-card'>" +
+            "<article class='p-card' style='border:0 !important; box-shadow:none !important;'>" +
               "<button type='button' class='p-heart-btn js-heart-toggle" + (inShoppingList ? " active" : "") + "' " +
                 "data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-image='" + escapeHtml(p.image) + "' " +
                 "data-price='" + Number(p.price || 0).toFixed(2) + "' data-category='" + escapeHtml(p.category || category) + "' " +
@@ -1106,6 +1105,10 @@
         });
 
         $grid.html(html);
+        $grid.find("article.p-card").each(function () {
+          this.style.setProperty("border", "0", "important");
+          this.style.setProperty("border-color", "transparent", "important");
+        });
       }
 
       function clearAllFilters() {

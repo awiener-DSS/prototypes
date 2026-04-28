@@ -122,3 +122,36 @@ input:focus, .form-control:focus, select:focus, textarea:focus {
   color: #fff !important;
 }
 .modal-header { background: #f6f8fa !important; }
+
+/* Product images: remove border on all screens */
+.pl-card img,
+.pl-grid img,
+.p-thumb,
+.pdp-main-image,
+.pdp-main img,
+.pdp-thumb,
+.pdp-gallery img,
+.cart-item-image,
+.preview-item img,
+.accessories-item img,
+.cart-added-item img,
+.checkout-line img,
+.checkout-order-line img,
+.pending-item img,
+.rejected-item img,
+.approve-item img {
+  border: 0 !important;
+  background: #fff !important;
+}
+
+/* Product card wrappers used on home carousels/listings */
+.product-grid .p-card,
+.product-grid .p-card:hover {
+  border: 0 !important;
+}
+
+/* Ensure product card wrappers never show borders */
+.p-card,
+.p-card:hover {
+  border: 0 !important;
+}

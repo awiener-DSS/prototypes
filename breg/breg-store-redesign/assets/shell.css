@@ -844,3 +844,12 @@ body.all-drawer-open {
     padding-top: 24px;
   }
 }
+
+/* Global override: product cards should be borderless */
+.p-card,
+.p-card:hover,
+.product-grid .p-card,
+.product-grid .p-card:hover {
+  border: 0 !important;
+  border-color: transparent !important;
+}

@@ -59,12 +59,24 @@
       padding-bottom:2px;
     }
     .product-grid.product-carousel::-webkit-scrollbar { display:none; }
-    .p-card { background:#fff; border:1px solid #d4dde5; border-radius:14px; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; display:flex; flex-direction:column; min-height:0; position:relative; font-family:var(--font-body); margin-top:4px; }
+    .p-card { background:#fff; border:0; border-radius:14px; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease; display:flex; flex-direction:column; min-height:0; position:relative; font-family:var(--font-body); margin-top:4px; }
     .product-grid.product-carousel .p-card { flex:0 0 calc((100% - 60px) / 6); scroll-snap-align:start; }
     .p-card-link { display:flex; flex-direction:column; color:inherit; text-decoration:none; height:100%; }
     .p-card-link:hover, .p-card-link:focus { color:inherit; text-decoration:none; }
-    .p-card:hover { transform:translateY(0); margin-top:0; border-color:var(--breg-primary-light); box-shadow:0 8px 20px rgba(0,71,187,.15); }
-    .p-thumb { width:100%; aspect-ratio:1/1; object-fit:cover; background:#eef2f5; display:block; }
+    .p-card:hover { transform:translateY(0); margin-top:0; box-shadow:0 8px 20px rgba(0,71,187,.15); }
+    .p-thumb { width:100%; aspect-ratio:1/1; object-fit:cover; background:#fff; display:block; border:0; }
+    .product-grid.product-carousel .p-card,
+    .product-grid.product-carousel .p-card:hover,
+    .product-grid.product-carousel > * {
+      border: 0 !important;
+      box-shadow: none !important;
+    }
+    .product-grid.product-carousel .p-thumb {
+      border: 0 !important;
+      background: #fff !important;
+      box-shadow: none !important;
+      outline: 0 !important;
+    }
     .p-body { padding:12px; display:flex; flex-direction:column; gap:8px; flex:1; }
     .p-title { margin:0; font-size:14px; font-weight:600; font-family:var(--font-body); line-height:1.4; color:var(--breg-darkest); }
 
@@ -340,7 +352,7 @@
           var productHref = "product-detail.html?category=" + category + "&id=" + encodeURIComponent(p.id);
           var image = p.image || missingProductImage;
           $grid.append(
-            "<article class='p-card'>" +
+            "<article class='p-card' style='border:0;box-shadow:none;'>" +
               "<a class='p-card-link' href='" + productHref + "'>" +
                 "<img class='p-thumb' src='" + image + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + name + "'>" +
                 "<div class='p-body'>" +
@@ -349,6 +361,14 @@
               "</a>" +
             "</article>"
           );
+        });
+        $grid.find(".p-card").each(function () {
+          this.style.setProperty("border", "0", "important");
+          this.style.setProperty("box-shadow", "none", "important");
+        });
+        $grid.find(".p-thumb").each(function () {
+          this.style.setProperty("border", "0", "important");
+          this.style.setProperty("background", "#fff", "important");
         });
       }
 

@@ -21,6 +21,8 @@
   var $accountEmail = $("#accountEmail");
   var $accountOnlyLinks = $(".account-only");
   var $accountSectionTitle = $(".account-col-title");
+  var BG_COLOR_STORAGE_KEY = "bregBgColor";
+  var DEFAULT_BG_COLOR = "#e7eded";
   var $returnsOrdersLink = $('a.action-box[href="order-history.html"]');
   var $cartLink = $("a.cart-box");
   var $headerActions = $(".header-actions").first();
@@ -46,6 +48,38 @@
   var allToggleOriginalHtml = $allToggle.length ? $allToggle.html() : "";
   var $allDrawerOverlay = $();
   var allMenuState = { expandedParent: null };
+
+  function isValidHexColor(value) {
+    return /^#([0-9a-f]{6})$/i.test(String(value || "").trim());
+  }
+
+  function applyBackgroundColor(colorValue) {
+    if (!isValidHexColor(colorValue)) return;
+    document.documentElement.style.setProperty("--breg-gray", colorValue);
+  }
+
+  function getStoredBackgroundColor() {
+    try {
+      var stored = localStorage.getItem(BG_COLOR_STORAGE_KEY);
+      if (isValidHexColor(stored)) return stored;
+    } catch (e) {}
+    return DEFAULT_BG_COLOR;
+  }
+
+  applyBackgroundColor(getStoredBackgroundColor());
+
+  $(document).on("input change", "#floatingBgColorPicker", function () {
+    var next = String($(this).val() || "").trim().toLowerCase();
+    if (!isValidHexColor(next)) return;
+    applyBackgroundColor(next);
+    try { localStorage.setItem(BG_COLOR_STORAGE_KEY, next); } catch (e) {}
+  });
+
+  $(document).on("click", "#floatingBgColorReset", function () {
+    applyBackgroundColor(DEFAULT_BG_COLOR);
+    try { localStorage.removeItem(BG_COLOR_STORAGE_KEY); } catch (e) {}
+    $("#floatingBgColorPicker").val(DEFAULT_BG_COLOR);
+  });
 
   if (!$searchWrap.length) return;
 
@@ -1684,6 +1718,7 @@
   function initScrollTop() {
     var btn = document.querySelector(".scroll-top-btn");
     var quickOrderBtn = document.querySelector(".scroll-quick-order-btn");
+    var bgColorControl = document.querySelector(".floating-bg-color-control");
     if (!btn) {
       btn = document.createElement("button");
       btn.type = "button";
@@ -1700,6 +1735,19 @@
       quickOrderBtn.textContent = "Quick Order";
       document.body.appendChild(quickOrderBtn);
     }
+    if (!bgColorControl) {
+      bgColorControl = document.createElement("div");
+      bgColorControl.className = "floating-bg-color-control";
+      bgColorControl.innerHTML =
+        "<label class='floating-bg-color-label' for='floatingBgColorPicker' title='Page background color'>" +
+          "<span class='glyphicon glyphicon-tint' aria-hidden='true'></span>" +
+        "</label>" +
+        "<input id='floatingBgColorPicker' class='floating-bg-color-input' type='color' aria-label='Pick background color'>" +
+        "<button type='button' id='floatingBgColorReset' class='floating-bg-color-reset' aria-label='Reset background color'>Reset</button>";
+      document.body.appendChild(bgColorControl);
+    }
+    var bgColorPicker = document.getElementById("floatingBgColorPicker");
+    if (bgColorPicker) bgColorPicker.value = getStoredBackgroundColor();
     if (btn._bregScrollTopInited) return;
     btn._bregScrollTopInited = true;
 

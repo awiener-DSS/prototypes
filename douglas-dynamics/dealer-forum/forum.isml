@@ -1,0 +1,22 @@
+<iscomment>
+  Salesforce B2C Commerce (SFCC) ISML sketch for the same forum UI.
+  Adjust paths to your cartridge static folder, e.g. ${URLUtils.staticURL('/css/main.css')}.
+  Wire forms to custom controllers for real topic CRUD, uploads, and subscriptions.
+</iscomment>
+<isdecorate template="common/layout/page">
+  <iscontentasset aid="dealer-forum-hero"/>
+
+  <div class="container dealer-forum">
+    <div class="row">
+      <div class="col-sm-8">
+        <isinclude template="forum/boardTabs"/>
+      </div>
+      <div class="col-sm-4">
+        <isinclude template="forum/searchPanel"/>
+        <isinclude template="forum/subscriptionsPanel"/>
+      </div>
+    </div>
+  </div>
+
+  <isinclude template="forum/newTopicModal"/>
+</isdecorate>

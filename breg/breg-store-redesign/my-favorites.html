@@ -1918,6 +1918,11 @@
       function getListById(id) {
         return lists.find(function (list) { return list.id === id; }) || null;
       }
+      function syncHomeFavoritesSnapshot() {
+        if (window.BregHomeActivity && typeof window.BregHomeActivity.syncFavoritesLists === "function") {
+          window.BregHomeActivity.syncFavoritesLists(lists);
+        }
+      }
       function getSelectedItemIds(listId) {
         var key = String(listId || "");
         if (!key) return [];
@@ -2014,6 +2019,7 @@
         if (!list) return;
         if (list.scope !== "mine") return;
         lists = lists.filter(function (item) { return item.id !== list.id; });
+        syncHomeFavoritesSnapshot();
         visibleLists = getVisibleLists();
         if (!visibleLists.length && lists.length) {
           activeListId = lists[0].id;
@@ -2800,8 +2806,10 @@
           scope: "mine",
           count: copiedItems.reduce(function (sum, item) { return sum + Math.max(1, parseInt(item.qty, 10) || 1); }, 0),
           updated: "Updated just now",
+          createdAt: new Date().toISOString(),
           items: copiedItems
         });
+        syncHomeFavoritesSnapshot();
         listScope = "mine";
         activeListId = lists[0].id;
         updateFilterButtons();
@@ -2820,6 +2828,7 @@
         if (!nextName || nextName === list.title) return;
         list.title = nextName;
         list.updated = "Updated just now";
+        syncHomeFavoritesSnapshot();
         renderRows();
         renderPreview();
         $manageListModal.modal("hide");
@@ -2878,6 +2887,7 @@
         window.location.href = "index.html";
       });
 
+      syncHomeFavoritesSnapshot();
       updateFilterButtons();
       ensureActiveListVisible();
       renderRows();

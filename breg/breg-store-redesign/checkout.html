@@ -1145,6 +1145,8 @@
           return {
             sku: String(line.sku || ""),
             name: String(line.name || line.sku || "Product"),
+            image: String(line.image || ""),
+            category: String(line.category || ""),
             qty: qty,
             price: price,
             lineTotal: lineTotal
@@ -1536,6 +1538,9 @@
         $btn.prop("disabled", true).text("Placing Order...");
         var order = buildOrder(cart, getCheckoutSelections());
         try { localStorage.setItem(ORDER_STORAGE_KEY, JSON.stringify(order)); } catch (e) {}
+        if (window.BregHomeActivity && typeof window.BregHomeActivity.trackPurchasedFromOrder === "function") {
+          window.BregHomeActivity.trackPurchasedFromOrder(order);
+        }
         saveCart([]);
         window.location.href = "order-confirmation.html";
       });

@@ -21,9 +21,14 @@
   var $accountEmail = $("#accountEmail");
   var $accountOnlyLinks = $(".account-only");
   var $accountSectionTitle = $(".account-col-title");
-  var BG_COLOR_STORAGE_KEY = "bregBgColor";
-  var DEFAULT_BG_COLOR = "#e7eded";
+  var $contactToggle = $();
+  var $contactDropdown = $();
+  var $contactEmailModal = $();
+  var DEFAULT_BG_COLOR = "#ffffff";
   var $returnsOrdersLink = $('a.action-box[href="order-history.html"]');
+  if ($returnsOrdersLink.length) {
+    $returnsOrdersLink.html("<div class='action-strong'>Track My Order</div>");
+  }
   var $cartLink = $("a.cart-box");
   var $headerActions = $(".header-actions").first();
   if ($headerActions.length && !$headerActions.find(".top-quick-order-link").length) {
@@ -58,28 +63,7 @@
     document.documentElement.style.setProperty("--breg-gray", colorValue);
   }
 
-  function getStoredBackgroundColor() {
-    try {
-      var stored = localStorage.getItem(BG_COLOR_STORAGE_KEY);
-      if (isValidHexColor(stored)) return stored;
-    } catch (e) {}
-    return DEFAULT_BG_COLOR;
-  }
-
-  applyBackgroundColor(getStoredBackgroundColor());
-
-  $(document).on("input change", "#floatingBgColorPicker", function () {
-    var next = String($(this).val() || "").trim().toLowerCase();
-    if (!isValidHexColor(next)) return;
-    applyBackgroundColor(next);
-    try { localStorage.setItem(BG_COLOR_STORAGE_KEY, next); } catch (e) {}
-  });
-
-  $(document).on("click", "#floatingBgColorReset", function () {
-    applyBackgroundColor(DEFAULT_BG_COLOR);
-    try { localStorage.removeItem(BG_COLOR_STORAGE_KEY); } catch (e) {}
-    $("#floatingBgColorPicker").val(DEFAULT_BG_COLOR);
-  });
+  applyBackgroundColor(DEFAULT_BG_COLOR);
 
   if (!$searchWrap.length) return;
 
@@ -866,7 +850,7 @@
   })();
 
   var storedAuth = localStorage.getItem("bregSignedIn");
-  var isSignedIn = storedAuth === null ? true : storedAuth === "true";
+  var isSignedIn = storedAuth === "true";
   var allMenuSections = [
     {
       title: "Shop by Category",
@@ -893,6 +877,38 @@
       ]
     }
   ];
+  var headerSubCategoryMap = (function () {
+    var map = {};
+    allMenuSections.forEach(function (section) {
+      (section.items || []).forEach(function (item) {
+        if (item && item.label && Array.isArray(item.children) && item.children.length) {
+          map[item.label] = item.children.slice();
+        }
+      });
+    });
+    return map;
+  })();
+
+  function categoryHasSubcategories(category) {
+    var label = normalizeCategoryLabel(category);
+    var children = headerSubCategoryMap[label];
+    return Array.isArray(children) && children.length > 0;
+  }
+
+  function categoryPageHref(category) {
+    var label = normalizeCategoryLabel(category);
+    if (!label) return "product-list.html";
+    if (categoryHasSubcategories(label)) {
+      return "category-landing.html?category=" + encodeURIComponent(label);
+    }
+    return "product-list.html?category=" + encodeURIComponent(label);
+  }
+
+  function headerSubmenuItemHref(parent, child) {
+    var parentLabel = String(parent || "").trim();
+    if (!parentLabel) return "#";
+    return "product-list.html?category=" + encodeURIComponent(parentLabel) + "&subcategory=" + encodeURIComponent(child || "");
+  }
 
   function renderSharedFooter() {
     if ($("footer[data-shared-footer]").length) return;
@@ -908,34 +924,32 @@
               "<ul class='site-footer-list'>" +
                 "<li><a href='#'>Contact Us</a></li>" +
                 "<li><a href='#'>Warranty/Return Policy</a></li>" +
-                "<li><a href='#'>BregPay</a></li>" +
                 "<li><a href='#'>Instructions for Use (IFUs)</a></li>" +
                 "<li><a href='#'>GTIN</a></li>" +
                 "<li><a href='#'>Frequently Asked Questions</a></li>" +
                 "<li><a href='#'>Breg.com</a></li>" +
               "</ul>" +
             "</div>" +
-            "<div>" +
+            "<div class='site-footer-col site-footer-col--products'>" +
               "<h3 class='site-footer-title'>Products</h3>" +
-              "<ul class='site-footer-list'>" +
-                "<li><a href='product-list.html?category=Knee%20Bracing'>Knee Bracing</a></li>" +
-                "<li><a href='product-list.html?category=Shoulder%20Bracing'>Shoulder Bracing</a></li>" +
-                "<li><a href='product-list.html?category=Spine%20Bracing'>Spine Bracing</a></li>" +
-                "<li><a href='product-list.html?category=Walker%2FAnkle%2FFoot%20Bracing'>Walker/Ankle/Foot</a></li>" +
-                "<li><a href='product-list.html?category=Elbow%2FWrist%20Bracing'>Wrist/Elbow Bracing</a></li>" +
-                "<li><a href='product-list.html?category=Cold%20Therapy%20and%20DVT'>Cold Therapy</a></li>" +
+              "<ul class='site-footer-list site-footer-list--two-col'>" +
+                "<li><a href='category-landing.html?category=Knee%20Bracing'>Knee Bracing</a></li>" +
+                "<li><a href='category-landing.html?category=Shoulder%20Bracing'>Shoulder Bracing</a></li>" +
+                "<li><a href='category-landing.html?category=Spine%20Bracing'>Spine Bracing</a></li>" +
+                "<li><a href='category-landing.html?category=Walker%2FAnkle%2FFoot%20Bracing'>Walker/Ankle/Foot</a></li>" +
+                "<li><a href='category-landing.html?category=Elbow%2FWrist%20Bracing'>Wrist/Elbow Bracing</a></li>" +
+                "<li><a href='category-landing.html?category=Cold%20Therapy%20and%20DVT'>Cold Therapy</a></li>" +
                 "<li><a href='#'>DVT</a></li>" +
-                "<li><a href='product-list.html?category=Hip%20Bracing'>Hip Bracing</a></li>" +
+                "<li><a href='category-landing.html?category=Hip%20Bracing'>Hip Bracing</a></li>" +
                 "<li><a href='#'>Fracture Bracing</a></li>" +
-                "<li><a href='product-list.html?category=Crutches%2C%20Canes%20%26%20Walkers'>Canes/Crutches/Walkers</a></li>" +
-                "<li><a href='product-list.html?category=Pediatrics'>Pediatrics</a></li>" +
+                "<li><a href='category-landing.html?category=Crutches%2C%20Canes%20%26%20Walkers'>Canes/Crutches/Walkers</a></li>" +
+                "<li><a href='category-landing.html?category=Pediatrics'>Pediatrics</a></li>" +
               "</ul>" +
             "</div>" +
             "<div>" +
               "<h3 class='site-footer-title'>My Account</h3>" +
               "<ul class='site-footer-list'>" +
                 "<li><a href='order-history.html'>Order History</a></li>" +
-                "<li><a href='#'>BregPay</a></li>" +
                 "<li><a href='#' class='js-quick-order-link'>Quick Order</a></li>" +
               "</ul>" +
             "</div>" +
@@ -1099,7 +1113,7 @@
     var normalized = normalizeCategoryLabel(category);
     if (!normalized) return;
     trackRecentCategory(normalized);
-    window.location.href = "product-list.html?category=" + encodeURIComponent(normalized);
+    window.location.href = categoryPageHref(normalized);
   }
 
   function goToProductPage(product, fallbackCategory) {
@@ -1181,14 +1195,271 @@
     allMenuState.expandedParent = null;
   }
 
+  function closeHeaderCategoryDropdowns() {
+    $(".sub-nav-cat-item").removeClass("open");
+  }
+
+  function initTopContactDropdown() {
+    if (!$headerActions.length) return;
+    if ($headerActions.find(".contact-wrap").length) {
+      $contactToggle = $("#contactToggle");
+      $contactDropdown = $("#contactDropdown");
+      return;
+    }
+
+    var contactHtml = "" +
+      "<div class='contact-wrap'>" +
+        "<button class='action-box contact-toggle' id='contactToggle' type='button'>" +
+          "<div class='action-muted'>Need Help?</div>" +
+          "<div class='action-strong'>Contact Us <span class='caret'></span></div>" +
+        "</button>" +
+        "<div class='contact-dropdown' id='contactDropdown'>" +
+          "<div class='contact-grid'>" +
+            "<div class='contact-col'>" +
+              "<div class='contact-col-title'>Sales</div>" +
+              "<a class='contact-link' href='#'>About Us</a>" +
+              "<a class='contact-link' href='#'>New to Breg</a>" +
+              "<a class='contact-link js-contact-email-trigger' href='#' data-contact-to='sales@breg.com' data-contact-phone='1-800-897-2734' data-contact-subject='Contact Sales Representative' data-contact-title='Contact Your Sales Representative'>Contact Your Sales Representative</a>" +
+              "<a class='contact-link' href='#'>Terms &amp; Conditions</a>" +
+            "</div>" +
+            "<div class='contact-col'>" +
+              "<div class='contact-col-title'>Account Help</div>" +
+              "<a class='contact-link js-contact-email-trigger' href='#' data-contact-to='credit@breg.com' data-contact-phone='1-800-897-2734' data-contact-subject='Contact Wholesale Credit Specialist' data-contact-title='Contact Wholesale Credit Specialist'>Contact Wholesale Credit Specialist</a>" +
+              "<a class='contact-link js-contact-email-trigger' href='#' data-contact-to='billing@breg.com' data-contact-phone='1-800-897-2734' data-contact-subject='Contact Patient Billing' data-contact-title='Contact Patient Billing'>Contact Patient Billing</a>" +
+              "<a class='contact-link' href='#'>Email Tax Exempt Certificate</a>" +
+            "</div>" +
+            "<div class='contact-col'>" +
+              "<div class='contact-col-title'>Order Status</div>" +
+              "<a class='contact-link js-contact-email-trigger' href='#' data-contact-to='ordersupport@breg.com' data-contact-phone='1-800-897-2734' data-contact-subject='Get help with my order' data-contact-title='Get help with my order'>Get help with my order</a>" +
+              "<a class='contact-link js-contact-email-trigger' href='#' data-contact-to='ordersupport@breg.com' data-contact-phone='1-800-897-2734' data-contact-subject='Get help with a product' data-contact-title='Get help with a product'>Get help with a product</a>" +
+              "<a class='contact-link js-contact-email-trigger' href='#' data-contact-to='ordersupport@breg.com' data-contact-phone='1-800-897-2734' data-contact-subject='Get help with the website' data-contact-title='Get help with the website'>Get help with the website</a>" +
+            "</div>" +
+          "</div>" +
+        "</div>" +
+      "</div>";
+
+    var $returns = $headerActions.find("a.action-box").filter(function () {
+      return $(this).attr("href") === "order-history.html";
+    }).first();
+    if ($returns.length) {
+      $(contactHtml).insertBefore($returns);
+    } else {
+      $headerActions.append(contactHtml);
+    }
+    $contactToggle = $("#contactToggle");
+    $contactDropdown = $("#contactDropdown");
+  }
+
+  function ensureContactEmailModal() {
+    if ($("#contactEmailModal").length) {
+      $contactEmailModal = $("#contactEmailModal");
+      return;
+    }
+    var modalHtml = "" +
+      "<div class='contact-email-modal' id='contactEmailModal' aria-hidden='true'>" +
+        "<div class='contact-email-dialog' role='dialog' aria-modal='true' aria-labelledby='contactEmailTitle'>" +
+          "<div class='contact-email-head'>" +
+            "<h3 id='contactEmailTitle'>Send Email</h3>" +
+            "<button type='button' class='contact-email-close' id='contactEmailClose' aria-label='Close'>&times;</button>" +
+          "</div>" +
+          "<div class='contact-email-body'>" +
+            "<p class='contact-email-context' id='contactEmailContext'></p>" +
+            "<p class='contact-email-call' id='contactEmailCall'></p>" +
+            "<label class='contact-email-label' for='contactSenderName'>Your Name</label>" +
+            "<input class='contact-email-input' id='contactSenderName' type='text' autocomplete='name'>" +
+            "<label class='contact-email-label' for='contactSenderCompany'>Company Name</label>" +
+            "<input class='contact-email-input' id='contactSenderCompany' type='text' autocomplete='organization'>" +
+            "<label class='contact-email-label' for='contactSenderPhone'>Your Phone</label>" +
+            "<input class='contact-email-input' id='contactSenderPhone' type='tel' autocomplete='tel'>" +
+            "<label class='contact-email-label' for='contactSenderEmail'>Your Email</label>" +
+            "<input class='contact-email-input' id='contactSenderEmail' type='email' autocomplete='email'>" +
+            "<label class='contact-email-label' for='contactEmailTo'>To</label>" +
+            "<input class='contact-email-input' id='contactEmailTo' type='email' readonly>" +
+            "<label class='contact-email-label' for='contactEmailSubject'>Subject</label>" +
+            "<input class='contact-email-input' id='contactEmailSubject' type='text'>" +
+            "<label class='contact-email-label' for='contactEmailMessage'>Message</label>" +
+            "<textarea class='contact-email-textarea' id='contactEmailMessage' rows='6' placeholder='Add your message'></textarea>" +
+            "<div class='contact-email-success' id='contactEmailSuccess'>Thank you. Someone from our team will get back to you shortly.</div>" +
+          "</div>" +
+          "<div class='contact-email-foot'>" +
+            "<button type='button' class='contact-email-btn secondary' id='contactEmailCancel'>Cancel</button>" +
+            "<button type='button' class='contact-email-btn primary' id='contactEmailSend'>Send Email</button>" +
+          "</div>" +
+        "</div>" +
+      "</div>";
+
+    var $firstBodyScript = $("body > script").first();
+    if ($firstBodyScript.length) $(modalHtml).insertBefore($firstBodyScript);
+    else $("body").append(modalHtml);
+    $contactEmailModal = $("#contactEmailModal");
+  }
+
+  function openContactEmailModal(payload) {
+    ensureContactEmailModal();
+    var data = payload || {};
+    var firstName = String(localStorage.getItem("bregFirstName") || "").trim();
+    var lastName = String(localStorage.getItem("bregLastName") || "").trim();
+    var fullName = String((firstName + " " + lastName).replace(/\s+/g, " ").trim());
+    var explicitUserName = String(localStorage.getItem("bregUserName") || "").trim();
+    var accountName = String(localStorage.getItem("bregAccountName") || "").trim() || "Medical Clinic Inc.";
+    var defaultName = explicitUserName || fullName || firstName || "Jordan Lee";
+    var placeholderNamePattern = /^(test|tester|user|guest|medical|admin|qa|demo)$/i;
+    if (placeholderNamePattern.test(defaultName) || defaultName.length < 2) {
+      defaultName = "Jordan Lee";
+    }
+    var defaultCompany = accountName;
+    var defaultPhone = String(localStorage.getItem("bregUserPhone") || "").trim() || "555-010-0000";
+    var defaultEmail = String(localStorage.getItem("bregUserEmail") || "").trim();
+
+    $("#contactEmailContext").text("You are contacting: " + String(data.title || "Support"));
+    $("#contactEmailCall").html(
+      "Prefer to call? Reach us at <a href='tel:" +
+      escapeHtml(String(data.phone || "1-800-897-2734").replace(/[^0-9+]/g, "")) +
+      "'>" + escapeHtml(String(data.phone || "1-800-897-2734")) + "</a>."
+    );
+    $("#contactSenderName").val(isSignedIn ? defaultName : "");
+    $("#contactSenderCompany").val(isSignedIn ? defaultCompany : "");
+    $("#contactSenderPhone").val(isSignedIn ? defaultPhone : "");
+    $("#contactSenderEmail").val(isSignedIn ? defaultEmail : "");
+    $("#contactSenderName").prop("readonly", isSignedIn);
+    $("#contactSenderCompany").prop("readonly", isSignedIn);
+    $("#contactSenderPhone").prop("readonly", isSignedIn);
+    $("#contactSenderEmail").prop("readonly", isSignedIn);
+    $("#contactEmailTo").val(String(data.to || ""));
+    $("#contactEmailSubject").val(String(data.subject || ""));
+    $("#contactEmailMessage").val("");
+    $("#contactEmailSuccess").removeClass("open");
+    $contactEmailModal.addClass("open").attr("aria-hidden", "false");
+    if (isSignedIn) $("#contactEmailMessage").trigger("focus");
+    else $("#contactSenderName").trigger("focus");
+  }
+
+  function closeContactEmailModal() {
+    if (!$contactEmailModal.length) return;
+    $contactEmailModal.removeClass("open").attr("aria-hidden", "true");
+  }
+
+  function validateContactEmailForm() {
+    var senderName = String($("#contactSenderName").val() || "").trim();
+    var senderCompany = String($("#contactSenderCompany").val() || "").trim();
+    var senderPhone = String($("#contactSenderPhone").val() || "").trim();
+    var senderEmail = String($("#contactSenderEmail").val() || "").trim();
+    var to = String($("#contactEmailTo").val() || "").trim();
+    var subject = String($("#contactEmailSubject").val() || "").trim();
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var errors = [];
+
+    $(".contact-email-error").remove();
+    $(".contact-email-input, .contact-email-textarea").removeClass("invalid");
+
+    function addFieldError(selector, message) {
+      var $field = $(selector);
+      $field.addClass("invalid");
+      $field.after("<div class='contact-email-error'>" + escapeHtml(message) + "</div>");
+      errors.push({ field: selector, message: message });
+    }
+
+    if (!to) addFieldError("#contactEmailTo", "Recipient is required.");
+    if (!subject) addFieldError("#contactEmailSubject", "Subject is required.");
+
+    if (!senderName) addFieldError("#contactSenderName", "Name is required.");
+    if (!senderCompany) addFieldError("#contactSenderCompany", "Company name is required.");
+    if (!senderPhone) addFieldError("#contactSenderPhone", "Phone is required.");
+
+    if (!isSignedIn) {
+      if (!senderEmail) addFieldError("#contactSenderEmail", "Email is required.");
+      else if (!emailPattern.test(senderEmail)) addFieldError("#contactSenderEmail", "Enter a valid email address.");
+    } else if (senderEmail && !emailPattern.test(senderEmail)) {
+      addFieldError("#contactSenderEmail", "Signed-in email appears invalid.");
+    }
+
+    if (errors.length) {
+      var firstField = errors[0] && errors[0].field ? errors[0].field : "";
+      if (firstField) $(firstField).trigger("focus");
+      return null;
+    }
+
+    return {
+      senderName: senderName,
+      senderCompany: senderCompany,
+      senderPhone: senderPhone,
+      senderEmail: senderEmail,
+      to: to,
+      subject: subject,
+      body: String($("#contactEmailMessage").val() || "").trim()
+    };
+  }
+
+  function updateHeaderSubmenuAlignment($item) {
+    if (!$item || !$item.length) return;
+    var $menu = $item.children(".sub-nav-submenu");
+    if (!$menu.length) return;
+    $item.removeClass("submenu-align-right");
+    if (window.matchMedia("(max-width: 991px)").matches) return;
+    var rect = $menu[0].getBoundingClientRect();
+    if (rect.right > window.innerWidth - 8) {
+      $item.addClass("submenu-align-right");
+    }
+  }
+
+  function initHeaderCategoryDropdowns() {
+    var $nav = $(".sub-nav-inner").first();
+    if (!$nav.length) return;
+    if ($nav.data("header-subcat-init") === "1") return;
+
+    $nav.find(".sub-nav-link").each(function () {
+      var $link = $(this);
+      if ($link.hasClass("quick-order")) return;
+      if ($link.find(".glyphicon-menu-hamburger").length) return;
+      var label = $.trim($link.text()).replace(/\s+/g, " ");
+      var children = headerSubCategoryMap[label];
+      if (!children || !children.length) return;
+
+      var href = categoryPageHref(label);
+      var $menu = $("<div class='sub-nav-submenu' role='menu' aria-label='" + escapeHtml(label + " sub-categories") + "'></div>");
+
+      children.forEach(function (child) {
+        var subHref = headerSubmenuItemHref(label, child);
+        $menu.append(
+          "<a class='sub-nav-submenu-link' role='menuitem' href='" + subHref + "' data-category='" + escapeHtml(label) + "' data-subcategory='" + escapeHtml(child) + "'>" +
+            escapeHtml(child) +
+          "</a>"
+        );
+      });
+
+      $link.attr("href", href);
+      $link.wrap("<div class='sub-nav-cat-item'></div>");
+      $link.after($menu);
+    });
+
+    $nav.data("header-subcat-init", "1");
+  }
+
+  function syncHomeLoginPanel() {
+    var signedIn = localStorage.getItem("bregSignedIn") === "true";
+    var $panel = $("#homeLoginPanel");
+    if ($panel.length) $panel.toggleClass("show", !signedIn);
+    $("#homeGuestSignInModule").toggleClass("is-visible", !signedIn);
+    $("#homePreviousOrdersModule").toggleClass("is-hidden", !signedIn);
+    $("#homePickUpModule").toggleClass("is-hidden", !signedIn);
+    $("#homeTemplatesModule").toggleClass("is-hidden", !signedIn);
+    $("#homeGuestTopProductsModule").toggleClass("is-visible", !signedIn);
+    $("#homeGuestTopCategoriesModule").toggleClass("is-visible", !signedIn);
+    $("#homeSignedInSecondRow").toggleClass("is-visible", signedIn);
+  }
+
   function performSignOut() {
     isSignedIn = false;
     localStorage.setItem("bregSignedIn", "false");
     localStorage.removeItem("bregFirstName");
+    localStorage.removeItem("bregLastName");
+    localStorage.removeItem("bregUserName");
     localStorage.removeItem("bregAccountName");
     localStorage.removeItem("bregUserEmail");
+    localStorage.removeItem("bregUserPhone");
     updateAccountStateUI();
     $accountDropdown.removeClass("open");
+    $contactDropdown.removeClass("open");
     closeAllDropdown();
   }
 
@@ -1202,6 +1473,7 @@
       html += "<h4 class='all-drawer-section-title'>" + escapeHtml(section.title) + "</h4>";
       section.items.forEach(function (entry) {
         var hasChildren = Array.isArray(entry.children) && entry.children.length;
+        var hasGroupedChildren = !!(hasChildren && entry.children[0] && typeof entry.children[0] === "object" && Array.isArray(entry.children[0].items));
         var isExpanded = hasChildren && allMenuState.expandedParent === entry.label;
         var href = entry.href || "index.html";
         var classes = "all-drawer-link";
@@ -1219,10 +1491,22 @@
         html += "</div>";
         if (isExpanded) {
           html += "<div class='all-drawer-subitems'>";
-          entry.children.forEach(function (child) {
-            var subHref = "product-list.html?category=" + encodeURIComponent(entry.label) + "&subcategory=" + encodeURIComponent(child);
-            html += "<div class='all-drawer-subitem'><a class='all-drawer-subitem-link' href='" + subHref + "'>" + escapeHtml(child) + "</a></div>";
-          });
+          if (hasGroupedChildren) {
+            entry.children.forEach(function (group) {
+              if (!group || !Array.isArray(group.items) || !group.items.length) return;
+              if (group.title) {
+                html += "<div class='all-drawer-subitem' style='font-weight:600;opacity:.85;'>" + escapeHtml(group.title) + "</div>";
+              }
+              group.items.forEach(function (child) {
+                html += "<div class='all-drawer-subitem'><a class='all-drawer-subitem-link' href='#'>" + escapeHtml(child) + "</a></div>";
+              });
+            });
+          } else {
+            entry.children.forEach(function (child) {
+              var subHref = "product-list.html?category=" + encodeURIComponent(entry.label) + "&subcategory=" + encodeURIComponent(child);
+              html += "<div class='all-drawer-subitem'><a class='all-drawer-subitem-link' href='" + subHref + "'>" + escapeHtml(child) + "</a></div>";
+            });
+          }
           html += "</div>";
         }
         html += "</div>";
@@ -1273,16 +1557,25 @@
   }
 
   function updateAccountStateUI() {
-    var firstName = localStorage.getItem("bregFirstName") || "Medical";
-    var displayName = localStorage.getItem("bregAccountName") || "Medical Clinic Inc.";
+    isSignedIn = localStorage.getItem("bregSignedIn") === "true";
+    var firstName = String(localStorage.getItem("bregFirstName") || "").trim();
+    var lastName = String(localStorage.getItem("bregLastName") || "").trim();
+    var explicitUserName = String(localStorage.getItem("bregUserName") || "").trim();
+    var displayName = String(localStorage.getItem("bregAccountName") || "").trim() || "Medical Clinic Inc.";
     var email = localStorage.getItem("bregUserEmail") || "test@breg.com";
-    var nameLine = (firstName && displayName) ? (firstName + " \u2013 " + displayName) : (firstName || displayName || "");
+    var placeholderFirstNamePattern = /^(test|tester|user|guest|medical|admin|qa|demo)$/i;
+    if (!firstName || placeholderFirstNamePattern.test(firstName)) firstName = "Jordan";
+    if (!lastName) lastName = "Lee";
+    var fullName = String((firstName + " " + lastName).replace(/\s+/g, " ").trim());
+    var explicitLooksFullName = explicitUserName.indexOf(" ") > -1;
+    var userName = explicitLooksFullName ? explicitUserName : fullName;
+    var nameLine = firstName + " - " + displayName;
     var drawerTitle = isSignedIn ? ("Hello, " + nameLine) : "Hello, sign in";
     $("#allDrawerTitle").text(drawerTitle);
     $("#allDrawerTitle").toggleClass("is-link", !isSignedIn);
     if (isSignedIn) {
       $accountGreeting.text("Hello " + nameLine);
-      $accountName.text(displayName);
+      $accountName.text(userName);
       $accountEmail.text(email);
       $("#accountSignoutLink").text("Sign out");
       $accountOnlyLinks.removeClass("disabled");
@@ -1293,6 +1586,7 @@
       $("#accountSignoutLink").text("Sign in");
       $accountOnlyLinks.addClass("disabled");
     }
+    syncHomeLoginPanel();
   }
 
   function initAllDropdown() {
@@ -1418,9 +1712,15 @@
     if (!$(event.target).closest(".search-wrap").length) closeSearchDropdown();
     if (!$(event.target).closest(".lang-wrap").length) $countryDropdown.removeClass("open");
     if (!$(event.target).closest(".account-wrap").length) $accountDropdown.removeClass("open");
+    if (!$(event.target).closest(".contact-wrap").length) $contactDropdown.removeClass("open");
+    if (!$(event.target).closest(".sub-nav-cat-item").length) closeHeaderCategoryDropdowns();
   });
   $(document).on("keydown", function (event) {
-    if (event.key === "Escape") closeAllDropdown();
+    if (event.key === "Escape") {
+      closeAllDropdown();
+      $contactDropdown.removeClass("open");
+      closeContactEmailModal();
+    }
   });
 
   $langToggle.on("click", function (event) { event.preventDefault(); $countryDropdown.toggleClass("open"); });
@@ -1439,7 +1739,57 @@
       window.location.href = "login.html";
       return;
     }
+    $contactDropdown.removeClass("open");
     $accountDropdown.toggleClass("open");
+  });
+  $(document).on("click", "#contactToggle", function (event) {
+    event.preventDefault();
+    $accountDropdown.removeClass("open");
+    $contactDropdown.toggleClass("open");
+  });
+  $(document).on("click", ".js-contact-email-trigger", function (event) {
+    event.preventDefault();
+    $contactDropdown.removeClass("open");
+    openContactEmailModal({
+      to: String($(this).attr("data-contact-to") || ""),
+      phone: String($(this).attr("data-contact-phone") || "1-800-897-2734"),
+      subject: String($(this).attr("data-contact-subject") || ""),
+      title: String($(this).attr("data-contact-title") || "")
+    });
+  });
+  $(document).on("click", "#contactEmailClose, #contactEmailCancel", function () {
+    closeContactEmailModal();
+  });
+  $(document).on("click", "#contactEmailModal", function (event) {
+    if (event.target === this) closeContactEmailModal();
+  });
+  $(document).on("click", "#contactEmailSend", function () {
+    var payload = validateContactEmailForm();
+    if (!payload) return;
+    var senderName = payload.senderName;
+    var senderCompany = payload.senderCompany;
+    var senderPhone = payload.senderPhone;
+    var senderEmail = payload.senderEmail;
+    var to = payload.to;
+    var subject = payload.subject;
+    var body = payload.body;
+    var contactDetails = [
+      "Name: " + (senderName || "N/A"),
+      "Company: " + (senderCompany || "N/A"),
+      "Phone: " + (senderPhone || "N/A"),
+      "Email: " + (senderEmail || "N/A")
+    ].join("\n");
+    var composedBody = contactDetails + "\n\n" + body;
+    void to;
+    void subject;
+    void composedBody;
+    $("#contactEmailSuccess").addClass("open");
+  });
+
+  $(document).on("input", ".contact-email-input, .contact-email-textarea", function () {
+    $(this).removeClass("invalid");
+    var $next = $(this).next(".contact-email-error");
+    if ($next.length) $next.remove();
   });
   $accountOnlyLinks.on("click", function (event) {
     if (isSignedIn) return;
@@ -1496,7 +1846,37 @@
     }
     event.preventDefault();
     trackRecentCategory(label);
-    window.location.href = "product-list.html?category=" + encodeURIComponent(label);
+    window.location.href = categoryPageHref(label);
+  });
+  $(".sub-nav-inner").on("mouseenter", ".sub-nav-cat-item", function () {
+    if (window.matchMedia("(max-width: 991px)").matches) return;
+    var $item = $(this);
+    $item.addClass("open").siblings(".sub-nav-cat-item").removeClass("open");
+    updateHeaderSubmenuAlignment($item);
+  });
+  $(".sub-nav-inner").on("mouseleave", ".sub-nav-cat-item", function () {
+    if (window.matchMedia("(max-width: 991px)").matches) return;
+    $(this).removeClass("open");
+  });
+  $(".sub-nav-inner").on("click", ".sub-nav-cat-item > .sub-nav-link", function (event) {
+    if (!window.matchMedia("(max-width: 991px)").matches) return;
+    var $item = $(this).closest(".sub-nav-cat-item");
+    if (!$item.find(".sub-nav-submenu-link").length) return;
+    event.preventDefault();
+    $item.toggleClass("open").siblings(".sub-nav-cat-item").removeClass("open");
+  });
+  $(".sub-nav-inner").on("click", ".sub-nav-submenu-link", function (event) {
+    event.preventDefault();
+    var category = String($(this).attr("data-category") || "").trim();
+    var subcategory = String($(this).attr("data-subcategory") || "").trim();
+    if (category) trackRecentCategory(category);
+    var href = "product-list.html?category=" + encodeURIComponent(category);
+    if (subcategory) href += "&subcategory=" + encodeURIComponent(subcategory);
+    window.location.href = href;
+  });
+  $(window).on("resize", function () {
+    closeHeaderCategoryDropdowns();
+    $(".sub-nav-cat-item").removeClass("submenu-align-right");
   });
 
   (function seedRecentCategoryFromPage() {
@@ -1506,9 +1886,360 @@
   })();
 
   initAllDropdown();
+  initTopContactDropdown();
+  initHeaderCategoryDropdowns();
   updateAccountStateUI();
   ensureAccountSignoutInMyAccount();
   syncCartCountBadge();
+
+  $(window).on("pageshow", function () {
+    updateAccountStateUI();
+  });
+  window.addEventListener("storage", function (event) {
+    if (!event || event.key === "bregSignedIn" || event.key === null) {
+      updateAccountStateUI();
+    }
+  });
+
+  var RECENT_PDP_STORAGE_KEY = "breg_recent_pdp_v1";
+  var FAVORITES_LISTS_SNAPSHOT_KEY = "breg_favorites_lists_snapshot_v1";
+  var ORDER_HISTORY_PRODUCTS_KEY = "breg_order_history_products_v1";
+  var RECENT_PDP_MAX = 12;
+  var FAVORITES_LISTS_SNAPSHOT_MAX = 20;
+  var ORDER_HISTORY_PRODUCTS_MAX = 40;
+  var TOP_CATEGORY_NAMES = categories.slice();
+  var DEFAULT_FAVORITES_LISTS = [
+    { id: "shopping", title: "Shopping List" },
+    { id: "recovery", title: "Recovery Supplies" },
+    { id: "postop", title: "Post-Surgery Essentials" },
+    { id: "athletic", title: "Athletic Support" },
+    { id: "clinic", title: "Clinic Supplies" }
+  ];
+  var FAVORITES_LIST_THUMBNAIL_IDS = {
+    shopping: "1060X",
+    recovery: "1060X",
+    postop: "0881X",
+    athletic: "100462-XXX",
+    clinic: "SP10627-000"
+  };
+  var DEFAULT_ORDER_HISTORY_PRODUCTS = [
+    { name: "Breg Polar Care Kodiak Cold Therapy System", displayName: "Breg Polar Care Kodiak Cold Therapy System", sku: "" },
+    { name: "T Scope Premier Post-Op Knee Brace", displayName: "T Scope Premier Post-Op Knee Brace", sku: "" },
+    { name: "Shoulder Immobilizer", displayName: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "" },
+    { name: "Physical Therapy Resistance Bands Set", displayName: "Physical Therapy Resistance Bands Set", sku: "PF010YXX" }
+  ];
+  var ORDER_HISTORY_SKU_OVERRIDES = {
+    "physical therapy resistance bands set": "PF010YXX"
+  };
+  var DEFAULT_RECENT_PDP = [
+    { id: "1060X" },
+    { id: "100462-XXX" },
+    { id: "0881X" },
+    { id: "VP20106-000" }
+  ];
+
+  function readJsonArray(key) {
+    try {
+      var parsed = JSON.parse(localStorage.getItem(key) || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveJsonArray(key, items, max) {
+    try {
+      localStorage.setItem(key, JSON.stringify((Array.isArray(items) ? items : []).slice(0, max)));
+    } catch (e) {}
+  }
+
+  function trackPdpVisit(product) {
+    if (!product || !product.id) return;
+    var entry = {
+      id: String(product.id),
+      name: String(product.name || ""),
+      category: String(product.category || ""),
+      image: normalizeSearchImage(product.image || ""),
+      visitedAt: new Date().toISOString()
+    };
+    var current = readJsonArray(RECENT_PDP_STORAGE_KEY).filter(function (item) {
+      return String(item && item.id ? item.id : "") !== entry.id;
+    });
+    current.unshift(entry);
+    saveJsonArray(RECENT_PDP_STORAGE_KEY, current, RECENT_PDP_MAX);
+  }
+
+  function normalizeCatalogName(value) {
+    return String(value || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function resolveCatalogItemByName(name) {
+    var list = Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : [];
+    var target = normalizeCatalogName(name);
+    if (!target) return null;
+    var exact = null;
+    var partial = null;
+    list.some(function (item) {
+      var candidateName = normalizeCatalogName(item && item.name);
+      if (!candidateName) return false;
+      if (candidateName === target) {
+        exact = item;
+        return true;
+      }
+      if (!partial && (candidateName.indexOf(target) > -1 || target.indexOf(candidateName) > -1)) {
+        partial = item;
+      }
+      return false;
+    });
+    return exact || partial;
+  }
+
+  function resolveHistorySku(sourceName, displayName, explicitSku) {
+    var sku = String(explicitSku || "").trim();
+    if (sku) return sku;
+    var catalogItem = resolveCatalogItemByName(sourceName) || resolveCatalogItemByName(displayName);
+    if (catalogItem) return String(catalogItem.id || catalogItem.sku || "").trim();
+    var sourceKey = normalizeCatalogName(sourceName);
+    var displayKey = normalizeCatalogName(displayName);
+    if (sourceKey && ORDER_HISTORY_SKU_OVERRIDES[sourceKey]) return ORDER_HISTORY_SKU_OVERRIDES[sourceKey];
+    if (displayKey && ORDER_HISTORY_SKU_OVERRIDES[displayKey]) return ORDER_HISTORY_SKU_OVERRIDES[displayKey];
+    return "";
+  }
+
+  function resolveFavoritesListImage(list, catalog) {
+    var storedImage = String(list && list.image ? list.image : "").trim();
+    if (storedImage) return normalizeSearchImage(storedImage);
+
+    var items = Array.isArray(list && list.items) ? list.items : [];
+    var index;
+    for (index = 0; index < items.length; index += 1) {
+      var item = items[index];
+      var sku = String(item && (item.id || item.sku) ? (item.id || item.sku) : "").trim();
+      var itemImage = String(item && item.image ? item.image : "").trim();
+      if (itemImage) return normalizeSearchImage(itemImage);
+      if (window.BregCatalogImage && sku) {
+        var resolved = window.BregCatalogImage.byId(sku) || window.BregCatalogImage.byName(item && item.name);
+        if (resolved) return normalizeSearchImage(resolved);
+      }
+      if (sku && catalog) {
+        var product = catalogProductIndex(catalog)[sku];
+        if (product && product.image) return normalizeSearchImage(product.image);
+      }
+    }
+
+    var thumbId = FAVORITES_LIST_THUMBNAIL_IDS[String(list && list.id ? list.id : "")];
+    if (thumbId && catalog) {
+      var thumbProduct = catalogProductIndex(catalog)[thumbId];
+      if (thumbProduct && thumbProduct.image) return normalizeSearchImage(thumbProduct.image);
+    }
+    if (thumbId && window.BregCatalogImage && typeof window.BregCatalogImage.byId === "function") {
+      var thumbImage = window.BregCatalogImage.byId(thumbId);
+      if (thumbImage) return normalizeSearchImage(thumbImage);
+    }
+    return SEARCH_MISSING_IMAGE;
+  }
+
+  function syncFavoritesLists(pageLists) {
+    var catalog = Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : [];
+    var snapshot = (Array.isArray(pageLists) ? pageLists : []).map(function (list) {
+      var image = resolveFavoritesListImage(list, catalog);
+      return {
+        id: String(list && list.id ? list.id : "").trim(),
+        title: String(list && list.title ? list.title : "").trim(),
+        updated: String(list && list.updated ? list.updated : ""),
+        image: image === SEARCH_MISSING_IMAGE ? "" : image
+      };
+    }).filter(function (item) { return item.id && item.title; });
+    if (snapshot.length) saveJsonArray(FAVORITES_LISTS_SNAPSHOT_KEY, snapshot, FAVORITES_LISTS_SNAPSHOT_MAX);
+  }
+
+  function syncOrderHistoryFromDom() {
+    if (!$ || !$.fn) return;
+    var products = [];
+    var seen = {};
+    $(".history-order-card").each(function () {
+      var orderDate = String($(this).attr("data-order-date") || "").trim();
+      $(this).find(".history-item").each(function () {
+        var $item = $(this);
+        var displayName = $.trim($item.find(".history-item-title").first().text());
+        var sourceName = String($item.find("img").attr("data-product-name") || displayName).trim();
+        var sku = resolveHistorySku(sourceName, displayName, $item.attr("data-item-number"));
+        var dedupeKey = sku || normalizeCatalogName(sourceName || displayName);
+        if (!dedupeKey || seen[dedupeKey]) return;
+        seen[dedupeKey] = true;
+        products.push({
+          sku: sku,
+          name: sourceName || displayName,
+          displayName: displayName || sourceName,
+          orderDate: orderDate,
+          purchasedAt: orderDate ? (orderDate + "T12:00:00.000Z") : new Date().toISOString()
+        });
+      });
+    });
+    if (products.length) saveJsonArray(ORDER_HISTORY_PRODUCTS_KEY, products, ORDER_HISTORY_PRODUCTS_MAX);
+  }
+
+  function mergeOrderHistoryProducts(lines, placedAt) {
+    if (!Array.isArray(lines) || !lines.length) return;
+    var current = readJsonArray(ORDER_HISTORY_PRODUCTS_KEY);
+    if (!current.length) current = DEFAULT_ORDER_HISTORY_PRODUCTS.slice();
+    var seen = {};
+    var merged = [];
+    lines.forEach(function (line) {
+      var sourceName = String(line && line.name ? line.name : "").trim();
+      if (!sourceName) return;
+      var sku = resolveHistorySku(sourceName, sourceName, line && line.sku);
+      var dedupeKey = sku || normalizeCatalogName(sourceName);
+      if (!dedupeKey || seen[dedupeKey]) return;
+      seen[dedupeKey] = true;
+      merged.push({
+        sku: sku,
+        name: sourceName,
+        displayName: sourceName,
+        purchasedAt: String(placedAt || new Date().toISOString())
+      });
+    });
+    current.forEach(function (entry) {
+      var sku = resolveHistorySku(entry && entry.name, entry && entry.displayName, entry && entry.sku);
+      var dedupeKey = sku || normalizeCatalogName((entry && entry.name) || (entry && entry.displayName));
+      if (!dedupeKey || seen[dedupeKey]) return;
+      seen[dedupeKey] = true;
+      merged.push(entry);
+    });
+    saveJsonArray(ORDER_HISTORY_PRODUCTS_KEY, merged, ORDER_HISTORY_PRODUCTS_MAX);
+  }
+
+  function trackPurchasedFromOrder(order) {
+    if (!order || !Array.isArray(order.lines)) return;
+    mergeOrderHistoryProducts(order.lines, order.placedAt);
+  }
+
+  function catalogProductIndex(catalog) {
+    var byId = {};
+    (Array.isArray(catalog) ? catalog : []).forEach(function (item) {
+      if (!item || !item.id) return;
+      byId[String(item.id)] = item;
+    });
+    return byId;
+  }
+
+  function resolveCatalogProductsFromEntries(entries, catalog, count, idKey) {
+    var byId = catalogProductIndex(catalog);
+    var picks = [];
+    var used = {};
+    (Array.isArray(entries) ? entries : []).forEach(function (entry) {
+      if (picks.length >= count) return;
+      var id = String(entry && entry[idKey] ? entry[idKey] : "");
+      if (!id || used[id]) return;
+      var product = byId[id];
+      if (!product) return;
+      used[id] = true;
+      picks.push(product);
+    });
+    return picks;
+  }
+
+  function resolveProductFromHistoryEntry(entry, catalog) {
+    var sourceName = String(entry && entry.name ? entry.name : "");
+    var displayName = String(entry && entry.displayName ? entry.displayName : sourceName);
+    var sku = resolveHistorySku(sourceName, displayName, entry && entry.sku);
+    var byId = catalogProductIndex(catalog);
+    if (sku && byId[sku]) return byId[sku];
+    var catalogItem = resolveCatalogItemByName(sourceName) || resolveCatalogItemByName(displayName);
+    if (catalogItem) return catalogItem;
+    if (!sourceName && !displayName) return null;
+    var label = displayName || sourceName;
+    var image = "";
+    if (window.BregCatalogImage && typeof window.BregCatalogImage.byName === "function") {
+      image = window.BregCatalogImage.byName(sourceName || label);
+    }
+    return {
+      id: sku || ("history-" + normalizeCatalogName(label).replace(/\s+/g, "-")),
+      name: label,
+      category: "Order History",
+      image: image || SEARCH_MISSING_IMAGE
+    };
+  }
+
+  function getRecentPdpProducts(catalog, count) {
+    var limit = count || 4;
+    var entries = readJsonArray(RECENT_PDP_STORAGE_KEY);
+    if (!entries.length) entries = DEFAULT_RECENT_PDP.slice();
+    return resolveCatalogProductsFromEntries(entries, catalog, limit, "id");
+  }
+
+  function getRecentFavoritesLists(count) {
+    var limit = count || 4;
+    var lists = readJsonArray(FAVORITES_LISTS_SNAPSHOT_KEY);
+    if (!lists.length) lists = DEFAULT_FAVORITES_LISTS.slice();
+    var catalog = Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : [];
+    return lists.slice(0, limit).map(function (list) {
+      var image = String(list && list.image ? list.image : "").trim();
+      return {
+        id: String(list && list.id ? list.id : ""),
+        title: String(list && list.title ? list.title : ""),
+        updated: String(list && list.updated ? list.updated : ""),
+        image: image || resolveFavoritesListImage(list, catalog)
+      };
+    });
+  }
+
+  function getRecentPurchasedProducts(catalog, count) {
+    var limit = count || 4;
+    var entries = readJsonArray(ORDER_HISTORY_PRODUCTS_KEY);
+    if (!entries.length) entries = DEFAULT_ORDER_HISTORY_PRODUCTS.slice();
+    var picks = [];
+    var used = {};
+    entries.forEach(function (entry) {
+      if (picks.length >= limit) return;
+      var product = resolveProductFromHistoryEntry(entry, catalog);
+      if (!product) return;
+      var key = String(product.id || "");
+      if (!key || used[key]) return;
+      used[key] = true;
+      picks.push(product);
+    });
+    return picks;
+  }
+
+  function getTopCategories(catalog, count) {
+    var limit = count || 4;
+    var picks = [];
+    var seen = {};
+    TOP_CATEGORY_NAMES.forEach(function (name) {
+      if (picks.length >= limit) return;
+      var label = String(name || "").trim();
+      if (!label || seen[label.toLowerCase()]) return;
+      var hasProducts = (Array.isArray(catalog) ? catalog : []).some(function (item) {
+        return item && item.category && String(item.category).toLowerCase() === label.toLowerCase();
+      });
+      if (!hasProducts) return;
+      seen[label.toLowerCase()] = true;
+      picks.push({
+        name: label,
+        image: getCatalogImageForCategory(label)
+      });
+    });
+    return picks;
+  }
+
+  window.BregHomeActivity = window.BregHomeActivity || {};
+  window.BregHomeActivity.trackPdpVisit = trackPdpVisit;
+  window.BregHomeActivity.syncFavoritesLists = syncFavoritesLists;
+  window.BregHomeActivity.syncOrderHistoryFromDom = syncOrderHistoryFromDom;
+  window.BregHomeActivity.trackPurchasedFromOrder = trackPurchasedFromOrder;
+  window.BregHomeActivity.getRecentPdpProducts = getRecentPdpProducts;
+  window.BregHomeActivity.getRecentFavoritesLists = getRecentFavoritesLists;
+  window.BregHomeActivity.getRecentPurchasedProducts = getRecentPurchasedProducts;
+  window.BregHomeActivity.getTopCategories = getTopCategories;
+
+  window.BregAuth = window.BregAuth || {};
+  window.BregAuth.syncHomeLoginPanel = syncHomeLoginPanel;
+  window.BregAuth.refresh = updateAccountStateUI;
 
   window.BregCart = window.BregCart || {};
   window.BregCart.storageKey = CART_STORAGE_KEY;
@@ -1718,7 +2449,6 @@
   function initScrollTop() {
     var btn = document.querySelector(".scroll-top-btn");
     var quickOrderBtn = document.querySelector(".scroll-quick-order-btn");
-    var bgColorControl = document.querySelector(".floating-bg-color-control");
     if (!btn) {
       btn = document.createElement("button");
       btn.type = "button";
@@ -1735,19 +2465,6 @@
       quickOrderBtn.textContent = "Quick Order";
       document.body.appendChild(quickOrderBtn);
     }
-    if (!bgColorControl) {
-      bgColorControl = document.createElement("div");
-      bgColorControl.className = "floating-bg-color-control";
-      bgColorControl.innerHTML =
-        "<label class='floating-bg-color-label' for='floatingBgColorPicker' title='Page background color'>" +
-          "<span class='glyphicon glyphicon-tint' aria-hidden='true'></span>" +
-        "</label>" +
-        "<input id='floatingBgColorPicker' class='floating-bg-color-input' type='color' aria-label='Pick background color'>" +
-        "<button type='button' id='floatingBgColorReset' class='floating-bg-color-reset' aria-label='Reset background color'>Reset</button>";
-      document.body.appendChild(bgColorControl);
-    }
-    var bgColorPicker = document.getElementById("floatingBgColorPicker");
-    if (bgColorPicker) bgColorPicker.value = getStoredBackgroundColor();
     if (btn._bregScrollTopInited) return;
     btn._bregScrollTopInited = true;
 

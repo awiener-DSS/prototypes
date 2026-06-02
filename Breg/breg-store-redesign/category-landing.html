@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Category Landing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css">
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+  <style>
+    body { background: #fff; color: #0f1111; }
+    .cat-page { margin: 16px 0 30px; }
+    .cat-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .cat-breadcrumb a { color: #007185; text-decoration: none; }
+    .cat-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .cat-title { margin: 0 0 8px; font-size: 34px; line-height: 1.1; font-weight: 600; }
+    .cat-subtitle { margin: 0 0 16px; color: #56626d; font-size: 14px; }
+    .cat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 14px; align-items: start; }
+    .cat-facets {
+      background: #fff; border: 1px solid #d7dee5; border-radius: 12px; padding: 12px;
+      position: sticky; top: 78px; max-height: calc(100vh - 96px); overflow: auto;
+    }
+    .cat-facet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .cat-facet-title { margin: 0; font-size: 17px; font-weight: 600; }
+    .cat-facet-clear { border: 0; background: transparent; color: #007185; font-size: 12px; font-weight: 600; padding: 0; }
+    .cat-facet-group { border-top: 1px solid #ecf0f3; padding-top: 10px; margin-top: 10px; }
+    .cat-facet-group:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
+    .cat-facet-group summary { list-style: none; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 8px; position: relative; padding-right: 18px; }
+    .cat-facet-group summary::-webkit-details-marker { display: none; }
+    .cat-facet-group summary:after { content: "\e114"; font-family: "Glyphicons Halflings"; position: absolute; right: 0; top: 0; font-size: 10px; color: #6e7a85; }
+    .cat-facet-group[open] summary:after { content: "\e113"; }
+    .cat-facet-option { display: flex; align-items: center; gap: 7px; margin: 0 0 7px; font-size: 12px; font-weight: 500; cursor: pointer; }
+    .cat-facet-option input { margin: 0; }
+    .cat-content { min-width: 0; }
+    .cat-toolbar { margin: 0 0 10px; }
+    .cat-active-filters { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin: 0 0 12px; }
+    .cat-chip { background: #fff; border: 1px solid #c7d0d8; border-radius: 999px; font-size: 12px; color: #1d252c; padding: 4px 10px; line-height: 1.3; display: inline-flex; align-items: center; gap: 6px; }
+    .cat-chip .remove { border: 0; background: transparent; color: #5f6a75; padding: 0; font-size: 11px; line-height: 1; }
+    .cat-sub-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+    .cat-sub-card {
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px;
+      border: 0; border-radius: 12px; background: #fff;
+      color: #071d49; text-decoration: none; padding: 8px 8px 12px; min-height: 220px;
+      transition: border-color .14s ease, box-shadow .14s ease, transform .14s ease;
+    }
+    .cat-sub-card:hover, .cat-sub-card:focus {
+      text-decoration: none; color: #0047bb; border-color: #a8c2e8;
+      box-shadow: 0 6px 18px rgba(7, 29, 73, 0.1); transform: translateY(-1px);
+    }
+    .cat-sub-name { font-size: 14px; font-weight: 600; line-height: 1.25; text-align: center; width: 100%; }
+    .cat-sub-thumb {
+      width: 100%; max-width: 220px; height: 170px; object-fit: contain; border-radius: 8px;
+      border: 0; background: #fff; padding: 0; display: block;
+    }
+    .cat-sub-arrow { display: none; }
+    .cat-empty {
+      border: 1px solid #d7dee5; border-radius: 12px; background: #fff;
+      padding: 24px; color: #4e5963; font-size: 14px;
+    }
+    .cat-product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .cat-product-card {
+      background: #fff; border: 1px solid #d7dee5; border-radius: 12px; overflow: hidden;
+      color: inherit; text-decoration: none; display: flex; flex-direction: column;
+      transition: border-color .14s ease, box-shadow .14s ease, transform .14s ease;
+    }
+    .cat-product-card:hover, .cat-product-card:focus {
+      color: inherit; text-decoration: none; border-color: #a8c2e8;
+      box-shadow: 0 6px 18px rgba(7, 29, 73, 0.1); transform: translateY(-1px);
+    }
+    .cat-product-thumb {
+      width: 100%; aspect-ratio: 1 / 1; object-fit: contain; background: #fff;
+      border-bottom: 1px solid #ecf0f3; padding: 10px;
+    }
+    .cat-product-body { padding: 10px 12px 12px; }
+    .cat-product-name { margin: 0; font-size: 13px; font-weight: 600; line-height: 1.35; color: #11181f; }
+    .cat-product-sub { margin: 6px 0 0; font-size: 12px; color: #56626d; }
+    .cat-empty.hidden { display: none; }
+    @media (max-width: 991px) {
+      .cat-layout { grid-template-columns: 1fr; }
+      .cat-facets { position: static; max-height: none; }
+      .cat-sub-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .cat-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cat-title { font-size: 30px; }
+    }
+    @media (max-width: 767px) {
+      .cat-sub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cat-product-grid { grid-template-columns: 1fr; }
+      .cat-title { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="https://create-matter-17437700.figma.site/_assets/v11/64dd29f5a33a040e48f65750f4097d6b95abcd21.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">Shopping List (12)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html">My Favorites</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <section class="cat-page">
+      <p class="cat-breadcrumb"><a href="index.html">Home</a><span class="sep">&gt;</span><span id="catBreadcrumb">Category</span></p>
+      <h1 class="cat-title" id="catTitle">Category</h1>
+      <p class="cat-subtitle" id="catSubtitle">Choose a sub-category to browse products.</p>
+      <div class="cat-layout">
+        <aside class="cat-facets">
+          <div class="cat-facet-head">
+            <h2 class="cat-facet-title">Facets</h2>
+            <button type="button" class="cat-facet-clear" id="catFacetClear">Clear all</button>
+          </div>
+          <details class="cat-facet-group" open><summary>Subcategory</summary><div id="facetSubcategory"></div></details>
+          <details class="cat-facet-group" open><summary>Size</summary><div id="facetSize"></div></details>
+          <details class="cat-facet-group" open><summary>Option</summary><div id="facetOption"></div></details>
+          <details class="cat-facet-group" open><summary>Color</summary><div id="facetColor"></div></details>
+          <details class="cat-facet-group" open><summary>Gender</summary><div id="facetGender"></div></details>
+          <details class="cat-facet-group" open><summary>Orientation</summary><div id="facetOrientation"></div></details>
+          <details class="cat-facet-group" open><summary>UOM</summary><div id="facetUom"></div></details>
+        </aside>
+        <section class="cat-content">
+          <div class="cat-toolbar">
+          </div>
+          <div class="cat-active-filters" id="catActiveFilters"></div>
+          <div class="cat-sub-grid" id="catSubGrid"></div>
+          <div class="cat-product-grid" id="catProductGrid" style="display:none;"></div>
+          <div class="cat-empty hidden" id="catNoResults">No sub-categories match these facets.</div>
+        </section>
+      </div>
+      <div class="cat-empty hidden" id="catEmpty">No sub-categories found. Redirecting to products...</div>
+    </section>
+  </main>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js"></script>
+  <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search || "");
+      var category = String(params.get("category") || "Knee Bracing").trim();
+      var subCategoryMap = {
+        "Knee Bracing": ["Adjustable ROM", "Functional OA Bracing", "Knee Ligament Bracing", "Patellofemoral Bracing", "Post-Op Knee Bracing", "Soft Supports"],
+        "Shoulder Bracing": ["Immobilizers and Stabilizers", "Slings and Braces"],
+        "Cold Therapy and DVT": ["Devices", "Pads", "Gel Packs", "DVT Prophylaxis"],
+        "Spine Bracing": ["Cervical Clavicle", "Featured Lower Spine", "Featured Upper Spine", "Lumbar"],
+        "Walker/Ankle/Foot Bracing": ["Walking Boots", "Ankle Bracing", "Foot Supports"],
+        "Elbow/Wrist Bracing": ["Elbow Bracing", "Wrist Bracing"],
+        "Hip Bracing": ["Post Op"],
+        "Splints and Fracture Management": ["Fracture Bracing", "Splint and Fracture Management"],
+        "Crutches, Canes & Walkers": ["Aluminum Push Button Crutches", "Folding Walker", "Push Button Aluminum Cane"],
+        "Home Therapy & Misc.": ["Home Therapy Kits", "Recovery"],
+        "Pediatrics": ["Knee Bracing", "Shoulder Bracing", "Elbow/Wrist Bracing", "Foot Supports", "Walking Boots", "Upper Spine", "Miscellaneous"]
+      };
+      var missingImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
+      var imagePrefix = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/";
+
+      function escapeHtml(text) {
+        return String(text || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function normalizeImage(rawUrl) {
+        var value = String(rawUrl || "").trim();
+        if (!value) return missingImage;
+        if (/^https?:\/\//i.test(value)) return value;
+        if (value.indexOf("20260218-all-products.xml/") === 0) {
+          value = value.replace(/^20260218-all-products\.xml\//, "");
+        }
+        if (value.charAt(0) === "/") value = value.slice(1);
+        return value ? (imagePrefix + value) : missingImage;
+      }
+
+      function categoryImages(categoryName) {
+        var source = Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : [];
+        return source
+          .filter(function (item) {
+            return item && String(item.category || "").toLowerCase() === String(categoryName || "").toLowerCase() && item.image;
+          })
+          .map(function (item) { return normalizeImage(item.image); });
+      }
+
+      function uniqueValues(values) {
+        var seen = {};
+        return (values || []).map(function (v) { return String(v || "").trim(); }).filter(function (v) {
+          if (!v || v.toUpperCase() === "N/A" || seen[v]) return false;
+          seen[v] = true;
+          return true;
+        });
+      }
+
+      function escapeSelectorValue(value) {
+        return String(value || "").replace(/(["\\])/g, "\\$1");
+      }
+
+      var subcategories = Array.isArray(subCategoryMap[category]) ? subCategoryMap[category] : [];
+      if (!subcategories.length) {
+        $("#catEmpty").removeClass("hidden");
+        window.location.href = "product-list.html?category=" + encodeURIComponent(category);
+        return;
+      }
+
+      $("#catTitle").text(category);
+      $("#catBreadcrumb").text(category);
+      $("#catSubtitle").text("Choose a sub-category in " + category + ".");
+      var images = categoryImages(category);
+      var categoryProducts = (Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : []).filter(function (item) {
+        return item && String(item.category || "").toLowerCase() === String(category).toLowerCase();
+      });
+      var cardMeta = subcategories.map(function (sub, index) {
+        var subProducts = categoryProducts.filter(function (item) {
+          return String(item.subcategory || "").toLowerCase() === String(sub).toLowerCase();
+        });
+        var image = images.length ? images[index % images.length] : missingImage;
+        var collect = function (key) {
+          return uniqueValues([].concat.apply([], subProducts.map(function (item) {
+            var list = item && item[key];
+            return Array.isArray(list) ? list : [];
+          })));
+        };
+        return {
+          label: sub,
+          href: "product-list.html?category=" + encodeURIComponent(category) + "&subcategory=" + encodeURIComponent(sub),
+          image: image,
+          facets: {
+            subcategory: [sub],
+            size: collect("sizeOptions"),
+            option: collect("optionOptions"),
+            color: collect("colorOptions"),
+            gender: collect("genderOptions"),
+            orientation: collect("orientationOptions"),
+            uom: collect("uomOptions")
+          }
+        };
+      });
+      var facetDefs = [
+        { key: "subcategory", target: "#facetSubcategory", className: "facet-subcategory" },
+        { key: "size", target: "#facetSize", className: "facet-size" },
+        { key: "option", target: "#facetOption", className: "facet-option" },
+        { key: "color", target: "#facetColor", className: "facet-color" },
+        { key: "gender", target: "#facetGender", className: "facet-gender" },
+        { key: "orientation", target: "#facetOrientation", className: "facet-orientation" },
+        { key: "uom", target: "#facetUom", className: "facet-uom" }
+      ];
+
+      function selectedValues(selector) {
+        return $(selector + ":checked").map(function () { return String(this.value || ""); }).get();
+      }
+
+      function currentState() {
+        return {
+          subcategory: selectedValues(".facet-subcategory"),
+          size: selectedValues(".facet-size"),
+          option: selectedValues(".facet-option"),
+          color: selectedValues(".facet-color"),
+          gender: selectedValues(".facet-gender"),
+          orientation: selectedValues(".facet-orientation"),
+          uom: selectedValues(".facet-uom")
+        };
+      }
+
+      function matchesState(card, state, excludeKey) {
+        return facetDefs.every(function (facet) {
+          if (facet.key === excludeKey) return true;
+          var selected = state[facet.key] || [];
+          if (!selected.length) return true;
+          var values = (card.facets && card.facets[facet.key]) || [];
+          return selected.some(function (v) { return values.indexOf(v) > -1; });
+        });
+      }
+
+      function renderFacetOptions(target, className, values, selected) {
+        var html = values.map(function (value) {
+          var checked = selected.indexOf(value) > -1 ? " checked" : "";
+          return (
+            "<label class='cat-facet-option'>" +
+              "<input type='checkbox' class='" + className + "' value='" + escapeHtml(value) + "'" + checked + ">" +
+              "<span>" + escapeHtml(value) + "</span>" +
+            "</label>"
+          );
+        }).join("");
+        $(target).html(html);
+      }
+
+      function renderCards(list) {
+        var html = list.map(function (card) {
+          return (
+            "<a class='cat-sub-card' href='" + card.href + "'>" +
+              "<img class='cat-sub-thumb' src='" + escapeHtml(card.image) + "' onerror=\"this.onerror=null;this.src='" + missingImage + "';\" alt='" + escapeHtml(card.label) + "'>" +
+              "<span class='cat-sub-name'>" + escapeHtml(card.label) + "</span>" +
+            "</a>"
+          );
+        }).join("");
+        $("#catSubGrid").html(html);
+        $("#catNoResults").toggleClass("hidden", list.length > 0);
+      }
+
+      function renderProducts(list) {
+        var html = list.map(function (item) {
+          var sku = String(item.id || "");
+          var name = String(item.name || sku || "Product");
+          var sub = String(item.subcategory || "");
+          var href = "product-detail.html?category=" + encodeURIComponent(category) + "&id=" + encodeURIComponent(sku);
+          var image = normalizeImage(item.image || "");
+          return (
+            "<a class='cat-product-card' href='" + href + "'>" +
+              "<img class='cat-product-thumb' src='" + escapeHtml(image) + "' onerror=\"this.onerror=null;this.src='" + missingImage + "';\" alt='" + escapeHtml(name) + "'>" +
+              "<div class='cat-product-body'>" +
+                "<p class='cat-product-name'>" + escapeHtml(name) + "</p>" +
+                (sub ? ("<p class='cat-product-sub'>" + escapeHtml(sub) + "</p>") : "") +
+              "</div>" +
+            "</a>"
+          );
+        }).join("");
+        $("#catProductGrid").html(html);
+      }
+
+      function renderActiveFilters(state) {
+        var chips = [];
+        facetDefs.forEach(function (facet) {
+          (state[facet.key] || []).forEach(function (value) {
+            chips.push(
+              "<span class='cat-chip'>" + escapeHtml(value) +
+              " <button type='button' class='remove' data-remove='" + facet.key + "' data-value='" + escapeHtml(value) + "'>&times;</button></span>"
+            );
+          });
+        });
+        $("#catActiveFilters").html(chips.join(""));
+      }
+
+      function buildFacetPanels() {
+        var state = currentState();
+        facetDefs.forEach(function (facet) {
+          var scopedCards = cardMeta.filter(function (card) { return matchesState(card, state, facet.key); });
+          var values = uniqueValues([].concat.apply([], scopedCards.map(function (card) {
+            return (card.facets && card.facets[facet.key]) || [];
+          })));
+          var selected = (state[facet.key] || []).filter(function (v) { return values.indexOf(v) > -1; });
+          renderFacetOptions(facet.target, facet.className, values, selected);
+        });
+      }
+
+      function applyFacets() {
+        buildFacetPanels();
+        var state = currentState();
+        var filtered = cardMeta.filter(function (card) { return matchesState(card, state, null); });
+        var hasFacetSelection = facetDefs.some(function (facet) {
+          return (state[facet.key] || []).length > 0;
+        });
+        var matchingProducts = categoryProducts.filter(function (item) {
+          var itemSub = String(item.subcategory || "");
+          var card = cardMeta.find(function (entry) {
+            return String(entry.label).toLowerCase() === itemSub.toLowerCase();
+          });
+          if (!card) return false;
+          return matchesState(card, state, null);
+        });
+
+        renderActiveFilters(state);
+        if (hasFacetSelection) {
+          $("#catSubGrid").hide();
+          $("#catProductGrid").show();
+          renderProducts(matchingProducts);
+          $("#catNoResults")
+            .toggleClass("hidden", matchingProducts.length > 0)
+            .text("No products match these facets.");
+          return;
+        }
+
+        $("#catProductGrid").hide().empty();
+        $("#catSubGrid").show();
+        $("#catNoResults")
+          .toggleClass("hidden", filtered.length > 0)
+          .text("No sub-categories match these facets.");
+        renderCards(filtered);
+      }
+
+      applyFacets();
+
+      $(document)
+        .on("change", ".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom", function () {
+          applyFacets();
+        })
+        .on("click", "#catFacetClear", function () {
+          $(".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom").prop("checked", false);
+          applyFacets();
+        })
+        .on("click", "#catActiveFilters .remove", function () {
+          var key = String($(this).attr("data-remove") || "");
+          var value = String($(this).attr("data-value") || "");
+          if (!key || !value) return;
+          $(".facet-" + key + "[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", false);
+          applyFacets();
+        });
+    })();
+  </script>
+</body>
+</html>

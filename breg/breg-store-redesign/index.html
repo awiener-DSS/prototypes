@@ -10,25 +10,84 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/shell.css">
   <style>
-    .hero-wrap { background:#fff; padding-bottom:8px; }
-    .hero-panel { position:relative; height:380px; overflow:hidden; }
+    .hero-wrap {
+      position:relative;
+      background:#fff;
+      padding-bottom:0;
+      width:100vw;
+      margin-left:calc(50% - 50vw);
+      margin-right:calc(50% - 50vw);
+      --hero-panel-half:min(750px, calc((100vw - 32px) / 2));
+    }
+    .hero-panel {
+      position:relative;
+      height:380px;
+      overflow:hidden;
+      max-width:1500px;
+      width:calc(100% - 32px);
+      margin:0 auto;
+    }
     .hero-slide { position:absolute; inset:0; opacity:0; transition:opacity .45s ease; background-size:cover; background-position:center; }
     .hero-slide.active { opacity:1; z-index:2; }
-    .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.2) 45%,rgba(0,0,0,.06) 100%); }
+    .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.12) 45%,rgba(0,0,0,.04) 100%); }
+    .hero-panel::after {
+      content:"";
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      height:140px;
+      z-index:3;
+      pointer-events:none;
+      background:var(--hero-fade-bg, linear-gradient(to bottom, rgba(74,127,184,0) 0%, rgba(74,127,184,.28) 55%, transparent 100%));
+      transition:background .45s ease;
+    }
     .hero-copy { position:absolute; z-index:3; top:50%; left:44px; transform:translateY(-50%); color:#fff; max-width:550px; }
     .hero-copy h1 { margin:0 0 8px; font-size:46px; font-weight:700; font-family:var(--font-headline); letter-spacing:.2px; color:#fff; }
     .hero-copy p { margin:0; font-size:22px; font-family:var(--font-body); opacity:.95; color:#fff; }
-    .hero-arrow { position:absolute; top:50%; transform:translateY(-50%); z-index:4; border:0; width:40px; height:40px; border-radius:999px; background:rgba(255,255,255,.9); color:#222; }
-    .hero-arrow.left { left:16px; }
-    .hero-arrow.right { right:16px; }
-    .hero-dots { position:absolute; z-index:4; left:50%; bottom:14px; transform:translateX(-50%); display:flex; gap:8px; }
-    .hero-dot { width:9px; height:9px; border-radius:999px; border:0; opacity:.65; background:#fff; }
-    .hero-dot.active { width:22px; opacity:1; }
+    .hero-arrow {
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      border:0;
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      background:#fff;
+      color:#222;
+      box-shadow:0 2px 8px rgba(15,17,17,.12);
+      z-index:10;
+    }
+    .hero-arrow.left { left:max(8px, calc(50% - var(--hero-panel-half) - 42px)); }
+    .hero-arrow.right { right:max(8px, calc(50% - var(--hero-panel-half) - 42px)); }
+    .hero-arrow:hover,
+    .hero-arrow:focus { background:#fff; color:#111; }
 
-    .product-section { background:#fff; margin-top:12px; padding:16px 18px 12px; }
-    .product-section h2 { margin:0; font-size:24px; font-weight:600; font-family:var(--font-headline); color:var(--breg-darkest); }
-    .section-subtitle { color:var(--breg-darkest); opacity:.8; font-size:15px; font-family:var(--font-body); margin:4px 0 16px; }
-    .product-carousel-wrap { position:relative; margin-top:14px; padding:0 36px; }
+    body { background:#eaeded; }
+    .product-section {
+      background:#fff;
+      margin-top:14px;
+      padding:12px 12px 10px;
+      border:1px solid #d5d9d9;
+      border-radius:2px;
+      box-shadow:0 1px 2px rgba(15,17,17,.04);
+    }
+    .product-section h2 {
+      margin:0;
+      font-size:18px;
+      font-weight:600;
+      font-family:var(--font-headline);
+      color:#0f1111;
+      line-height:1.2;
+    }
+    .section-subtitle {
+      color:#565959;
+      font-size:13px;
+      font-family:var(--font-body);
+      margin:4px 0 8px;
+      opacity:1;
+    }
+    .product-carousel-wrap { position:relative; margin-top:10px; padding:0; }
     .carousel-btn {
       position:absolute;
       top:50%;
@@ -47,24 +106,75 @@
     }
     .carousel-btn.left { left:0; }
     .carousel-btn.right { right:0; }
+    .product-carousel-wrap .carousel-btn { display:none; }
     .carousel-btn[disabled] { opacity:.35; cursor:not-allowed; }
+    .home-modules-row {
+      margin-top:-52px;
+      position:relative;
+      z-index:6;
+    }
+    .home-modules-first-row {
+      position:relative;
+    }
+    .home-modules-first-row {
+      padding-bottom:16px;
+    }
+    .home-modules-row-inner {
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:10px;
+      align-items:start;
+      padding:0 20px;
+      position:relative;
+      z-index:1;
+    }
+    .home-hero-blend {
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      bottom:0;
+      width:100%;
+      height:auto;
+      z-index:0;
+      pointer-events:none;
+      border-radius:2px;
+      background:linear-gradient(to bottom, rgba(74,127,184,.34) 0%, rgba(74,127,184,.14) 48%, #eaeded 100%);
+      transition:background .45s ease;
+    }
+    .home-modules-row-inner .product-section,
+    .home-modules-row .login-panel {
+      margin-top:0;
+      position:relative;
+      z-index:1;
+    }
+    .home-modules-row .login-panel {
+      display:none;
+      flex-direction:column;
+      justify-content:space-between;
+      align-items:flex-start;
+      padding:16px;
+      gap:18px;
+    }
+    .home-modules-row .login-panel.show { display:flex; }
+    .home-modules-first-row .product-grid.product-carousel {
+      grid-template-columns:repeat(2, minmax(0,1fr));
+      gap:8px;
+    }
     .product-grid.product-carousel {
-      display:flex;
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0,1fr));
       gap:12px;
-      overflow-x:auto;
-      scroll-snap-type:x mandatory;
-      scrollbar-width:none;
-      -ms-overflow-style:none;
       padding-top:4px;
       padding-bottom:2px;
     }
     .product-grid.product-carousel::-webkit-scrollbar { display:none; }
     .p-card { background:#fff; border:0; border-radius:14px; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease; display:flex; flex-direction:column; min-height:0; position:relative; font-family:var(--font-body); margin-top:4px; }
-    .product-grid.product-carousel .p-card { flex:0 0 calc((100% - 60px) / 6); scroll-snap-align:start; }
+    .product-grid.product-carousel .p-card { min-width:0; }
     .p-card-link { display:flex; flex-direction:column; color:inherit; text-decoration:none; height:100%; }
     .p-card-link:hover, .p-card-link:focus { color:inherit; text-decoration:none; }
     .p-card:hover { transform:translateY(0); margin-top:0; box-shadow:0 8px 20px rgba(0,71,187,.15); }
-    .p-thumb { width:100%; aspect-ratio:1/1; object-fit:cover; background:#fff; display:block; border:0; }
+    .p-thumb { width:100%; aspect-ratio:4/3; object-fit:cover; background:#fff; display:block; border:0; }
     .product-grid.product-carousel .p-card,
     .product-grid.product-carousel .p-card:hover,
     .product-grid.product-carousel > * {
@@ -77,17 +187,128 @@
       box-shadow: none !important;
       outline: 0 !important;
     }
-    .p-body { padding:12px; display:flex; flex-direction:column; gap:8px; flex:1; }
-    .p-title { margin:0; font-size:14px; font-weight:600; font-family:var(--font-body); line-height:1.4; color:var(--breg-darkest); }
+    .p-body { padding:8px; display:flex; flex-direction:column; gap:4px; flex:1; }
+    .p-title { margin:0; font-size:12px; font-weight:600; font-family:var(--font-body); line-height:1.3; color:var(--breg-darkest); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:30px; }
+    .p-thumb-list {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      aspect-ratio:4/3;
+      background:#f3f6f9;
+      color:var(--breg-primary, #0047bb);
+      font-size:34px;
+    }
 
     .promo-strip { margin-top:12px; background:linear-gradient(to right,var(--breg-primary-dark),var(--breg-primary)); color:#fff; padding:30px 0; font-family:var(--font-body); }
     .promo-strip h3 { margin-top:0; font-size:34px; font-family:var(--font-headline); font-weight:700; }
     .promo-strip p { color:rgba(255,255,255,.9); font-size:20px; margin-bottom:18px; }
     .promo-strip img { width:250px; height:250px; object-fit:cover; border-radius:8px; box-shadow:0 8px 16px rgba(0,0,0,.25); }
+    .login-panel {
+      margin-top: 12px;
+      background: #fff;
+      border: 1px solid #d8e1ea;
+      border-radius: 14px;
+      padding: 18px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .login-panel.show { display: flex; }
+    .login-panel h3 { margin: 0 0 10px; font-size: 18px; font-weight: 600; color: var(--breg-darkest); font-family: var(--font-headline); }
+    .login-panel p { margin: 0 0 10px; color: #54616d; font-size: 12px; line-height:1.35; font-family: var(--font-body); }
+    .login-panel-actions { display: inline-flex; align-items: center; gap: 8px; }
+    .login-panel-btn {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 0 12px;
+      border-radius: 999px; border: 1px solid var(--breg-primary, #0047bb); text-decoration: none;
+      font-size: 12px; font-weight: 600; font-family: var(--font-body);
+    }
+    .login-panel-btn.primary { background: var(--breg-primary, #0047bb); color: #fff; }
+    .login-panel-btn.secondary { background: #fff; color: var(--breg-primary, #0047bb); }
+    .login-panel-btn:hover, .login-panel-btn:focus { text-decoration: none; }
+    .home-guest-signin-module {
+      display:none;
+      flex-direction:column;
+      justify-content:space-between;
+      min-height:100%;
+    }
+    .home-guest-signin-module.is-visible { display:flex; }
+    .home-guest-signin-module h2 { margin-bottom:10px; }
+    .home-guest-signin-copy {
+      margin:0 0 14px;
+      color:#54616d;
+      font-size:12px;
+      line-height:1.4;
+      font-family:var(--font-body);
+    }
+    .home-guest-signin-actions {
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .home-guest-signin-actions .login-panel-btn {
+      width:100%;
+      justify-content:center;
+    }
+    .home-previous-orders-module.is-hidden,
+    .home-pickup-module.is-hidden,
+    .home-templates-module.is-hidden { display:none; }
+    .home-guest-top-products-module,
+    .home-guest-top-categories-module { display:none; }
+    .home-guest-top-products-module.is-visible,
+    .home-guest-top-categories-module.is-visible { display:block; }
+    .home-modules-second-row {
+      display:none;
+      margin-top:14px;
+    }
+    .home-modules-second-row.is-visible { display:block; }
+    .home-modules-second-row .home-modules-row-inner {
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+    .home-modules-second-row .product-section {
+      width:100%;
+    }
+    .home-modules-second-row .product-carousel-wrap {
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    .home-modules-second-row .product-grid.product-carousel {
+      grid-template-columns:repeat(6, minmax(0, 1fr));
+      gap:10px;
+    }
 
-    @media (max-width:1199px){ .product-grid.product-carousel .p-card{flex-basis:calc((100% - 36px) / 4);} }
-    @media (max-width:991px){ .product-grid.product-carousel .p-card{flex-basis:calc((100% - 24px) / 3);} .hero-panel{height:330px;} .hero-copy h1{font-size:34px;} .hero-copy p{font-size:18px;} }
-    @media (max-width:767px){ .hero-panel{height:260px;} .hero-copy{left:18px; right:18px; max-width:none;} .hero-copy h1{font-size:28px;} .hero-copy p{font-size:16px;} .product-carousel-wrap{padding:0 30px;} .product-grid.product-carousel .p-card{flex-basis:calc((100% - 12px) / 2);} .promo-strip h3{font-size:28px;} .promo-strip p{font-size:16px;} .promo-strip img{width:180px;height:180px;margin-top:12px;} }
+    @media (max-width:1199px){
+      .home-modules-row{margin-top:12px;}
+      .home-hero-blend{display:none;}
+      .home-modules-first-row .home-modules-row-inner{grid-template-columns:repeat(2, minmax(0, 1fr)); padding:0 14px;}
+      .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr));}
+      .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
+    }
+    @media (max-width:991px){
+      .home-modules-row{margin-top:12px;}
+      .home-hero-blend{display:none;}
+      .home-modules-first-row .home-modules-row-inner{grid-template-columns:1fr; padding:0 12px;}
+      .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr));}
+      .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr));}
+      .hero-panel{height:330px;}
+      .hero-copy h1{font-size:34px;}
+      .hero-copy p{font-size:18px;}
+    }
+    @media (max-width:767px){
+      .hero-arrow.left{left:calc(50% - var(--hero-panel-half) - 36px);}
+      .hero-arrow.right{right:calc(50% - var(--hero-panel-half) - 36px);}
+      .hero-panel{height:260px;}
+      .hero-copy{left:18px; right:18px; max-width:none;}
+      .hero-copy h1{font-size:28px;}
+      .hero-copy p{font-size:16px;}
+      .product-section{padding:14px 12px 12px;}
+      .home-modules-first-row .product-grid.product-carousel{grid-template-columns:1fr;}
+      .promo-strip h3{font-size:28px;}
+      .promo-strip p{font-size:16px;}
+      .promo-strip img{width:180px;height:180px;margin-top:12px;}
+    }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
@@ -139,63 +360,144 @@
     <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
   </header>
 
+  <section class="hero-wrap" aria-label="Featured promotions">
+    <button type="button" class="hero-arrow left" id="heroPrev" aria-label="Previous slide"><span class="glyphicon glyphicon-chevron-left"></span></button>
+    <div class="hero-panel" id="heroPanel">
+      <div class="hero-slide active" data-title="" data-subtitle="" data-blend="#4a7fb8" style="background-image:url('https://create-matter-17437700.figma.site/_assets/v11/d48d2f84cb49eabc90d3638a22a50b2aaa4d36e1.png');"></div>
+      <div class="hero-slide" data-title="Advanced Support Technology" data-subtitle="Trusted by Healthcare Professionals Worldwide" data-blend="#2f8f4e" style="background-image:url('https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+      <div class="hero-slide" data-title="Recovery Made Simple" data-subtitle="Comprehensive Rehabilitation Solutions" data-blend="#8a6a4d" style="background-image:url('https://images.unsplash.com/photo-1545463913-5083aa7359a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+      <div class="hero-slide" data-title="Return to Performance" data-subtitle="Athletic Recovery and Support" data-blend="#3a6f86" style="background-image:url('https://images.unsplash.com/photo-1754941622117-97957c5d669b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-copy"><h1 id="heroTitle"></h1><p id="heroSubtitle"></p></div>
+    </div>
+    <button type="button" class="hero-arrow right" id="heroNext" aria-label="Next slide"><span class="glyphicon glyphicon-chevron-right"></span></button>
+  </section>
+
   <main class="site-max">
-    <section class="hero-wrap">
-      <div class="hero-panel" id="heroPanel">
-        <div class="hero-slide active" data-title="Keep Moving Forward" data-subtitle="Premium Medical Bracing Solutions" style="background-image:url('https://create-matter-17437700.figma.site/_assets/v11/d48d2f84cb49eabc90d3638a22a50b2aaa4d36e1.png');"></div>
-        <div class="hero-slide" data-title="Advanced Support Technology" data-subtitle="Trusted by Healthcare Professionals Worldwide" style="background-image:url('https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-        <div class="hero-slide" data-title="Recovery Made Simple" data-subtitle="Comprehensive Rehabilitation Solutions" style="background-image:url('https://images.unsplash.com/photo-1545463913-5083aa7359a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-        <div class="hero-slide" data-title="Return to Performance" data-subtitle="Athletic Recovery and Support" style="background-image:url('https://images.unsplash.com/photo-1754941622117-97957c5d669b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-        <div class="hero-overlay"></div>
-        <div class="hero-copy"><h1 id="heroTitle">Keep Moving Forward</h1><p id="heroSubtitle">Premium Medical Bracing Solutions</p></div>
-        <button class="hero-arrow left" id="heroPrev"><span class="glyphicon glyphicon-chevron-left"></span></button>
-        <button class="hero-arrow right" id="heroNext"><span class="glyphicon glyphicon-chevron-right"></span></button>
-        <div class="hero-dots" id="heroDots"></div>
+    <section class="home-modules-row" aria-label="Home recommendations">
+      <div class="home-modules-first-row">
+        <div class="home-hero-blend" id="homeHeroBlend" aria-hidden="true"></div>
+        <div class="home-modules-row-inner home-modules-row-inner--quad">
+      <section class="product-section home-pickup-module" id="homePickUpModule">
+        <h2>Pick Up Where You Left Off</h2>
+        <div class="product-carousel-wrap" data-carousel="pickUpGrid">
+          <button type="button" class="carousel-btn left" data-target="pickUpGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+          <div class="product-grid product-carousel" id="pickUpGrid"></div>
+          <button type="button" class="carousel-btn right" data-target="pickUpGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        </div>
+      </section>
+
+      <section class="product-section home-templates-module" id="homeTemplatesModule">
+        <h2>Templates / Shopping List</h2>
+        <div class="product-carousel-wrap" data-carousel="templatesGrid">
+          <button type="button" class="carousel-btn left" data-target="templatesGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+          <div class="product-grid product-carousel" id="templatesGrid"></div>
+          <button type="button" class="carousel-btn right" data-target="templatesGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        </div>
+      </section>
+
+      <section class="product-section home-guest-top-products-module" id="homeGuestTopProductsModule">
+        <h2>Top Products</h2>
+        <div class="product-carousel-wrap" data-carousel="topRatedGrid">
+          <button type="button" class="carousel-btn left" data-target="topRatedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+          <div class="product-grid product-carousel" id="topRatedGrid"></div>
+          <button type="button" class="carousel-btn right" data-target="topRatedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        </div>
+      </section>
+
+      <section class="product-section home-guest-top-categories-module" id="homeGuestTopCategoriesModule">
+        <h2>Top Categories</h2>
+        <div class="product-carousel-wrap" data-carousel="topCategoriesGrid">
+          <button type="button" class="carousel-btn left" data-target="topCategoriesGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+          <div class="product-grid product-carousel" id="topCategoriesGrid"></div>
+          <button type="button" class="carousel-btn right" data-target="topCategoriesGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        </div>
+      </section>
+
+      <section class="product-section">
+        <h2>Recommended for you</h2>
+        <div class="product-carousel-wrap" data-carousel="recommendedGrid">
+          <button type="button" class="carousel-btn left" data-target="recommendedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+          <div class="product-grid product-carousel" id="recommendedGrid"></div>
+          <button type="button" class="carousel-btn right" data-target="recommendedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        </div>
+      </section>
+
+      <section class="product-section home-guest-signin-module" id="homeGuestSignInModule">
+        <h2>Sign in to your account</h2>
+        <p class="home-guest-signin-copy">View order history, saved lists, and personalized product recommendations.</p>
+        <div class="home-guest-signin-actions">
+          <a class="login-panel-btn primary" href="login.html">Sign in</a>
+          <a class="login-panel-btn secondary" href="login.html">Register</a>
+        </div>
+      </section>
+
+      <section class="product-section home-previous-orders-module" id="homePreviousOrdersModule">
+        <h2>Your Previous Orders</h2>
+        <div class="product-carousel-wrap" data-carousel="previousOrdersGrid">
+          <button type="button" class="carousel-btn left" data-target="previousOrdersGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+          <div class="product-grid product-carousel" id="previousOrdersGrid"></div>
+          <button type="button" class="carousel-btn right" data-target="previousOrdersGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+        </div>
+      </section>
+        </div>
+      </div>
+
+      <div class="home-modules-second-row" id="homeSignedInSecondRow">
+        <div class="home-modules-row-inner">
+          <section class="product-section">
+            <h2>Top Products</h2>
+            <div class="product-carousel-wrap" data-carousel="topRatedGridSignedIn">
+              <button type="button" class="carousel-btn left" data-target="topRatedGridSignedIn" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+              <div class="product-grid product-carousel" id="topRatedGridSignedIn"></div>
+              <button type="button" class="carousel-btn right" data-target="topRatedGridSignedIn" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+            </div>
+          </section>
+
+          <section class="product-section">
+            <h2>Top Categories</h2>
+            <div class="product-carousel-wrap" data-carousel="topCategoriesGridSignedIn">
+              <button type="button" class="carousel-btn left" data-target="topCategoriesGridSignedIn" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+              <div class="product-grid product-carousel" id="topCategoriesGridSignedIn"></div>
+              <button type="button" class="carousel-btn right" data-target="topCategoriesGridSignedIn" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+            </div>
+          </section>
+        </div>
       </div>
     </section>
 
-    <section class="product-section">
-      <h2>Recommended for you</h2>
-      <p class="section-subtitle">Frequently bought together based on your order history</p>
-      <div class="product-carousel-wrap" data-carousel="recommendedGrid">
-        <button type="button" class="carousel-btn left" data-target="recommendedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-        <div class="product-grid product-carousel" id="recommendedGrid"></div>
-        <button type="button" class="carousel-btn right" data-target="recommendedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-      </div>
-    </section>
-
-    <section class="promo-strip"><div class="container-fluid site-max"><div class="row"><div class="col-sm-8"><h3>Keep recovering with confidence</h3><p>Based on your recent views, we think you'll love our complete cold therapy systems</p><button class="btn btn-default btn-lg">Shop Cold Therapy</button></div><div class="col-sm-4 text-center"><img src="https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral" alt="Cold Therapy Products"></div></div></div></section>
-
-    <section class="product-section">
-      <h2>Your Previous Orders</h2>
-      <div class="product-carousel-wrap" data-carousel="previousOrdersGrid">
-        <button type="button" class="carousel-btn left" data-target="previousOrdersGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-        <div class="product-grid product-carousel" id="previousOrdersGrid"></div>
-        <button type="button" class="carousel-btn right" data-target="previousOrdersGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-      </div>
-    </section>
-    <section class="product-section">
-      <h2>Top Products</h2>
-      <div class="product-carousel-wrap" data-carousel="topRatedGrid">
-        <button type="button" class="carousel-btn left" data-target="topRatedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-        <div class="product-grid product-carousel" id="topRatedGrid"></div>
-        <button type="button" class="carousel-btn right" data-target="topRatedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-      </div>
-    </section>
   </main>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script src="assets/catalog-image-resolver.js"></script>
   <script>
     (function () {
       var heroIndex = 0;
       var $slides = $("#heroPanel .hero-slide");
       var $title = $("#heroTitle");
       var $subtitle = $("#heroSubtitle");
-      var $dots = $("#heroDots");
       var heroTimer;
+
+      function hexToRgb(hex) {
+        var value = String(hex || "#4a7fb8").replace("#", "").trim();
+        if (value.length === 3) {
+          value = value.split("").map(function (ch) { return ch + ch; }).join("");
+        }
+        var parsed = parseInt(value, 16);
+        if (!isFinite(parsed)) return { r: 74, g: 127, b: 184 };
+        return { r: (parsed >> 16) & 255, g: (parsed >> 8) & 255, b: parsed & 255 };
+      }
+
+      function applyHeroBlend(hex) {
+        var rgb = hexToRgb(hex);
+        var heroFade = "linear-gradient(to bottom, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",0) 0%, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.35) 58%, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.12) 82%, transparent 100%)";
+        var rowFade = "linear-gradient(to bottom, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.36) 0%, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.14) 50%, #eaeded 100%)";
+        $("#heroPanel").css("--hero-fade-bg", heroFade);
+        $("#homeHeroBlend").css("background", rowFade);
+      }
 
       function setHero(index) {
         heroIndex = (index + $slides.length) % $slides.length;
@@ -203,18 +505,12 @@
         var $active = $slides.eq(heroIndex);
         $title.text($active.data("title"));
         $subtitle.text($active.data("subtitle"));
-        $dots.find(".hero-dot").removeClass("active").eq(heroIndex).addClass("active");
+        applyHeroBlend($active.data("blend") || "#4a7fb8");
       }
 
       function startHero() {
         clearInterval(heroTimer);
         heroTimer = setInterval(function () { setHero(heroIndex + 1); }, 5000);
-      }
-
-      for (var i = 0; i < $slides.length; i += 1) {
-        var $dot = $("<button type='button' class='hero-dot' aria-label='Go to slide'></button>");
-        (function (idx) { $dot.on("click", function () { setHero(idx); startHero(); }); })(i);
-        $dots.append($dot);
       }
 
       $("#heroPrev").on("click", function () { setHero(heroIndex - 1); startHero(); });
@@ -224,8 +520,16 @@
 
       var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
       var catalog = window.BREG_CATALOG_ITEMS || [];
-      var sectionOrder = ["recommendedGrid", "previousOrdersGrid", "topRatedGrid"];
-      var sectionCounts = { recommendedGrid: 18, previousOrdersGrid: 18, topRatedGrid: 18 };
+      var sectionCounts = {
+        pickUpGrid: 4,
+        templatesGrid: 4,
+        recommendedGrid: 4,
+        previousOrdersGrid: 4,
+        topRatedGrid: 4,
+        topCategoriesGrid: 4,
+        topRatedGridSignedIn: 6,
+        topCategoriesGridSignedIn: 6
+      };
 
       function validCatalogProduct(p) {
         return p &&
@@ -238,38 +542,10 @@
           (p.type === "product" || p.type === "variation-master");
       }
 
-      function parseJsonSafe(key) {
-        try { return JSON.parse(localStorage.getItem(key) || "null"); } catch (e) { return null; }
-      }
-
       function buildSectionsFromCatalog() {
         var validProducts = catalog.filter(validCatalogProduct);
-        var byId = {};
-        var byCategory = {};
-        validProducts.forEach(function (item) {
-          byId[String(item.id || "")] = item;
-          byCategory[item.category] = byCategory[item.category] || [];
-          byCategory[item.category].push(item);
-        });
-        Object.keys(byCategory).forEach(function (category) {
-          byCategory[category].sort(function (a, b) {
-            return String(a.name || "").localeCompare(String(b.name || ""));
-          });
-        });
-
-        var lastOrder = parseJsonSafe("breg_last_order_v1");
-        var orderLines = (lastOrder && Array.isArray(lastOrder.lines)) ? lastOrder.lines.slice() : [];
-        var orderedCatalogProducts = [];
-        var orderedIds = {};
-        orderLines.forEach(function (line) {
-          var sku = String(line && line.sku ? line.sku : "");
-          if (!sku) return;
-          var matched = byId[sku];
-          if (!matched) return;
-          if (orderedIds[matched.id]) return;
-          orderedIds[matched.id] = true;
-          orderedCatalogProducts.push(matched);
-        });
+        var homeActivity = window.BregHomeActivity || {};
+        var limit = function (key) { return sectionCounts[key] || 4; };
 
         function fillWithCatalog(target, count, disallowSet) {
           validProducts.forEach(function (item) {
@@ -280,41 +556,30 @@
           });
         }
 
-        function buildRecommended(count) {
+        function buildRecommended(count, purchasedProducts) {
           var picks = [];
           var used = {};
-          var categoryCursor = {};
-          orderedCatalogProducts.forEach(function (product) {
+          var byCategory = {};
+          var orderedIds = {};
+          validProducts.forEach(function (item) {
+            byCategory[item.category] = byCategory[item.category] || [];
+            byCategory[item.category].push(item);
+          });
+          (purchasedProducts || []).forEach(function (product) {
+            orderedIds[product.id] = true;
+          });
+          (purchasedProducts || []).forEach(function (product) {
             var cat = product.category;
             if (!cat || !byCategory[cat] || !byCategory[cat].length) return;
-            categoryCursor[cat] = categoryCursor[cat] || 0;
             var pool = byCategory[cat];
             for (var i = 0; i < pool.length && picks.length < count; i += 1) {
-              var candidate = pool[(categoryCursor[cat] + i) % pool.length];
+              var candidate = pool[i];
               if (!candidate || orderedIds[candidate.id] || used[candidate.id]) continue;
               used[candidate.id] = true;
               picks.push(candidate);
             }
-            categoryCursor[cat] += 1;
           });
-          if (picks.length < count) {
-            fillWithCatalog(picks, count, used);
-          }
-          return picks.slice(0, count);
-        }
-
-        function buildPreviousOrders(count) {
-          var picks = [];
-          var used = {};
-          orderedCatalogProducts.forEach(function (product) {
-            if (picks.length >= count) return;
-            if (!product || used[product.id]) return;
-            used[product.id] = true;
-            picks.push(product);
-          });
-          if (picks.length < count) {
-            fillWithCatalog(picks, count, used);
-          }
+          if (picks.length < count) fillWithCatalog(picks, count, used);
           return picks.slice(0, count);
         }
 
@@ -327,27 +592,61 @@
             used[item.id] = true;
             picks.push(item);
           });
-          if (picks.length < count) {
-            fillWithCatalog(picks, count, used);
-          }
+          if (picks.length < count) fillWithCatalog(picks, count, used);
           return picks.slice(0, count);
         }
 
+        var pickUp = (typeof homeActivity.getRecentPdpProducts === "function")
+          ? homeActivity.getRecentPdpProducts(catalog, limit("pickUpGrid"))
+          : [];
+        var favoriteLists = (typeof homeActivity.getRecentFavoritesLists === "function")
+          ? homeActivity.getRecentFavoritesLists(limit("templatesGrid"))
+          : [];
+        var purchased = (typeof homeActivity.getRecentPurchasedProducts === "function")
+          ? homeActivity.getRecentPurchasedProducts(catalog, limit("previousOrdersGrid"))
+          : [];
+        var topCategories = (typeof homeActivity.getTopCategories === "function")
+          ? homeActivity.getTopCategories(catalog, limit("topCategoriesGrid"))
+          : [];
+
         var sections = {};
-        sections.recommendedGrid = buildRecommended(sectionCounts.recommendedGrid || 6);
-        sections.previousOrdersGrid = buildPreviousOrders(sectionCounts.previousOrdersGrid || 6);
+        sections.pickUpGrid = pickUp;
+        sections.templatesGrid = favoriteLists;
+        sections.recommendedGrid = buildRecommended(limit("recommendedGrid"), purchased);
+        sections.previousOrdersGrid = purchased;
+        sections.topCategoriesGrid = topCategories;
         var disallowForTop = {};
+        sections.pickUpGrid.forEach(function (p) { disallowForTop[p.id] = true; });
         sections.recommendedGrid.forEach(function (p) { disallowForTop[p.id] = true; });
         sections.previousOrdersGrid.forEach(function (p) { disallowForTop[p.id] = true; });
-        sections.topRatedGrid = buildTopProducts(sectionCounts.topRatedGrid || 6, disallowForTop);
+        sections.topRatedGrid = buildTopProducts(limit("topRatedGrid"), disallowForTop);
+        sections.topRatedGrid.forEach(function (p) { disallowForTop[p.id] = true; });
+        sections.topRatedGridSignedIn = buildTopProducts(limit("topRatedGridSignedIn"), disallowForTop);
+        sections.topCategoriesGridSignedIn = (typeof homeActivity.getTopCategories === "function")
+          ? homeActivity.getTopCategories(catalog, limit("topCategoriesGridSignedIn"))
+          : topCategories.slice(0, limit("topCategoriesGridSignedIn"));
         return sections;
       }
 
-      function renderGrid(id, products) {
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function sectionLimit(id, fallback) {
+        return sectionCounts[id] || fallback || 4;
+      }
+
+      function renderGrid(id, products, maxCount) {
         var $grid = $("#" + id);
+        var limit = maxCount || sectionLimit(id, 4);
         $grid.empty();
-        products.forEach(function (p) {
-          var name = (p.name || "").replace(/'/g, "&#39;");
+        products.slice(0, limit).forEach(function (p) {
+          var name = escapeHtml(p.name || "");
           var category = encodeURIComponent(p.category || "Knee Bracing");
           var productHref = "product-detail.html?category=" + category + "&id=" + encodeURIComponent(p.id);
           var image = p.image || missingProductImage;
@@ -356,7 +655,63 @@
               "<a class='p-card-link' href='" + productHref + "'>" +
                 "<img class='p-thumb' src='" + image + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + name + "'>" +
                 "<div class='p-body'>" +
-                  "<h3 class='p-title'>" + p.name + "</h3>" +
+                  "<h3 class='p-title'>" + name + "</h3>" +
+                "</div>" +
+              "</a>" +
+            "</article>"
+          );
+        });
+        $grid.find(".p-card").each(function () {
+          this.style.setProperty("border", "0", "important");
+          this.style.setProperty("box-shadow", "none", "important");
+        });
+        $grid.find(".p-thumb").each(function () {
+          this.style.setProperty("border", "0", "important");
+          this.style.setProperty("background", "#fff", "important");
+        });
+      }
+
+      function renderListGrid(id, lists) {
+        var $grid = $("#" + id);
+        $grid.empty();
+        lists.slice(0, 4).forEach(function (list) {
+          var title = escapeHtml(list.title || "Favorites List");
+          var image = list.image || missingProductImage;
+          $grid.append(
+            "<article class='p-card' style='border:0;box-shadow:none;'>" +
+              "<a class='p-card-link' href='my-favorites.html'>" +
+                "<img class='p-thumb' src='" + image + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + title + "'>" +
+                "<div class='p-body'>" +
+                  "<h3 class='p-title'>" + title + "</h3>" +
+                "</div>" +
+              "</a>" +
+            "</article>"
+          );
+        });
+        $grid.find(".p-card").each(function () {
+          this.style.setProperty("border", "0", "important");
+          this.style.setProperty("box-shadow", "none", "important");
+        });
+        $grid.find(".p-thumb").each(function () {
+          this.style.setProperty("border", "0", "important");
+          this.style.setProperty("background", "#fff", "important");
+        });
+      }
+
+      function renderCategoryGrid(id, categories, maxCount) {
+        var $grid = $("#" + id);
+        var limit = maxCount || sectionLimit(id, 4);
+        $grid.empty();
+        categories.slice(0, limit).forEach(function (cat) {
+          var name = escapeHtml(cat.name || "");
+          var href = "product-list.html?category=" + encodeURIComponent(cat.name || "");
+          var image = cat.image || missingProductImage;
+          $grid.append(
+            "<article class='p-card' style='border:0;box-shadow:none;'>" +
+              "<a class='p-card-link' href='" + href + "'>" +
+                "<img class='p-thumb' src='" + image + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + name + "'>" +
+                "<div class='p-body'>" +
+                  "<h3 class='p-title'>" + name + "</h3>" +
                 "</div>" +
               "</a>" +
             "</article>"
@@ -429,11 +784,60 @@
         });
       }
 
+      function syncGuestHomeModules() {
+        var signedIn = localStorage.getItem("bregSignedIn") === "true";
+        $("#homeGuestSignInModule").toggleClass("is-visible", !signedIn);
+        $("#homePreviousOrdersModule").toggleClass("is-hidden", !signedIn);
+        $("#homePickUpModule").toggleClass("is-hidden", !signedIn);
+        $("#homeTemplatesModule").toggleClass("is-hidden", !signedIn);
+        $("#homeGuestTopProductsModule").toggleClass("is-visible", !signedIn);
+        $("#homeGuestTopCategoriesModule").toggleClass("is-visible", !signedIn);
+        $("#homeSignedInSecondRow").toggleClass("is-visible", signedIn);
+      }
+
       var sections = buildSectionsFromCatalog();
-      sectionOrder.forEach(function (key) { renderGrid(key, sections[key] || []); });
+      renderGrid("pickUpGrid", sections.pickUpGrid || []);
+      renderListGrid("templatesGrid", sections.templatesGrid || []);
+      renderGrid("recommendedGrid", sections.recommendedGrid || []);
+      renderGrid("previousOrdersGrid", sections.previousOrdersGrid || []);
+      renderGrid("topRatedGrid", sections.topRatedGrid || []);
+      renderCategoryGrid("topCategoriesGrid", sections.topCategoriesGrid || []);
+      renderGrid("topRatedGridSignedIn", sections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
+      renderCategoryGrid("topCategoriesGridSignedIn", sections.topCategoriesGridSignedIn || [], sectionLimit("topCategoriesGridSignedIn", 6));
       initCarousels();
-      $(window).on("resize", function () {
-        sectionOrder.forEach(function (key) { updateCarouselButtons(key); });
+      syncGuestHomeModules();
+      if (window.BregAuth && typeof window.BregAuth.syncHomeLoginPanel === "function") {
+        window.BregAuth.syncHomeLoginPanel();
+      }
+      function refreshHomeModules() {
+        syncGuestHomeModules();
+        var nextSections = buildSectionsFromCatalog();
+        renderGrid("pickUpGrid", nextSections.pickUpGrid || []);
+        renderListGrid("templatesGrid", nextSections.templatesGrid || []);
+        renderGrid("recommendedGrid", nextSections.recommendedGrid || []);
+        renderGrid("previousOrdersGrid", nextSections.previousOrdersGrid || []);
+        renderGrid("topRatedGrid", nextSections.topRatedGrid || []);
+        renderCategoryGrid("topCategoriesGrid", nextSections.topCategoriesGrid || []);
+        renderGrid("topRatedGridSignedIn", nextSections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
+        renderCategoryGrid("topCategoriesGridSignedIn", nextSections.topCategoriesGridSignedIn || [], sectionLimit("topCategoriesGridSignedIn", 6));
+        initCarousels();
+      }
+
+      $(window).on("pageshow", refreshHomeModules);
+      window.addEventListener("storage", function (event) {
+        if (!event || event.key === null) {
+          refreshHomeModules();
+          return;
+        }
+        if (
+          event.key === "bregSignedIn" ||
+          event.key === "breg_recent_pdp_v1" ||
+          event.key === "breg_favorites_lists_snapshot_v1" ||
+          event.key === "breg_order_history_products_v1" ||
+          event.key === "breg_last_order_v1"
+        ) {
+          refreshHomeModules();
+        }
       });
     })();
   </script>

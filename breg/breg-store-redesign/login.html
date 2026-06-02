@@ -444,8 +444,11 @@
         if (loginEmail.value.trim().toLowerCase() === 'test@breg.com' && loginPassword.value === 'password123') {
           loginError.style.display = 'none';
           localStorage.setItem('bregSignedIn','true');
-          localStorage.setItem('bregFirstName', 'Test');
+          localStorage.setItem('bregFirstName', 'Jordan');
+          localStorage.setItem('bregLastName', 'Lee');
+          localStorage.setItem('bregUserName', 'Jordan Lee');
           localStorage.setItem('bregAccountName', 'Medical Clinic Inc.');
+          localStorage.setItem('bregUserPhone', '555-010-0000');
           localStorage.setItem('bregUserEmail', 'test@breg.com');
           window.location.href = redirect;
           return;

@@ -1157,6 +1157,19 @@
         "Wrist/Elbow Bracing": "Elbow/Wrist Bracing",
         "Hip & Thigh": "Hip Bracing"
       };
+      var categorySubMap = {
+        "Knee Bracing": ["Adjustable ROM", "Functional OA Bracing", "Knee Ligament Bracing", "Patellofemoral Bracing", "Post-Op Knee Bracing", "Soft Supports"],
+        "Shoulder Bracing": ["Immobilizers and Stabilizers", "Slings and Braces"],
+        "Cold Therapy and DVT": ["Devices", "Pads", "Gel Packs", "DVT Prophylaxis"],
+        "Spine Bracing": ["Cervical Clavicle", "Featured Lower Spine", "Featured Upper Spine", "Lumbar"],
+        "Walker/Ankle/Foot Bracing": ["Walking Boots", "Ankle Bracing", "Foot Supports"],
+        "Elbow/Wrist Bracing": ["Elbow Bracing", "Wrist Bracing"],
+        "Hip Bracing": ["Post Op"],
+        "Splints and Fracture Management": ["Fracture Bracing", "Splint and Fracture Management"],
+        "Crutches, Canes & Walkers": ["Aluminum Push Button Crutches", "Folding Walker", "Push Button Aluminum Cane"],
+        "Home Therapy & Misc.": ["Home Therapy Kits", "Recovery"],
+        "Pediatrics": ["Knee Bracing", "Shoulder Bracing", "Elbow/Wrist Bracing", "Foot Supports", "Walking Boots", "Upper Spine", "Miscellaneous"]
+      };
       category = categoryAliases[category] || category;
 
       var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
@@ -1337,9 +1350,13 @@
         $("#pdpTabs").show();
         $(".pdp-jump a[data-target='#pdp-overview']").closest("li").addClass("is-active");
 
+        var hasSubcategories = Array.isArray(categorySubMap[product.category]) && categorySubMap[product.category].length > 0;
+        var categoryHref = hasSubcategories
+          ? ("category-landing.html?category=" + encodeURIComponent(product.category || ""))
+          : ("product-list.html?category=" + encodeURIComponent(product.category || ""));
         $("#crumbCategory")
           .text(product.category || "Category")
-          .attr("href", "product-list.html?category=" + encodeURIComponent(product.category || ""));
+          .attr("href", categoryHref);
 
         var subcategory = product.subcategory || "";
         var hasSubcategory = !!subcategory;
@@ -2091,6 +2108,9 @@
           var unitPrice = Number($("#cartAddedModal").data("buy-now-price") || product.price || 0);
           var order = buildOrderPayloadFromCart(sku, qty, unitPrice);
           try { localStorage.setItem("breg_last_order_v1", JSON.stringify(order)); } catch (e) {}
+          if (window.BregHomeActivity && typeof window.BregHomeActivity.trackPurchasedFromOrder === "function") {
+            window.BregHomeActivity.trackPurchasedFromOrder(order);
+          }
           clearCartState();
           updateCartBadge([]);
           window.location.href = "order-confirmation.html";
@@ -2499,6 +2519,15 @@
 
         applyWizardState();
         updateResolvedSku();
+
+        if (window.BregHomeActivity && typeof window.BregHomeActivity.trackPdpVisit === "function") {
+          window.BregHomeActivity.trackPdpVisit({
+            id: product.id,
+            name: product.name,
+            category: product.category,
+            image: product.image
+          });
+        }
       }
 
       renderPage(findProduct());

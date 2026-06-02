@@ -613,16 +613,24 @@
   <script>
     (function () {
       function renderAccountUserMeta() {
-        var firstName = "Test";
-        var lastName = "User";
+        var firstName = "Jordan";
+        var lastName = "Lee";
+        var userName = "";
         var role = "Account Administrator";
         var company = "Medical Clinic Inc.";
-        try { firstName = localStorage.getItem("bregFirstName") || "Test"; } catch (e) {}
-        try { lastName = localStorage.getItem("bregLastName") || "User"; } catch (e) {}
+        try { firstName = localStorage.getItem("bregFirstName") || "Jordan"; } catch (e) {}
+        try { lastName = localStorage.getItem("bregLastName") || "Lee"; } catch (e) {}
+        try { userName = localStorage.getItem("bregUserName") || ""; } catch (e) {}
         try { role = localStorage.getItem("bregUserRole") || "Account Administrator"; } catch (e) {}
         try { company = localStorage.getItem("bregAccountName") || "Medical Clinic Inc."; } catch (e) {}
-        var fullName = (String(firstName || "").trim() + " " + String(lastName || "").trim()).trim();
-        if (!fullName) fullName = "Test User";
+        firstName = String(firstName || "").trim();
+        lastName = String(lastName || "").trim();
+        userName = String(userName || "").trim();
+        var placeholderFirstNamePattern = /^(test|tester|user|guest|medical|admin|qa|demo)$/i;
+        if (!firstName || placeholderFirstNamePattern.test(firstName)) firstName = "Jordan";
+        if (!lastName) lastName = "Lee";
+        var fullName = (firstName + " " + lastName).trim();
+        if (userName && userName.indexOf(" ") > -1) fullName = userName;
         $("#accountUserName").text(fullName);
         $("#accountUserRole").text(String(role || "Account Administrator"));
         $("#accountUserCompany").text(String(company || "Medical Clinic Inc."));
@@ -632,10 +640,13 @@
         event.preventDefault();
         try { localStorage.setItem("bregSignedIn", "false"); } catch (e) {}
         try { localStorage.removeItem("bregFirstName"); } catch (e) {}
+        try { localStorage.removeItem("bregLastName"); } catch (e) {}
+        try { localStorage.removeItem("bregUserName"); } catch (e) {}
         try { localStorage.removeItem("bregAccountName"); } catch (e) {}
         try { localStorage.removeItem("bregUserEmail"); } catch (e) {}
+        try { localStorage.removeItem("bregUserPhone"); } catch (e) {}
         try { localStorage.removeItem("bregUserRole"); } catch (e) {}
-        window.location.href = "index.html";
+        window.location.replace("index.html");
       });
 
       renderAccountUserMeta();

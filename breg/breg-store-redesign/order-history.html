@@ -1164,6 +1164,9 @@
         $item.find(".history-item-title").first().attr("href", buildPdpHrefFromItem($item));
       });
       decorateTrackingLinks();
+      if (window.BregHomeActivity && typeof window.BregHomeActivity.syncOrderHistoryFromDom === "function") {
+        window.BregHomeActivity.syncOrderHistoryFromDom();
+      }
     })();
 
     (function () {

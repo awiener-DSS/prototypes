@@ -32,6 +32,12 @@
     .cat-facet-group summary::-webkit-details-marker { display: none; }
     .cat-facet-group summary:after { content: "\e114"; font-family: "Glyphicons Halflings"; position: absolute; right: 0; top: 0; font-size: 10px; color: #6e7a85; }
     .cat-facet-group[open] summary:after { content: "\e113"; }
+    .cat-facet-search {
+      display: none; width: 100%; margin: 0 0 8px; padding: 6px 8px;
+      border: 1px solid #d7dee5; border-radius: 6px; font-size: 12px; box-sizing: border-box;
+    }
+    .cat-facet-group[open] .cat-facet-search.is-visible { display: block; }
+    .cat-facet-options { max-height: 220px; overflow-y: auto; }
     .cat-facet-option { display: flex; align-items: center; gap: 7px; margin: 0 0 7px; font-size: 12px; font-weight: 500; cursor: pointer; }
     .cat-facet-option input { margin: 0; }
     .cat-content { min-width: 0; }
@@ -151,13 +157,13 @@
             <h2 class="cat-facet-title">Facets</h2>
             <button type="button" class="cat-facet-clear" id="catFacetClear">Clear all</button>
           </div>
-          <details class="cat-facet-group" open><summary>Subcategory</summary><div id="facetSubcategory"></div></details>
-          <details class="cat-facet-group" open><summary>Size</summary><div id="facetSize"></div></details>
-          <details class="cat-facet-group" open><summary>Option</summary><div id="facetOption"></div></details>
-          <details class="cat-facet-group" open><summary>Color</summary><div id="facetColor"></div></details>
-          <details class="cat-facet-group" open><summary>Gender</summary><div id="facetGender"></div></details>
-          <details class="cat-facet-group" open><summary>Orientation</summary><div id="facetOrientation"></div></details>
-          <details class="cat-facet-group" open><summary>UOM</summary><div id="facetUom"></div></details>
+          <details class="cat-facet-group" open><summary>Subcategory</summary><input type="search" class="cat-facet-search" placeholder="Search subcategory" autocomplete="off" aria-label="Search subcategory"><div id="facetSubcategory" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Size</summary><input type="search" class="cat-facet-search" placeholder="Search size" autocomplete="off" aria-label="Search size"><div id="facetSize" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Option</summary><input type="search" class="cat-facet-search" placeholder="Search option" autocomplete="off" aria-label="Search option"><div id="facetOption" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Color</summary><input type="search" class="cat-facet-search" placeholder="Search color" autocomplete="off" aria-label="Search color"><div id="facetColor" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Gender</summary><input type="search" class="cat-facet-search" placeholder="Search gender" autocomplete="off" aria-label="Search gender"><div id="facetGender" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Orientation</summary><input type="search" class="cat-facet-search" placeholder="Search orientation" autocomplete="off" aria-label="Search orientation"><div id="facetOrientation" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>UOM</summary><input type="search" class="cat-facet-search" placeholder="Search UOM" autocomplete="off" aria-label="Search UOM"><div id="facetUom" class="cat-facet-options"></div></details>
         </aside>
         <section class="cat-content">
           <div class="cat-toolbar">
@@ -314,6 +320,28 @@
         });
       }
 
+      var FACET_SEARCH_MIN = 5;
+
+      function applyFacetSearch($search) {
+        var query = String($search.val() || "").trim().toLowerCase();
+        $search.closest(".cat-facet-group").find(".cat-facet-option").each(function () {
+          var text = $(this).text().trim().toLowerCase();
+          $(this).toggle(!query || text.indexOf(query) > -1);
+        });
+      }
+
+      function syncFacetSearchField($group, optionCount) {
+        var $search = $group.find(".cat-facet-search");
+        if (!$search.length) return;
+        if (optionCount >= FACET_SEARCH_MIN) {
+          $search.addClass("is-visible");
+          applyFacetSearch($search);
+        } else {
+          $search.removeClass("is-visible").val("");
+          $group.find(".cat-facet-option").show();
+        }
+      }
+
       function renderFacetOptions(target, className, values, selected) {
         var html = values.map(function (value) {
           var checked = selected.indexOf(value) > -1 ? " checked" : "";
@@ -382,6 +410,9 @@
           })));
           var selected = (state[facet.key] || []).filter(function (v) { return values.indexOf(v) > -1; });
           renderFacetOptions(facet.target, facet.className, values, selected);
+          var $group = $(facet.target).closest(".cat-facet-group");
+          $group.prop("open", facet.key === "subcategory" || selected.length > 0);
+          syncFacetSearchField($group, values.length);
         });
       }
 
@@ -423,6 +454,9 @@
       applyFacets();
 
       $(document)
+        .on("input", ".cat-facet-search", function () {
+          applyFacetSearch($(this));
+        })
         .on("change", ".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom", function () {
           applyFacets();
         })

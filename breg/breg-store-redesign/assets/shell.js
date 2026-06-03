@@ -277,7 +277,8 @@
   }
 
   function openSharedCartAddedModal(lines) {
-    var addedLines = (Array.isArray(lines) ? lines : [])
+    var sourceLines = Array.isArray(lines) ? lines : (lines ? [lines] : []);
+    var addedLines = sourceLines
       .map(function (line) { return normalizeCartLine(line); })
       .filter(Boolean);
     if (!addedLines.length) return;
@@ -1116,6 +1117,12 @@
     window.location.href = categoryPageHref(normalized);
   }
 
+  function goToSearchResultsPage(term) {
+    var value = String(term || "").trim();
+    if (!value) return;
+    window.location.href = "product-list.html?q=" + encodeURIComponent(value);
+  }
+
   function goToProductPage(product, fallbackCategory) {
     if (!product || !product.sku) return false;
     var category = normalizeCategoryLabel(product.category || fallbackCategory || "");
@@ -1145,6 +1152,8 @@
         goToCategoryPage(categoryMatch);
         return;
       }
+      goToSearchResultsPage(value);
+      return;
     }
 
     ensureQuickOrderCatalogLoaded().done(function () {
@@ -1158,7 +1167,9 @@
         goToCategoryPage(fallbackCategory);
         return;
       }
-      closeSearchDropdown();
+      goToSearchResultsPage(value);
+    }).fail(function () {
+      goToSearchResultsPage(value);
     });
   }
 
@@ -1461,6 +1472,7 @@
     $accountDropdown.removeClass("open");
     $contactDropdown.removeClass("open");
     closeAllDropdown();
+    window.location.replace("index.html");
   }
 
   function renderAllDrawerMenu() {

@@ -228,30 +228,62 @@
       padding-top: 16px;
       border-top: 1px solid #c9ced4;
     }
-    .healthcare-strip h3 {
-      margin: 0 0 10px;
-      color: #565959;
-      font-size: 14px;
-      line-height: 1.2;
-      font-weight: 700;
-    }
     .healthcare-strip p {
-      margin: 0 0 14px;
+      margin: 0 0 12px;
       color: #565959;
       font-size: 14px;
       line-height: 1.45;
     }
+    .healthcare-strip p:last-child {
+      margin-bottom: 0;
+    }
+    .healthcare-strip strong {
+      font-weight: 700;
+      color: #565959;
+    }
     .healthcare-strip a {
       color: #007185;
-      font-size: 14px;
-      text-decoration: none;
-    }
-    .healthcare-strip a:hover {
       text-decoration: underline;
+    }
+    .healthcare-strip a:hover,
+    .healthcare-strip a:focus {
+      color: #005f6b;
     }
     .signin-main {
       min-height: auto;
       padding-bottom: 8px;
+    }
+    .org-account-panel {
+      margin-top: 4px;
+    }
+    .org-flow-step.hidden {
+      display: none;
+    }
+    .org-verified-msg {
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #9fd4a8;
+      background: #f0faf2;
+      color: #067647;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .org-back-link {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #007185;
+      text-decoration: none;
+    }
+    .org-back-link:hover,
+    .org-back-link:focus {
+      text-decoration: underline;
+      color: #005f6b;
+    }
+    .org-account-panel.hidden,
+    .new-customer-alt-panel.hidden {
+      display: none;
     }
     @media (max-width: 991px) {
       .signin-layout {
@@ -277,8 +309,8 @@
       .choice-btn,
       .benefits-box h3,
       .benefits-list,
-      .healthcare-strip h3,
       .healthcare-strip p,
+      .healthcare-strip strong,
       .healthcare-strip a,
       .agreement-copy {
         font-size: 14px;
@@ -386,7 +418,57 @@
         <p class="new-customer-copy">To create an online account, please select an option below.</p>
         <button type="button" id="hasOrgBtn" class="choice-btn active">Yes, my organization has an account</button>
         <button type="button" id="newCustomerBtn" class="choice-btn">No, I am a new customer</button>
-        <div class="benefits-box">
+
+        <div id="orgAccountPanel" class="org-account-panel">
+          <div id="orgVerifyStep" class="org-flow-step">
+            <p class="new-customer-copy">Verify your organization account number and billing ZIP code to continue.</p>
+            <div class="demo-box" id="orgVerifyDemo">
+              <strong>Demo verification (click to auto-fill):</strong>
+              <div class="demo-line">Account number: 1234567</div>
+              <div class="demo-line">Billing ZIP: 90001</div>
+            </div>
+            <form id="orgVerifyForm" class="signin-form">
+              <div class="form-group">
+                <label class="field-label" for="orgAccountNumber">Account number</label>
+                <input id="orgAccountNumber" type="text" class="form-control" autocomplete="off" placeholder="Enter your account number" required>
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="orgBillingZip">Billing ZIP code</label>
+                <input id="orgBillingZip" type="text" class="form-control" inputmode="numeric" autocomplete="postal-code" maxlength="10" placeholder="Enter billing ZIP code" required>
+              </div>
+              <button type="submit" class="btn signin-primary">Verify account</button>
+              <div class="error-msg" id="orgVerifyError">We could not verify that account number and billing ZIP code. Please check your information and try again.</div>
+            </form>
+          </div>
+
+          <div id="orgRegisterStep" class="org-flow-step hidden">
+            <p class="org-verified-msg" id="orgVerifiedSummary"></p>
+            <p class="new-customer-copy">Create your user account for this organization.</p>
+            <form id="orgRegisterForm" class="signin-form">
+              <div class="form-group">
+                <label class="field-label" for="orgUserName">Full name</label>
+                <input id="orgUserName" type="text" class="form-control" autocomplete="name" placeholder="First and last name" required>
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="orgUserEmail">Email address</label>
+                <input id="orgUserEmail" type="email" class="form-control" autocomplete="email" placeholder="Enter your email address" required>
+              </div>
+              <div class="form-group">
+                <label class="field-label" for="orgUserPhone">Phone number</label>
+                <input id="orgUserPhone" type="tel" class="form-control" autocomplete="tel" placeholder="Enter your phone number" required>
+              </div>
+              <button type="submit" class="btn signin-primary">Create account</button>
+              <div class="error-msg" id="orgRegisterError">Please complete all fields with valid information.</div>
+            </form>
+            <a href="#" class="org-back-link" id="orgVerifyAgainLink">Verify a different account</a>
+          </div>
+        </div>
+
+        <div id="newCustomerAltPanel" class="new-customer-alt-panel hidden">
+          <p class="new-customer-copy">To open a new organization account, please contact your Breg sales representative or call 1-800-897-2734.</p>
+        </div>
+
+        <div class="benefits-box" id="newCustomerBenefits">
           <h3>Benefits of creating an account:</h3>
           <ul class="benefits-list">
             <li>Quick and easy checkout</li>
@@ -400,9 +482,8 @@
       </aside>
     </div>
     <section class="healthcare-strip">
-      <h3>Healthcare Professionals:</h3>
-      <p>If you're a healthcare provider, clinic, or medical facility, please contact our sales team for professional account access.</p>
-      <a href="#">Learn more about professional accounts</a>
+      <p><strong>BregStore is a wholesale ordering platform for authorized distributors and healthcare providers.</strong> Breg braces and cold therapy devices must be dispensed by a licensed medical professional.</p>
+      <p><strong>If you are a patient with a prescription, please contact your nearest Breg <a href="#">Patient Service Center</a> for assistance.</strong></p>
     </section>
   </main>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -419,42 +500,185 @@
       var loginPassword = document.getElementById('loginPassword');
       var showLoginPassword = document.getElementById('showLoginPassword');
       var demoCredentials = document.getElementById('demoCredentials');
+      var orgAccountPanel = document.getElementById('orgAccountPanel');
+      var orgVerifyStep = document.getElementById('orgVerifyStep');
+      var orgRegisterStep = document.getElementById('orgRegisterStep');
+      var newCustomerAltPanel = document.getElementById('newCustomerAltPanel');
+      var newCustomerBenefits = document.getElementById('newCustomerBenefits');
+      var orgVerifyForm = document.getElementById('orgVerifyForm');
+      var orgRegisterForm = document.getElementById('orgRegisterForm');
+      var orgVerifyError = document.getElementById('orgVerifyError');
+      var orgRegisterError = document.getElementById('orgRegisterError');
+      var orgVerifiedSummary = document.getElementById('orgVerifiedSummary');
+      var orgVerifyDemo = document.getElementById('orgVerifyDemo');
+      var orgVerifyAgainLink = document.getElementById('orgVerifyAgainLink');
+      var verifiedOrg = null;
 
-      hasOrgBtn.addEventListener('click', function() {
-        hasOrgBtn.classList.add('active');
-        newCustomerBtn.classList.remove('active');
+      var VALID_ORG_ACCOUNTS = {
+        "1234567": { billingZip: "90001", accountName: "Medical Clinic Inc." }
+      };
+
+      function normalizeZip(value) {
+        return String(value || "").replace(/\D/g, "").slice(0, 10);
+      }
+
+      function normalizeAccountNumber(value) {
+        return String(value || "").trim().replace(/\s+/g, "");
+      }
+
+      function hideError(el) {
+        if (el) el.style.display = "none";
+      }
+
+      function showError(el) {
+        if (el) el.style.display = "block";
+      }
+
+      function resetOrgVerification() {
+        verifiedOrg = null;
+        orgVerifyStep.classList.remove("hidden");
+        orgRegisterStep.classList.add("hidden");
+        hideError(orgVerifyError);
+        hideError(orgRegisterError);
+        if (orgVerifyForm) orgVerifyForm.reset();
+        if (orgRegisterForm) orgRegisterForm.reset();
+      }
+
+      function showHasOrgPanel() {
+        orgAccountPanel.classList.remove("hidden");
+        newCustomerAltPanel.classList.add("hidden");
+        newCustomerBenefits.classList.remove("hidden");
+        resetOrgVerification();
+      }
+
+      function showNewCustomerPanel() {
+        orgAccountPanel.classList.add("hidden");
+        newCustomerAltPanel.classList.remove("hidden");
+        newCustomerBenefits.classList.remove("hidden");
+        resetOrgVerification();
+      }
+
+      function validateOrgAccount(accountNumber, billingZip) {
+        var normalizedAccount = normalizeAccountNumber(accountNumber);
+        var normalizedZip = normalizeZip(billingZip);
+        var record = VALID_ORG_ACCOUNTS[normalizedAccount];
+        if (!record) return null;
+        if (normalizeZip(record.billingZip) !== normalizedZip) return null;
+        return {
+          accountNumber: normalizedAccount,
+          billingZip: normalizedZip,
+          accountName: record.accountName
+        };
+      }
+
+      function showOrgRegisterStep(org) {
+        verifiedOrg = org;
+        orgVerifyStep.classList.add("hidden");
+        orgRegisterStep.classList.remove("hidden");
+        hideError(orgVerifyError);
+        hideError(orgRegisterError);
+        orgVerifiedSummary.textContent =
+          "Account " + org.accountNumber + " verified for " + org.accountName + ".";
+      }
+
+      function persistNewUserSession(name, email, phone) {
+        var trimmedName = String(name || "").trim();
+        var parts = trimmedName.split(/\s+/).filter(Boolean);
+        var firstName = parts[0] || trimmedName;
+        var lastName = parts.length > 1 ? parts.slice(1).join(" ") : "";
+        localStorage.setItem("bregSignedIn", "true");
+        localStorage.setItem("bregFirstName", firstName);
+        localStorage.setItem("bregLastName", lastName);
+        localStorage.setItem("bregUserName", trimmedName);
+        localStorage.setItem("bregUserEmail", String(email || "").trim());
+        localStorage.setItem("bregUserPhone", String(phone || "").trim());
+        localStorage.setItem("bregAccountName", verifiedOrg ? verifiedOrg.accountName : "Medical Clinic Inc.");
+        if (verifiedOrg && verifiedOrg.accountNumber) {
+          localStorage.setItem("bregOrgAccountNumber", verifiedOrg.accountNumber);
+        }
+      }
+
+      hasOrgBtn.addEventListener("click", function() {
+        hasOrgBtn.classList.add("active");
+        newCustomerBtn.classList.remove("active");
+        showHasOrgPanel();
       });
 
-      newCustomerBtn.addEventListener('click', function() {
-        newCustomerBtn.classList.add('active');
-        hasOrgBtn.classList.remove('active');
+      newCustomerBtn.addEventListener("click", function() {
+        newCustomerBtn.classList.add("active");
+        hasOrgBtn.classList.remove("active");
+        showNewCustomerPanel();
       });
 
-      showLoginPassword.addEventListener('change', function() {
-        loginPassword.type = showLoginPassword.checked ? 'text' : 'password';
-      });
-      demoCredentials.addEventListener('click', function() {
-        loginEmail.value = 'test@breg.com';
-        loginPassword.value = 'password123';
-        loginError.style.display = 'none';
+      orgVerifyDemo.addEventListener("click", function() {
+        document.getElementById("orgAccountNumber").value = "1234567";
+        document.getElementById("orgBillingZip").value = "90001";
+        hideError(orgVerifyError);
       });
 
-      document.getElementById('loginForm').addEventListener('submit', function(e){
+      orgVerifyAgainLink.addEventListener("click", function(event) {
+        event.preventDefault();
+        resetOrgVerification();
+      });
+
+      orgVerifyForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        var accountNumber = document.getElementById("orgAccountNumber").value;
+        var billingZip = document.getElementById("orgBillingZip").value;
+        var org = validateOrgAccount(accountNumber, billingZip);
+        if (!org) {
+          showError(orgVerifyError);
+          return;
+        }
+        showOrgRegisterStep(org);
+      });
+
+      orgRegisterForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        if (!verifiedOrg) {
+          resetOrgVerification();
+          return;
+        }
+        var name = document.getElementById("orgUserName").value.trim();
+        var email = document.getElementById("orgUserEmail").value.trim();
+        var phone = document.getElementById("orgUserPhone").value.trim();
+        var emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!name || !emailValid || !phone) {
+          showError(orgRegisterError);
+          return;
+        }
+        hideError(orgRegisterError);
+        persistNewUserSession(name, email, phone);
+        window.location.href = redirect;
+      });
+
+      showLoginPassword.addEventListener("change", function() {
+        loginPassword.type = showLoginPassword.checked ? "text" : "password";
+      });
+      demoCredentials.addEventListener("click", function() {
+        loginEmail.value = "test@breg.com";
+        loginPassword.value = "password123";
+        loginError.style.display = "none";
+      });
+
+      document.getElementById("loginForm").addEventListener("submit", function(e){
         e.preventDefault();
-        if (loginEmail.value.trim().toLowerCase() === 'test@breg.com' && loginPassword.value === 'password123') {
-          loginError.style.display = 'none';
-          localStorage.setItem('bregSignedIn','true');
-          localStorage.setItem('bregFirstName', 'Jordan');
-          localStorage.setItem('bregLastName', 'Lee');
-          localStorage.setItem('bregUserName', 'Jordan Lee');
-          localStorage.setItem('bregAccountName', 'Medical Clinic Inc.');
-          localStorage.setItem('bregUserPhone', '555-010-0000');
-          localStorage.setItem('bregUserEmail', 'test@breg.com');
+        if (loginEmail.value.trim().toLowerCase() === "test@breg.com" && loginPassword.value === "password123") {
+          loginError.style.display = "none";
+          localStorage.setItem("bregSignedIn","true");
+          localStorage.setItem("bregFirstName", "Jordan");
+          localStorage.setItem("bregLastName", "Lee");
+          localStorage.setItem("bregUserName", "Jordan Lee");
+          localStorage.setItem("bregAccountName", "Medical Clinic Inc.");
+          localStorage.setItem("bregUserPhone", "555-010-0000");
+          localStorage.setItem("bregUserEmail", "test@breg.com");
           window.location.href = redirect;
           return;
         }
-        loginError.style.display = 'block';
+        loginError.style.display = "block";
       });
+
+      showHasOrgPanel();
     })();
   </script>
 </body>

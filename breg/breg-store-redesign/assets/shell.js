@@ -42,14 +42,6 @@
   var $allToggle = $(".sub-nav-inner .sub-nav-link").filter(function () {
     return $(this).find(".glyphicon-menu-hamburger").length > 0;
   }).first();
-  if ($allToggle.length) {
-    $allToggle.remove();
-    $allToggle = $();
-  }
-  var $quickOrderLink = $(".sub-nav-inner .sub-nav-link.quick-order").first();
-  if ($quickOrderLink.length) {
-    $quickOrderLink.remove();
-  }
   var allToggleOriginalHtml = $allToggle.length ? $allToggle.html() : "";
   var $allDrawerOverlay = $();
   var allMenuState = { expandedParent: null };
@@ -1210,6 +1202,24 @@
     $(".sub-nav-cat-item").removeClass("open");
   }
 
+  function initMobileHeaderAccess() {
+    if (!$headerActions.length) return;
+
+    function ensureMobileIcon($target, glyphClass, ariaLabel) {
+      if (!$target || !$target.length) return;
+      if (!$target.find(".header-mobile-icon").length) {
+        $target.prepend("<span class='glyphicon " + glyphClass + " header-mobile-icon' aria-hidden='true'></span>");
+      }
+      if (ariaLabel) $target.attr("aria-label", ariaLabel);
+    }
+
+    ensureMobileIcon($accountToggle, "glyphicon-user", "Account and Lists");
+    ensureMobileIcon($("#contactToggle"), "glyphicon-earphone", "Contact Us");
+    if ($langToggle.length) {
+      $langToggle.attr("aria-label", "Language and region");
+    }
+  }
+
   function initTopContactDropdown() {
     if (!$headerActions.length) return;
     if ($headerActions.find(".contact-wrap").length) {
@@ -1899,6 +1909,7 @@
 
   initAllDropdown();
   initTopContactDropdown();
+  initMobileHeaderAccess();
   initHeaderCategoryDropdowns();
   updateAccountStateUI();
   ensureAccountSignoutInMyAccount();
@@ -2458,7 +2469,57 @@
 })();
 
 (function () {
+  var SCROLL_CONTROLS_INIT_KEY = "__bregScrollControlsInited";
+  var SCROLL_CONTROLS_STYLE_ID = "bregScrollControlsStyles";
+
+  function isMobileViewport() {
+    return window.matchMedia("(max-width: 991px)").matches;
+  }
+
+  function getScrollY() {
+    return window.pageYOffset
+      || window.scrollY
+      || document.documentElement.scrollTop
+      || document.body.scrollTop
+      || 0;
+  }
+
+  function scrollShowThreshold() {
+    return isMobileViewport() ? 72 : 200;
+  }
+
+  function ensureScrollControlsStyles() {
+    if (document.getElementById(SCROLL_CONTROLS_STYLE_ID)) return;
+    var style = document.createElement("style");
+    style.id = SCROLL_CONTROLS_STYLE_ID;
+    style.textContent = "" +
+      ".scroll-top-btn,.scroll-quick-order-btn{position:fixed!important;z-index:11900!important;}" +
+      ".scroll-top-btn{right:24px;bottom:24px;width:44px;height:44px;border-radius:999px;border:1px solid rgba(0,71,187,.3);background:#fff;color:#0047bb;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease;}" +
+      ".scroll-quick-order-btn{right:24px;bottom:78px;min-height:38px;padding:0 14px;border-radius:999px;border:1px solid #0047bb;background:#0047bb;color:#fff!important;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease;}" +
+      ".scroll-top-btn.visible,.scroll-quick-order-btn.visible{opacity:1!important;visibility:visible!important;pointer-events:auto!important;transform:translateY(0)!important;}" +
+      ".scroll-quick-order-btn:hover,.scroll-quick-order-btn:focus{text-decoration:none;color:#fff!important;background:#001E62;border-color:#001E62;}" +
+      "@media (max-width:991px){.scroll-quick-order-btn{right:12px;bottom:calc(62px + env(safe-area-inset-bottom,0px));min-height:36px;padding:0 12px;}.scroll-top-btn{right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:42px;height:42px;}}";
+    document.head.appendChild(style);
+  }
+
+  function ensureScrollSentinel() {
+    var sentinel = document.getElementById("bregScrollSentinel");
+    if (sentinel) return sentinel;
+    sentinel = document.createElement("div");
+    sentinel.id = "bregScrollSentinel";
+    sentinel.setAttribute("aria-hidden", "true");
+    sentinel.style.cssText = "position:absolute;left:0;width:1px;height:1px;pointer-events:none;visibility:hidden;top:72px;";
+    if (document.body.firstChild) {
+      document.body.insertBefore(sentinel, document.body.firstChild);
+    } else {
+      document.body.appendChild(sentinel);
+    }
+    return sentinel;
+  }
+
   function initScrollTop() {
+    ensureScrollControlsStyles();
+
     var btn = document.querySelector(".scroll-top-btn");
     var quickOrderBtn = document.querySelector(".scroll-quick-order-btn");
     if (!btn) {
@@ -2477,18 +2538,18 @@
       quickOrderBtn.textContent = "Quick Order";
       document.body.appendChild(quickOrderBtn);
     }
-    if (btn._bregScrollTopInited) return;
-    btn._bregScrollTopInited = true;
+    if (document.documentElement[SCROLL_CONTROLS_INIT_KEY]) return;
+    document.documentElement[SCROLL_CONTROLS_INIT_KEY] = true;
+
+    ensureScrollSentinel();
+
+    function setVisible(show) {
+      btn.classList.toggle("visible", !!show);
+      quickOrderBtn.classList.toggle("visible", !!show);
+    }
 
     function updateVisibility() {
-      var y = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-      if (y > 240) {
-        btn.classList.add("visible");
-        quickOrderBtn.classList.add("visible");
-      } else {
-        btn.classList.remove("visible");
-        quickOrderBtn.classList.remove("visible");
-      }
+      setVisible(getScrollY() > scrollShowThreshold());
     }
 
     btn.addEventListener("click", function () {
@@ -2496,8 +2557,31 @@
     });
 
     window.addEventListener("scroll", updateVisibility, { passive: true });
+    document.addEventListener("scroll", updateVisibility, { passive: true });
+    window.addEventListener("touchmove", updateVisibility, { passive: true });
+    window.addEventListener("touchend", updateVisibility, { passive: true });
+    window.addEventListener("wheel", updateVisibility, { passive: true });
+    window.addEventListener("resize", updateVisibility);
+    window.addEventListener("orientationchange", function () {
+      setTimeout(updateVisibility, 120);
+    });
+    window.addEventListener("pageshow", updateVisibility);
+    document.addEventListener("visibilitychange", updateVisibility);
+
+    if (isMobileViewport()) {
+      window.setInterval(updateVisibility, 250);
+    }
+
     updateVisibility();
   }
+
+  window.BregScrollControls = {
+    refresh: function () {
+      var btn = document.querySelector(".scroll-top-btn");
+      var quickOrderBtn = document.querySelector(".scroll-quick-order-btn");
+      if (!btn || !quickOrderBtn) initScrollTop();
+    }
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initScrollTop);

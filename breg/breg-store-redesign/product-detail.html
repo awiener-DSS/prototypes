@@ -8,11 +8,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/shell.css">
+  <link rel="stylesheet" href="assets/shell.css?v=20260608c">
   <style>
     body { background: #EAEDED; }
     .pdp-page { margin: 16px 0 26px; }
-    .pdp-mobile-sticky-name { display: none; }
     .pdp-breadcrumb {
       margin: 0 0 10px;
       font-size: 12px;
@@ -35,6 +34,8 @@
     .pdp-gallery-col { position: sticky; top: 96px; align-self: start; }
     .pdp-gallery-main { border: 0; border-radius: 14px; background: #fff; padding: 18px; height: 400px; display: flex; align-items: center; justify-content: center; }
     .pdp-gallery-main img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+    .pdp-gallery-mobile-only { display: none; }
+    .pdp-gallery-track { display: none; }
     .pdp-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
     .pdp-thumb { width: 100%; height: 82px; border: 0 !important; border-radius: 8px; background: #fff; padding: 8px; cursor: pointer; outline: none; box-shadow: none; }
     .pdp-thumb.active { border: 0 !important; box-shadow: none !important; }
@@ -123,6 +124,7 @@
       color: #fff;
     }
     .pdp-top-cart-btn[disabled] { opacity: .55; cursor: not-allowed; }
+    .pdp-mobile-sticky-cart { display: none; }
     .pdp-top-bulk-btn {
       margin-top: 8px;
       border: 1px solid #d1d5dc;
@@ -280,31 +282,163 @@
       .pdp-indications, .pdp-models, .pdp-feature-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 767px) {
-      .pdp-mobile-sticky-name {
-        display: block;
+      .pdp-rail .pdp-info {
+        display: none;
+      }
+      .pdp-mobile-sticky-cart {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
         position: fixed;
         left: 0;
         right: 0;
-        top: var(--pdp-mobile-name-top, 108px);
-        z-index: 1040;
+        bottom: 0;
+        z-index: 1045;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
         background: #fff;
-        border-bottom: 1px solid #e8edf1;
-        padding: 10px 16px;
-        font-size: 16px;
-        line-height: 1.3;
-        font-weight: 600;
-        color: #0a0a0a;
-        box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06);
-        transform: translateY(-120%);
+        border-top: 1px solid #e8edf1;
+        box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.1);
+        transform: translateY(110%);
         opacity: 0;
-        transition: transform .18s ease, opacity .18s ease;
         pointer-events: none;
+        transition: transform .18s ease, opacity .18s ease;
+        box-sizing: border-box;
+        max-width: 100%;
+        width: 100%;
       }
-      .pdp-mobile-sticky-name.show {
+      .pdp-mobile-sticky-cart.visible {
         transform: translateY(0);
         opacity: 1;
+        pointer-events: auto;
       }
-      .pdp-gallery-main { height: 360px; }
+      .pdp-mobile-sticky-cart-top {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+      }
+      .pdp-mobile-sticky-cart-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .pdp-mobile-sticky-cart-name {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: #0a0a0a;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .pdp-mobile-sticky-cart-price {
+        margin: 2px 0 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: #b12704;
+        line-height: 1.2;
+      }
+      .pdp-mobile-sticky-cart-price.is-hidden {
+        display: none;
+      }
+      .pdp-mobile-sticky-cart-btn {
+        width: 100%;
+        max-width: none;
+        min-height: 40px;
+        height: auto;
+        border: 1px solid var(--breg-primary, #0047bb);
+        background: var(--breg-primary, #0047bb);
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        padding: 8px 12px;
+        line-height: 1.2;
+        white-space: normal;
+        text-align: center;
+      }
+      .pdp-mobile-sticky-cart-btn:hover,
+      .pdp-mobile-sticky-cart-btn:focus {
+        background: var(--breg-primary-dark, #001E62);
+        border-color: var(--breg-primary-dark, #001E62);
+        color: #fff;
+      }
+      .pdp-mobile-sticky-cart-btn[disabled] {
+        opacity: .55;
+        cursor: not-allowed;
+      }
+      body.pdp-sticky-cart-visible .scroll-top-btn {
+        bottom: calc(var(--pdp-sticky-cart-offset, 0px) + 12px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      body.pdp-sticky-cart-visible .scroll-quick-order-btn {
+        bottom: calc(var(--pdp-sticky-cart-offset, 0px) + 62px + env(safe-area-inset-bottom, 0px)) !important;
+      }
+      .pdp-gallery-desktop-only { display: none !important; }
+      .pdp-gallery-mobile-only { display: flex; }
+      .pdp-gallery-main {
+        display: block;
+        width: 100%;
+        height: auto;
+        padding: 0;
+        overflow: hidden;
+      }
+      .pdp-gallery-track {
+        display: flex;
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        touch-action: pan-x pan-y;
+        scrollbar-width: none;
+      }
+      .pdp-gallery-track::-webkit-scrollbar {
+        display: none;
+      }
+      .pdp-gallery-slide {
+        flex: 0 0 100%;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+        height: 360px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+      .pdp-gallery-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        cursor: zoom-in;
+        border-radius: 8px;
+        -webkit-user-drag: none;
+        user-select: none;
+      }
+      .pdp-gallery-dots {
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        margin: 10px 0 0;
+        min-height: 8px;
+      }
+      .pdp-gallery-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        border: 0;
+        padding: 0;
+        background: #cbd5e1;
+        transition: background .18s ease, transform .18s ease;
+      }
+      .pdp-gallery-dot.active {
+        background: var(--breg-primary, #0047bb);
+        transform: scale(1.2);
+      }
       .pdp-top h1 { font-size: 22px; line-height: 28px; }
       .pdp-price { font-size: 34px; }
       .pdp-btn-primary { font-size: 18px; }
@@ -331,6 +465,26 @@
       .pdp-top-qty .pdp-qty-select {
         width: 64px;
         height: 38px;
+      }
+      .pdp-page,
+      .pdp-tabs {
+        overflow-x: hidden;
+        max-width: 100%;
+      }
+      .pdp-tab-head {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        max-width: 100%;
+      }
+      .pdp-tab-head::-webkit-scrollbar {
+        display: none;
+      }
+      .pdp-tab {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding-left: 14px;
+        padding-right: 14px;
       }
     }
     .bulk-modal {
@@ -490,70 +644,108 @@
     }
     .bulk-stock-text { color: #166534; }
     .bulk-mobile-list { display: none; }
+    .bulk-mobile-selected-count { display: none; }
+    .bulk-mobile-toolbar,
+    .bulk-mobile-filters-panel,
+    .bulk-mobile-clear-filters { display: none; }
     .bulk-mobile-card {
       border: 1px solid #e4e8ee;
-      border-radius: 10px;
+      border-radius: 12px;
       background: #fff;
-      padding: 10px;
-      margin-bottom: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
     }
     .bulk-mobile-card:last-child { margin-bottom: 0; }
-    .bulk-mobile-top {
+    .bulk-mobile-card.is-selected {
+      border-color: #8eb8ea;
+      background: #f5f9ff;
+      box-shadow: 0 0 0 1px rgba(0, 71, 187, 0.12);
+    }
+    .bulk-mobile-options {
       display: flex;
-      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .bulk-mobile-option-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 28px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid #d5dde4;
+      background: #f8fafc;
+      font-size: 13px;
+      line-height: 1.2;
+      color: #0f172a;
+    }
+    .bulk-mobile-option-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .3px;
+      color: #64748b;
+    }
+    .bulk-mobile-option-value {
+      font-weight: 600;
+    }
+    .bulk-mobile-card-meta {
+      display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 8px;
     }
-    .bulk-mobile-sku {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.35;
-      color: #0f172a;
-      font-weight: 700;
-      word-break: break-word;
-    }
-    .bulk-mobile-price {
-      font-size: 14px;
-      line-height: 1.35;
-      color: #b12704;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .bulk-mobile-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 12px;
-      margin-bottom: 10px;
-    }
-    .bulk-mobile-kv {
-      min-width: 0;
-      font-size: 12px;
-      line-height: 1.35;
-      color: #475569;
-    }
-    .bulk-mobile-kv strong {
-      display: block;
-      margin-bottom: 2px;
-      color: #64748b;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: .25px;
-    }
-    .bulk-mobile-qty-row {
-      display: grid;
-      grid-template-columns: 1fr 110px;
-      gap: 10px;
-      align-items: center;
-    }
-    .bulk-mobile-qty-label {
+    .bulk-mobile-sku-sub {
       margin: 0;
       font-size: 12px;
       line-height: 1.3;
       color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: .25px;
+      word-break: break-all;
+      flex: 1;
+      min-width: 0;
+    }
+    .bulk-mobile-price {
+      font-size: 16px;
+      line-height: 1.2;
+      color: #b12704;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .bulk-mobile-stock {
+      margin: 0 0 10px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .bulk-mobile-qty-stepper {
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      gap: 8px;
+      align-items: center;
+    }
+    .bulk-qty-step {
+      width: 44px;
+      height: 44px;
+      border: 1px solid #cdd6df;
+      border-radius: 10px;
+      background: #fff;
+      color: #0f172a;
+      font-size: 22px;
+      line-height: 1;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bulk-qty-step:active {
+      background: #f1f5f9;
+    }
+    .bulk-mobile-qty-stepper .bulk-qty {
+      width: 100%;
+      height: 44px;
+      text-align: center;
+      font-size: 16px;
       font-weight: 600;
     }
     .list-create-dialog { width: min(460px, 100%); }
@@ -816,21 +1008,18 @@
       }
       #bulkOrderModal .bulk-dialog {
         width: 100%;
-        max-height: 94vh;
+        max-height: 96dvh;
         border-radius: 14px 14px 0 0;
         border-left: 0;
         border-right: 0;
-        overflow-x: hidden;
+        overflow: hidden;
       }
       #bulkOrderModal .bulk-dialog,
       #bulkOrderModal .bulk-dialog * {
         box-sizing: border-box;
       }
       #bulkOrderModal .bulk-head {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background: #fff;
+        flex-shrink: 0;
         padding: 12px 14px;
       }
       #bulkOrderModal .bulk-head h3 {
@@ -838,62 +1027,177 @@
         line-height: 1.25;
       }
       #bulkOrderModal .bulk-body {
-        padding: 10px 12px 12px;
+        flex: 1;
+        min-height: 0;
+        padding: 0 12px 12px;
+        overflow-y: auto;
         overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
       }
       #bulkOrderModal .bulk-note {
-        font-size: 12px;
-        margin-bottom: 8px;
-      }
-      #bulkOrderModal .bulk-filter-input {
-        height: 38px;
         font-size: 13px;
+        margin: 10px 0 8px;
+        line-height: 1.4;
       }
+      #bulkOrderModal .bulk-filters { display: none; }
       #bulkOrderModal .bulk-table { display: none; }
       #bulkOrderModal .bulk-mobile-list { display: block; }
-      #bulkOrderModal .bulk-mobile-card,
-      #bulkOrderModal .bulk-mobile-grid,
-      #bulkOrderModal .bulk-mobile-qty-row,
-      #bulkOrderModal .bulk-filters {
+      #bulkOrderModal .bulk-mobile-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background: #fff;
+        padding: 10px 0 8px;
+        margin: 0 -12px;
+        padding-left: 12px;
+        padding-right: 12px;
+        border-bottom: 1px solid #eef2f6;
+      }
+      #bulkOrderModal .bulk-mobile-search-wrap {
+        flex: 1;
+        min-width: 0;
+      }
+      #bulkOrderModal .bulk-mobile-search {
+        width: 100%;
+        height: 42px;
+        font-size: 16px;
+        border-radius: 10px;
+      }
+      #bulkOrderModal .bulk-mobile-filter-toggle {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 42px;
+        padding: 0 12px;
+        border: 1px solid #cdd6df;
+        border-radius: 10px;
+        background: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        color: #0f172a;
+      }
+      #bulkOrderModal .bulk-mobile-filter-toggle.is-open {
+        border-color: var(--breg-primary, #0047bb);
+        color: var(--breg-primary, #0047bb);
+        background: #f5f9ff;
+      }
+      #bulkOrderModal .bulk-filter-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: var(--breg-primary, #0047bb);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      #bulkOrderModal .bulk-mobile-filters-panel {
+        display: block;
+        padding: 10px 0 4px;
+        border-bottom: 1px solid #eef2f6;
+        margin-bottom: 8px;
+      }
+      #bulkOrderModal .bulk-mobile-chip-group {
+        margin-bottom: 10px;
+      }
+      #bulkOrderModal .bulk-mobile-chip-label {
+        margin: 0 0 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+        color: #64748b;
+      }
+      #bulkOrderModal .bulk-mobile-chip-row {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 2px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      #bulkOrderModal .bulk-mobile-chip-row::-webkit-scrollbar {
+        display: none;
+      }
+      #bulkOrderModal .bulk-mobile-chip {
+        flex: 0 0 auto;
+        min-height: 36px;
+        padding: 0 14px;
+        border: 1px solid #d5dde4;
+        border-radius: 999px;
+        background: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+        white-space: nowrap;
+      }
+      #bulkOrderModal .bulk-mobile-chip.active {
+        border-color: var(--breg-primary, #0047bb);
+        background: #e8f1ff;
+        color: var(--breg-primary-dark, #001E62);
+      }
+      #bulkOrderModal .bulk-mobile-clear-filters {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 36px;
+        margin-bottom: 4px;
+        border: 0;
+        background: transparent;
+        color: var(--breg-primary, #0047bb);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: underline;
+      }
+      #bulkOrderModal .bulk-filter-count {
+        margin: 8px 0;
+        font-size: 13px;
+        font-weight: 600;
+        color: #475569;
+      }
+      #bulkOrderModal .bulk-mobile-card {
         min-width: 0;
         max-width: 100%;
       }
-      #bulkOrderModal .bulk-mobile-grid {
-        grid-template-columns: 1fr;
-      }
-      #bulkOrderModal .bulk-mobile-qty-row {
-        grid-template-columns: 1fr;
-        gap: 6px;
-      }
-      #bulkOrderModal .bulk-qty {
-        width: 100%;
-        height: 38px;
-        min-width: 0;
-      }
       #bulkOrderModal .bulk-foot {
-        position: sticky;
-        bottom: 0;
-        z-index: 2;
+        flex-shrink: 0;
         background: #fff;
         border-top: 1px solid #e5e7eb;
-        padding: 10px 12px;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
         display: grid;
         grid-template-columns: 1fr;
         gap: 8px;
+      }
+      #bulkOrderModal .bulk-mobile-selected-count {
+        display: block;
+        margin: 0;
+        font-size: 13px;
+        line-height: 1.3;
+        color: #64748b;
+        text-align: center;
+      }
+      #bulkOrderModal .bulk-mobile-selected-count.has-selection {
+        color: #0f172a;
+        font-weight: 600;
       }
       #bulkOrderModal .bulk-btn-cancel,
       #bulkOrderModal .bulk-btn-check,
       #bulkOrderModal .bulk-btn-add {
         width: 100%;
-        height: 40px;
-        font-size: 14px;
+        height: 44px;
+        font-size: 15px;
         min-width: 0;
       }
-      #bulkOrderModal .bulk-mobile-sku,
-      #bulkOrderModal .bulk-mobile-kv {
-        overflow-wrap: anywhere;
-        word-break: break-word;
-      }
+      #bulkOrderModal .bulk-btn-add { order: -1; }
     }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
@@ -907,7 +1211,7 @@
         </a>
         <div class="search-wrap">
           <form class="search-box" id="searchForm">
-            <input id="searchInput" type="text" placeholder="Search medical bracing &amp; support products" autocomplete="off">
+            <input id="searchInput" type="text" placeholder="Search Breg Store" autocomplete="off">
             <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
             <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
           </form>
@@ -945,7 +1249,15 @@
     </div>
     <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
   </header>
-  <div class="pdp-mobile-sticky-name" id="pdpMobileStickyName"></div>
+  <div class="pdp-mobile-sticky-cart" id="pdpMobileStickyCart" aria-hidden="true">
+    <div class="pdp-mobile-sticky-cart-top">
+      <div class="pdp-mobile-sticky-cart-info">
+        <p class="pdp-mobile-sticky-cart-name" id="pdpMobileStickyCartName"></p>
+        <p class="pdp-mobile-sticky-cart-price" id="pdpMobileStickyCartPrice"></p>
+      </div>
+    </div>
+    <button type="button" class="pdp-mobile-sticky-cart-btn" id="stickyAddToCartBtn" disabled>Add to Cart</button>
+  </div>
 
   <main class="site-max">
     <section class="pdp-page">
@@ -1040,9 +1352,10 @@
           <div id="bulkModalContent"></div>
         </div>
         <div class="bulk-foot">
-          <button type="button" class="bulk-btn-cancel" id="bulkModalCancel">Cancel</button>
-          <button type="button" class="bulk-btn-check" id="bulkModalCheckInventory">Check Inventory</button>
+          <p class="bulk-mobile-selected-count" id="bulkSelectedCount"></p>
           <button type="button" class="bulk-btn-add" id="bulkModalAdd">Add Selected to Cart</button>
+          <button type="button" class="bulk-btn-check" id="bulkModalCheckInventory">Check Inventory</button>
+          <button type="button" class="bulk-btn-cancel" id="bulkModalCancel">Cancel</button>
         </div>
       </div>
     </div>
@@ -1137,7 +1450,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js"></script>
+  <script src="assets/shell.js?v=20260608b"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
@@ -1242,8 +1555,10 @@
 
       function renderPage(product) {
         if (!product) {
-          $("#pdpMobileStickyName").removeClass("show").text("");
-          $(window).off("scroll.pdpsticky resize.pdpsticky");
+          $(window).off("scroll.pdpstickycart resize.pdpstickycart touchmove.pdpstickycart touchend.pdpstickycart");
+          $("#pdpMobileStickyCart").removeClass("visible").attr("aria-hidden", "true");
+          document.body.classList.remove("pdp-sticky-cart-visible");
+          document.documentElement.style.setProperty("--pdp-sticky-cart-offset", "0px");
           $("#pdpRoot").html("<div class='pdp-empty'>Product not found.</div>");
           return;
         }
@@ -1284,8 +1599,12 @@
         var html = "" +
           "<div class='pdp-layout'>" +
             "<section class='pdp-card pdp-gallery-col'>" +
-              "<div class='pdp-gallery-main'><img id='pdpMainImage' src='" + escapeHtml(image) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(product.name) + "'></div>" +
-              "<div class='pdp-thumbs' id='pdpThumbs'></div>" +
+              "<div class='pdp-gallery-main'>" +
+                "<div class='pdp-gallery-track' id='pdpGalleryTrack' aria-label='Product images'></div>" +
+                "<img id='pdpMainImage' class='pdp-gallery-desktop-only' src='" + escapeHtml(image) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(product.name) + "'>" +
+              "</div>" +
+              "<div class='pdp-thumbs pdp-gallery-desktop-only' id='pdpThumbs'></div>" +
+              "<div class='pdp-gallery-dots pdp-gallery-mobile-only' id='pdpGalleryDots' aria-hidden='true'></div>" +
             "</section>" +
             "<section class='pdp-main'>" +
               "<div class='pdp-top pdp-card' id='pdpTopCard'>" +
@@ -1367,38 +1686,182 @@
           .attr("href", "product-list.html?category=" + encodeURIComponent(product.category || "") + "&subcategory=" + encodeURIComponent(subcategory));
 
         $("#crumbProduct").text(product.name);
-        $("#pdpMobileStickyName").text(product.name);
+        $("#pdpMobileStickyCartName").text(product.name);
+        $("#pdpMobileStickyCartPrice").text("$" + BregFormatMoney(Number(product.price || 0)));
 
-        function setMobileStickyTop() {
-          var offset = $(".top-header").outerHeight() || 108;
-          document.documentElement.style.setProperty("--pdp-mobile-name-top", offset + "px");
+        function syncMobileStickyCart() {
+          var $topBtn = $("#topAddToCartBtn");
+          var $stickyBtn = $("#stickyAddToCartBtn");
+          if (!$stickyBtn.length || !$topBtn.length) return;
+          var btnText = String($topBtn.text() || "");
+          var isSelectOptions = isSignedIn && btnText === "Select Options to Continue";
+          $stickyBtn
+            .text(btnText)
+            .toggleClass("is-select-options", isSelectOptions)
+            .prop("disabled", isSelectOptions ? false : $topBtn.prop("disabled"));
+          var priceVisible = $("#pdpPriceValue").is(":visible");
+          $("#pdpMobileStickyCartPrice")
+            .text($("#pdpPriceValue").text())
+            .toggleClass("is-hidden", !priceVisible);
+          updateStickyScrollOffset();
         }
-        function bindMobileStickyTitle() {
-          var $sticky = $("#pdpMobileStickyName");
-          var $title = $("#pdpTopCard h1").first();
-          if (!$sticky.length || !$title.length) return;
-          $(window).off("scroll.pdpsticky resize.pdpsticky");
-          function applyStickyState() {
-            if (!window.matchMedia("(max-width: 767px)").matches) {
-              $sticky.removeClass("show");
+
+        function updateStickyScrollOffset() {
+          var $sticky = $("#pdpMobileStickyCart");
+          var height = ($sticky.length && $sticky.hasClass("visible"))
+            ? Math.ceil($sticky.outerHeight() || 0)
+            : 0;
+          document.documentElement.style.setProperty("--pdp-sticky-cart-offset", height + "px");
+        }
+
+        function bindMobileStickyCart() {
+          var $sticky = $("#pdpMobileStickyCart");
+          var $cartRow = $(".pdp-top-cart-row").first();
+          if (!$sticky.length || !$cartRow.length) return;
+
+          $(window).off("scroll.pdpstickycart resize.pdpstickycart touchmove.pdpstickycart touchend.pdpstickycart");
+
+          function setStickyVisible(show) {
+            $sticky.toggleClass("visible", !!show).attr("aria-hidden", show ? "false" : "true");
+            document.body.classList.toggle("pdp-sticky-cart-visible", !!show);
+            if (!show) {
+              document.documentElement.style.setProperty("--pdp-sticky-cart-offset", "0px");
               return;
             }
-            setMobileStickyTop();
-            var threshold = ($title.offset().top || 0) + ($title.outerHeight() || 0);
-            var scrollTop = $(window).scrollTop() || 0;
-            $sticky.toggleClass("show", scrollTop > threshold);
+            window.requestAnimationFrame(function () {
+              window.requestAnimationFrame(updateStickyScrollOffset);
+            });
           }
-          $(window).on("scroll.pdpsticky resize.pdpsticky", applyStickyState);
+
+          function applyStickyState() {
+            if (!window.matchMedia("(max-width: 767px)").matches) {
+              setStickyVisible(false);
+              return;
+            }
+            var rect = $cartRow[0].getBoundingClientRect();
+            setStickyVisible(rect.bottom < 8);
+          }
+
+          $(window).on("scroll.pdpstickycart resize.pdpstickycart touchmove.pdpstickycart touchend.pdpstickycart", applyStickyState);
+          $(window).on("resize.pdpstickycart", updateStickyScrollOffset);
           applyStickyState();
+          syncMobileStickyCart();
         }
-        setMobileStickyTop();
-        bindMobileStickyTitle();
+
+        function isMobileGalleryView() {
+          return window.matchMedia("(max-width: 767px)").matches;
+        }
+
+        function buildGallerySlides(images, altText) {
+          return images.map(function (src, idx) {
+            return "<div class='pdp-gallery-slide' data-index='" + idx + "'>" +
+              "<img src='" + escapeHtml(src) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(altText) + " image " + (idx + 1) + "'>" +
+            "</div>";
+          }).join("");
+        }
+
+        function getGalleryActiveIndex(track) {
+          if (!track) return 0;
+          var slides = track.querySelectorAll(".pdp-gallery-slide");
+          if (!slides.length) return 0;
+          var width = track.clientWidth || 1;
+          var index = Math.round(track.scrollLeft / width);
+          return Math.max(0, Math.min(index, slides.length - 1));
+        }
+
+        function scrollGalleryToIndex(index, behavior) {
+          var track = document.getElementById("pdpGalleryTrack");
+          if (!track) return;
+          var width = track.clientWidth || 0;
+          if (!width) return;
+          track.scrollTo({
+            left: index * width,
+            behavior: behavior || "auto"
+          });
+        }
+
+        function renderGalleryDots(activeIndex) {
+          var track = document.getElementById("pdpGalleryTrack");
+          var $dots = $("#pdpGalleryDots");
+          if (!track || !$dots.length) return;
+          var slideCount = track.querySelectorAll(".pdp-gallery-slide").length;
+          if (slideCount <= 1) {
+            $dots.empty().hide();
+            return;
+          }
+          var html = "";
+          for (var i = 0; i < slideCount; i += 1) {
+            html += "<button type='button' class='pdp-gallery-dot" + (i === activeIndex ? " active" : "") + "' data-index='" + i + "' aria-label='View image " + (i + 1) + "'></button>";
+          }
+          $dots.html(html).show();
+        }
+
+        function updateGalleryDots() {
+          var track = document.getElementById("pdpGalleryTrack");
+          if (!track) return;
+          var index = getGalleryActiveIndex(track);
+          var $dots = $("#pdpGalleryDots");
+          if (!$dots.length) return;
+          var slideCount = track.querySelectorAll(".pdp-gallery-slide").length;
+          if (slideCount <= 1) {
+            $dots.empty().hide();
+            return;
+          }
+          if (!$dots.find(".pdp-gallery-dot").length) {
+            renderGalleryDots(index);
+            return;
+          }
+          $dots.find(".pdp-gallery-dot").removeClass("active").eq(index).addClass("active");
+        }
+
+        function syncMobileGalleryToSrc(src) {
+          if (!isMobileGalleryView()) return;
+          var track = document.getElementById("pdpGalleryTrack");
+          if (!track || !src) return;
+          var slides = track.querySelectorAll(".pdp-gallery-slide img");
+          for (var i = 0; i < slides.length; i += 1) {
+            if (slides[i].getAttribute("src") === src) {
+              scrollGalleryToIndex(i, "auto");
+              break;
+            }
+          }
+          updateGalleryDots();
+        }
+
+        function updateGalleryPrimaryImage(src) {
+          if (!src) return;
+          $("#pdpMainImage").attr("src", src);
+          var $firstSlideImg = $("#pdpGalleryTrack .pdp-gallery-slide").first().find("img");
+          if ($firstSlideImg.length) $firstSlideImg.attr("src", src);
+          var $firstThumb = $(".pdp-thumb").first();
+          if ($firstThumb.length) {
+            $firstThumb.attr("data-src", src);
+            $firstThumb.find("img").attr("src", src);
+          }
+          syncMobileGalleryToSrc(src);
+        }
+
+        function bindMobileGallery() {
+          var track = document.getElementById("pdpGalleryTrack");
+          var $track = $("#pdpGalleryTrack");
+          if (!track || !$track.length) return;
+          $track.off("scroll.pdpgallery touchmove.pdpgallery touchend.pdpgallery");
+          function onGalleryScroll() {
+            window.requestAnimationFrame(updateGalleryDots);
+          }
+          $track.on("scroll.pdpgallery touchmove.pdpgallery touchend.pdpgallery", onGalleryScroll);
+          renderGalleryDots(0);
+          window.requestAnimationFrame(updateGalleryDots);
+        }
+
+        $("#pdpGalleryTrack").html(buildGallerySlides(galleryImages, product.name));
 
         var thumbHtml = "";
         galleryImages.forEach(function (src, idx) {
           thumbHtml += "<button type='button' class='pdp-thumb" + (idx === 0 ? " active" : "") + "' data-src='" + escapeHtml(src) + "'><img src='" + escapeHtml(src) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='Thumbnail " + (idx + 1) + "'></button>";
         });
         $("#pdpThumbs").html(thumbHtml);
+        bindMobileGallery();
 
         var cfgHtml = "";
         facetDefs.forEach(function (facet) {
@@ -1759,9 +2222,15 @@
         function closeCartAddedModal() {
           $("#cartAddedModal").removeClass("open").attr("aria-hidden", "true");
         }
-        function renderImageZoomThumbs(activeSrc) {
+        function getGalleryImageSources() {
           var seen = {};
           var srcs = [];
+          $("#pdpGalleryTrack .pdp-gallery-slide img").each(function () {
+            var s = String($(this).attr("src") || "").trim();
+            if (!s || seen[s]) return;
+            seen[s] = true;
+            srcs.push(s);
+          });
           $(".pdp-thumb").each(function () {
             var s = String($(this).attr("data-src") || "").trim();
             if (!s || seen[s]) return;
@@ -1772,6 +2241,11 @@
             var main = String($("#pdpMainImage").attr("src") || "").trim();
             if (main) srcs.push(main);
           }
+          return srcs;
+        }
+
+        function renderImageZoomThumbs(activeSrc) {
+          var srcs = getGalleryImageSources();
           var html = "";
           srcs.forEach(function (src) {
             var active = src === activeSrc ? " active" : "";
@@ -1856,6 +2330,22 @@
           });
         }
 
+        function scrollToProductOptions() {
+          var pending = getFirstPendingFacet();
+          if (pending && pending.key) {
+            scrollToFacetStep(pending.key);
+            return;
+          }
+          var configNode = document.getElementById("pdpConfig");
+          if (!configNode) return;
+          var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          configNode.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "center",
+            inline: "nearest"
+          });
+        }
+
         function updateResolvedSku() {
           var isMaster = product.type === "variation-master";
           var variants = variantsByMaster[product.id] || [];
@@ -1877,7 +2367,7 @@
                   resolved = matches[0].sku;
                   var vImg = (matches[0].images && matches[0].images.length) ? normalizeImage(matches[0].images[0]) : "";
                   if (vImg) {
-                    $("#pdpMainImage").attr("src", vImg);
+                    updateGalleryPrimaryImage(vImg);
                   }
                 } else if (matches.length === 0) {
                   unresolvedReason = "No sellable SKU matches the selected options.";
@@ -1894,7 +2384,7 @@
                     resolved = chosen.sku;
                     var chosenImg = (chosen.images && chosen.images.length) ? normalizeImage(chosen.images[0]) : "";
                     if (chosenImg) {
-                      $("#pdpMainImage").attr("src", chosenImg);
+                      updateGalleryPrimaryImage(chosenImg);
                     }
                   } else {
                     unresolvedReason = "Select additional options to resolve a single sellable SKU.";
@@ -1948,15 +2438,16 @@
           refreshListButton();
           refreshHeartButton();
           renderListPanel();
+          syncMobileStickyCart();
         }
 
         $(document).on("click", ".pdp-thumb", function () {
           var src = $(this).attr("data-src");
           $(".pdp-thumb").removeClass("active");
           $(this).addClass("active");
-          $("#pdpMainImage").attr("src", src);
+          updateGalleryPrimaryImage(src);
         });
-        $(document).on("click", "#pdpMainImage", function () {
+        $(document).on("click", "#pdpMainImage, .pdp-gallery-slide img", function () {
           var src = $(this).attr("src");
           openImageZoomModal(src, $(this).attr("alt"));
           renderImageZoomThumbs(src);
@@ -1965,13 +2456,21 @@
           var src = $(this).attr("data-src");
           if (!src) return;
           $("#imageZoomSrc").attr("src", src);
-          $("#pdpMainImage").attr("src", src);
+          updateGalleryPrimaryImage(src);
           $(".image-zoom-thumb").removeClass("active");
           $(this).addClass("active");
           $(".pdp-thumb").removeClass("active");
           $(".pdp-thumb").filter(function () {
             return $(this).attr("data-src") === src;
           }).first().addClass("active");
+        });
+        $(document).on("click", ".pdp-gallery-dot", function () {
+          var index = Number($(this).attr("data-index"));
+          if (!isFinite(index)) return;
+          scrollGalleryToIndex(index, "smooth");
+        });
+        $(window).on("resize.pdpgallery", function () {
+          updateGalleryDots();
         });
 
         $(document).on("click", ".pdp-option-chip", function () {
@@ -2210,8 +2709,38 @@
           sortKey: "sku",
           sortDir: "asc",
           search: "",
-          facetFilters: {}
+          facetFilters: {},
+          filtersExpanded: false
         };
+
+        function isBulkMobileView() {
+          return window.matchMedia("(max-width: 767px)").matches;
+        }
+
+        function getBulkActiveFilterCount() {
+          return Object.keys(bulkState.facetFilters).filter(function (key) {
+            return !!bulkState.facetFilters[key];
+          }).length;
+        }
+
+        function updateBulkSelectedSummary() {
+          var lines = getBulkSelectedLines();
+          var totalQty = lines.reduce(function (sum, line) {
+            return sum + Number(line.qty || 0);
+          }, 0);
+          var $el = $("#bulkSelectedCount");
+          if (!$el.length) return;
+          if (!lines.length) {
+            $el.text("No variants selected yet").removeClass("has-selection");
+            return;
+          }
+          $el
+            .text(
+              totalQty + " item" + (totalQty === 1 ? "" : "s") +
+              " across " + lines.length + " variant" + (lines.length === 1 ? "" : "s")
+            )
+            .addClass("has-selection");
+        }
 
         function getBulkOptionFacets(variants) {
           return facetDefs.filter(function (facet) {
@@ -2247,7 +2776,42 @@
           return out.sort();
         }
 
+        function renderBulkFiltersMobile(variants) {
+          var filterFacets = getBulkFilterFacets(variants);
+          var activeFilterCount = getBulkActiveFilterCount();
+          var filtersHtml = "<div class='bulk-mobile-toolbar'>" +
+            "<div class='bulk-mobile-search-wrap'>" +
+              "<input id='bulkSearchFilter' class='bulk-filter-input bulk-mobile-search' type='search' placeholder='Search variants...' value='" + escapeHtml(bulkState.search) + "' autocomplete='off'>" +
+            "</div>" +
+            "<button type='button' class='bulk-mobile-filter-toggle" + (bulkState.filtersExpanded ? " is-open" : "") + "' id='bulkMobileFilterToggle' aria-expanded='" + (bulkState.filtersExpanded ? "true" : "false") + "'>" +
+              "Filters" + (activeFilterCount ? ("<span class='bulk-filter-badge'>" + activeFilterCount + "</span>") : "") +
+            "</button>" +
+          "</div>";
+
+          if (bulkState.filtersExpanded) {
+            filtersHtml += "<div class='bulk-mobile-filters-panel' id='bulkMobileFiltersPanel'>";
+            filterFacets.forEach(function (facet) {
+              var selectedVal = bulkState.facetFilters[facet.key] || "";
+              filtersHtml += "<div class='bulk-mobile-chip-group'>" +
+                "<p class='bulk-mobile-chip-label'>" + escapeHtml(facet.label) + "</p>" +
+                "<div class='bulk-mobile-chip-row'>" +
+                  "<button type='button' class='bulk-mobile-chip" + (!selectedVal ? " active" : "") + "' data-facet='" + facet.key + "' data-value=''>All</button>";
+              getBulkFacetValues(variants, facet.key).forEach(function (v) {
+                filtersHtml += "<button type='button' class='bulk-mobile-chip" + (selectedVal === v ? " active" : "") + "' data-facet='" + facet.key + "' data-value='" + escapeHtml(v) + "'>" + escapeHtml(v) + "</button>";
+              });
+              filtersHtml += "</div></div>";
+            });
+            filtersHtml += "<button type='button' class='bulk-mobile-clear-filters' id='bulkClearFilters'>Clear all filters</button></div>";
+          }
+
+          $("#bulkModalFilters").html(filtersHtml);
+        }
+
         function renderBulkFilters(variants) {
+          if (isBulkMobileView()) {
+            renderBulkFiltersMobile(variants);
+            return;
+          }
           var filterFacets = getBulkFilterFacets(variants);
           var filtersHtml = "<div class='bulk-filters'>" +
             "<div class='bulk-filter'>" +
@@ -2267,6 +2831,16 @@
           });
           filtersHtml += "</div>";
           $("#bulkModalFilters").html(filtersHtml);
+        }
+
+        function buildBulkMobileOptionChips(variant, optionFacets) {
+          return optionFacets.map(function (facet) {
+            var value = getVariantFacetValue(variant, facet.key) || "-";
+            return "<span class='bulk-mobile-option-chip'>" +
+              "<span class='bulk-mobile-option-label'>" + escapeHtml(facet.label) + "</span>" +
+              "<span class='bulk-mobile-option-value'>" + escapeHtml(value) + "</span>" +
+            "</span>";
+          }).join("");
         }
 
         function getFilteredBulkVariants() {
@@ -2325,6 +2899,7 @@
           $("#bulkFilterCount").text(variants.length + " variant" + (variants.length === 1 ? "" : "s") + " shown");
           if (!variants.length) {
             $("#bulkModalContent").html("<div class='pdp-empty'>No variants match the current filters.</div>");
+            updateBulkSelectedSummary();
             return;
           }
           var headers = "<th>" + bulkSortHeader("SKU", "sku") + "</th>";
@@ -2354,20 +2929,20 @@
             var qtyVal = bulkState.qtyBySku[sku] != null ? bulkState.qtyBySku[sku] : 0;
             var price = Number(v.price != null ? v.price : product.price || 0).toFixed(2);
             var stock = bulkState.inventoryBySku[sku] || "";
-            var detailRows = optionFacets.map(function (facet) {
-              var value = getVariantFacetValue(v, facet.key) || "-";
-              return "<div class='bulk-mobile-kv'><strong>" + escapeHtml(facet.label) + "</strong>" + escapeHtml(value) + "</div>";
-            }).join("");
-            detailRows += "<div class='bulk-mobile-kv'><strong>Inventory</strong>" + (stock ? ("<span class='bulk-stock-text'>" + escapeHtml(stock) + "</span>") : "-") + "</div>";
-            return "<div class='bulk-mobile-card'>" +
-              "<div class='bulk-mobile-top'>" +
-                "<p class='bulk-mobile-sku'>" + escapeHtml(sku) + "</p>" +
+            var stockHtml = stock
+              ? "<div class='bulk-mobile-stock bulk-stock-text'>" + escapeHtml(stock) + "</div>"
+              : "";
+            return "<div class='bulk-mobile-card" + (qtyVal > 0 ? " is-selected" : "") + "' data-sku='" + escapeHtml(sku) + "'>" +
+              "<div class='bulk-mobile-options'>" + buildBulkMobileOptionChips(v, optionFacets) + "</div>" +
+              "<div class='bulk-mobile-card-meta'>" +
+                "<span class='bulk-mobile-sku-sub'>" + escapeHtml(sku) + "</span>" +
                 "<span class='bulk-mobile-price'>$" + price + "</span>" +
               "</div>" +
-              "<div class='bulk-mobile-grid'>" + detailRows + "</div>" +
-              "<div class='bulk-mobile-qty-row'>" +
-                "<p class='bulk-mobile-qty-label'>Quantity</p>" +
-                "<input class='bulk-qty' type='number' min='0' step='1' value='" + qtyVal + "' data-sku='" + escapeHtml(sku) + "'>" +
+              stockHtml +
+              "<div class='bulk-mobile-qty-stepper'>" +
+                "<button type='button' class='bulk-qty-step bulk-qty-minus' data-sku='" + escapeHtml(sku) + "' aria-label='Decrease quantity'>&minus;</button>" +
+                "<input class='bulk-qty' type='number' min='0' step='1' inputmode='numeric' value='" + qtyVal + "' data-sku='" + escapeHtml(sku) + "' aria-label='Quantity for " + escapeHtml(sku) + "'>" +
+                "<button type='button' class='bulk-qty-step bulk-qty-plus' data-sku='" + escapeHtml(sku) + "' aria-label='Increase quantity'>+</button>" +
               "</div>" +
             "</div>";
           }).join("");
@@ -2378,6 +2953,7 @@
             "</table>" +
             "<div class='bulk-mobile-list'>" + mobileCards + "</div>"
           );
+          updateBulkSelectedSummary();
         }
 
         function openBulkModal() {
@@ -2390,10 +2966,12 @@
           bulkState.sortDir = "asc";
           bulkState.search = "";
           bulkState.facetFilters = {};
+          bulkState.filtersExpanded = false;
           if (!variants.length) {
             $("#bulkModalFilters").empty();
             $("#bulkFilterCount").text("");
             $("#bulkModalContent").html("<div class='pdp-empty'>No sellable variants available for bulk order.</div>");
+            updateBulkSelectedSummary();
           } else {
             renderBulkFilters(variants);
             renderBulkTable();
@@ -2439,6 +3017,13 @@
           addToCartLine(line);
           openCartAddedModal(line);
         });
+        $("#stickyAddToCartBtn").on("click", function () {
+          if ($(this).hasClass("is-select-options")) {
+            scrollToProductOptions();
+            return;
+          }
+          $("#topAddToCartBtn").trigger("click");
+        });
         $("#topBulkOrderBtn").on("click", function () {
           if (!isSignedIn) {
             window.location.href = loginRedirectHref;
@@ -2456,6 +3041,24 @@
           bulkState.search = $(this).val() || "";
           renderBulkTable();
         });
+        $(document).on("click", "#bulkMobileFilterToggle", function () {
+          bulkState.filtersExpanded = !bulkState.filtersExpanded;
+          renderBulkFilters(bulkState.variants);
+        });
+        $(document).on("click", ".bulk-mobile-chip", function () {
+          var key = $(this).attr("data-facet");
+          if (!key) return;
+          bulkState.facetFilters[key] = $(this).attr("data-value") || "";
+          renderBulkFilters(bulkState.variants);
+          renderBulkTable();
+        });
+        $(document).on("click", "#bulkClearFilters", function () {
+          bulkState.search = "";
+          bulkState.facetFilters = {};
+          bulkState.filtersExpanded = true;
+          renderBulkFilters(bulkState.variants);
+          renderBulkTable();
+        });
         $(document).on("change", ".bulk-facet-filter", function () {
           var key = $(this).attr("data-facet");
           bulkState.facetFilters[key] = $(this).val() || "";
@@ -2463,11 +3066,24 @@
         });
         $(document).on("input", ".bulk-qty", function () {
           var sku = $(this).attr("data-sku");
-          var qty = Number($(this).val() || 0);
+          var qty = Math.max(0, Number($(this).val() || 0));
           if (!sku) return;
+          if (qty !== Number($(this).val() || 0)) $(this).val(qty);
           bulkState.qtyBySku[sku] = qty > 0 ? qty : 0;
           delete bulkState.inventoryBySku[sku];
           $(this).closest("tr").find(".bulk-inventory-cell").text("");
+          $(this).closest(".bulk-mobile-card").toggleClass("is-selected", qty > 0);
+          updateBulkSelectedSummary();
+        });
+        $(document).on("click", ".bulk-qty-minus", function () {
+          var $input = $(this).siblings(".bulk-qty");
+          var val = Math.max(0, Number($input.val() || 0) - 1);
+          $input.val(val).trigger("input");
+        });
+        $(document).on("click", ".bulk-qty-plus", function () {
+          var $input = $(this).siblings(".bulk-qty");
+          var val = Math.max(0, Number($input.val() || 0) + 1);
+          $input.val(val).trigger("input");
         });
         $(document).on("click", ".bulk-sort", function () {
           var key = $(this).attr("data-sort") || "sku";
@@ -2519,6 +3135,7 @@
 
         applyWizardState();
         updateResolvedSku();
+        bindMobileStickyCart();
 
         if (window.BregHomeActivity && typeof window.BregHomeActivity.trackPdpVisit === "function") {
           window.BregHomeActivity.trackPdpVisit({

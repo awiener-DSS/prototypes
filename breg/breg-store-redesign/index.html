@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/shell.css">
+  <link rel="stylesheet" href="assets/shell.css?v=20260608c">
   <style>
     .hero-wrap {
       position:relative;
@@ -27,8 +27,35 @@
       width:calc(100% - 32px);
       margin:0 auto;
     }
+    .hero-track {
+      position:absolute;
+      inset:0;
+    }
     .hero-slide { position:absolute; inset:0; opacity:0; transition:opacity .45s ease; background-size:cover; background-position:center; }
     .hero-slide.active { opacity:1; z-index:2; }
+    .hero-dots {
+      display:none;
+      justify-content:center;
+      align-items:center;
+      gap:6px;
+      margin:10px auto 0;
+      min-height:8px;
+      max-width:1500px;
+      width:calc(100% - 32px);
+    }
+    .hero-dot {
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      border:0;
+      padding:0;
+      background:#cbd5e1;
+      transition:background .18s ease, transform .18s ease;
+    }
+    .hero-dot.active {
+      background:var(--breg-primary, #0047bb);
+      transform:scale(1.2);
+    }
     .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.12) 45%,rgba(0,0,0,.04) 100%); }
     .hero-panel::after {
       content:"";
@@ -297,14 +324,48 @@
       .hero-copy p{font-size:18px;}
     }
     @media (max-width:767px){
-      .hero-arrow.left{left:calc(50% - var(--hero-panel-half) - 36px);}
-      .hero-arrow.right{right:calc(50% - var(--hero-panel-half) - 36px);}
-      .hero-panel{height:260px;}
+      .hero-wrap{overflow:visible;}
+      .hero-arrow{display:none;}
+      .hero-panel{
+        display:block;
+        height:260px;
+        overflow:hidden;
+      }
+      .hero-track{
+        position:relative;
+        display:flex;
+        width:100%;
+        height:100%;
+        overflow-x:auto;
+        overflow-y:hidden;
+        scroll-snap-type:x mandatory;
+        -webkit-overflow-scrolling:touch;
+        overscroll-behavior-x:contain;
+        touch-action:pan-x pan-y;
+        scrollbar-width:none;
+      }
+      .hero-track::-webkit-scrollbar{display:none;}
+      .hero-slide{
+        position:relative;
+        flex:0 0 100%;
+        width:100%;
+        min-width:100%;
+        max-width:100%;
+        height:260px;
+        opacity:1 !important;
+        z-index:1;
+        scroll-snap-align:start;
+        scroll-snap-stop:always;
+        transition:none;
+      }
+      .hero-slide.active{z-index:1;}
+      .hero-dots{display:flex;}
       .hero-copy{left:18px; right:18px; max-width:none;}
       .hero-copy h1{font-size:28px;}
       .hero-copy p{font-size:16px;}
       .product-section{padding:14px 12px 12px;}
-      .home-modules-first-row .product-grid.product-carousel{grid-template-columns:1fr;}
+      .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;}
+      .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;}
       .promo-strip h3{font-size:28px;}
       .promo-strip p{font-size:16px;}
       .promo-strip img{width:180px;height:180px;margin-top:12px;}
@@ -321,7 +382,7 @@
         </a>
         <div class="search-wrap">
           <form class="search-box" id="searchForm">
-            <input id="searchInput" type="text" placeholder="Search medical bracing & support products" autocomplete="off">
+            <input id="searchInput" type="text" placeholder="Search Breg Store" autocomplete="off">
             <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
             <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
           </form>
@@ -363,13 +424,16 @@
   <section class="hero-wrap" aria-label="Featured promotions">
     <button type="button" class="hero-arrow left" id="heroPrev" aria-label="Previous slide"><span class="glyphicon glyphicon-chevron-left"></span></button>
     <div class="hero-panel" id="heroPanel">
-      <div class="hero-slide active" data-title="" data-subtitle="" data-blend="#4a7fb8" style="background-image:url('https://create-matter-17437700.figma.site/_assets/v11/d48d2f84cb49eabc90d3638a22a50b2aaa4d36e1.png');"></div>
-      <div class="hero-slide" data-title="Advanced Support Technology" data-subtitle="Trusted by Healthcare Professionals Worldwide" data-blend="#2f8f4e" style="background-image:url('https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-      <div class="hero-slide" data-title="Recovery Made Simple" data-subtitle="Comprehensive Rehabilitation Solutions" data-blend="#8a6a4d" style="background-image:url('https://images.unsplash.com/photo-1545463913-5083aa7359a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-      <div class="hero-slide" data-title="Return to Performance" data-subtitle="Athletic Recovery and Support" data-blend="#3a6f86" style="background-image:url('https://images.unsplash.com/photo-1754941622117-97957c5d669b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+      <div class="hero-track" id="heroTrack" aria-label="Featured promotion slides">
+        <div class="hero-slide active" data-title="" data-subtitle="" data-blend="#4a7fb8" style="background-image:url('https://create-matter-17437700.figma.site/_assets/v11/d48d2f84cb49eabc90d3638a22a50b2aaa4d36e1.png');"></div>
+        <div class="hero-slide" data-title="Advanced Support Technology" data-subtitle="Trusted by Healthcare Professionals Worldwide" data-blend="#2f8f4e" style="background-image:url('https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+        <div class="hero-slide" data-title="Recovery Made Simple" data-subtitle="Comprehensive Rehabilitation Solutions" data-blend="#8a6a4d" style="background-image:url('https://images.unsplash.com/photo-1545463913-5083aa7359a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+        <div class="hero-slide" data-title="Return to Performance" data-subtitle="Athletic Recovery and Support" data-blend="#3a6f86" style="background-image:url('https://images.unsplash.com/photo-1754941622117-97957c5d669b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
+      </div>
       <div class="hero-overlay"></div>
       <div class="hero-copy"><h1 id="heroTitle"></h1><p id="heroSubtitle"></p></div>
     </div>
+    <div class="hero-dots" id="heroDots" aria-hidden="true"></div>
     <button type="button" class="hero-arrow right" id="heroNext" aria-label="Next slide"><span class="glyphicon glyphicon-chevron-right"></span></button>
   </section>
 
@@ -470,7 +534,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js"></script>
+  <script src="assets/shell.js?v=20260608b"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="assets/catalog-image-resolver.js"></script>
   <script>
@@ -479,7 +543,14 @@
       var $slides = $("#heroPanel .hero-slide");
       var $title = $("#heroTitle");
       var $subtitle = $("#heroSubtitle");
+      var $heroTrack = $("#heroTrack");
+      var $heroDots = $("#heroDots");
       var heroTimer;
+      var heroMobileMq = window.matchMedia("(max-width: 767px)");
+
+      function isMobileHeroView() {
+        return heroMobileMq.matches;
+      }
 
       function hexToRgb(hex) {
         var value = String(hex || "#4a7fb8").replace("#", "").trim();
@@ -499,24 +570,155 @@
         $("#homeHeroBlend").css("background", rowFade);
       }
 
-      function setHero(index) {
-        heroIndex = (index + $slides.length) % $slides.length;
-        $slides.removeClass("active").eq(heroIndex).addClass("active");
-        var $active = $slides.eq(heroIndex);
+      function applyHeroCopy(index) {
+        var $active = $slides.eq(index);
         $title.text($active.data("title"));
         $subtitle.text($active.data("subtitle"));
         applyHeroBlend($active.data("blend") || "#4a7fb8");
       }
 
-      function startHero() {
-        clearInterval(heroTimer);
-        heroTimer = setInterval(function () { setHero(heroIndex + 1); }, 5000);
+      function getHeroActiveIndex() {
+        var track = document.getElementById("heroTrack");
+        if (!track) return 0;
+        var width = track.clientWidth || 1;
+        var index = Math.round(track.scrollLeft / width);
+        return Math.max(0, Math.min(index, $slides.length - 1));
       }
 
-      $("#heroPrev").on("click", function () { setHero(heroIndex - 1); startHero(); });
-      $("#heroNext").on("click", function () { setHero(heroIndex + 1); startHero(); });
+      function scrollHeroToIndex(index, behavior) {
+        var track = document.getElementById("heroTrack");
+        if (!track) return;
+        var width = track.clientWidth || 0;
+        if (!width) return;
+        track.scrollTo({
+          left: index * width,
+          behavior: behavior || "auto"
+        });
+      }
+
+      function renderHeroDots(activeIndex) {
+        if (!isMobileHeroView() || !$heroDots.length) {
+          $heroDots.empty().hide();
+          return;
+        }
+        if ($slides.length <= 1) {
+          $heroDots.empty().hide();
+          return;
+        }
+        var html = "";
+        for (var i = 0; i < $slides.length; i += 1) {
+          html += "<button type='button' class='hero-dot" + (i === activeIndex ? " active" : "") + "' data-index='" + i + "' aria-label='View slide " + (i + 1) + "'></button>";
+        }
+        $heroDots.html(html).show();
+      }
+
+      function updateHeroDots() {
+        if (!isMobileHeroView()) {
+          $heroDots.empty().hide();
+          return;
+        }
+        var index = getHeroActiveIndex();
+        if ($slides.length <= 1) {
+          $heroDots.empty().hide();
+          return;
+        }
+        if (!$heroDots.find(".hero-dot").length) {
+          renderHeroDots(index);
+          return;
+        }
+        $heroDots.find(".hero-dot").removeClass("active").eq(index).addClass("active");
+      }
+
+      function syncHeroFromScroll() {
+        var index = getHeroActiveIndex();
+        if (index === heroIndex) {
+          updateHeroDots();
+          return;
+        }
+        heroIndex = index;
+        $slides.removeClass("active").eq(heroIndex).addClass("active");
+        applyHeroCopy(heroIndex);
+        updateHeroDots();
+      }
+
+      function setHero(index, scrollBehavior) {
+        heroIndex = (index + $slides.length) % $slides.length;
+        $slides.removeClass("active").eq(heroIndex).addClass("active");
+        applyHeroCopy(heroIndex);
+        if (isMobileHeroView()) {
+          scrollHeroToIndex(heroIndex, scrollBehavior || "auto");
+          updateHeroDots();
+          return;
+        }
+      }
+
+      function bindMobileHero() {
+        $heroTrack.off("scroll.herogallery touchmove.herogallery touchend.herogallery");
+        if (!isMobileHeroView()) {
+          $heroDots.empty().hide();
+          return;
+        }
+        function onHeroScroll() {
+          window.requestAnimationFrame(syncHeroFromScroll);
+        }
+        $heroTrack.on("scroll.herogallery touchmove.herogallery touchend.herogallery", onHeroScroll);
+        renderHeroDots(heroIndex);
+        scrollHeroToIndex(heroIndex, "auto");
+        window.requestAnimationFrame(updateHeroDots);
+      }
+
+      function startHero() {
+        clearInterval(heroTimer);
+        heroTimer = setInterval(function () {
+          if (isMobileHeroView()) {
+            var nextIndex = (getHeroActiveIndex() + 1) % $slides.length;
+            scrollHeroToIndex(nextIndex, "smooth");
+          } else {
+            setHero(heroIndex + 1);
+          }
+        }, 5000);
+      }
+
+      function resetHeroTimer() {
+        startHero();
+      }
+
+      $("#heroPrev").on("click", function () { setHero(heroIndex - 1); resetHeroTimer(); });
+      $("#heroNext").on("click", function () { setHero(heroIndex + 1); resetHeroTimer(); });
+      $(document).on("click", ".hero-dot", function () {
+        var index = Number($(this).attr("data-index"));
+        if (!isFinite(index)) return;
+        setHero(index, "smooth");
+        resetHeroTimer();
+      });
+      $heroTrack.on("touchend.herointeract", function () { resetHeroTimer(); });
+
+      function initHeroCarousel() {
+        if (isMobileHeroView()) {
+          bindMobileHero();
+          setHero(heroIndex, "auto");
+        } else {
+          $heroTrack.off("scroll.herogallery touchmove.herogallery touchend.herogallery touchend.herointeract");
+          $heroDots.empty().hide();
+          setHero(heroIndex);
+        }
+        startHero();
+      }
+
+      if (typeof heroMobileMq.addEventListener === "function") {
+        heroMobileMq.addEventListener("change", initHeroCarousel);
+      } else if (typeof heroMobileMq.addListener === "function") {
+        heroMobileMq.addListener(initHeroCarousel);
+      }
+      $(window).on("resize.hero", function () {
+        if (isMobileHeroView()) {
+          scrollHeroToIndex(heroIndex, "auto");
+          updateHeroDots();
+        }
+      });
+
       setHero(0);
-      startHero();
+      initHeroCarousel();
 
       var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
       var catalog = window.BREG_CATALOG_ITEMS || [];

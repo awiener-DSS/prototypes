@@ -787,12 +787,21 @@
     return found ? normalizeSearchImage(found.image) : SEARCH_MISSING_IMAGE;
   }
 
+  function isListableCatalogProduct(p) {
+    if (!p) return false;
+    if (window.BregCatalogListing && typeof window.BregCatalogListing.isListable === "function") {
+      return window.BregCatalogListing.isListable(p);
+    }
+    var type = String(p.type || "product");
+    return type === "variation-master" || type === "product";
+  }
+
   function getCatalogProductsForCategory(category, limit) {
     var catalog = window.BREG_CATALOG_ITEMS;
     if (!catalog || !Array.isArray(catalog)) return [];
     var cat = String(category || "").toLowerCase();
     var valid = catalog.filter(function (p) {
-      return p && p.category && String(p.category).toLowerCase() === cat && p.name && p.category !== "Uncategorized";
+      return isListableCatalogProduct(p) && p.category && String(p.category).toLowerCase() === cat && p.name && p.category !== "Uncategorized";
     });
     return valid.slice(0, limit || 6).map(function (p) {
       return { name: p.name, price: "$" + formatMoney(Number(p.price) || 0), image: normalizeSearchImage(p.image) };
@@ -805,7 +814,7 @@
     var seen = {};
     var out = [];
     catalog.forEach(function (p) {
-      if (!p || !p.name || !p.category || p.category === "Uncategorized" || seen[p.id]) return;
+      if (!isListableCatalogProduct(p) || !p.name || !p.category || p.category === "Uncategorized" || seen[p.id]) return;
       seen[p.id] = true;
       out.push({ text: p.name, category: p.category, image: normalizeSearchImage(p.image) });
     });
@@ -2492,7 +2501,6 @@
     ".bulk-modal.open," +
     ".quick-order-modal.open," +
     ".contact-email-modal.open," +
-    ".pl-quickview-modal.open," +
     ".bulk-detail-modal.open," +
     ".pl-filter-backdrop.open," +
     ".cat-filter-backdrop.open," +
@@ -2500,7 +2508,6 @@
 
   function isAnyModalOpen() {
     if (document.body.classList.contains("all-drawer-open")) return true;
-    if (document.body.classList.contains("pl-quickview-open")) return true;
     return !!document.querySelector(MODAL_OPEN_SELECTOR);
   }
 

@@ -1475,7 +1475,9 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="analysis/catalog-data.js"></script>
+  <script src="assets/product-facets.js?v=20260609a"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
+  <script src="assets/catalog-listing.js?v=20260609a"></script>
   <script src="assets/catalog-image-resolver.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
   <script>
@@ -1614,15 +1616,7 @@
         }
         function isConfigurableMaster(item) {
           if (!item || item.type !== "variation-master") return false;
-          var optionGroups = [
-            item.sizeOptions || [],
-            item.optionOptions || [],
-            item.colorOptions || [],
-            item.genderOptions || [],
-            item.orientationOptions || [],
-            item.uomOptions || []
-          ];
-          return optionGroups.some(function (list) { return Array.isArray(list) && list.length > 1; });
+          return (window.BregProductFacets && window.BregProductFacets.requiredFromProduct(item).length > 0);
         }
         function toSeedItem(item, index) {
           return {
@@ -1681,14 +1675,9 @@
       function getMasterConfig(itemId) {
         var catalogItem = getCatalogBySku(itemId);
         if (!catalogItem || catalogItem.type !== "variation-master") return null;
-        var facetDefs = [
-          { key: "size", label: "Size", values: uniq(catalogItem.sizeOptions || []) },
-          { key: "option", label: "Model", values: uniq(catalogItem.optionOptions || []) },
-          { key: "color", label: "Color", values: uniq(catalogItem.colorOptions || []) },
-          { key: "gender", label: "Gender", values: uniq(catalogItem.genderOptions || []) },
-          { key: "orientation", label: "Orientation", values: uniq(catalogItem.orientationOptions || []) },
-          { key: "uom", label: "UOM", values: uniq(catalogItem.uomOptions || []) }
-        ].filter(function (facet) { return facet.values.length > 0; });
+        var facetDefs = (window.BregProductFacets ? window.BregProductFacets.buildFacetDefs(catalogItem, function (facet, product) {
+          return uniq(product[facet.catalogField] || []);
+        }) : []);
         var requiredFacets = facetDefs.filter(function (facet) { return facet.values.length > 1; });
         if (!requiredFacets.length) return null;
         return {
@@ -2108,6 +2097,9 @@
         var sku = String(source.id || "");
         var pool = window.BREG_CATALOG_ITEMS.filter(function (entry) {
           if (!entry || !entry.id || String(entry.id) === sku) return false;
+          if (window.BregCatalogListing && typeof window.BregCatalogListing.isListable === "function") {
+            return window.BregCatalogListing.isListable(entry);
+          }
           if (entry.type === "variation-product") return false;
           var cat = String(entry.category || "").trim().toLowerCase();
           var sub = String(entry.subcategory || "").trim().toLowerCase();

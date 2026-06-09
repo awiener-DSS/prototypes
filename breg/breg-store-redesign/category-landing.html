@@ -241,10 +241,9 @@
           <details class="cat-facet-group"><summary>Subcategory</summary><input type="search" class="cat-facet-search" placeholder="Search subcategory" autocomplete="off" aria-label="Search subcategory"><div id="facetSubcategory" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>Size</summary><input type="search" class="cat-facet-search" placeholder="Search size" autocomplete="off" aria-label="Search size"><div id="facetSize" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>Option</summary><input type="search" class="cat-facet-search" placeholder="Search option" autocomplete="off" aria-label="Search option"><div id="facetOption" class="cat-facet-options"></div></details>
-          <details class="cat-facet-group"><summary>Color</summary><input type="search" class="cat-facet-search" placeholder="Search color" autocomplete="off" aria-label="Search color"><div id="facetColor" class="cat-facet-options"></div></details>
-          <details class="cat-facet-group"><summary>Gender</summary><input type="search" class="cat-facet-search" placeholder="Search gender" autocomplete="off" aria-label="Search gender"><div id="facetGender" class="cat-facet-options"></div></details>
-          <details class="cat-facet-group"><summary>Orientation</summary><input type="search" class="cat-facet-search" placeholder="Search orientation" autocomplete="off" aria-label="Search orientation"><div id="facetOrientation" class="cat-facet-options"></div></details>
-          <details class="cat-facet-group"><summary>UOM</summary><input type="search" class="cat-facet-search" placeholder="Search UOM" autocomplete="off" aria-label="Search UOM"><div id="facetUom" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Left/Right</summary><input type="search" class="cat-facet-search" placeholder="Search left or right" autocomplete="off" aria-label="Search left or right"><div id="facetSide" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Brace Type</summary><input type="search" class="cat-facet-search" placeholder="Search brace type" autocomplete="off" aria-label="Search brace type"><div id="facetBraceType" class="cat-facet-options"></div></details>
+          <details class="cat-facet-group"><summary>Style</summary><input type="search" class="cat-facet-search" placeholder="Search style" autocomplete="off" aria-label="Search style"><div id="facetStyle" class="cat-facet-options"></div></details>
           </div>
           <div class="cat-filter-footer">
             <button type="button" class="cat-filter-apply" id="catMobileFilterApply">Apply Filters</button>
@@ -267,6 +266,9 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script src="analysis/variant-data.js?v=20260218a"></script>
+  <script src="assets/catalog-listing.js?v=20260609a"></script>
+  <script src="assets/product-facets.js?v=20260609a"></script>
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search || "");
@@ -341,7 +343,12 @@
       $("#catSubtitle").text("Choose a sub-category in " + category + ".");
       var images = categoryImages(category);
       var categoryProducts = (Array.isArray(window.BREG_CATALOG_ITEMS) ? window.BREG_CATALOG_ITEMS : []).filter(function (item) {
-        return item && String(item.category || "").toLowerCase() === String(category).toLowerCase();
+        if (!item || String(item.category || "").toLowerCase() !== String(category).toLowerCase()) return false;
+        if (window.BregCatalogListing && typeof window.BregCatalogListing.isListable === "function") {
+          return window.BregCatalogListing.isListable(item);
+        }
+        var type = String(item.type || "product");
+        return type === "variation-master" || type === "product";
       });
       var cardMeta = subcategories.map(function (sub, index) {
         var subProducts = categoryProducts.filter(function (item) {
@@ -361,38 +368,33 @@
           facets: {
             subcategory: [sub],
             size: collect("sizeOptions"),
+            side: collect("sideOptions"),
+            braceType: collect("braceTypeOptions"),
             option: collect("optionOptions"),
-            color: collect("colorOptions"),
-            gender: collect("genderOptions"),
-            orientation: collect("orientationOptions"),
-            uom: collect("uomOptions")
+            style: collect("styleOptions")
           }
         };
       });
-      var facetDefs = [
-        { key: "subcategory", target: "#facetSubcategory", className: "facet-subcategory" },
-        { key: "size", target: "#facetSize", className: "facet-size" },
-        { key: "option", target: "#facetOption", className: "facet-option" },
-        { key: "color", target: "#facetColor", className: "facet-color" },
-        { key: "gender", target: "#facetGender", className: "facet-gender" },
-        { key: "orientation", target: "#facetOrientation", className: "facet-orientation" },
-        { key: "uom", target: "#facetUom", className: "facet-uom" }
-      ];
+      var facetDefs = [{ key: "subcategory", target: "#facetSubcategory", className: "facet-subcategory" }].concat(
+        (window.BREG_PRODUCT_FACETS || []).map(function (facet) {
+          return {
+            key: facet.key,
+            target: "#facet" + facet.key.charAt(0).toUpperCase() + facet.key.slice(1),
+            className: facet.filterClass.replace("filter-", "facet-")
+          };
+        })
+      );
 
       function selectedValues(selector) {
         return $(selector + ":checked").map(function () { return String(this.value || ""); }).get();
       }
 
       function currentState() {
-        return {
-          subcategory: selectedValues(".facet-subcategory"),
-          size: selectedValues(".facet-size"),
-          option: selectedValues(".facet-option"),
-          color: selectedValues(".facet-color"),
-          gender: selectedValues(".facet-gender"),
-          orientation: selectedValues(".facet-orientation"),
-          uom: selectedValues(".facet-uom")
-        };
+        var state = {};
+        facetDefs.forEach(function (facet) {
+          state[facet.key] = selectedValues("." + facet.className);
+        });
+        return state;
       }
 
       function matchesState(card, state, excludeKey) {
@@ -503,7 +505,9 @@
       function restoreMobileFilterSnapshot() {
         if (!mobileFilterSnapshot) return;
         var snapshot = mobileFilterSnapshot;
-        $(".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom").prop("checked", false);
+        facetDefs.forEach(function (facet) {
+          $("." + facet.className).prop("checked", false);
+        });
         facetDefs.forEach(function (facet) {
           (snapshot[facet.key] || []).forEach(function (value) {
             $("." + facet.className + "[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
@@ -593,13 +597,17 @@
         renderCards(filtered);
       }
 
+      function facetSelectorList() {
+        return facetDefs.map(function (facet) { return "." + facet.className; }).join(", ");
+      }
+
       applyFacets();
 
       $(document)
         .on("input", ".cat-facet-search", function () {
           applyFacetSearch($(this));
         })
-        .on("change", ".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom", function () {
+        .on("change", facetSelectorList(), function () {
           if (isMobileFilterDrawerOpen()) return;
           applyFacets();
         })
@@ -613,7 +621,7 @@
           toggleMobileFilters(false);
         })
         .on("click", "#catFacetClear", function () {
-          $(".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom").prop("checked", false);
+          $(facetSelectorList()).prop("checked", false);
           if (isMobileFilterDrawerOpen()) return;
           applyFacets();
         })

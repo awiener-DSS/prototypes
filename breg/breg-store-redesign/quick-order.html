@@ -415,6 +415,20 @@
       font-size: 12px;
       line-height: 1.3;
     }
+    .bulk-price-cell {
+      display: flex;
+      align-items: center;
+      min-height: 22px;
+      color: #b12704;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .bulk-detail-price-wrap {
+      display: inline-flex;
+      align-items: center;
+      min-height: 20px;
+      gap: 0;
+    }
     .bulk-remove {
       border: 0;
       background: transparent;
@@ -855,7 +869,7 @@ FUSION-OA-PLUS,1</pre>
           <h4 id="bulkDetailName"></h4>
           <p class="bulk-detail-kv"><strong>SKU:</strong><span id="bulkDetailSku"></span></p>
           <p class="bulk-detail-kv"><strong>Category:</strong><span id="bulkDetailCategory"></span></p>
-          <p class="bulk-detail-kv"><strong>Price:</strong><span id="bulkDetailPrice"></span></p>
+          <p class="bulk-detail-kv"><strong>Price:</strong><span class="bulk-detail-price-wrap"><span class="breg-price-loading breg-price-loading--sm js-bulk-detail-price-loading" role="status" aria-label="Loading price"></span><span id="bulkDetailPrice"></span></span></p>
           <div class="bulk-detail-desc" id="bulkDetailDesc"></div>
         </div>
       </div>
@@ -902,6 +916,7 @@ FUSION-OA-PLUS,1</pre>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
+  <script src="assets/price-loading.js?v=20260609a"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
   <script>
     (function () {
@@ -920,6 +935,37 @@ FUSION-OA-PLUS,1</pre>
       ];
       var items = [];
       var listState = {};
+      var detailPriceState = { priceTimer: null, priceReadyKey: null };
+
+      function formatItemPriceText(item) {
+        return "$" + BregFormatMoney(toPrice(item && item.price));
+      }
+
+      function revealItemPrice(index) {
+        var item = items[index];
+        if (!item || !window.BregPriceLoading) return;
+        var $row = $("#bulkList tbody tr").eq(index);
+        if (!$row.length) return;
+        var priceText = formatItemPriceText(item);
+        if (!item.priceState) item.priceState = { priceTimer: null, priceReadyKey: null };
+        window.BregPriceLoading.apply({
+          state: item.priceState,
+          shouldShow: true,
+          priceText: priceText,
+          readyKey: skuKey(item.sku) + "|" + priceText,
+          $loading: $row.find(".js-bulk-price-loading"),
+          $price: $row.find(".js-bulk-price-value"),
+          validate: function () {
+            return !!items[index] && skuKey(items[index].sku) === skuKey(item.sku);
+          }
+        });
+      }
+
+      function revealAllItemPrices() {
+        items.forEach(function (_, index) {
+          revealItemPrice(index);
+        });
+      }
 
       function escapeHtml(text) {
         return String(text || "")
@@ -1042,7 +1088,19 @@ FUSION-OA-PLUS,1</pre>
         $("#bulkDetailName").text(item.name || item.sku || "Product");
         $("#bulkDetailSku").text(item.sku || "");
         $("#bulkDetailCategory").text(item.category || "Quick Order");
-        $("#bulkDetailPrice").text("$" + BregFormatMoney(toPrice(item.price)));
+        var priceText = formatItemPriceText(item);
+        if (window.BregPriceLoading) {
+          window.BregPriceLoading.apply({
+            state: detailPriceState,
+            shouldShow: true,
+            priceText: priceText,
+            readyKey: skuKey(item.sku) + "|" + priceText,
+            $loading: $("#bulkDetailModal .js-bulk-detail-price-loading"),
+            $price: $("#bulkDetailPrice")
+          });
+        } else {
+          $("#bulkDetailPrice").text(priceText).show();
+        }
         $("#bulkDetailDesc").text(getItemDescription(item));
         $("#bulkDetailImage")
           .attr("src", image)
@@ -1052,6 +1110,14 @@ FUSION-OA-PLUS,1</pre>
 
       function closeDetailModal() {
         $("#bulkDetailModal").removeClass("open").attr("aria-hidden", "true");
+        if (window.BregPriceLoading) {
+          window.BregPriceLoading.apply({
+            state: detailPriceState,
+            shouldShow: false,
+            $loading: $("#bulkDetailModal .js-bulk-detail-price-loading"),
+            $price: $("#bulkDetailPrice")
+          });
+        }
       }
 
       function skuKey(value) {
@@ -1198,6 +1264,7 @@ FUSION-OA-PLUS,1</pre>
 
         var rows = items.map(function (item, index) {
           var image = String(item.image || "") || missingImage;
+          var priceText = formatItemPriceText(item);
           return "" +
             "<tr>" +
               "<td>" +
@@ -1206,7 +1273,7 @@ FUSION-OA-PLUS,1</pre>
                   "<div><p class='bulk-item-name'><button type='button' class='bulk-item-open js-open-product-modal' data-index='" + index + "'>" + escapeHtml(item.name || item.sku) + "</button></p><p class='bulk-item-sku'>SKU: " + escapeHtml(item.sku) + "</p></div>" +
                 "</div>" +
               "</td>" +
-              "<td>$" + BregFormatMoney(toPrice(item.price)) + "</td>" +
+              "<td><div class='bulk-price-cell breg-price-loading-wrap'><span class='breg-price-loading breg-price-loading--sm js-bulk-price-loading' role='status' aria-label='Loading price'></span><span class='js-bulk-price-value' style='display:none;'>" + escapeHtml(priceText) + "</span></div></td>" +
               "<td><input type='number' min='1' step='1' class='bulk-number js-item-qty' data-index='" + index + "' value='" + Math.max(1, Number(item.qty || 1)) + "' style='height:34px;width:92px;'></td>" +
               "<td><span class='bulk-inv-status " + statusClass(item.inventoryStatus) + "'>" + escapeHtml(item.inventoryStatus || "") + "</span></td>" +
               "<td><button type='button' class='bulk-remove js-remove-item' data-index='" + index + "'>Remove</button></td>" +
@@ -1220,6 +1287,7 @@ FUSION-OA-PLUS,1</pre>
           "</table>";
 
         $("#bulkList").html(table);
+        revealAllItemPrices();
       }
 
       function addManualLine() {

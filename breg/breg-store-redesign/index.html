@@ -542,6 +542,8 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script src="analysis/variant-data.js?v=20260218a"></script>
+  <script src="assets/catalog-listing.js?v=20260609a"></script>
   <script src="assets/catalog-image-resolver.js"></script>
   <script>
     (function () {
@@ -745,14 +747,12 @@
       };
 
       function validCatalogProduct(p) {
-        return p &&
-          p.id &&
-          p.name &&
-          p.image &&
-          p.category &&
-          p.category !== "Uncategorized" &&
-          p.subcategory !== "Uncategorized" &&
-          (p.type === "product" || p.type === "variation-master");
+        if (!p || !p.id || !p.name || !p.image || !p.category) return false;
+        if (p.category === "Uncategorized" || p.subcategory === "Uncategorized") return false;
+        if (window.BregCatalogListing && typeof window.BregCatalogListing.isListable === "function") {
+          return window.BregCatalogListing.isListable(p);
+        }
+        return p.type === "product" || p.type === "variation-master";
       }
 
       function buildSectionsFromCatalog() {

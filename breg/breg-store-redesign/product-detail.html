@@ -32,14 +32,72 @@
     }
     .pdp-layout { display: grid; grid-template-columns: 360px minmax(420px, 1fr) 294px; gap: 14px; align-items: start; }
     .pdp-gallery-col { position: sticky; top: 96px; align-self: start; }
-    .pdp-gallery-main { border: 0; border-radius: 14px; background: #fff; padding: 18px; height: 400px; display: flex; align-items: center; justify-content: center; }
-    .pdp-gallery-main img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
-    .pdp-gallery-mobile-only { display: none; }
-    .pdp-gallery-track { display: none; }
-    .pdp-thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-    .pdp-thumb { width: 100%; height: 82px; border: 0 !important; border-radius: 8px; background: #fff; padding: 8px; cursor: pointer; outline: none; box-shadow: none; }
-    .pdp-thumb.active { border: 0 !important; box-shadow: none !important; }
-    .pdp-thumb img { width: 100%; height: 100%; object-fit: contain; }
+    .pdp-gallery-main {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 0;
+      border-radius: 14px;
+      background: #fff;
+      padding: 0;
+      overflow: hidden;
+    }
+    .pdp-gallery-track {
+      display: flex;
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      touch-action: pan-x pan-y;
+      scrollbar-width: none;
+    }
+    .pdp-gallery-track::-webkit-scrollbar { display: none; }
+    .pdp-gallery-slide {
+      flex: 0 0 100%;
+      width: 100%;
+      min-width: 100%;
+      max-width: 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      height: 400px;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+    }
+    .pdp-gallery-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      cursor: zoom-in;
+      border-radius: 8px;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+    .pdp-gallery-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      margin: 10px 0 0;
+      min-height: 8px;
+    }
+    .pdp-gallery-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      border: 0;
+      padding: 0;
+      background: #cbd5e1;
+      transition: background .18s ease, transform .18s ease;
+    }
+    .pdp-gallery-dot.active {
+      background: var(--breg-primary, #0047bb);
+      transform: scale(1.2);
+    }
     .pdp-main { display: flex; flex-direction: column; gap: 12px; }
     .pdp-card { border: 1px solid #d5dde4; border-radius: 14px; background: #fff; padding: 14px; }
     .pdp-top h1 { margin: 10px 0 8px; font-size: 24px; line-height: 32px; font-weight: 500; color: #0a0a0a; letter-spacing: .07px; }
@@ -88,7 +146,8 @@
       color: #1f2937;
     }
     .pdp-price-wrap { border-top: 1px solid #e8edf1; border-bottom: 1px solid #e8edf1; padding: 14px 0 12px; }
-    .pdp-price { color: #b12704; font-size: 30px; line-height: 36px; margin: 0 0 8px; letter-spacing: .39px; }
+    .pdp-price-row { display: flex; align-items: center; min-height: 36px; margin: 0 0 8px; }
+    .pdp-price { color: #b12704; font-size: 30px; line-height: 36px; margin: 0; letter-spacing: .39px; }
     .pdp-price-note { font-size: 12px; color: #4a5565; margin: 0; }
     .pdp-inventory-msg {
       margin: 6px 0 0;
@@ -214,41 +273,7 @@
       outline: none;
       box-shadow: 0 0 0 2px rgba(0,113,133,.12);
     }
-    .pdp-stock { background: #f9fafb; border: 1px solid #d5dde4; border-radius: 10px; padding: 14px; font-size: 13px; color: #4a5565; }
-    .pdp-stock-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
-    .pdp-stock strong { color: #00a63e; font-weight: 600; }
-    .pdp-sku-selected { margin: 4px 0 0; color: #1e2939; }
-    .pdp-info { background: #f0f8ff; border: 1px solid #8ec6d0; border-radius: 10px; padding: 14px; }
-    .pdp-info-title { margin: 0 0 10px; font-size: 14px; font-weight: 600; color: #1e2939; }
-    .pdp-jump { margin: 0; padding: 0; list-style: none; }
-    .pdp-jump li {
-      min-height: 38px;
-      border: 1px solid #d1d5dc;
-      background: #fff;
-      border-radius: 4px;
-      margin: 0 0 8px;
-      padding: 9px 13px;
-      color: #007185;
-      font-size: 14px;
-      line-height: 20px;
-      white-space: normal;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
-    .pdp-jump a {
-      display: block;
-      color: #007185;
-      text-decoration: none;
-    }
-    .pdp-jump a:hover,
-    .pdp-jump a:focus {
-      color: #005a6a;
-      text-decoration: none;
-    }
-    .pdp-jump li.is-active {
-      border-color: #007185;
-      background: #e9f7f9;
-    }
+    .pdp-sku-selected { margin: 10px 0 0; color: #1e2939; font-size: 13px; }
     .pdp-btn-primary { border: 1px solid var(--breg-primary, #0047bb); background: var(--breg-primary, #0047bb); border-radius: 999px; font-size: 16px; line-height: 1.1; color: #fff; width: 100%; height: 42px; }
     .pdp-btn-primary:hover { background: var(--breg-primary-dark, #001E62); border-color: var(--breg-primary-dark, #001E62); color: #fff; }
     .pdp-btn-primary[disabled] { opacity: .55; cursor: not-allowed; }
@@ -285,7 +310,6 @@
       color: #0a0a0a;
       letter-spacing: -.15px;
     }
-    .pdp-rail .pdp-info { margin-top: 8px; }
     .pdp-tabs { margin-top: 12px; background: #fff; border: 1px solid #d5dde4; border-radius: 14px; padding: 14px; }
     .pdp-tab-head { display: flex; gap: 0; border-bottom: 1px solid #e8edf1; padding-bottom: 1px; margin-bottom: 16px; height: 47px; }
     .pdp-tab { height: 46px; border: 0; border-bottom: 2px solid transparent; background: transparent; padding: 13px 24px; font-size: 14px; line-height: 20px; color: #4a5565; }
@@ -315,9 +339,6 @@
       .pdp-indications, .pdp-models, .pdp-feature-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 767px) {
-      .pdp-rail .pdp-info {
-        display: none;
-      }
       .pdp-mobile-sticky-cart {
         display: flex;
         flex-direction: column;
@@ -364,8 +385,14 @@
         overflow: hidden;
         text-overflow: ellipsis;
       }
+      .pdp-mobile-sticky-cart-price-wrap {
+        display: flex;
+        align-items: center;
+        min-height: 20px;
+        margin-top: 2px;
+      }
       .pdp-mobile-sticky-cart-price {
-        margin: 2px 0 0;
+        margin: 0;
         font-size: 16px;
         font-weight: 600;
         color: #b12704;
@@ -406,72 +433,7 @@
       body.pdp-sticky-cart-visible .scroll-quick-order-btn {
         bottom: calc(var(--pdp-sticky-cart-offset, 0px) + 62px + env(safe-area-inset-bottom, 0px)) !important;
       }
-      .pdp-gallery-desktop-only { display: none !important; }
-      .pdp-gallery-mobile-only { display: flex; }
-      .pdp-gallery-main {
-        display: block;
-        width: 100%;
-        height: auto;
-        padding: 0;
-        overflow: hidden;
-      }
-      .pdp-gallery-track {
-        display: flex;
-        width: 100%;
-        overflow-x: auto;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-x: contain;
-        touch-action: pan-x pan-y;
-        scrollbar-width: none;
-      }
-      .pdp-gallery-track::-webkit-scrollbar {
-        display: none;
-      }
-      .pdp-gallery-slide {
-        flex: 0 0 100%;
-        width: 100%;
-        min-width: 100%;
-        max-width: 100%;
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        height: 360px;
-        padding: 18px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-sizing: border-box;
-      }
-      .pdp-gallery-slide img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        cursor: zoom-in;
-        border-radius: 8px;
-        -webkit-user-drag: none;
-        user-select: none;
-      }
-      .pdp-gallery-dots {
-        justify-content: center;
-        align-items: center;
-        gap: 6px;
-        margin: 10px 0 0;
-        min-height: 8px;
-      }
-      .pdp-gallery-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        border: 0;
-        padding: 0;
-        background: #cbd5e1;
-        transition: background .18s ease, transform .18s ease;
-      }
-      .pdp-gallery-dot.active {
-        background: var(--breg-primary, #0047bb);
-        transform: scale(1.2);
-      }
+      .pdp-gallery-slide { height: 360px; }
       .pdp-top h1 { font-size: 22px; line-height: 28px; }
       .pdp-price { font-size: 34px; }
       .pdp-btn-primary { font-size: 18px; }
@@ -1406,7 +1368,10 @@
     <div class="pdp-mobile-sticky-cart-top">
       <div class="pdp-mobile-sticky-cart-info">
         <p class="pdp-mobile-sticky-cart-name" id="pdpMobileStickyCartName"></p>
-        <p class="pdp-mobile-sticky-cart-price" id="pdpMobileStickyCartPrice"></p>
+        <div class="pdp-mobile-sticky-cart-price-wrap">
+          <span class="breg-price-loading breg-price-loading--sm js-pdp-mobile-price-loading" role="status" aria-label="Loading price"></span>
+          <p class="pdp-mobile-sticky-cart-price" id="pdpMobileStickyCartPrice"></p>
+        </div>
       </div>
     </div>
     <button type="button" class="pdp-mobile-sticky-cart-btn" id="stickyAddToCartBtn" disabled>Add to Cart</button>
@@ -1607,6 +1572,8 @@
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
+  <script src="assets/product-facets.js?v=20260609a"></script>
+  <script src="assets/price-loading.js?v=20260609a"></script>
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
@@ -1713,43 +1680,8 @@
         return String(value || "").trim().toLowerCase();
       }
 
-      function isOrientationRedundantWithOption(variants) {
-        if (!variants || !variants.length) return false;
-        var hasOption = false;
-        var hasOrientation = false;
-        var allPaired = true;
-        variants.forEach(function (variant) {
-          var attrs = variant.attributes || {};
-          var opt = normalizeOptionValue((attrs.option || [])[0]);
-          var ori = normalizeOptionValue((attrs.orientation || [])[0]);
-          if (opt) hasOption = true;
-          if (ori) hasOrientation = true;
-          if (!opt || !ori) return;
-          if (!((opt === "left" && ori === "left") || (opt === "right" && ori === "right"))) {
-            allPaired = false;
-          }
-        });
-        return hasOption && hasOrientation && allPaired;
-      }
-
-      function findFacetValueBySide(facet, side) {
-        if (!facet) return "";
-        var target = normalizeOptionValue(side);
-        var match = (facet.values || []).find(function (value) {
-          return normalizeOptionValue(value) === target;
-        });
-        return match || "";
-      }
-
       function buildPdpFacetConfig(product) {
-        var catalogFacetDefs = [
-          { key: "size", label: "Size", catalogField: "sizeOptions" },
-          { key: "option", label: "Model", catalogField: "optionOptions" },
-          { key: "color", label: "Color", catalogField: "colorOptions" },
-          { key: "gender", label: "Gender", catalogField: "genderOptions" },
-          { key: "orientation", label: "Orientation", catalogField: "orientationOptions" },
-          { key: "uom", label: "UOM", catalogField: "uomOptions" }
-        ];
+        var catalogFacetDefs = (window.BregProductFacets && window.BregProductFacets.list()) || [];
         if (!product || product.type !== "variation-master") {
           var fallbackFacets = catalogFacetDefs.map(function (facet) {
             return {
@@ -1766,17 +1698,13 @@
         }
         var variants = Array.isArray(variantsByMaster[product.id]) ? variantsByMaster[product.id] : [];
         var onlineVariants = variants.filter(function (variant) { return variant.online !== false; });
-        var hideOrientation = isOrientationRedundantWithOption(onlineVariants);
         var facetDefs = catalogFacetDefs.map(function (facet) {
-          var label = facet.label;
-          if (facet.key === "option" && hideOrientation) label = "Left/Right";
           return {
             key: facet.key,
-            label: label,
+            label: facet.label,
             values: getFacetValuesFromVariants(product, onlineVariants, facet.key, facet.catalogField)
           };
         }).filter(function (facet) {
-          if (facet.key === "orientation" && hideOrientation) return false;
           return facet.values.length > 0;
         });
         return {
@@ -1820,13 +1748,14 @@
         var pdpFacetConfig = buildPdpFacetConfig(product);
         var facetDefs = pdpFacetConfig.facetDefs;
         var pdpSellableVariants = pdpFacetConfig.variants;
+        var requiredFacets = pdpFacetConfig.requiredFacets;
+        var hasConfigurableOptions = requiredFacets.length > 0;
 
         var selected = {};
         facetDefs.forEach(function (f) {
           selected[f.key] = f.values.length === 1 ? String(f.values[0] || "") : "";
         });
-        var flowFacets = facetDefs.slice();
-        var requiredFacets = pdpFacetConfig.requiredFacets;
+        var flowFacets = requiredFacets.slice();
         var stepByFacet = {};
         flowFacets.forEach(function (f, i) { stepByFacet[f.key] = i + 1; });
         var shortDesc = cleanDescriptionHtml(descriptionMap[product.id] || "") ||
@@ -1844,10 +1773,8 @@
             "<section class='pdp-card pdp-gallery-col'>" +
               "<div class='pdp-gallery-main'>" +
                 "<div class='pdp-gallery-track' id='pdpGalleryTrack' aria-label='Product images'></div>" +
-                "<img id='pdpMainImage' class='pdp-gallery-desktop-only' src='" + escapeHtml(image) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(product.name) + "'>" +
               "</div>" +
-              "<div class='pdp-thumbs pdp-gallery-desktop-only' id='pdpThumbs'></div>" +
-              "<div class='pdp-gallery-dots pdp-gallery-mobile-only' id='pdpGalleryDots' aria-hidden='true'></div>" +
+              "<div class='pdp-gallery-dots' id='pdpGalleryDots' aria-hidden='true'></div>" +
             "</section>" +
             "<section class='pdp-main'>" +
               "<div class='pdp-top pdp-card' id='pdpTopCard'>" +
@@ -1870,47 +1797,35 @@
                   "</div>" +
                 "</div>" +
 	                "<div class='pdp-price-wrap'>" +
-	                  "<p class='pdp-price' id='pdpPriceValue'>$" + BregFormatMoney(Number(product.price || 0)) + "</p>" +
-	                  "<p class='pdp-inventory-msg' id='topInventoryMsg'></p>" +
+	                  "<div class='pdp-price-row breg-price-loading-wrap breg-price-loading-wrap--pdp'>" +
+	                    "<span class='breg-price-loading js-pdp-price-loading' role='status' aria-label='Loading price'></span>" +
+	                    "<p class='pdp-price' id='pdpPriceValue' style='display:none;'>$" + BregFormatMoney(Number(product.price || 0)) + "</p>" +
+	                  "</div>" +
+	                  "<p class='pdp-inventory-msg' id='topInventoryMsg' style='display:none;'></p>" +
 	                  "<div class='pdp-top-cart-row'>" +
 	                    "<div class='pdp-top-cart-controls'>" +
-	                      "<button type='button' id='topAddToCartBtn' class='pdp-top-cart-btn' disabled>" + (isSignedIn ? "Select Options to Continue" : "Login to Continue") + "</button>" +
+	                      "<button type='button' id='topAddToCartBtn' class='pdp-top-cart-btn'" + (isSignedIn && hasConfigurableOptions ? " disabled" : "") + ">" + (isSignedIn ? (hasConfigurableOptions ? "Select Options to Continue" : "Add to Cart") : "Login to Continue") + "</button>" +
 	                      "<div class='pdp-top-qty' id='topQtyWrap'><p class='pdp-top-qty-label'>Qty</p><select id='topQtySelect' class='pdp-qty-select' disabled><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option></select></div>" +
 	                    "</div>" +
 	                    "<button type='button' id='topCheckInventoryBtn' class='pdp-check-inventory-btn' style='display:none;'>Check Inventory</button>" +
-	                    "<button type='button' id='topBulkOrderBtn' class='pdp-top-bulk-btn'>Or Bulk Order Multiple Variants</button>" +
+	                    (hasConfigurableOptions ? "<button type='button' id='topBulkOrderBtn' class='pdp-top-bulk-btn'>Or Bulk Order Multiple Variants</button>" : "") +
 	                  "</div>" +
 	                "</div>" +
               "</div>" +
-              "<div class='pdp-card'>" +
+              (hasConfigurableOptions ? ("<div class='pdp-card'>" +
                 "<div class='pdp-config' id='pdpConfig'></div>" +
-              "</div>" +
-              "<div class='pdp-card'>" +
-	                "<div class='pdp-stock'>" +
-	                  "<div class='pdp-stock-line'><span>Availability: <strong>In Stock</strong></span></div>" +
-	                  "<div>Ships from nearest distribution center</div>" +
-	                  "<div class='pdp-sku-selected' id='pdpSelectedSku'></div>" +
-	                "</div>" +
-              "</div>" +
+                "<div class='pdp-sku-selected' id='pdpSelectedSku'></div>" +
+              "</div>") : ("<div class='pdp-config' id='pdpConfig' style='display:none;'></div>" +
+                "<div class='pdp-sku-selected' id='pdpSelectedSku' style='display:none;'></div>")) +
             "</section>" +
             "<aside class='pdp-rail'>" +
               "<h3>Frequently Purchased Together</h3>" +
               "<div id='pdpRail'></div>" +
-	              "<div class='pdp-info'>" +
-	                "<p class='pdp-info-title'>Jump to product information:</p>" +
-	                "<ul class='pdp-jump'>" +
-	                  "<li><a href='#pdp-overview' class='js-scroll-section' data-target='#pdp-overview'>Overview</a></li>" +
-	                  "<li><a href='#pdp-clinical' class='js-scroll-section' data-target='#pdp-clinical'>Clinical Information</a></li>" +
-	                  "<li><a href='#pdp-specifications' class='js-scroll-section' data-target='#pdp-specifications'>Specifications</a></li>" +
-	                  "<li><a href='#pdp-fitting-use' class='js-scroll-section' data-target='#pdp-fitting-use'>Fitting &amp; Use</a></li>" +
-	                "</ul>" +
-	              "</div>" +
-	            "</aside>" +
+            "</aside>" +
 	          "</div>";
 
         $("#pdpRoot").html(html);
         $("#pdpTabs").show();
-        $(".pdp-jump a[data-target='#pdp-overview']").closest("li").addClass("is-active");
 
         var hasSubcategories = Array.isArray(categorySubMap[product.category]) && categorySubMap[product.category].length > 0;
         var categoryHref = hasSubcategories
@@ -1930,7 +1845,91 @@
 
         $("#crumbProduct").text(product.name);
         $("#pdpMobileStickyCartName").text(product.name);
-        $("#pdpMobileStickyCartPrice").text("$" + BregFormatMoney(Number(product.price || 0)));
+
+        var pdpPriceState = { priceTimer: null, priceReadyKey: null };
+        var pdpCartState = { showPrice: false, priceDisplayed: false, unresolvedReason: "" };
+
+        function formatPdpPriceText() {
+          return "$" + BregFormatMoney(Number(product.price || 0));
+        }
+
+        function syncPdpAddToCartButton() {
+          var $btn = $("#topAddToCartBtn");
+          if (!isSignedIn) {
+            $btn.prop("disabled", false).text("Login to Continue");
+            syncMobileStickyCart();
+            return;
+          }
+          if (pdpCartState.unresolvedReason && hasConfigurableOptions) {
+            $btn.prop("disabled", true).text("Select Options to Continue");
+            syncMobileStickyCart();
+            return;
+          }
+          if (pdpCartState.showPrice && !pdpCartState.priceDisplayed) {
+            $btn.prop("disabled", true).text("Add to Cart");
+            syncMobileStickyCart();
+            return;
+          }
+          $btn.prop("disabled", false).text("Add to Cart");
+          syncMobileStickyCart();
+        }
+
+        function syncMobileStickyPriceDisplay(priceText, phase) {
+          var $mobilePrice = $("#pdpMobileStickyCartPrice");
+          var $mobileLoading = $("#pdpMobileStickyCartLoading, .js-pdp-mobile-price-loading");
+          if (phase === "hidden") {
+            $mobilePrice.addClass("is-hidden").text("");
+            window.BregPriceLoading.setLoadingActive($mobileLoading, false);
+            return;
+          }
+          if (phase === "loading") {
+            $mobilePrice.addClass("is-hidden");
+            window.BregPriceLoading.setLoadingActive($mobileLoading, true);
+            return;
+          }
+          window.BregPriceLoading.setLoadingActive($mobileLoading, false);
+          $mobilePrice.text(priceText).removeClass("is-hidden");
+        }
+
+        function updatePdpPriceDisplay(shouldShow, readyKey) {
+          pdpCartState.showPrice = !!shouldShow;
+          if (!window.BregPriceLoading) {
+            if (shouldShow) {
+              $("#pdpPriceValue").text(formatPdpPriceText()).show();
+              pdpCartState.priceDisplayed = true;
+              syncMobileStickyPriceDisplay(formatPdpPriceText(), "shown");
+            } else {
+              $("#pdpPriceValue").hide();
+              pdpCartState.priceDisplayed = false;
+              syncMobileStickyPriceDisplay("", "hidden");
+            }
+            syncPdpAddToCartButton();
+            return;
+          }
+          window.BregPriceLoading.apply({
+            state: pdpPriceState,
+            shouldShow: shouldShow,
+            priceText: formatPdpPriceText(),
+            readyKey: readyKey,
+            $loading: $(".js-pdp-price-loading"),
+            $price: $("#pdpPriceValue"),
+            onLoading: function () {
+              pdpCartState.priceDisplayed = false;
+              syncMobileStickyPriceDisplay("", "loading");
+              syncPdpAddToCartButton();
+            },
+            onHidden: function () {
+              pdpCartState.priceDisplayed = false;
+              syncMobileStickyPriceDisplay("", "hidden");
+              syncPdpAddToCartButton();
+            },
+            onShown: function (priceText) {
+              pdpCartState.priceDisplayed = true;
+              syncMobileStickyPriceDisplay(priceText, "shown");
+              syncPdpAddToCartButton();
+            }
+          });
+        }
 
         function syncMobileStickyCart() {
           var $topBtn = $("#topAddToCartBtn");
@@ -1943,9 +1942,12 @@
             .toggleClass("is-select-options", isSelectOptions)
             .prop("disabled", isSelectOptions ? false : $topBtn.prop("disabled"));
           var priceVisible = $("#pdpPriceValue").is(":visible");
-          $("#pdpMobileStickyCartPrice")
-            .text($("#pdpPriceValue").text())
-            .toggleClass("is-hidden", !priceVisible);
+          var priceLoading = $(".js-pdp-price-loading").hasClass("is-active");
+          $("#pdpMobileStickyCartPrice").toggleClass("is-hidden", !priceVisible);
+          if (priceVisible) {
+            $("#pdpMobileStickyCartPrice").text($("#pdpPriceValue").text());
+          }
+          window.BregPriceLoading.setLoadingActive($(".js-pdp-mobile-price-loading"), priceLoading && !priceVisible);
           updateStickyScrollOffset();
         }
 
@@ -1991,8 +1993,16 @@
           syncMobileStickyCart();
         }
 
-        function isMobileGalleryView() {
-          return window.matchMedia("(max-width: 767px)").matches;
+        function getCurrentGalleryImageSrc() {
+          var track = document.getElementById("pdpGalleryTrack");
+          if (track) {
+            var index = getGalleryActiveIndex(track);
+            var slides = track.querySelectorAll(".pdp-gallery-slide img");
+            if (slides[index]) {
+              return String(slides[index].getAttribute("src") || "").trim() || image;
+            }
+          }
+          return image;
         }
 
         function buildGallerySlides(images, altText) {
@@ -2057,8 +2067,7 @@
           $dots.find(".pdp-gallery-dot").removeClass("active").eq(index).addClass("active");
         }
 
-        function syncMobileGalleryToSrc(src) {
-          if (!isMobileGalleryView()) return;
+        function syncGalleryToSrc(src) {
           var track = document.getElementById("pdpGalleryTrack");
           if (!track || !src) return;
           var slides = track.querySelectorAll(".pdp-gallery-slide img");
@@ -2073,18 +2082,12 @@
 
         function updateGalleryPrimaryImage(src) {
           if (!src) return;
-          $("#pdpMainImage").attr("src", src);
           var $firstSlideImg = $("#pdpGalleryTrack .pdp-gallery-slide").first().find("img");
           if ($firstSlideImg.length) $firstSlideImg.attr("src", src);
-          var $firstThumb = $(".pdp-thumb").first();
-          if ($firstThumb.length) {
-            $firstThumb.attr("data-src", src);
-            $firstThumb.find("img").attr("src", src);
-          }
-          syncMobileGalleryToSrc(src);
+          syncGalleryToSrc(src);
         }
 
-        function bindMobileGallery() {
+        function bindGallery() {
           var track = document.getElementById("pdpGalleryTrack");
           var $track = $("#pdpGalleryTrack");
           if (!track || !$track.length) return;
@@ -2098,33 +2101,32 @@
         }
 
         $("#pdpGalleryTrack").html(buildGallerySlides(galleryImages, product.name));
-
-        var thumbHtml = "";
-        galleryImages.forEach(function (src, idx) {
-          thumbHtml += "<button type='button' class='pdp-thumb" + (idx === 0 ? " active" : "") + "' data-src='" + escapeHtml(src) + "'><img src='" + escapeHtml(src) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='Thumbnail " + (idx + 1) + "'></button>";
-        });
-        $("#pdpThumbs").html(thumbHtml);
-        bindMobileGallery();
+        bindGallery();
 
         var cfgHtml = "";
-        facetDefs.forEach(function (facet) {
-          var chips = facet.values.map(function (v) {
-            var isActive = selected[facet.key] === v;
-            return "<button type='button' class='pdp-option-chip" + (isActive ? " active" : "") + "' data-facet='" + facet.key + "' data-value='" + escapeHtml(v) + "'>" + escapeHtml(v) + "</button>";
-          }).join("");
-          if (facet.key === "size") {
-            cfgHtml += "<div class='pdp-group show' data-group='" + facet.key + "'>" +
-              "<div class='pdp-group-head'><p class='pdp-group-label'>Size</p><a href='#' class='pdp-size-chart'>Size Chart</a></div>" +
-              "<div class='pdp-option-chips'>" + chips + "</div>" +
-            "</div>";
-          } else {
-            cfgHtml += "<div class='pdp-group show' data-group='" + facet.key + "'>" +
-              "<p class='pdp-group-label'>" + facet.label + "</p>" +
-              "<div class='pdp-option-chips'>" + chips + "</div>" +
-            "</div>";
-          }
-        });
-        $("#pdpConfig").html(cfgHtml || "<div class='pdp-empty'>No configurable options for this product.</div>");
+        if (hasConfigurableOptions) {
+          requiredFacets.forEach(function (facet) {
+            var chips = facet.values.map(function (v) {
+              var isActive = selected[facet.key] === v;
+              return "<button type='button' class='pdp-option-chip" + (isActive ? " active" : "") + "' data-facet='" + facet.key + "' data-value='" + escapeHtml(v) + "'>" + escapeHtml(v) + "</button>";
+            }).join("");
+            if (facet.key === "size") {
+              cfgHtml += "<div class='pdp-group show' data-group='" + facet.key + "'>" +
+                "<div class='pdp-group-head'><p class='pdp-group-label'>Size</p><a href='#' class='pdp-size-chart'>Size Chart</a></div>" +
+                "<div class='pdp-option-chips'>" + chips + "</div>" +
+              "</div>";
+            } else {
+              cfgHtml += "<div class='pdp-group show' data-group='" + facet.key + "'>" +
+                "<p class='pdp-group-label'>" + facet.label + "</p>" +
+                "<div class='pdp-option-chips'>" + chips + "</div>" +
+              "</div>";
+            }
+          });
+        }
+        $("#pdpConfig").html(cfgHtml);
+        if (!hasConfigurableOptions) {
+          $("#pdpSelectedSku").hide();
+        }
 
         var railHtml = "";
         related.forEach(function (p) {
@@ -2163,7 +2165,6 @@
           try { localStorage.setItem(LIST_STORAGE_KEY, JSON.stringify(listState)); } catch (e) {}
         }
         function getListTargetSku() {
-          var hasConfigurableOptions = product.type === "variation-master" && requiredFacets.length > 0;
           if (hasConfigurableOptions) {
             return String(product.id || "");
           }
@@ -2474,15 +2475,9 @@
             seen[s] = true;
             srcs.push(s);
           });
-          $(".pdp-thumb").each(function () {
-            var s = String($(this).attr("data-src") || "").trim();
-            if (!s || seen[s]) return;
-            seen[s] = true;
-            srcs.push(s);
-          });
           if (!srcs.length) {
-            var main = String($("#pdpMainImage").attr("src") || "").trim();
-            if (main) srcs.push(main);
+            var current = getCurrentGalleryImageSrc();
+            if (current) srcs.push(current);
           }
           return srcs;
         }
@@ -2559,21 +2554,6 @@
           return collectVariantFacetValues(getMatchingVariantsForSelection(facetKey), facetKey);
         }
 
-        function syncPairedFacets(changedKey, changedValue) {
-          var optionFacet = facetDefs.find(function (facet) { return facet.key === "option"; });
-          var orientationFacet = facetDefs.find(function (facet) { return facet.key === "orientation"; });
-          if (!optionFacet || !orientationFacet) return;
-          var side = normalizeOptionValue(changedValue);
-          if (changedKey === "option" && (side === "left" || side === "right")) {
-            var pairedOrientation = findFacetValueBySide(orientationFacet, side);
-            if (pairedOrientation) selected.orientation = pairedOrientation;
-          }
-          if (changedKey === "orientation" && (side === "left" || side === "right")) {
-            var pairedOption = findFacetValueBySide(optionFacet, side);
-            if (pairedOption) selected.option = pairedOption;
-          }
-        }
-
         function syncChipStates() {
           facetDefs.forEach(function (facet) {
             var value = selected[facet.key] || "";
@@ -2626,18 +2606,29 @@
           });
         }
 
+        function getDefaultSellableSku(variants) {
+          if (!variants || !variants.length) return String(product.id || "");
+          var masterStem = String(product.id || "").split("-")[0] || "";
+          var preferred = variants.find(function (variant) {
+            return masterStem && String(variant.sku || "").indexOf(masterStem) === 0;
+          });
+          return String((preferred || variants[0]).sku || product.id || "");
+        }
+
         function updateResolvedSku() {
           var isMaster = product.type === "variation-master";
           var variants = variantsByMaster[product.id] || [];
           var resolved = product.id;
           var unresolvedReason = "";
           var wasEnabled = !$("#topAddToCartBtn").prop("disabled");
-          var isConfigurable = isMaster && requiredFacets.length > 0;
+          var isConfigurable = hasConfigurableOptions;
 
           if (isMaster) {
             variants = pdpSellableVariants.length ? pdpSellableVariants : variants;
             if (!variants.length) {
               unresolvedReason = "Variant data unavailable for this master.";
+            } else if (!isConfigurable) {
+              resolved = getDefaultSellableSku(variants);
             } else {
               var missingFacets = requiredFacets.filter(function (f) { return !selected[f.key]; });
               if (missingFacets.length) {
@@ -2677,28 +2668,30 @@
           currentResolvedSku = resolved || product.id;
 
           if (unresolvedReason) {
-            $("#pdpSelectedSku").text(unresolvedReason);
-            $("#topAddToCartBtn").prop("disabled", isSignedIn).text(isSignedIn ? "Select Options to Continue" : "Login to Continue");
+            if (hasConfigurableOptions) {
+              $("#pdpSelectedSku").show().text(unresolvedReason);
+            } else {
+              $("#pdpSelectedSku").hide().text("");
+            }
+            $("#topAddToCartBtn").text(isSignedIn ? "Select Options to Continue" : "Login to Continue");
             $("#topQtyWrap").hide();
             $("#topQtySelect").prop("disabled", true);
             $("#topCheckInventoryBtn").hide();
             $("#topInventoryMsg").hide().text("");
-            if (isConfigurable || !isSignedIn) {
-              $("#pdpPriceValue").hide();
-            }
           } else {
-            $("#pdpSelectedSku").html("Selected SKU: <strong>" + escapeHtml(resolved) + "</strong>");
-            $("#topAddToCartBtn").prop("disabled", false).text(isSignedIn ? "Add to Cart" : "Login to Continue");
+            if (hasConfigurableOptions) {
+              $("#pdpSelectedSku").show().html("Selected SKU: <strong>" + escapeHtml(resolved) + "</strong>");
+            } else {
+              $("#pdpSelectedSku").hide().text("");
+            }
             if (isSignedIn) {
               $("#topQtyWrap").css("display", "flex");
               $("#topQtySelect").prop("disabled", false);
               $("#topCheckInventoryBtn").show();
-              $("#pdpPriceValue").show();
             } else {
               $("#topQtyWrap").hide();
               $("#topQtySelect").prop("disabled", true);
               $("#topCheckInventoryBtn").hide();
-              $("#pdpPriceValue").hide();
             }
             $("#topInventoryMsg").hide().text("");
             if (!wasEnabled && requiredFacets.length) {
@@ -2713,8 +2706,21 @@
               }
             }
           }
-          if (!isSignedIn) {
+          pdpCartState.unresolvedReason = unresolvedReason;
+          var showPrice = window.BregPriceLoading && typeof window.BregPriceLoading.canShowPdpPrice === "function"
+            ? window.BregPriceLoading.canShowPdpPrice(hasConfigurableOptions, unresolvedReason, isSignedIn)
+            : (isSignedIn && (!hasConfigurableOptions || !unresolvedReason));
+          if (showPrice) {
+            updatePdpPriceDisplay(true, String(resolved || product.id || "") + "|" + formatPdpPriceText());
+          } else {
+            pdpCartState.priceDisplayed = false;
+            updatePdpPriceDisplay(false);
+            syncPdpAddToCartButton();
+          }
+          if (!isSignedIn || !hasConfigurableOptions) {
             $("#topBulkOrderBtn").hide();
+          } else {
+            $("#topBulkOrderBtn").show();
           }
           refreshListButton();
           refreshHeartButton();
@@ -2722,13 +2728,7 @@
           syncMobileStickyCart();
         }
 
-        $(document).on("click", ".pdp-thumb", function () {
-          var src = $(this).attr("data-src");
-          $(".pdp-thumb").removeClass("active");
-          $(this).addClass("active");
-          updateGalleryPrimaryImage(src);
-        });
-        $(document).on("click", "#pdpMainImage, .pdp-gallery-slide img", function () {
+        $(document).on("click", ".pdp-gallery-slide img", function () {
           var src = $(this).attr("src");
           openImageZoomModal(src, $(this).attr("alt"));
           renderImageZoomThumbs(src);
@@ -2740,10 +2740,6 @@
           updateGalleryPrimaryImage(src);
           $(".image-zoom-thumb").removeClass("active");
           $(this).addClass("active");
-          $(".pdp-thumb").removeClass("active");
-          $(".pdp-thumb").filter(function () {
-            return $(this).attr("data-src") === src;
-          }).first().addClass("active");
         });
         $(document).on("click", ".pdp-gallery-dot", function () {
           var index = Number($(this).attr("data-index"));
@@ -2751,7 +2747,7 @@
           scrollGalleryToIndex(index, "smooth");
         });
         $(window).on("resize.pdpgallery", function () {
-          updateGalleryDots();
+          bindGallery();
         });
 
         $(document).on("click", ".pdp-option-chip", function () {
@@ -2761,7 +2757,6 @@
           var facet = $chip.attr("data-facet");
           var value = $chip.attr("data-value");
           selected[facet] = value;
-          syncPairedFacets(facet, value);
           var currentStep = stepByFacet[facet] || 0;
           if (currentStep > 0) {
             flowFacets.forEach(function (f) {
@@ -2788,10 +2783,6 @@
             $(".pdp-tab.js-scroll-section").filter(function () {
               return $(this).attr("data-target") === target;
             }).first().addClass("active");
-            $(".pdp-jump li").removeClass("is-active");
-            $(".pdp-jump a.js-scroll-section").filter(function () {
-              return $(this).attr("data-target") === target;
-            }).closest("li").addClass("is-active");
             $("#pdpTabs .pdp-content-section").hide();
             $target.show();
           }
@@ -2803,10 +2794,8 @@
           }
           e.preventDefault();
           var headerOffset = $(".top-header").outerHeight() || 0;
-          var isJumpLink = $(this).closest(".pdp-jump").length > 0;
-          var $scrollTarget = isJumpLink ? $("#pdpTabs") : $target;
           var sectionOffset = 12;
-          var top = Math.max(0, Math.floor($scrollTarget.offset().top - headerOffset - sectionOffset));
+          var top = Math.max(0, Math.floor($target.offset().top - headerOffset - sectionOffset));
           $("html, body").stop(true).animate({ scrollTop: top }, 260);
           setActiveSectionStates();
         });
@@ -2828,7 +2817,7 @@
           var item = {
             sku: sku,
             name: product.name,
-            image: String($("#pdpMainImage").attr("src") || image),
+            image: getCurrentGalleryImageSrc(),
             price: Number(product.price || 0),
             category: product.category || category
           };
@@ -2977,10 +2966,11 @@
         }
 
         function getBulkVariants() {
+          if (!hasConfigurableOptions) return [];
           if (product.type === "variation-master") {
             return (variantsByMaster[product.id] || []).filter(function (v) { return v.online !== false; });
           }
-          return [{ sku: product.id, attributes: {} }];
+          return [];
         }
 
         var bulkState = {

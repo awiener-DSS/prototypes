@@ -405,12 +405,6 @@
       min-width: 0;
     }
 
-    .pl-grid.list .p-quickview-btn {
-      flex: 0 0 auto;
-      align-self: center;
-      margin: 0 40px 0 0;
-    }
-
     .pl-grid.list .p-thumb {
       width: 112px;
       min-width: 112px;
@@ -526,435 +520,56 @@
       display: block;
     }
 
-    .p-quickview-btn {
-      position: absolute;
-      left: 50%;
-      bottom: 10px;
-      transform: translateX(-50%) translateY(8px);
-      opacity: 0;
-      pointer-events: none;
-      border: 0;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.96);
-      color: #0f1111;
-      font-size: 12px;
-      font-weight: 600;
-      line-height: 1;
-      padding: 8px 14px;
-      box-shadow: 0 4px 14px rgba(16, 26, 35, .16);
-      transition: opacity .16s ease, transform .16s ease;
-      z-index: 2;
-      white-space: nowrap;
-    }
-
-    .p-card:hover .p-quickview-btn,
-    .p-quickview-btn:focus-visible {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-      pointer-events: auto;
-    }
-
-    .pl-grid.list .p-quickview-btn {
-      position: static;
-      transform: none;
-      opacity: 1;
-      pointer-events: auto;
-      margin-top: 8px;
-      box-shadow: none;
-      border: 1px solid #c7d0d8;
-      background: #fff;
-    }
-
-    .pl-grid.list .p-quickview-btn:hover,
-    .pl-grid.list .p-quickview-btn:focus {
-      border-color: #007185;
-      color: #007185;
-    }
-
-    .pl-quickview-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 12000;
-      background: rgba(15, 23, 42, 0.56);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-    }
-
-    .pl-quickview-modal.open {
-      display: flex;
-    }
-
-    .pl-quickview-dialog {
-      width: min(880px, 96vw);
-      max-height: 92vh;
-      overflow: visible;
-      background: #fff;
-      border-radius: 12px;
-      border: 1px solid #dbe3ea;
-      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.28);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .pl-quickview-head {
-      padding: 12px 16px;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .pl-quickview-title {
-      margin: 0;
-      font-size: 20px;
-      line-height: 1.2;
-      color: #0f172a;
-      font-weight: 700;
-    }
-
-    .pl-quickview-close {
-      border: 0;
-      background: transparent;
-      color: #475569;
-      font-size: 28px;
-      line-height: 1;
-      padding: 0 4px;
-    }
-
-    .pl-quickview-close:hover,
-    .pl-quickview-close:focus {
-      color: #0f172a;
-      outline: 0;
-    }
-
-    .pl-quickview-body {
-      padding: 16px;
-      display: grid;
-      grid-template-columns: minmax(220px, 300px) 1fr;
-      gap: 16px;
-      overflow: auto;
-      max-height: calc(92vh - 52px);
-    }
-
-    .pl-quickview-meta {
-      position: relative;
-      min-width: 0;
-    }
-
-    .pl-quickview-top-actions {
-      margin-top: 12px;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .pdp-mini-btn {
-      height: 38px;
-      border-radius: 8px;
-      border: 1px solid #d1d5dc;
-      background: #fff;
-      color: #364153;
-      font-size: 14px;
-      line-height: 20px;
-      padding: 8px 16px;
-    }
-
-    .pdp-mini-btn.warm {
-      border-color: #c7511f;
-      background: #fff8f0;
-      color: #c7511f;
-    }
-
-    .pdp-heart-btn {
-      width: 38px;
-      min-width: 38px;
-      padding: 0;
-      font-size: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .pdp-heart-btn.hearted {
-      animation: plQvHeartPop .34s ease-out;
-    }
-
-    @keyframes plQvHeartPop {
-      0% { transform: scale(1); }
-      45% { transform: scale(1.26); }
-      100% { transform: scale(1); }
-    }
-
-    .pdp-list-wrap { position: relative; }
-
-    .pdp-list-btn {
-      min-width: 132px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .pdp-list-popover {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      width: 320px;
-      max-width: min(92vw, 320px);
-      background: #fff;
-      border: 1px solid #d5dde4;
-      border-radius: 12px;
-      box-shadow: 0 16px 28px rgba(15, 23, 42, .15);
+    .p-card-default-body {
       padding: 12px;
-      z-index: 210;
-      display: none;
     }
 
-    .pdp-list-popover.open { display: block; }
+    .p-card-hover-panel {
+      display: none;
+      padding: 0 12px 12px;
+      background: #fff;
+    }
 
-    .pdp-list-title {
-      margin: 0 0 2px;
+    .p-hover-name {
+      margin: 0 0 4px;
       font-size: 14px;
       font-weight: 600;
-      color: #0f172a;
+      line-height: 1.35;
+      color: #11181f;
     }
 
-    .pdp-list-subtitle {
+    .p-hover-price-wrap {
+      display: flex;
+      align-items: center;
+      min-height: 22px;
+      margin: 0 0 6px;
+    }
+
+    .p-hover-price {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #b12704;
+    }
+
+    .p-hover-desc {
       margin: 0 0 10px;
       font-size: 12px;
-      color: #64748b;
-    }
-
-    .pdp-list-items {
-      max-height: 200px;
-      overflow: auto;
-      border: 1px solid #e5eaf0;
-      border-radius: 8px;
-      background: #f8fafc;
-    }
-
-    .pdp-list-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 10px;
-      font-size: 13px;
-      color: #1f2937;
-      border-bottom: 1px solid #e7edf5;
-      margin: 0;
-      font-weight: 400;
-      cursor: pointer;
-    }
-
-    .pdp-list-item:last-child { border-bottom: 0; }
-
-    .pdp-list-foot {
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .pdp-list-link {
-      border: 1px solid #d1d5dc;
-      background: #fff;
-      border-radius: 999px;
-      padding: 6px 12px;
-      font-size: 12px;
-      color: #1f2937;
-    }
-
-    .pdp-empty {
-      padding: 10px;
-      font-size: 13px;
-      color: #64748b;
-    }
-
-    #plQvCreateListModal.bulk-modal {
-      z-index: 13010;
-    }
-
-    #plQvCreateListModal .bulk-dialog {
-      width: min(460px, 100%);
-      max-height: none;
-      overflow: visible;
-    }
-
-    #plQvCreateListModal .list-create-body { padding: 16px; }
-
-    #plQvCreateListModal .list-create-label {
-      display: block;
-      margin: 0 0 6px;
-      font-size: 12px;
-      color: #475569;
-      font-weight: 600;
-      letter-spacing: .2px;
-      text-transform: uppercase;
-    }
-
-    #plQvCreateListModal .list-create-input {
-      width: 100%;
-      height: 40px;
-      border: 1px solid #cdd6df;
-      border-radius: 10px;
-      padding: 0 12px;
-      font-size: 14px;
-      color: #0f172a;
-      background: #fff;
-    }
-
-    #plQvCreateListModal .list-create-input:focus {
-      outline: none;
-      border-color: #007185;
-      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
-    }
-
-    #plQvCreateListModal .list-create-error {
-      min-height: 18px;
-      margin: 8px 0 0;
-      font-size: 12px;
-      color: #b91c1c;
-    }
-
-    #plQvCreateListModal .bulk-head {
-      padding: 14px 16px;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    #plQvCreateListModal .bulk-head h3 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 24px;
-      color: #0a0a0a;
-    }
-
-    #plQvCreateListModal .bulk-close {
-      border: 1px solid #d1d5dc;
-      background: #fff;
-      width: 34px;
-      height: 34px;
-      border-radius: 8px;
-      font-size: 22px;
-      line-height: 1;
-      color: #4b5563;
-    }
-
-    #plQvCreateListModal .bulk-foot {
-      padding: 12px 16px;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      background: #fff;
-    }
-
-    #plQvCreateListModal .bulk-btn-cancel {
-      border: 1px solid #d1d5dc;
-      background: #fff;
-      border-radius: 999px;
-      height: 38px;
-      padding: 0 16px;
-      font-size: 14px;
-    }
-
-    #plQvCreateListModal .bulk-btn-add {
-      border: 1px solid var(--breg-primary, #0047bb);
-      background: var(--breg-primary, #0047bb);
-      border-radius: 999px;
-      height: 38px;
-      padding: 0 18px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #fff;
-    }
-
-    .pl-quickview-image-wrap {
-      border: 1px solid #dbe3ea;
-      border-radius: 12px;
-      background: #f8fafc;
-      min-height: 260px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-    }
-
-    .pl-quickview-image {
-      width: 100%;
-      max-height: 280px;
-      object-fit: contain;
-    }
-
-    .pl-quickview-meta h4 {
-      margin: 0 0 8px;
-      color: #1e2939;
-      font-size: 20px;
-      line-height: 1.25;
-      font-weight: 700;
-    }
-
-    .pl-quickview-kv {
-      margin: 0 0 6px;
-      color: #475569;
-      font-size: 13px;
       line-height: 1.45;
+      color: #5f6c78;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .pl-quickview-kv strong {
-      color: #0f172a;
-      font-weight: 600;
-      margin-right: 4px;
-    }
-
-    .pl-quickview-desc {
-      margin: 12px 0 0;
-      color: #334155;
-      font-size: 14px;
-      line-height: 1.55;
-      border-top: 1px solid #e5e7eb;
-      padding-top: 12px;
-    }
-
-    .pl-quickview-actions {
-      margin-top: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .pl-quickview-actions .btn {
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 8px 14px;
-    }
-
-    .pl-quickview-actions .btn-primary {
-      background: var(--breg-primary, #0047bb);
-      border-color: var(--breg-primary, #0047bb);
-    }
-
-    .pl-quickview-actions .btn-default {
-      border-color: #c7d0d8;
-      color: #0f1111;
-    }
-
-    .pl-quickview-config {
-      margin: 12px 0 0;
-      padding-top: 12px;
-      border-top: 1px solid #e5e7eb;
+    .p-hover-config {
       display: grid;
       gap: 10px;
     }
 
-    .pl-qv-facet-label {
+    .p-hover-facet-label {
       display: block;
       margin: 0 0 6px;
       font-size: 12px;
@@ -962,105 +577,187 @@
       color: #37424d;
     }
 
-    .pl-qv-chips {
+    .p-hover-options {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .pl-qv-chip {
-      border: 1px solid #c7d0d8;
-      border-radius: 999px;
-      background: #fff;
-      color: #0f1111;
-      font-size: 12px;
-      font-weight: 500;
-      line-height: 1;
-      padding: 7px 12px;
-      cursor: pointer;
-    }
-
-    .pl-qv-chip:hover,
-    .pl-qv-chip:focus {
-      border-color: #007185;
-      color: #007185;
-      outline: 0;
-    }
-
-    .pl-qv-chip.active {
-      border-color: var(--breg-primary, #0047bb);
-      background: rgba(0, 71, 187, 0.08);
-      color: var(--breg-primary, #0047bb);
-    }
-
-    .pl-qv-chip.locked {
-      cursor: default;
-      opacity: 0.92;
-    }
-
-    .pl-quickview-resolved {
-      margin: 10px 0 0;
-      font-size: 12px;
-      color: #5f6c78;
-      line-height: 1.4;
-    }
-
-    .pl-quickview-resolved strong {
-      color: #0f172a;
-    }
-
-    .pl-quickview-cart-row {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid #e5e7eb;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: flex-end;
       gap: 8px;
     }
 
-    .pl-quickview-qty-wrap label {
+    .p-hover-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      border: 2px solid transparent;
+      padding: 0;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+    }
+
+    .p-hover-swatch.active {
+      border-color: #11181f;
+      box-shadow: 0 0 0 1px #fff, 0 0 0 3px rgba(17, 24, 31, 0.28);
+    }
+
+    .p-hover-size {
+      min-width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 8px;
+      background: #f1f5f9;
+      color: #11181f;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 0 10px;
+      cursor: pointer;
+    }
+
+    .p-hover-size.active {
+      background: #e2e8f0;
+      box-shadow: inset 0 0 0 1px #94a3b8;
+    }
+
+    .p-hover-chip {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #f8fafc;
+      color: #11181f;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      padding: 9px 12px;
+      cursor: pointer;
+    }
+
+    .p-hover-chip.active {
+      background: #e2e8f0;
+      box-shadow: inset 0 0 0 1px #94a3b8;
+    }
+
+    .p-hover-msg {
+      margin: 8px 0 0;
+      font-size: 11px;
+      line-height: 1.35;
+      color: #64748b;
+    }
+
+    .p-hover-cart-row {
+      margin-top: 12px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .p-hover-qty-label {
       display: block;
-      margin: 0 0 4px;
+      margin: 0 0 6px;
       font-size: 12px;
       font-weight: 600;
       color: #37424d;
     }
 
-    .pl-quickview-qty {
-      width: 72px;
-      height: 38px;
-      border: 1px solid #c7d0d8;
-      border-radius: 8px;
-      padding: 0 8px;
-      font-size: 13px;
+    .p-hover-qty-stepper {
+      display: grid;
+      grid-template-columns: 36px 40px 36px;
+      align-items: center;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f1f5f9;
     }
 
-    #plQuickViewAddToCartBtn {
-      min-width: 140px;
-      height: 38px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 600;
+    .p-hover-qty-stepper button {
+      border: 0;
+      background: transparent;
+      color: #334155;
+      font-size: 18px;
+      line-height: 1;
+      height: 36px;
+      padding: 0;
+      cursor: pointer;
     }
 
-    #plQuickViewAddToCartBtn:disabled {
-      opacity: 0.65;
+    .p-hover-qty-stepper button:disabled {
+      opacity: 0.35;
       cursor: not-allowed;
+    }
+
+    .p-hover-qty-val {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #11181f;
+      border-left: 1px solid #e2e8f0;
+      border-right: 1px solid #e2e8f0;
+      height: 36px;
+      line-height: 36px;
+    }
+
+    .p-hover-add-btn {
+      width: 44px;
+      height: 44px;
+      border: 0;
+      border-radius: 12px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex: 0 0 auto;
+      cursor: pointer;
+    }
+
+    .p-hover-add-btn:hover,
+    .p-hover-add-btn:focus {
+      background: var(--breg-primary-dark, #001E62);
+      outline: 0;
+    }
+
+    .p-hover-add-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    @media (min-width: 768px) {
+      .pl-grid:not(.list) {
+        overflow: visible;
+      }
+
+      .pl-grid:not(.list) .p-card {
+        overflow: visible;
+      }
+
+      .pl-grid:not(.list) .p-media {
+        position: relative;
+        overflow: visible;
+      }
+
+      .pl-grid:not(.list) .p-card-hover-panel {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        z-index: 8;
+        border: 1px solid #e8edf1;
+        border-top: 0;
+        border-radius: 0 0 14px 14px;
+        box-shadow: 0 16px 32px rgba(16, 26, 35, 0.18);
+        max-height: min(420px, 70vh);
+        overflow-y: auto;
+      }
+
+      .pl-grid:not(.list) .p-card:hover {
+        z-index: 20;
+        box-shadow: 0 8px 20px rgba(16, 26, 35, 0.12);
+      }
+
+      .pl-grid:not(.list) .p-card:hover .p-card-hover-panel {
+        display: block;
+      }
     }
 
     #sharedCartAddedModal.bulk-modal.open {
       z-index: 12150;
-    }
-
-    @media (max-width: 767px) {
-      .p-quickview-btn,
-      .pl-grid.list .p-quickview-btn {
-        display: none !important;
-      }
-      .pl-quickview-body {
-        grid-template-columns: 1fr;
-      }
     }
 
     .p-body {
@@ -1309,27 +1006,21 @@
           </details>
 
           <details class="pl-filter-group">
-            <summary>Color</summary>
-            <input type="search" class="pl-facet-search" placeholder="Search color" autocomplete="off" aria-label="Search color">
-            <div id="colorOptions" class="pl-filter-options"></div>
+            <summary>Left/Right</summary>
+            <input type="search" class="pl-facet-search" placeholder="Search left or right" autocomplete="off" aria-label="Search left or right">
+            <div id="sideOptions" class="pl-filter-options"></div>
           </details>
 
           <details class="pl-filter-group">
-            <summary>Gender</summary>
-            <input type="search" class="pl-facet-search" placeholder="Search gender" autocomplete="off" aria-label="Search gender">
-            <div id="genderOptions" class="pl-filter-options"></div>
+            <summary>Brace Type</summary>
+            <input type="search" class="pl-facet-search" placeholder="Search brace type" autocomplete="off" aria-label="Search brace type">
+            <div id="braceTypeOptions" class="pl-filter-options"></div>
           </details>
 
           <details class="pl-filter-group">
-            <summary>Orientation</summary>
-            <input type="search" class="pl-facet-search" placeholder="Search orientation" autocomplete="off" aria-label="Search orientation">
-            <div id="orientationOptions" class="pl-filter-options"></div>
-          </details>
-
-          <details class="pl-filter-group">
-            <summary>UOM</summary>
-            <input type="search" class="pl-facet-search" placeholder="Search UOM" autocomplete="off" aria-label="Search UOM">
-            <div id="uomOptions" class="pl-filter-options"></div>
+            <summary>Style</summary>
+            <input type="search" class="pl-facet-search" placeholder="Search style" autocomplete="off" aria-label="Search style">
+            <div id="styleOptions" class="pl-filter-options"></div>
           </details>
           </div>
 
@@ -1348,88 +1039,15 @@
 
   <div class="pl-filter-backdrop" id="filterBackdrop"></div>
 
-  <div class="pl-quickview-modal" id="plQuickViewModal" aria-hidden="true">
-    <div class="pl-quickview-dialog" role="dialog" aria-modal="true" aria-labelledby="plQuickViewTitle">
-      <div class="pl-quickview-head">
-        <h3 class="pl-quickview-title" id="plQuickViewTitle">Quick View</h3>
-        <button type="button" class="pl-quickview-close" id="plQuickViewClose" aria-label="Close">&times;</button>
-      </div>
-      <div class="pl-quickview-body">
-        <div class="pl-quickview-image-wrap">
-          <img id="plQuickViewImage" class="pl-quickview-image" src="" alt="">
-        </div>
-        <div class="pl-quickview-meta">
-          <h4 id="plQuickViewName"></h4>
-          <p class="pl-quickview-kv" id="plQuickViewSkuRow"><strong>SKU:</strong> <span id="plQuickViewSku"></span></p>
-          <p class="pl-quickview-kv" id="plQuickViewCategoryRow"><strong>Category:</strong> <span id="plQuickViewCategory"></span></p>
-          <p class="pl-quickview-kv hidden" id="plQuickViewSubcategoryRow"><strong>Subcategory:</strong> <span id="plQuickViewSubcategory"></span></p>
-          <p class="pl-quickview-kv hidden" id="plQuickViewPriceRow"><strong>Price:</strong> <span id="plQuickViewPrice"></span></p>
-          <div class="pl-quickview-desc" id="plQuickViewDesc"></div>
-          <div class="pl-quickview-top-actions pdp-top-actions">
-            <button type="button" id="plQvHeartBtn" class="pdp-mini-btn pdp-heart-btn" aria-label="Save to Shopping List">&#9825;</button>
-            <div class="pdp-list-wrap" id="plQvListWrap">
-              <button type="button" id="plQvListBtn" class="pdp-mini-btn pdp-list-btn"><span id="plQvListBtnText">Add to List</span><span class="caret"></span></button>
-              <div class="pdp-list-popover" id="plQvListPanel">
-                <p class="pdp-list-title">Add to List</p>
-                <p class="pdp-list-subtitle" id="plQvListSubtitle">Save this item for later.</p>
-                <div class="pdp-list-items" id="plQvListItems"></div>
-                <div class="pdp-list-foot">
-                  <button type="button" class="pdp-list-link" id="plQvCreateListBtn">Create List</button>
-                  <button type="button" class="pdp-list-link" id="plQvCloseListBtn">Done</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="pl-quickview-config hidden" id="plQuickViewConfig"></div>
-          <p class="pl-quickview-resolved hidden" id="plQuickViewResolvedMsg"></p>
-          <div class="pl-quickview-cart-row">
-            <div class="pl-quickview-qty-wrap">
-              <label for="plQuickViewQty">Qty</label>
-              <select id="plQuickViewQty" class="pl-quickview-qty">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="10">10</option>
-              </select>
-            </div>
-            <button type="button" class="btn btn-primary" id="plQuickViewAddToCartBtn" disabled>Add to Cart</button>
-          </div>
-          <div class="pl-quickview-actions">
-            <a class="btn btn-default" id="plQuickViewDetailsLink" href="#">View full details</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="bulk-modal" id="plQvCreateListModal" aria-hidden="true">
-    <div class="bulk-dialog list-create-dialog" role="dialog" aria-modal="true" aria-labelledby="plQvCreateListTitle">
-      <div class="bulk-head">
-        <h3 id="plQvCreateListTitle">Create New List</h3>
-        <button type="button" class="bulk-close" id="plQvCreateListClose" aria-label="Close">&times;</button>
-      </div>
-      <form id="plQvCreateListForm">
-        <div class="list-create-body">
-          <label class="list-create-label" for="plQvCreateListInput">List name</label>
-          <input id="plQvCreateListInput" class="list-create-input" type="text" maxlength="80" autocomplete="off" placeholder="e.g. Surgery Essentials">
-          <p class="list-create-error" id="plQvCreateListError"></p>
-        </div>
-        <div class="bulk-foot">
-          <button type="button" class="bulk-btn-cancel" id="plQvCreateListCancel">Cancel</button>
-          <button type="submit" class="bulk-btn-add">Create List</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
+  <script src="assets/product-facets.js?v=20260609a"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
+  <script src="assets/catalog-listing.js?v=20260609a"></script>
+  <script src="assets/price-loading.js?v=20260609a"></script>
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
@@ -1496,134 +1114,7 @@
 
       var descriptionMap = window.BREG_PRODUCT_DESCRIPTIONS || {};
       var variantsByMaster = window.BREG_VARIANTS_BY_MASTER || {};
-      var quickViewState = null;
-      var LIST_STORAGE_KEY = "breg_saved_lists_v1";
-      var defaultLists = [
-        "Shopping List",
-        "Recovery Supplies",
-        "Post-Surgery Essentials",
-        "Athletic Support",
-        "Clinic Supplies"
-      ];
-
-      function loadListState() {
-        var state = {};
-        defaultLists.forEach(function (n) { state[n] = []; });
-        try {
-          var raw = localStorage.getItem(LIST_STORAGE_KEY);
-          if (!raw) return state;
-          var parsed = JSON.parse(raw);
-          Object.keys(parsed || {}).forEach(function (name) {
-            if (!Array.isArray(parsed[name])) return;
-            state[name] = parsed[name].map(function (v) { return String(v || ""); }).filter(Boolean);
-          });
-        } catch (e) {}
-        return state;
-      }
-
-      function saveListState() {
-        try { localStorage.setItem(LIST_STORAGE_KEY, JSON.stringify(listState)); } catch (e) {}
-      }
-
-      var listState = loadListState();
-
-      function getQuickViewListTargetSku() {
-        if (!quickViewState || !quickViewState.product) return "";
-        var product = quickViewState.product;
-        var config = quickViewState.config;
-        var requiredFacets = (config && config.requiredFacets) ? config.requiredFacets : [];
-        var hasConfigurableOptions = product.type === "variation-master" && requiredFacets.length > 0;
-        if (hasConfigurableOptions) {
-          return String(product.id || "");
-        }
-        return String(quickViewState.resolvedSku || product.id || "");
-      }
-
-      function listsContainingSku(sku) {
-        var out = [];
-        Object.keys(listState).forEach(function (name) {
-          if ((listState[name] || []).indexOf(sku) > -1) out.push(name);
-        });
-        return out;
-      }
-
-      function refreshQuickViewListButton() {
-        var sku = getQuickViewListTargetSku();
-        var cnt = listsContainingSku(sku).length;
-        var label = cnt > 0 ? (cnt === 1 ? "Saved to List" : "Saved to Lists") : "Add to List";
-        $("#plQvListBtnText").text(label);
-        $("#plQvListBtn").toggleClass("warm", cnt > 0);
-      }
-
-      function refreshQuickViewHeartButton() {
-        if (!window.BregFavorites || typeof window.BregFavorites.isInShoppingList !== "function") return;
-        var sku = getQuickViewListTargetSku();
-        var saved = window.BregFavorites.isInShoppingList(sku);
-        $("#plQvHeartBtn").toggleClass("warm", saved).html(saved ? "&#10084;" : "&#9825;");
-      }
-
-      function renderQuickViewListPanel() {
-        var sku = getQuickViewListTargetSku();
-        var containing = listsContainingSku(sku);
-        var html = "";
-        Object.keys(listState).sort().forEach(function (name) {
-          var checked = (listState[name] || []).indexOf(sku) > -1 ? " checked" : "";
-          html += "<label class='pdp-list-item'><input type='checkbox' class='js-pl-qv-list-check' data-list='" + escapeHtml(name) + "'" + checked + "> <span>" + escapeHtml(name) + "</span></label>";
-        });
-        $("#plQvListItems").html(html || "<div class='pdp-empty'>No lists available.</div>");
-        $("#plQvListSubtitle").text(
-          containing.length
-            ? ("Already saved in: " + containing.join(", "))
-            : "Save this item for later."
-        );
-      }
-
-      function refreshQuickViewListUi() {
-        refreshQuickViewHeartButton();
-        refreshQuickViewListButton();
-        if ($("#plQvListPanel").hasClass("open")) renderQuickViewListPanel();
-        syncQuickViewCardHeart();
-      }
-
-      function syncQuickViewCardHeart() {
-        if (!quickViewState || !quickViewState.product) return;
-        if (!window.BregFavorites || typeof window.BregFavorites.isInShoppingList !== "function") return;
-        var product = quickViewState.product;
-        var sku = getQuickViewListTargetSku();
-        if (sku !== String(product.id || "")) return;
-        var inList = window.BregFavorites.isInShoppingList(sku);
-        var $cardBtn = $(".js-heart-toggle[data-sku='" + String(product.id || "").replace(/(["\\])/g, "\\$1") + "']");
-        if ($cardBtn.length) {
-          $cardBtn.toggleClass("active", inList).html(inList ? "&#10084;" : "&#9825;");
-        }
-      }
-
-      function getQuickViewFavoriteItem() {
-        if (!quickViewState || !quickViewState.product) return null;
-        var product = quickViewState.product;
-        var sku = getQuickViewListTargetSku();
-        if (!sku) return null;
-        var variant = quickViewState.resolvedVariant;
-        return {
-          sku: sku,
-          name: String(product.name || ""),
-          image: String($("#plQuickViewImage").attr("src") || product.image || ""),
-          price: Number(product.price || 0),
-          category: String(product.category || category || "")
-        };
-      }
-
-      function openPlQvCreateListModal() {
-        $("#plQvListPanel").removeClass("open");
-        $("#plQvCreateListError").text("");
-        $("#plQvCreateListInput").val("");
-        $("#plQvCreateListModal").addClass("open").attr("aria-hidden", "false");
-        setTimeout(function () { $("#plQvCreateListInput").trigger("focus"); }, 0);
-      }
-
-      function closePlQvCreateListModal() {
-        $("#plQvCreateListModal").removeClass("open").attr("aria-hidden", "true");
-      }
+      var cardHoverStates = {};
 
       function cleanDescriptionHtml(raw) {
         var text = String(raw || "").trim();
@@ -1690,32 +1181,23 @@
         return uniq(product[catalogField] || []);
       }
 
-      function isOrientationRedundantWithOption(variants) {
-        if (!variants || !variants.length) return false;
-        var hasOption = false;
-        var hasOrientation = false;
-        var allPaired = true;
-        variants.forEach(function (variant) {
-          var attrs = variant.attributes || {};
-          var opt = normalizeOptionValue((attrs.option || [])[0]);
-          var ori = normalizeOptionValue((attrs.orientation || [])[0]);
-          if (opt) hasOption = true;
-          if (ori) hasOrientation = true;
-          if (!opt || !ori) return;
-          if (!((opt === "left" && ori === "left") || (opt === "right" && ori === "right"))) {
-            allPaired = false;
-          }
+      function productFacetFilterDefs() {
+        return (window.BREG_PRODUCT_FACETS || []).map(function (facet) {
+          return {
+            key: facet.key,
+            target: "#" + facet.catalogField,
+            className: facet.filterClass,
+            stateKey: facet.stateKey,
+            chipLabel: facet.chipLabel,
+            valueGetter: function (product) { return product[facet.catalogField] || []; }
+          };
         });
-        return hasOption && hasOrientation && allPaired;
       }
 
-      function findFacetValueBySide(facet, side) {
-        if (!facet) return "";
-        var target = normalizeOptionValue(side);
-        var match = (facet.values || []).find(function (value) {
-          return normalizeOptionValue(value) === target;
-        });
-        return match || "";
+      function productFacetSelectorList() {
+        return [".filter-subcategory"].concat((window.BREG_PRODUCT_FACETS || []).map(function (facet) {
+          return "." + facet.filterClass;
+        })).join(", ");
       }
 
       function getQuickViewConfig(product) {
@@ -1723,25 +1205,21 @@
         var variants = Array.isArray(variantsByMaster[product.id]) ? variantsByMaster[product.id] : [];
         if (!variants.length) return null;
         var onlineVariants = variants.filter(function (variant) { return variant.online !== false; });
-        var hideOrientation = isOrientationRedundantWithOption(onlineVariants);
-        var optionValues = getQuickViewFacetValues(product, onlineVariants, "option", "optionOptions");
-        var facetDefs = [
-          { key: "size", label: "Size", values: getQuickViewFacetValues(product, onlineVariants, "size", "sizeOptions") },
-          { key: "option", label: hideOrientation ? "Left/Right" : "Model", values: optionValues },
-          { key: "color", label: "Color", values: getQuickViewFacetValues(product, onlineVariants, "color", "colorOptions") },
-          { key: "gender", label: "Gender", values: getQuickViewFacetValues(product, onlineVariants, "gender", "genderOptions") },
-          { key: "orientation", label: "Orientation", values: getQuickViewFacetValues(product, onlineVariants, "orientation", "orientationOptions") },
-          { key: "uom", label: "UOM", values: getQuickViewFacetValues(product, onlineVariants, "uom", "uomOptions") }
-        ].filter(function (facet) {
-          if (facet.key === "orientation" && hideOrientation) return false;
+        var facetDefs = (window.BREG_PRODUCT_FACETS || []).map(function (facet) {
+          return {
+            key: facet.key,
+            label: facet.label,
+            values: getQuickViewFacetValues(product, onlineVariants, facet.key, facet.catalogField)
+          };
+        }).filter(function (facet) {
           return facet.values.length > 0;
         });
         var requiredFacets = facetDefs.filter(function (facet) { return facet.values.length > 1; });
+        if (!requiredFacets.length) return null;
         return {
-          facetDefs: facetDefs,
+          facetDefs: requiredFacets,
           requiredFacets: requiredFacets,
-          variants: onlineVariants,
-          hideOrientation: hideOrientation
+          variants: onlineVariants
         };
       }
 
@@ -1761,24 +1239,6 @@
         return (config && config.facetDefs || []).map(function (facet) { return facet.key; });
       }
 
-      function syncQuickViewPairedFacets(changedKey, changedValue) {
-        if (!quickViewState || !quickViewState.config) return;
-        var config = quickViewState.config;
-        var selected = quickViewState.selected || {};
-        var optionFacet = config.facetDefs.find(function (facet) { return facet.key === "option"; });
-        var orientationFacet = config.facetDefs.find(function (facet) { return facet.key === "orientation"; });
-        if (!optionFacet || !orientationFacet) return;
-        var side = normalizeOptionValue(changedValue);
-        if (changedKey === "option" && (side === "left" || side === "right")) {
-          var pairedOrientation = findFacetValueBySide(orientationFacet, side);
-          if (pairedOrientation) selected.orientation = pairedOrientation;
-        }
-        if (changedKey === "orientation" && (side === "left" || side === "right")) {
-          var pairedOption = findFacetValueBySide(optionFacet, side);
-          if (pairedOption) selected.option = pairedOption;
-        }
-      }
-
       function variantMatchesSelection(variant, selected, facetKeys) {
         var keys = (facetKeys && facetKeys.length) ? facetKeys : Object.keys(selected || {});
         return keys.every(function (key) {
@@ -1793,11 +1253,30 @@
 
       function resolveQuickViewVariant(product, config, selected) {
         if (!config) {
+          if (product && product.type === "variation-master") {
+            var masterVariants = (variantsByMaster[product.id] || []).filter(function (variant) {
+              return variant.online !== false;
+            });
+            if (masterVariants.length) {
+              return {
+                sku: String(masterVariants[0].sku || product.id || ""),
+                variant: masterVariants[0],
+                reason: ""
+              };
+            }
+          }
           return { sku: String(product.id || ""), variant: null, reason: "" };
         }
         var variants = config.variants || [];
         if (!variants.length) {
           return { sku: "", variant: null, reason: "Variant data unavailable for this product." };
+        }
+        if (!(config.requiredFacets || []).length) {
+          return {
+            sku: String(variants[0].sku || product.id || ""),
+            variant: variants[0],
+            reason: ""
+          };
         }
         var facetKeys = getQuickViewFacetKeys(config);
         var missing = (config.requiredFacets || []).filter(function (facet) { return !selected[facet.key]; });
@@ -1832,143 +1311,204 @@
         return product.image || missingProductImage;
       }
 
-      function renderQuickViewConfig() {
-        var state = quickViewState;
+      function isDesktopGridView() {
+        return window.matchMedia("(min-width: 768px)").matches;
+      }
+
+      function initCardHoverState(product) {
+        if (!product) return null;
+        var config = getQuickViewConfig(product);
+        var state = {
+          product: product,
+          config: config,
+          selected: config ? initQuickViewSelected(config) : {},
+          qty: 1,
+          resolvedSku: String(product.id || ""),
+          resolvedVariant: null,
+          priceTimer: null,
+          priceReadyKey: null,
+          priceDisplayed: false
+        };
+        cardHoverStates[String(product.id)] = state;
+        return state;
+      }
+
+      function getCardHoverState(productId) {
+        return cardHoverStates[String(productId || "")] || null;
+      }
+
+      function renderCardHoverFacets($card, state) {
+        var $config = $card.find(".js-card-hover-config");
         if (!state || !state.config) {
-          $("#plQuickViewConfig").addClass("hidden").empty();
+          $config.empty();
           return;
         }
         var html = "";
         (state.config.facetDefs || []).forEach(function (facet) {
           var isLocked = facet.values.length === 1;
-          var chips = facet.values.map(function (value) {
+          var optionsHtml = facet.values.map(function (value) {
             var active = state.selected[facet.key] === value ? " active" : "";
-            var lockedClass = isLocked ? " locked" : "";
             var disabledAttr = isLocked ? " disabled" : "";
-            return "<button type='button' class='pl-qv-chip" + active + lockedClass + "' data-facet='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(value) + "'" + disabledAttr + ">" + escapeHtml(value) + "</button>";
+            if (facet.key === "size") {
+              return "<button type='button' class='p-hover-size js-card-hover-option" + active + "' data-facet='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(value) + "'" + disabledAttr + ">" + escapeHtml(value) + "</button>";
+            }
+            return "<button type='button' class='p-hover-chip js-card-hover-option" + active + "' data-facet='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(value) + "'" + disabledAttr + ">" + escapeHtml(value) + "</button>";
           }).join("");
           html +=
-            "<div class='pl-qv-facet' data-facet='" + escapeHtml(facet.key) + "'>" +
-              "<span class='pl-qv-facet-label'>" + escapeHtml(facet.label) + "</span>" +
-              "<div class='pl-qv-chips'>" + chips + "</div>" +
+            "<div class='p-hover-facet' data-facet='" + escapeHtml(facet.key) + "'>" +
+              "<span class='p-hover-facet-label'>" + escapeHtml(facet.label) + "</span>" +
+              "<div class='p-hover-options'>" + optionsHtml + "</div>" +
             "</div>";
         });
-        if (!html) {
-          $("#plQuickViewConfig").addClass("hidden").empty();
-          return;
-        }
-        $("#plQuickViewConfig").html(html).removeClass("hidden");
+        $config.html(html);
       }
 
-      function updateQuickViewResolved() {
-        var state = quickViewState;
+      var HOVER_PRICE_DELAY_MS = 2000;
+
+      function formatHoverPrice(product) {
+        var amount = Number(product && product.price ? product.price : 0);
+        return "$" + (window.BregFormatMoney ? window.BregFormatMoney(amount) : amount.toFixed(2));
+      }
+
+      function productNeedsOptionSelection(config) {
+        if (window.BregPriceLoading && typeof window.BregPriceLoading.productNeedsOptionSelection === "function") {
+          return window.BregPriceLoading.productNeedsOptionSelection(config);
+        }
+        return !!(config && config.requiredFacets && config.requiredFacets.length);
+      }
+
+      function canShowHoverPrice(config, resolved) {
+        if (window.BregPriceLoading && typeof window.BregPriceLoading.canShowPriceAfterOptions === "function") {
+          return window.BregPriceLoading.canShowPriceAfterOptions(config, resolved, isSignedIn());
+        }
+        if (!isSignedIn()) return false;
+        if (!productNeedsOptionSelection(config)) return true;
+        return !resolved.reason;
+      }
+
+      function refreshCardHoverAddButton($card, state, resolved) {
+        var $addBtn = $card.find(".js-card-hover-add");
+        var canAdd = !!resolved.sku && !resolved.reason;
+        var waitingForPrice = isSignedIn() && canShowHoverPrice(state.config, resolved) && !state.priceDisplayed;
+        if (!isSignedIn()) {
+          $addBtn.prop("disabled", false).attr("title", "Login to add to cart").attr("aria-label", "Login to add to cart");
+          return;
+        }
+        var enabled = canAdd && !waitingForPrice;
+        $addBtn
+          .prop("disabled", !enabled)
+          .attr("title", enabled ? "Add to cart" : (canAdd ? "Loading price" : "Select options"))
+          .attr("aria-label", enabled ? "Add to cart" : (canAdd ? "Loading price" : "Select options"));
+      }
+
+      function updateCardHoverPrice($card, state, product, resolved) {
+        var $price = $card.find(".js-card-hover-price");
+        var $loading = $card.find(".js-card-hover-price-loading");
+        var shouldShow = canShowHoverPrice(state.config, resolved);
+        var priceText = formatHoverPrice(product);
+        var readyKey = String(resolved.sku || product.id || "") + "|" + priceText;
+
+        function refreshAddButton() {
+          var currentResolved = resolveQuickViewVariant(product, state.config, state.selected || {});
+          refreshCardHoverAddButton($card, state, currentResolved);
+        }
+
+        if (!window.BregPriceLoading) {
+          if (shouldShow) {
+            $price.text(priceText).show();
+            state.priceDisplayed = true;
+          } else {
+            $price.hide().text("");
+            state.priceDisplayed = false;
+          }
+          refreshAddButton();
+          return;
+        }
+
+        window.BregPriceLoading.apply({
+          state: state,
+          shouldShow: shouldShow,
+          priceText: priceText,
+          readyKey: readyKey,
+          delayMs: HOVER_PRICE_DELAY_MS,
+          $loading: $loading,
+          $price: $price,
+          onLoading: function () {
+            state.priceDisplayed = false;
+            refreshAddButton();
+          },
+          onHidden: function () {
+            state.priceDisplayed = false;
+            refreshAddButton();
+          },
+          onShown: function () {
+            state.priceDisplayed = true;
+            refreshAddButton();
+          },
+          validate: function () {
+            if (!$card.closest("body").length) return false;
+            var currentState = getCardHoverState(String($card.find(".p-card-hover-panel").attr("data-product-id") || ""));
+            if (!currentState || currentState !== state) return false;
+            var currentResolved = resolveQuickViewVariant(product, state.config, state.selected || {});
+            return canShowHoverPrice(state.config, currentResolved) &&
+              String(currentResolved.sku || product.id || "") + "|" + priceText === readyKey;
+          }
+        });
+      }
+
+      function updateCardHoverPanel($card, options) {
+        options = options || {};
+        var productId = String($card.find(".p-card-hover-panel").attr("data-product-id") || "");
+        var state = getCardHoverState(productId);
         if (!state || !state.product) return;
         var product = state.product;
         var resolved = resolveQuickViewVariant(product, state.config, state.selected || {});
         state.resolvedSku = resolved.sku;
         state.resolvedVariant = resolved.variant;
 
-        if (state.config) {
-          $("#plQuickViewSkuRow").removeClass("hidden");
-          if (resolved.reason) {
-            $("#plQuickViewResolvedMsg").text(resolved.reason).removeClass("hidden");
-            $("#plQuickViewSku").text(product.id || "");
-          } else if (resolved.sku) {
-            $("#plQuickViewResolvedMsg").html("Selected SKU: <strong>" + escapeHtml(resolved.sku) + "</strong>").removeClass("hidden");
-            $("#plQuickViewSku").text(resolved.sku);
-          } else {
-            $("#plQuickViewResolvedMsg").addClass("hidden").text("");
-            $("#plQuickViewSku").text(product.id || "");
-          }
-        } else {
-          $("#plQuickViewSkuRow").removeClass("hidden");
-          $("#plQuickViewSku").text(product.id || "");
-          $("#plQuickViewResolvedMsg").addClass("hidden").text("");
+        $card.find(".p-hover-name").text(product.name || product.id);
+        if (!options.skipPrice) {
+          updateCardHoverPrice($card, state, product, resolved);
         }
+
+        var shortDesc = getProductShortDescription(product);
+        var $desc = $card.find(".p-hover-desc");
+        if (shortDesc) {
+          $desc.text(shortDesc).show();
+        } else {
+          $desc.hide().text("");
+        }
+
+        renderCardHoverFacets($card, state);
+
+        var $msg = $card.find(".js-card-hover-msg");
+        if (resolved.reason) {
+          $msg.text(resolved.reason).show();
+        } else {
+          $msg.hide().text("");
+        }
+
+        $card.find(".js-card-hover-qty-val").text(String(state.qty || 1));
+        refreshCardHoverAddButton($card, state, resolved);
 
         var image = getQuickViewImage(product, resolved.variant);
-        $("#plQuickViewImage")
-          .attr("src", image)
-          .off("error.plQuickView")
-          .on("error.plQuickView", function () {
-            this.onerror = null;
-            this.src = missingProductImage;
+        $card.find(".p-thumb").attr("src", image);
+      }
+
+      function initCardHoverPanels() {
+        cardHoverStates = {};
+        if (viewMode === "list" || !isDesktopGridView()) return;
+        $("#productGrid .p-card").each(function () {
+          var $card = $(this);
+          var productId = String($card.find(".p-card-hover-panel").attr("data-product-id") || "");
+          var product = findProductById(productId);
+          if (!product) return;
+          initCardHoverState(product);
+          var hoverState = getCardHoverState(productId);
+          updateCardHoverPanel($card, {
+            skipPrice: hoverState && !productNeedsOptionSelection(hoverState.config)
           });
-
-        var canAdd = !!resolved.sku && !resolved.reason;
-        if (!isSignedIn()) {
-          $("#plQuickViewAddToCartBtn").prop("disabled", false).text("Login to add to cart");
-          $("#plQuickViewQty").prop("disabled", true);
-        } else {
-          $("#plQuickViewAddToCartBtn").prop("disabled", !canAdd).text(canAdd ? "Add to Cart" : "Select options");
-          $("#plQuickViewQty").prop("disabled", !canAdd);
-        }
-        refreshQuickViewListUi();
-      }
-
-      function isQuickViewDesktop() {
-        return window.matchMedia("(min-width: 768px)").matches;
-      }
-
-      function openQuickView(productId) {
-        if (!isQuickViewDesktop()) return;
-        var product = findProductById(productId);
-        if (!product) return;
-        var fallbackImage = missingProductImage;
-        var shortDesc = getProductShortDescription(product);
-        var productCategory = product.category || category || "Knee Bracing";
-        var config = getQuickViewConfig(product);
-
-        quickViewState = {
-          product: product,
-          config: config,
-          selected: config ? initQuickViewSelected(config) : {},
-          resolvedSku: product.id,
-          resolvedVariant: null
-        };
-
-        $("#plQuickViewName").text(product.name || product.id);
-        $("#plQuickViewCategory").text(productCategory);
-        $("#plQuickViewCategoryRow").toggle(!!productCategory);
-
-        if (product.subcategory) {
-          $("#plQuickViewSubcategory").text(product.subcategory);
-          $("#plQuickViewSubcategoryRow").removeClass("hidden");
-        } else {
-          $("#plQuickViewSubcategoryRow").addClass("hidden");
-        }
-
-        if (isSignedIn()) {
-          $("#plQuickViewPrice").text("$" + (window.BregFormatMoney ? window.BregFormatMoney(Number(product.price || 0)) : Number(product.price || 0).toFixed(2)));
-          $("#plQuickViewPriceRow").removeClass("hidden");
-        } else {
-          $("#plQuickViewPriceRow").addClass("hidden");
-        }
-
-        $("#plQuickViewDesc").text(shortDesc || "No short description is available for this product.");
-        $("#plQuickViewImage")
-          .attr("src", product.image || fallbackImage)
-          .attr("alt", product.name || product.id)
-          .off("error.plQuickView")
-          .on("error.plQuickView", function () {
-            this.onerror = null;
-            this.src = fallbackImage;
-          });
-        $("#plQuickViewDetailsLink").attr("href", getProductDetailHref(product));
-        $("#plQuickViewQty").val("1");
-        $("#plQuickViewModal").data("quickview-product-id", product.id);
-        renderQuickViewConfig();
-        updateQuickViewResolved();
-        $("#plQvListPanel").removeClass("open");
-        $("#plQuickViewModal").addClass("open").attr("aria-hidden", "false");
-        $("body").addClass("pl-quickview-open");
-      }
-
-      function closeQuickView() {
-        quickViewState = null;
-        $("#plQvListPanel").removeClass("open");
-        $("#plQuickViewModal").removeClass("open").attr("aria-hidden", "true").removeData("quickview-product-id");
-        $("body").removeClass("pl-quickview-open");
+        });
       }
 
       function addQuickViewLineToCart(line) {
@@ -2060,13 +1600,22 @@
         return haystack.indexOf(q) > -1;
       }
 
+      function isListableCatalogItem(item) {
+        if (window.BregCatalogListing && typeof window.BregCatalogListing.isListable === "function") {
+          return window.BregCatalogListing.isListable(item);
+        }
+        var type = String(item && item.type ? item.type : "product");
+        return type === "variation-master" || type === "product";
+      }
+
       function filterProductsForPage() {
+        var listable = allCatalogItems.filter(isListableCatalogItem);
         if (isSearchMode) {
-          return allCatalogItems.filter(function (item) {
+          return listable.filter(function (item) {
             return productMatchesSearch(item, searchQuery);
           });
         }
-        return allCatalogItems.filter(function (item) {
+        return listable.filter(function (item) {
           return normalizeKey(item.category) === normalizeKey(category);
         });
       }
@@ -2110,7 +1659,7 @@
         var html = "";
         values.forEach(function (value) {
           var checked = selectedSet && selectedSet.indexOf(value) > -1 ? " checked" : "";
-          html += "<label class='pl-option" + (className === "filter-color" ? " pl-option-swatch" : "") + "'>";
+          html += "<label class='pl-option'>";
           html += "<input type='checkbox' class='" + className + "' value='" + escapeHtml(value) + "'" + checked + ">";
           html += formatLabel ? formatLabel(value) : escapeHtml(value);
           html += "</label>";
@@ -2349,8 +1898,10 @@
             return uniqueValues(all);
           };
 
-          var optionValues = collect("Option").concat(collect("LeftRight"));
+          var optionValues = collect("Option").concat(collect("LeftRight")).concat(collect("Left or Right"));
           optionValues = uniqueValues(optionValues);
+          var sideValues = collect("Left or Right").concat(collect("LeftRight"));
+          sideValues = uniqueValues(sideValues);
 
           items.push({
             id: entry.sku,
@@ -2361,11 +1912,10 @@
             type: type,
             size: (collect("Size")[0] || "U"),
             sizeOptions: collect("Size"),
+            sideOptions: sideValues,
+            braceTypeOptions: collect("Brace Type"),
             optionOptions: optionValues,
-            colorOptions: collect("Color"),
-            genderOptions: collect("Gender"),
-            orientationOptions: collect("Orientation"),
-            uomOptions: collect("UOM"),
+            styleOptions: collect("Style"),
             price: entry.price,
             oldPrice: entry.oldPrice
           });
@@ -2380,13 +1930,17 @@
 
       function productMatchesState(product, state, excludeFacet) {
         if (excludeFacet !== "subcategory" && state.subcategories.length && state.subcategories.indexOf(product.subcategory) === -1) return false;
-        if (excludeFacet !== "size" && state.sizes.length && !product.sizeOptions.some(function (size) { return state.sizes.indexOf(size) > -1; })) return false;
-        if (excludeFacet !== "option" && state.options.length && !product.optionOptions.some(function (option) { return state.options.indexOf(option) > -1; })) return false;
-        if (excludeFacet !== "color" && state.colors.length && !product.colorOptions.some(function (color) { return state.colors.indexOf(color) > -1; })) return false;
-        if (excludeFacet !== "gender" && state.genders.length && !product.genderOptions.some(function (gender) { return state.genders.indexOf(gender) > -1; })) return false;
-        if (excludeFacet !== "orientation" && state.orientations.length && !product.orientationOptions.some(function (orientation) { return state.orientations.indexOf(orientation) > -1; })) return false;
-        if (excludeFacet !== "uom" && state.uoms.length && !product.uomOptions.some(function (uom) { return state.uoms.indexOf(uom) > -1; })) return false;
-        return true;
+        var matches = true;
+        (window.BREG_PRODUCT_FACETS || []).forEach(function (facet) {
+          if (excludeFacet === facet.key) return;
+          var selected = state[facet.stateKey] || [];
+          if (!selected.length) return;
+          var values = product[facet.catalogField] || [];
+          if (!values.some(function (value) { return selected.indexOf(value) > -1; })) {
+            matches = false;
+          }
+        });
+        return matches;
       }
 
       function isMobileFilterView() {
@@ -2406,27 +1960,14 @@
       function restoreMobileFilterSnapshot() {
         if (!mobileFilterSnapshot) return;
         var snapshot = mobileFilterSnapshot;
-        $(".filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom").prop("checked", false);
+        $(productFacetSelectorList()).prop("checked", false);
         snapshot.subcategories.forEach(function (value) {
           $(".filter-subcategory[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
         });
-        snapshot.sizes.forEach(function (value) {
-          $(".filter-size[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
-        });
-        snapshot.options.forEach(function (value) {
-          $(".filter-option[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
-        });
-        snapshot.colors.forEach(function (value) {
-          $(".filter-color[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
-        });
-        snapshot.genders.forEach(function (value) {
-          $(".filter-gender[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
-        });
-        snapshot.orientations.forEach(function (value) {
-          $(".filter-orientation[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
-        });
-        snapshot.uoms.forEach(function (value) {
-          $(".filter-uom[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        productFacetFilterDefs().forEach(function (facet) {
+          (snapshot[facet.stateKey] || []).forEach(function (value) {
+            $("." + facet.className + "[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+          });
         });
         buildFacetFilters();
       }
@@ -2452,18 +1993,17 @@
         if (subcategory && !state.subcategories.length) {
           state.subcategories = [subcategory];
         }
-        var facetDefs = [
-          { key: "subcategory", target: "#subcategoryOptions", className: "filter-subcategory", selected: state.subcategories, valueGetter: function (p) { return [p.subcategory]; } },
-          { key: "size", target: "#sizeOptions", className: "filter-size", selected: state.sizes, valueGetter: function (p) { return p.sizeOptions || []; } },
-          { key: "option", target: "#optionOptions", className: "filter-option", selected: state.options, valueGetter: function (p) { return p.optionOptions || []; } },
-          { key: "color", target: "#colorOptions", className: "filter-color", selected: state.colors, valueGetter: function (p) { return p.colorOptions || []; }, formatLabel: function (value) {
-            var swatch = colorToSwatch(value);
-            return "<span class='pl-swatch-thumb' style='background:" + swatch + ";'></span><span>" + escapeHtml(value) + "</span>";
-          } },
-          { key: "gender", target: "#genderOptions", className: "filter-gender", selected: state.genders, valueGetter: function (p) { return p.genderOptions || []; } },
-          { key: "orientation", target: "#orientationOptions", className: "filter-orientation", selected: state.orientations, valueGetter: function (p) { return p.orientationOptions || []; } },
-          { key: "uom", target: "#uomOptions", className: "filter-uom", selected: state.uoms, valueGetter: function (p) { return p.uomOptions || []; } }
-        ];
+        var facetDefs = [{ key: "subcategory", target: "#subcategoryOptions", className: "filter-subcategory", selected: state.subcategories, valueGetter: function (p) { return [p.subcategory]; } }].concat(
+          productFacetFilterDefs().map(function (facet) {
+            return {
+              key: facet.key,
+              target: facet.target,
+              className: facet.className,
+              selected: state[facet.stateKey] || [],
+              valueGetter: facet.valueGetter
+            };
+          })
+        );
 
         facetDefs.forEach(function (facet) {
           var scopedProducts = products.filter(function (p) { return productMatchesState(p, state, facet.key); });
@@ -2477,16 +2017,14 @@
       }
 
       function currentState() {
-        return {
+        var state = {
           sort: $("#sortSelect").val(),
-          subcategories: selectedValues(".filter-subcategory"),
-          sizes: selectedValues(".filter-size"),
-          options: selectedValues(".filter-option"),
-          colors: selectedValues(".filter-color"),
-          genders: selectedValues(".filter-gender"),
-          orientations: selectedValues(".filter-orientation"),
-          uoms: selectedValues(".filter-uom")
+          subcategories: selectedValues(".filter-subcategory")
         };
+        (window.BREG_PRODUCT_FACETS || []).forEach(function (facet) {
+          state[facet.stateKey] = selectedValues("." + facet.filterClass);
+        });
+        return state;
       }
 
       function applyFilters() {
@@ -2495,13 +2033,16 @@
 
         filtered = products.filter(function (p) {
           if (s.subcategories.length && s.subcategories.indexOf(p.subcategory) === -1) return false;
-          if (s.sizes.length && !p.sizeOptions.some(function (size) { return s.sizes.indexOf(size) > -1; })) return false;
-          if (s.options.length && !p.optionOptions.some(function (option) { return s.options.indexOf(option) > -1; })) return false;
-          if (s.colors.length && !p.colorOptions.some(function (color) { return s.colors.indexOf(color) > -1; })) return false;
-          if (s.genders.length && !p.genderOptions.some(function (gender) { return s.genders.indexOf(gender) > -1; })) return false;
-          if (s.orientations.length && !p.orientationOptions.some(function (orientation) { return s.orientations.indexOf(orientation) > -1; })) return false;
-          if (s.uoms.length && !p.uomOptions.some(function (uom) { return s.uoms.indexOf(uom) > -1; })) return false;
-          return true;
+          var matches = true;
+          (window.BREG_PRODUCT_FACETS || []).forEach(function (facet) {
+            var selected = s[facet.stateKey] || [];
+            if (!selected.length) return;
+            var values = p[facet.catalogField] || [];
+            if (!values.some(function (value) { return selected.indexOf(value) > -1; })) {
+              matches = false;
+            }
+          });
+          return matches;
         });
 
         if (s.sort === "price_asc") filtered.sort(function (a, b) { return a.price - b.price; });
@@ -2519,23 +2060,10 @@
           chips.push("<span class='pl-chip'>" + escapeHtml(v) + " <button class='remove' data-remove='subcategory' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
         });
 
-        state.sizes.forEach(function (v) {
-          chips.push("<span class='pl-chip'>Size " + escapeHtml(v) + " <button class='remove' data-remove='size' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
-        });
-        state.options.forEach(function (v) {
-          chips.push("<span class='pl-chip'>Option " + escapeHtml(v) + " <button class='remove' data-remove='option' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
-        });
-        state.colors.forEach(function (v) {
-          chips.push("<span class='pl-chip'>Color " + escapeHtml(v) + " <button class='remove' data-remove='color' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
-        });
-        state.genders.forEach(function (v) {
-          chips.push("<span class='pl-chip'>Gender " + escapeHtml(v) + " <button class='remove' data-remove='gender' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
-        });
-        state.orientations.forEach(function (v) {
-          chips.push("<span class='pl-chip'>Orientation " + escapeHtml(v) + " <button class='remove' data-remove='orientation' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
-        });
-        state.uoms.forEach(function (v) {
-          chips.push("<span class='pl-chip'>UOM " + escapeHtml(v) + " <button class='remove' data-remove='uom' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+        productFacetFilterDefs().forEach(function (facet) {
+          (state[facet.stateKey] || []).forEach(function (v) {
+            chips.push("<span class='pl-chip'>" + escapeHtml(facet.chipLabel) + " " + escapeHtml(v) + " <button class='remove' data-remove='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(v) + "' type='button'>&times;</button></span>");
+          });
         });
 
         chips.push("<span class='pl-count-inline'><span id='resultCountInline'>" + filtered.length + "</span> products</span>");
@@ -2571,6 +2099,34 @@
               metaHtml += "<p class='p-desc'>" + escapeHtml(shortDesc) + "</p>";
             }
           }
+          var shortDesc = getProductShortDescription(p);
+          var priceHtml =
+            "<div class='p-hover-price-wrap'>" +
+              "<span class='p-hover-price-loading js-card-hover-price-loading' role='status' aria-label='Loading price'></span>" +
+              "<p class='p-hover-price js-card-hover-price' style='display:none;'></p>" +
+            "</div>";
+          var hoverPanelHtml = listLayout ? "" : (
+            "<div class='p-card-hover-panel' data-product-id='" + escapeHtml(p.id) + "'>" +
+              "<h3 class='p-hover-name'>" + escapeHtml(p.name) + "</h3>" +
+              priceHtml +
+              (shortDesc ? ("<p class='p-hover-desc'>" + escapeHtml(shortDesc) + "</p>") : "<p class='p-hover-desc' style='display:none;'></p>") +
+              "<div class='p-hover-config js-card-hover-config'></div>" +
+              "<p class='p-hover-msg js-card-hover-msg' style='display:none;'></p>" +
+              "<div class='p-hover-cart-row'>" +
+                "<div class='p-hover-qty-wrap'>" +
+                  "<span class='p-hover-qty-label'>Quantity</span>" +
+                  "<div class='p-hover-qty-stepper'>" +
+                    "<button type='button' class='js-card-hover-qty-dec' aria-label='Decrease quantity'>&minus;</button>" +
+                    "<span class='p-hover-qty-val js-card-hover-qty-val'>1</span>" +
+                    "<button type='button' class='js-card-hover-qty-inc' aria-label='Increase quantity'>&plus;</button>" +
+                  "</div>" +
+                "</div>" +
+                "<button type='button' class='p-hover-add-btn js-card-hover-add' disabled aria-label='Add to cart'>" +
+                  "<span class='glyphicon glyphicon-shopping-cart' aria-hidden='true'></span>" +
+                "</button>" +
+              "</div>" +
+            "</div>"
+          );
           html += "" +
             "<article class='p-card'" + (listLayout ? "" : " style='border:0 !important; box-shadow:none !important;'") + ">" +
               "<button type='button' class='p-heart-btn js-heart-toggle" + (inShoppingList ? " active" : "") + "' " +
@@ -2581,9 +2137,9 @@
                 "<a class='p-card-link' href='" + detailHref + "'>" +
                   "<img class='p-thumb' src='" + p.image + "' onerror=\"this.onerror=null;this.src='" + fallbackImage + "';\" alt='" + escapeHtml(p.name) + "'>" +
                 "</a>" +
-                "<button type='button' class='p-quickview-btn js-pl-quickview' data-product-id='" + escapeHtml(p.id) + "'>Quick View</button>" +
+                hoverPanelHtml +
               "</div>" +
-              "<a class='p-card-body-link' href='" + detailHref + "'>" +
+              "<a class='p-card-body-link p-card-default-body' href='" + detailHref + "'>" +
                 "<div class='p-body'>" +
                   "<h3 class='p-title'>" + escapeHtml(p.name) + "</h3>" +
                   metaHtml +
@@ -2598,24 +2154,24 @@
             this.style.setProperty("border", "0", "important");
             this.style.setProperty("border-color", "transparent", "important");
           });
+          initCardHoverPanels();
         }
       }
 
       function clearAllFilters() {
         $("#sortSelect").val("featured");
-        $(".filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom").prop("checked", false);
+        $(productFacetSelectorList()).prop("checked", false);
         if (isMobileFilterDrawerOpen()) return;
         applyFilters();
       }
 
       function removeFilter(type, value) {
-        if (type === "subcategory") $(".filter-subcategory[value='" + value + "']").prop("checked", false);
-        if (type === "size") $(".filter-size[value='" + value + "']").prop("checked", false);
-        if (type === "option") $(".filter-option[value='" + value + "']").prop("checked", false);
-        if (type === "color") $(".filter-color[value='" + value + "']").prop("checked", false);
-        if (type === "gender") $(".filter-gender[value='" + value + "']").prop("checked", false);
-        if (type === "orientation") $(".filter-orientation[value='" + value + "']").prop("checked", false);
-        if (type === "uom") $(".filter-uom[value='" + value + "']").prop("checked", false);
+        if (type === "subcategory") {
+          $(".filter-subcategory[value='" + value + "']").prop("checked", false);
+        } else {
+          var facet = (window.BREG_PRODUCT_FACETS || []).find(function (entry) { return entry.key === type; });
+          if (facet) $("." + facet.filterClass + "[value='" + value + "']").prop("checked", false);
+        }
         applyFilters();
       }
 
@@ -2735,7 +2291,7 @@
         .on("input change", "#sortSelect", function () {
           applyFilters();
         })
-        .on("input change", ".filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom", function () {
+        .on("input change", productFacetSelectorList(), function () {
           if (isMobileFilterDrawerOpen()) return;
           applyFilters();
         })
@@ -2762,137 +2318,82 @@
         .on("click", "#filterBackdrop", function () {
           toggleMobileFilters(false);
         })
-        .on("click", ".js-pl-quickview", function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          if (!isQuickViewDesktop()) return;
-          openQuickView($(this).attr("data-product-id"));
+        .on("mouseenter", "#productGrid .p-card", function () {
+          if (viewMode === "list" || !isDesktopGridView()) return;
+          var $card = $(this);
+          var productId = String($card.find(".p-card-hover-panel").attr("data-product-id") || "");
+          var state = getCardHoverState(productId);
+          if (!state || !state.product || !isSignedIn()) return;
+          if (!productNeedsOptionSelection(state.config)) {
+            state.priceReadyKey = null;
+            var resolved = resolveQuickViewVariant(state.product, state.config, state.selected || {});
+            updateCardHoverPrice($card, state, state.product, resolved);
+          }
         })
-        .on("click", "#plQuickViewClose", function () {
-          closeQuickView();
-        })
-        .on("click", "#plQuickViewModal", function (event) {
-          if (event.target === this) closeQuickView();
-        })
-        .on("click", ".pl-qv-chip", function () {
-          if (!quickViewState || !quickViewState.config) return;
-          var facetKey = String($(this).attr("data-facet") || "");
-          var facetValue = String($(this).attr("data-value") || "");
-          if (!facetKey) return;
-          quickViewState.selected[facetKey] = facetValue;
-          syncQuickViewPairedFacets(facetKey, facetValue);
-          renderQuickViewConfig();
-          updateQuickViewResolved();
-        })
-        .on("click", "#plQuickViewAddToCartBtn", function (event) {
+        .on("click", ".js-card-hover-option", function (event) {
           event.preventDefault();
           event.stopPropagation();
           if ($(this).prop("disabled")) return;
+          var $card = $(this).closest(".p-card");
+          var productId = String($card.find(".p-card-hover-panel").attr("data-product-id") || "");
+          var state = getCardHoverState(productId);
+          if (!state || !state.config) return;
+          var facetKey = String($(this).attr("data-facet") || "");
+          var facetValue = String($(this).attr("data-value") || "");
+          if (!facetKey) return;
+          state.selected[facetKey] = facetValue;
+          updateCardHoverPanel($card);
+        })
+        .on("click", ".js-card-hover-qty-dec", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          var $card = $(this).closest(".p-card");
+          var state = getCardHoverState($card.find(".p-card-hover-panel").attr("data-product-id"));
+          if (!state) return;
+          state.qty = Math.max(1, Number(state.qty || 1) - 1);
+          updateCardHoverPanel($card);
+        })
+        .on("click", ".js-card-hover-qty-inc", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          var $card = $(this).closest(".p-card");
+          var state = getCardHoverState($card.find(".p-card-hover-panel").attr("data-product-id"));
+          if (!state) return;
+          state.qty = Math.min(99, Number(state.qty || 1) + 1);
+          updateCardHoverPanel($card);
+        })
+        .on("click", ".js-card-hover-add", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
+          if ($(this).prop("disabled")) return;
+          var $card = $(this).closest(".p-card");
+          var productId = String($card.find(".p-card-hover-panel").attr("data-product-id") || "");
+          var state = getCardHoverState(productId);
+          if (!state || !state.product) return;
           if (!isSignedIn()) {
             window.location.href = getQuickViewLoginHref();
             return;
           }
-          if (!quickViewState || !quickViewState.product) return;
-          var product = quickViewState.product;
-          var resolved = resolveQuickViewVariant(product, quickViewState.config, quickViewState.selected || {});
-          var resolvedSku = String(resolved.sku || quickViewState.resolvedSku || "");
+          var product = state.product;
+          var resolved = resolveQuickViewVariant(product, state.config, state.selected || {});
+          var resolvedSku = String(resolved.sku || state.resolvedSku || "");
           if (!resolvedSku || resolved.reason) {
-            updateQuickViewResolved();
+            updateCardHoverPanel($card);
             return;
           }
-          var variant = resolved.variant || quickViewState.resolvedVariant;
-          var qty = Number($("#plQuickViewQty").val() || 1);
+          var variant = resolved.variant || state.resolvedVariant;
           var line = {
             sku: resolvedSku,
-            qty: isFinite(qty) ? Math.max(1, Math.round(qty)) : 1,
+            qty: Math.max(1, Math.round(Number(state.qty || 1))),
             name: String((variant && variant.name) || product.name || resolvedSku),
             price: Number(product.price || 0),
             image: getQuickViewImage(product, variant),
             category: String(product.category || category || "")
           };
           if (!addQuickViewLineToCart(line)) return;
-          closeQuickView();
           if (window.BregCart && typeof window.BregCart.showAddedModal === "function") {
             window.BregCart.showAddedModal([line]);
           }
-        })
-        .on("click", "#plQvListBtn", function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          $("#plQvListPanel").toggleClass("open");
-          if ($("#plQvListPanel").hasClass("open")) renderQuickViewListPanel();
-        })
-        .on("click", "#plQvHeartBtn", function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          if (!window.BregFavorites || typeof window.BregFavorites.toggleShoppingListItem !== "function") return;
-          var item = getQuickViewFavoriteItem();
-          if (!item || !item.sku) return;
-          var $btn = $(this);
-          var saved = window.BregFavorites.toggleShoppingListItem(item);
-          refreshQuickViewHeartButton();
-          if (saved) {
-            $btn.removeClass("hearted");
-            if ($btn.length && $btn.get(0)) $btn.get(0).offsetWidth;
-            $btn.addClass("hearted");
-          }
-          syncQuickViewCardHeart();
-        })
-        .on("click", "#plQvCloseListBtn", function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          $("#plQvListPanel").removeClass("open");
-        })
-        .on("change", ".js-pl-qv-list-check", function () {
-          var listName = $(this).attr("data-list") || "";
-          var sku = getQuickViewListTargetSku();
-          if (!listName || !sku) return;
-          var arr = listState[listName] || [];
-          var idx = arr.indexOf(sku);
-          if (this.checked && idx === -1) arr.push(sku);
-          if (!this.checked && idx > -1) arr.splice(idx, 1);
-          listState[listName] = arr;
-          saveListState();
-          refreshQuickViewListButton();
-          renderQuickViewListPanel();
-        })
-        .on("click", "#plQvCreateListBtn", function (event) {
-          event.preventDefault();
-          event.stopPropagation();
-          openPlQvCreateListModal();
-        })
-        .on("click", "#plQvCreateListClose, #plQvCreateListCancel", function () {
-          closePlQvCreateListModal();
-        })
-        .on("click", "#plQvCreateListModal", function (event) {
-          if (event.target === this) closePlQvCreateListModal();
-        })
-        .on("submit", "#plQvCreateListForm", function (event) {
-          event.preventDefault();
-          var name = String($("#plQvCreateListInput").val() || "").trim();
-          if (!name) {
-            $("#plQvCreateListError").text("Enter a list name.");
-            return;
-          }
-          var existing = Object.keys(listState).find(function (n) {
-            return n.toLowerCase() === name.toLowerCase();
-          });
-          var finalName = existing || name;
-          if (!listState[finalName]) listState[finalName] = [];
-          var sku = getQuickViewListTargetSku();
-          if (sku && listState[finalName].indexOf(sku) === -1) listState[finalName].push(sku);
-          saveListState();
-          refreshQuickViewListButton();
-          renderQuickViewListPanel();
-          closePlQvCreateListModal();
-        })
-        .on("keydown.plQuickView", function (event) {
-          if (event.key !== "Escape") return;
-          if ($("#plQvCreateListModal").hasClass("open")) {
-            closePlQvCreateListModal();
-            return;
-          }
-          if ($("#plQuickViewModal").hasClass("open")) closeQuickView();
         })
         .on("click", ".js-heart-toggle", function (event) {
           event.preventDefault();
@@ -2913,23 +2414,14 @@
             if ($btn.length && $btn.get(0)) $btn.get(0).offsetWidth;
             $btn.addClass("hearted");
           }
-          if ($("#plQuickViewModal").hasClass("open") && quickViewState && quickViewState.product &&
-              String(quickViewState.product.id || "") === item.sku) {
-            refreshQuickViewHeartButton();
-          }
-        })
-        .on("click", function (event) {
-          if (!$(event.target).closest("#plQvListWrap").length) {
-            $("#plQvListPanel").removeClass("open");
-          }
         });
 
       $(window).on("resize", function () {
         if (window.innerWidth > 991) {
           toggleMobileFilters(false, { commit: true });
         }
-        if (!isQuickViewDesktop() && $("#plQuickViewModal").hasClass("open")) {
-          closeQuickView();
+        if (isDesktopGridView() && viewMode !== "list") {
+          initCardHoverPanels();
         }
       });
     })();

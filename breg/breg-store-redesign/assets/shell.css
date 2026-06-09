@@ -1345,6 +1345,66 @@ body.breg-scroll-controls-suppressed .scroll-quick-order-btn {
   }
 }
 
+@media (max-width: 767px) {
+  .bulk-modal .bulk-foot,
+  .modal .modal-dialog .modal-footer {
+    flex-shrink: 0;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    padding: 10px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    justify-content: stretch;
+    align-items: stretch;
+  }
+  .bulk-modal .bulk-foot {
+    box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
+  }
+  .bulk-modal .bulk-foot .bulk-btn-cancel,
+  .bulk-modal .bulk-foot .bulk-btn-check,
+  .bulk-modal .bulk-foot .bulk-btn-add,
+  .modal .modal-dialog .modal-footer > .btn,
+  .modal .modal-dialog .modal-footer > .btn-default,
+  .modal .modal-dialog .modal-footer > .btn-primary,
+  .modal .modal-dialog .modal-footer > .btn-create-submit,
+  .modal .modal-dialog .modal-footer > .btn-manage-save,
+  .modal .modal-dialog .modal-footer > .btn-delete-list,
+  .modal .modal-dialog .modal-footer > .profile-btn,
+  .modal .modal-dialog .modal-footer > .address-form-btn,
+  .modal .modal-dialog .modal-footer > .payment-form-btn,
+  .modal .modal-dialog .modal-footer > .user-btn,
+  .modal .modal-dialog .modal-footer > .delete-btn {
+    width: 100%;
+    height: 40px;
+    min-height: 40px;
+    margin: 0;
+    padding: 0 14px;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1.2;
+    border-radius: 999px;
+    box-sizing: border-box;
+  }
+  .modal .modal-dialog .modal-footer .manage-list-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    width: 100%;
+    margin-left: 0;
+  }
+  .modal .modal-dialog .modal-footer .manage-list-actions .btn {
+    width: 100%;
+    height: 40px;
+    min-height: 40px;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
 /* Global override: product cards should be borderless */
 .p-card,
 .p-card:hover,

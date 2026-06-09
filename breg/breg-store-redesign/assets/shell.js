@@ -193,7 +193,7 @@
           ".bulk-btn-check{border:1px solid var(--breg-primary,#0047bb);background:#fff;color:var(--breg-primary,#0047bb);font-family:var(--font-body);}" +
           ".bulk-btn-add{border:1px solid var(--breg-primary,#0047bb);background:var(--breg-primary,#0047bb);color:#fff;font-family:var(--font-body);}" +
           ".bulk-btn-check:hover,.bulk-btn-check:focus,.bulk-btn-cancel:hover,.bulk-btn-cancel:focus{text-decoration:none;color:var(--breg-darkest,#071d49);}.bulk-btn-add:hover,.bulk-btn-add:focus{text-decoration:none;color:#fff;background:var(--breg-primary-dark,#001E62);border-color:var(--breg-primary-dark,#001E62);}" +
-          "@media (max-width:767px){.cart-added-list{grid-template-columns:1fr;}.bulk-foot{flex-wrap:wrap;}}" +
+          "@media (max-width:767px){.cart-added-list{grid-template-columns:1fr;}}" +
         "</style>";
       $("head").append(modalStyles);
     }

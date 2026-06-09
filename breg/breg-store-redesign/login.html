@@ -663,7 +663,8 @@
 
       document.getElementById("loginForm").addEventListener("submit", function(e){
         e.preventDefault();
-        if (loginEmail.value.trim().toLowerCase() === "test@breg.com" && loginPassword.value === "password123") {
+        var storedPassword = localStorage.getItem("bregUserPassword") || "password123";
+        if (loginEmail.value.trim().toLowerCase() === "test@breg.com" && loginPassword.value === storedPassword) {
           loginError.style.display = "none";
           localStorage.setItem("bregSignedIn","true");
           localStorage.setItem("bregFirstName", "Jordan");

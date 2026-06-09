@@ -131,7 +131,13 @@
       background: var(--breg-primary-dark, #001E62);
       color: #fff;
     }
-    .confirm-actions { margin-top: 14px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .confirm-actions {
+      margin-top: 14px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
     .confirm-btn {
       border: 1px solid #d1d5dc;
       background: #fff;
@@ -200,6 +206,125 @@
     @media (max-width: 900px) {
       .confirm-options-grid { grid-template-columns: 1fr; }
     }
+    @media (max-width: 767px) {
+      #confirmTable {
+        width: 100%;
+        max-width: 100%;
+        overflow: visible;
+      }
+      .confirm-table {
+        min-width: 0;
+      }
+      .confirm-table thead {
+        display: none;
+      }
+      .confirm-table,
+      .confirm-table tbody {
+        display: block;
+        width: 100%;
+      }
+      .confirm-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 10px;
+        padding: 12px 14px;
+        border: 1px solid #e8edf3;
+        border-radius: 10px;
+        background: #f8fafc;
+        margin-bottom: 10px;
+      }
+      .confirm-table tbody tr:last-child {
+        margin-bottom: 0;
+      }
+      .confirm-table tbody tr.is-selectable:hover td,
+      .confirm-table tbody tr.line-selected td {
+        background: transparent;
+      }
+      .confirm-table tbody tr.line-selected {
+        border-color: #9eb7d6;
+        background: #eef5ff;
+        box-shadow: inset 0 0 0 1px rgba(73, 128, 197, 0.12);
+      }
+      .confirm-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 4px 0;
+        border: 0;
+        font-size: 13px;
+      }
+      .confirm-table tbody td::before {
+        content: attr(data-label);
+        flex: 0 0 38%;
+        max-width: 42%;
+        font-weight: 600;
+        color: #64748b;
+        font-size: 10px;
+        line-height: 1.35;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+      }
+      .confirm-table tbody td.confirm-line-product {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        font-size: 15px;
+        font-weight: 600;
+        color: #0f172a;
+        line-height: 1.35;
+        padding-top: 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e8edf3;
+        margin-bottom: 2px;
+        justify-content: flex-start;
+      }
+      .confirm-table.has-select-col tbody td.confirm-line-product {
+        grid-column: 1;
+      }
+      .confirm-table tbody td.confirm-line-product::before {
+        display: none;
+      }
+      .confirm-table tbody td.confirm-line-select {
+        grid-column: 2;
+        grid-row: 1;
+        align-self: start;
+        justify-content: flex-end;
+        padding-top: 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #e8edf3;
+        margin-bottom: 2px;
+      }
+      .confirm-table tbody td.confirm-line-select::before {
+        display: none;
+      }
+      .confirm-table tbody td.confirm-line-total {
+        grid-column: 1 / -1;
+        font-weight: 600;
+        color: #b12704;
+      }
+      .confirm-table tbody td.confirm-line-detail {
+        grid-column: 1 / -1;
+      }
+      .confirm-line-check {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+      }
+      .confirm-total {
+        text-align: left;
+        font-size: 15px;
+      }
+      .confirm-line-actions {
+        justify-content: stretch;
+      }
+      .confirm-line-actions .confirm-line-btn,
+      .confirm-actions .confirm-line-btn {
+        flex: 1 1 140px;
+        text-align: center;
+        padding: 7px 12px;
+        font-size: 13px;
+      }
+    }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
 </head>
@@ -263,7 +388,7 @@
         <div class="confirm-total" id="confirmTotal"></div>
         <div class="confirm-line-actions" id="confirmLineActions"></div>
         <div class="confirm-actions">
-          <a class="confirm-btn primary" href="order-history.html">Back to Order History</a>
+          <a class="confirm-line-btn" href="order-history.html">Back to Order History</a>
         </div>
       </div>
     </section>
@@ -508,23 +633,41 @@
       selectionsHtml += "</div>";
       $("#confirmCheckoutSelections").html(selectionsHtml);
 
+      function applyConfirmTableMobileLabels() {
+        var $table = $("#confirmTable .confirm-table");
+        if (!$table.length) return;
+        var labels = [];
+        $table.find("thead th").each(function () {
+          labels.push(String($(this).text() || "").trim());
+        });
+        $table.find("tbody tr").each(function () {
+          var $cells = $(this).children("td");
+          labels.forEach(function (label, index) {
+            if ($cells.eq(index).length) {
+              $cells.eq(index).attr("data-label", label);
+            }
+          });
+        });
+      }
+
       var rows = "";
       order.lines.forEach(function (line, idx) {
         rows += "<tr>" +
-          (isHistoryDetail ? ("<td><input type='checkbox' class='confirm-line-check' data-line-index='" + idx + "'></td>") : "") +
-          "<td>" + escapeHtml(line.name || line.sku || "Product") + "</td>" +
-          "<td>" + escapeHtml(line.sku || "") + "</td>" +
-          "<td>" + Number(line.qty || 0) + "</td>" +
-          "<td>$" + BregFormatMoney(Number(line.price || 0)) + "</td>" +
-          "<td>$" + BregFormatMoney(Number(line.lineTotal || 0)) + "</td>" +
+          (isHistoryDetail ? ("<td class='confirm-line-select'><input type='checkbox' class='confirm-line-check' data-line-index='" + idx + "'></td>") : "") +
+          "<td class='confirm-line-product'>" + escapeHtml(line.name || line.sku || "Product") + "</td>" +
+          "<td class='confirm-line-detail'>" + escapeHtml(line.sku || "") + "</td>" +
+          "<td class='confirm-line-detail'>" + Number(line.qty || 0) + "</td>" +
+          "<td class='confirm-line-detail'>$" + BregFormatMoney(Number(line.price || 0)) + "</td>" +
+          "<td class='confirm-line-total'>$" + BregFormatMoney(Number(line.lineTotal || 0)) + "</td>" +
         "</tr>";
       });
       $("#confirmTable").html(
-        "<table class='confirm-table'>" +
+        "<table class='confirm-table" + (isHistoryDetail ? " has-select-col" : "") + "'>" +
           "<thead><tr>" + (isHistoryDetail ? "<th>Select</th>" : "") + "<th>Product</th><th>SKU</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead>" +
           "<tbody>" + rows + "</tbody>" +
         "</table>"
       );
+      applyConfirmTableMobileLabels();
       $("#confirmTotal").text("Order Total: $" + BregFormatMoney(Number(order.total || 0)));
       if (isHistoryDetail) {
         $("#confirmLineActions").html(

@@ -204,6 +204,12 @@
       background: #e9f7f9;
       color: #0f4d56;
     }
+    .pdp-option-chip.unavailable,
+    .pdp-option-chip:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
     .pdp-option-chip:focus {
       outline: none;
       box-shadow: 0 0 0 2px rgba(0,113,133,.12);
@@ -248,10 +254,37 @@
     .pdp-btn-primary[disabled] { opacity: .55; cursor: not-allowed; }
     .pdp-rail { border: 1px solid #d5dde4; border-radius: 10px; background: #fff; padding: 14px; position: sticky; top: 96px; }
     .pdp-rail h3 { margin: 0 0 16px; padding-bottom: 9px; border-bottom: 1px solid #e5e7eb; font-size: 16px; line-height: 24px; font-weight: 500; letter-spacing: -.31px; color: #0a0a0a; }
-    .pdp-rail-item { display: flex; gap: 12px; margin-bottom: 16px; text-decoration: none; color: inherit; }
-    .pdp-rail-item img { width: 80px; height: 80px; border: 0; border-radius: 4px; background: #fff; object-fit: contain; padding: 9px; }
-    .pdp-rail-name { font-size: 14px; line-height: 20px; color: #0a0a0a; letter-spacing: -.15px; }
-    .pdp-rail-price { color: #b12704; font-size: 14px; margin-top: 4px; }
+    #pdpRail {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    #pdpRail > .pdp-empty {
+      grid-column: 1 / -1;
+    }
+    .pdp-rail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+      min-width: 0;
+    }
+    .pdp-rail-item img {
+      width: 100%;
+      aspect-ratio: 1;
+      border: 0;
+      border-radius: 4px;
+      background: #fff;
+      object-fit: contain;
+      padding: 9px;
+    }
+    .pdp-rail-name {
+      font-size: 13px;
+      line-height: 18px;
+      color: #0a0a0a;
+      letter-spacing: -.15px;
+    }
     .pdp-rail .pdp-info { margin-top: 8px; }
     .pdp-tabs { margin-top: 12px; background: #fff; border: 1px solid #d5dde4; border-radius: 14px; padding: 14px; }
     .pdp-tab-head { display: flex; gap: 0; border-bottom: 1px solid #e8edf1; padding-bottom: 1px; margin-bottom: 16px; height: 47px; }
@@ -647,7 +680,76 @@
     .bulk-mobile-selected-count { display: none; }
     .bulk-mobile-toolbar,
     .bulk-mobile-filters-panel,
-    .bulk-mobile-clear-filters { display: none; }
+    .bulk-mobile-clear-filters,
+    .bulk-mobile-selection-wrap { display: none; }
+    .bulk-mobile-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eef2f6;
+    }
+    .bulk-mobile-row:last-child { border-bottom: 0; }
+    .bulk-mobile-row.is-selected {
+      background: linear-gradient(90deg, #f5f9ff 0%, #fff 100%);
+      margin: 0 -12px;
+      padding-left: 12px;
+      padding-right: 12px;
+      border-bottom-color: #dbeafe;
+    }
+    .bulk-mobile-row-copy {
+      flex: 1;
+      min-width: 0;
+    }
+    .bulk-mobile-variant-title {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.35;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .bulk-mobile-variant-meta {
+      margin: 4px 0 0;
+      font-size: 12px;
+      line-height: 1.35;
+      color: #64748b;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 8px;
+      align-items: center;
+    }
+    .bulk-mobile-variant-sku {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .bulk-mobile-row .bulk-mobile-price {
+      font-size: 13px;
+      font-weight: 700;
+      color: #b12704;
+    }
+    .bulk-mobile-row .bulk-mobile-stock {
+      margin: 4px 0 0;
+      font-size: 11px;
+    }
+    .bulk-mobile-qty-stepper.compact {
+      flex: 0 0 auto;
+      width: 108px;
+      grid-template-columns: 34px 1fr 34px;
+      gap: 4px;
+    }
+    .bulk-mobile-qty-stepper.compact .bulk-qty-step {
+      width: 34px;
+      height: 34px;
+      font-size: 18px;
+      border-radius: 8px;
+    }
+    .bulk-mobile-qty-stepper.compact .bulk-qty {
+      height: 34px;
+      font-size: 15px;
+      padding: 0;
+    }
     .bulk-mobile-card {
       border: 1px solid #e4e8ee;
       border-radius: 12px;
@@ -1035,9 +1137,54 @@
         -webkit-overflow-scrolling: touch;
       }
       #bulkOrderModal .bulk-note {
-        font-size: 13px;
-        margin: 10px 0 8px;
-        line-height: 1.4;
+        display: none;
+      }
+      #bulkOrderModal .bulk-filter-count {
+        margin: 4px 0 8px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #475569;
+      }
+      #bulkOrderModal .bulk-mobile-selection-wrap {
+        display: block;
+        margin: 0 -12px 8px;
+        padding: 10px 12px;
+        background: #f8fafc;
+        border-top: 1px solid #eef2f6;
+        border-bottom: 1px solid #eef2f6;
+      }
+      #bulkOrderModal .bulk-mobile-selection-wrap:empty {
+        display: none;
+      }
+      #bulkOrderModal .bulk-mobile-selection-label {
+        margin: 0 0 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .35px;
+        color: #64748b;
+      }
+      #bulkOrderModal .bulk-mobile-selection-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      #bulkOrderModal .bulk-mobile-selection-pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #e8f1ff;
+        border: 1px solid #bfdbfe;
+        color: #001e62;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+      #bulkOrderModal .bulk-mobile-list {
+        display: block;
+        padding-top: 2px;
       }
       #bulkOrderModal .bulk-filters { display: none; }
       #bulkOrderModal .bulk-table { display: none; }
@@ -1158,15 +1305,15 @@
         font-weight: 600;
         text-decoration: underline;
       }
-      #bulkOrderModal .bulk-filter-count {
-        margin: 8px 0;
-        font-size: 13px;
-        font-weight: 600;
-        color: #475569;
-      }
       #bulkOrderModal .bulk-mobile-card {
         min-width: 0;
         max-width: 100%;
+      }
+      #bulkOrderModal .bulk-mobile-row {
+        align-items: flex-start;
+      }
+      #bulkOrderModal .bulk-mobile-qty-stepper.compact {
+        margin-top: 2px;
       }
       #bulkOrderModal .bulk-foot {
         flex-shrink: 0;
@@ -1176,6 +1323,7 @@
         display: grid;
         grid-template-columns: 1fr;
         gap: 8px;
+        box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.06);
       }
       #bulkOrderModal .bulk-mobile-selected-count {
         display: block;
@@ -1183,21 +1331,26 @@
         font-size: 13px;
         line-height: 1.3;
         color: #64748b;
-        text-align: center;
+        text-align: left;
       }
       #bulkOrderModal .bulk-mobile-selected-count.has-selection {
         color: #0f172a;
         font-weight: 600;
       }
       #bulkOrderModal .bulk-btn-cancel,
-      #bulkOrderModal .bulk-btn-check,
-      #bulkOrderModal .bulk-btn-add {
-        width: 100%;
-        height: 44px;
-        font-size: 15px;
-        min-width: 0;
+      #bulkOrderModal .bulk-btn-check {
+        display: none;
       }
-      #bulkOrderModal .bulk-btn-add { order: -1; }
+      #bulkOrderModal .bulk-btn-add {
+        order: -1;
+        height: 48px;
+        font-size: 16px;
+        font-weight: 700;
+        border-radius: 12px;
+      }
+      #bulkOrderModal .bulk-btn-add:disabled {
+        opacity: .55;
+      }
     }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
@@ -1342,7 +1495,7 @@
     <div class="bulk-modal" id="bulkOrderModal" aria-hidden="true">
       <div class="bulk-dialog" role="dialog" aria-modal="true" aria-labelledby="bulkModalTitle">
         <div class="bulk-head">
-          <h3 id="bulkModalTitle">Bulk Order Multiple Variants</h3>
+          <h3 id="bulkModalTitle">Bulk Order Variants</h3>
           <button type="button" class="bulk-close" id="bulkModalClose" aria-label="Close">×</button>
         </div>
         <div class="bulk-body">
@@ -1544,12 +1697,107 @@
         return sameCat[0] || null;
       }
 
+      function collectVariantFacetValues(variants, facetKey) {
+        return uniq([].concat.apply([], (variants || []).map(function (variant) {
+          return (variant.attributes && variant.attributes[facetKey]) || [];
+        }))).sort(function (a, b) { return a.localeCompare(b); });
+      }
+
+      function getFacetValuesFromVariants(product, variants, facetKey, catalogField) {
+        var fromVariants = collectVariantFacetValues(variants, facetKey);
+        if (fromVariants.length) return fromVariants;
+        return uniq(product[catalogField] || []);
+      }
+
+      function normalizeOptionValue(value) {
+        return String(value || "").trim().toLowerCase();
+      }
+
+      function isOrientationRedundantWithOption(variants) {
+        if (!variants || !variants.length) return false;
+        var hasOption = false;
+        var hasOrientation = false;
+        var allPaired = true;
+        variants.forEach(function (variant) {
+          var attrs = variant.attributes || {};
+          var opt = normalizeOptionValue((attrs.option || [])[0]);
+          var ori = normalizeOptionValue((attrs.orientation || [])[0]);
+          if (opt) hasOption = true;
+          if (ori) hasOrientation = true;
+          if (!opt || !ori) return;
+          if (!((opt === "left" && ori === "left") || (opt === "right" && ori === "right"))) {
+            allPaired = false;
+          }
+        });
+        return hasOption && hasOrientation && allPaired;
+      }
+
+      function findFacetValueBySide(facet, side) {
+        if (!facet) return "";
+        var target = normalizeOptionValue(side);
+        var match = (facet.values || []).find(function (value) {
+          return normalizeOptionValue(value) === target;
+        });
+        return match || "";
+      }
+
+      function buildPdpFacetConfig(product) {
+        var catalogFacetDefs = [
+          { key: "size", label: "Size", catalogField: "sizeOptions" },
+          { key: "option", label: "Model", catalogField: "optionOptions" },
+          { key: "color", label: "Color", catalogField: "colorOptions" },
+          { key: "gender", label: "Gender", catalogField: "genderOptions" },
+          { key: "orientation", label: "Orientation", catalogField: "orientationOptions" },
+          { key: "uom", label: "UOM", catalogField: "uomOptions" }
+        ];
+        if (!product || product.type !== "variation-master") {
+          var fallbackFacets = catalogFacetDefs.map(function (facet) {
+            return {
+              key: facet.key,
+              label: facet.label,
+              values: uniq(product[facet.catalogField] || [])
+            };
+          }).filter(function (facet) { return facet.values.length > 0; });
+          return {
+            facetDefs: fallbackFacets,
+            requiredFacets: fallbackFacets.filter(function (facet) { return facet.values.length > 1; }),
+            variants: []
+          };
+        }
+        var variants = Array.isArray(variantsByMaster[product.id]) ? variantsByMaster[product.id] : [];
+        var onlineVariants = variants.filter(function (variant) { return variant.online !== false; });
+        var hideOrientation = isOrientationRedundantWithOption(onlineVariants);
+        var facetDefs = catalogFacetDefs.map(function (facet) {
+          var label = facet.label;
+          if (facet.key === "option" && hideOrientation) label = "Left/Right";
+          return {
+            key: facet.key,
+            label: label,
+            values: getFacetValuesFromVariants(product, onlineVariants, facet.key, facet.catalogField)
+          };
+        }).filter(function (facet) {
+          if (facet.key === "orientation" && hideOrientation) return false;
+          return facet.values.length > 0;
+        });
+        return {
+          facetDefs: facetDefs,
+          requiredFacets: facetDefs.filter(function (facet) { return facet.values.length > 1; }),
+          variants: onlineVariants
+        };
+      }
+
+      function variantAttributeMatches(variant, key, value) {
+        var normalized = normalizeOptionValue(value);
+        if (!normalized) return true;
+        var values = (variant.attributes && variant.attributes[key]) || [];
+        return values.some(function (attr) {
+          return normalizeOptionValue(attr) === normalized;
+        });
+      }
+
       function variantMatchesSelection(variant, selected) {
-        return Object.keys(selected).every(function (k) {
-          var value = selected[k];
-          if (!value) return true;
-          var values = (variant.attributes && variant.attributes[k]) || [];
-          return values.indexOf(value) > -1;
+        return Object.keys(selected || {}).every(function (k) {
+          return variantAttributeMatches(variant, k, selected[k]);
         });
       }
 
@@ -1569,21 +1817,16 @@
           return p.id !== product.id && normalizeKey(p.category) === normalizeKey(product.category);
         }).slice(0, 4);
 
-        var facetDefs = [
-          { key: "size", label: "Size", values: uniq(product.sizeOptions || []) },
-          { key: "option", label: "Model", values: uniq(product.optionOptions || []) },
-          { key: "color", label: "Color", values: uniq(product.colorOptions || []) },
-          { key: "gender", label: "Gender", values: uniq(product.genderOptions || []) },
-          { key: "orientation", label: "Orientation", values: uniq(product.orientationOptions || []) },
-          { key: "uom", label: "UOM", values: uniq(product.uomOptions || []) }
-        ].filter(function (f) { return f.values.length > 0; });
+        var pdpFacetConfig = buildPdpFacetConfig(product);
+        var facetDefs = pdpFacetConfig.facetDefs;
+        var pdpSellableVariants = pdpFacetConfig.variants;
 
         var selected = {};
         facetDefs.forEach(function (f) {
-          selected[f.key] = "";
+          selected[f.key] = f.values.length === 1 ? String(f.values[0] || "") : "";
         });
         var flowFacets = facetDefs.slice();
-        var requiredFacets = facetDefs.filter(function (f) { return f.values.length > 1; });
+        var requiredFacets = pdpFacetConfig.requiredFacets;
         var stepByFacet = {};
         flowFacets.forEach(function (f, i) { stepByFacet[f.key] = i + 1; });
         var shortDesc = cleanDescriptionHtml(descriptionMap[product.id] || "") ||
@@ -1888,7 +2131,7 @@
           var pImg = normalizeImage(p.image) || missingProductImage;
           railHtml += "<a class='pdp-rail-item' href='product-detail.html?category=" + encodeURIComponent(p.category) + "&id=" + encodeURIComponent(p.id) + "'>" +
             "<img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'>" +
-            "<div><div class='pdp-rail-name'>" + escapeHtml(p.name) + "</div>" + (isSignedIn ? ("<div class='pdp-rail-price'>$" + BregFormatMoney(Number(p.price || 0)) + "</div>") : "") + "</div>" +
+            "<div class='pdp-rail-name'>" + escapeHtml(p.name) + "</div>" +
           "</a>";
         });
         $("#pdpRail").html(railHtml || "<div class='pdp-empty'>No related products found.</div>");
@@ -2302,11 +2545,48 @@
           }
         }
 
+        function getMatchingVariantsForSelection(excludeKey) {
+          if (!pdpSellableVariants.length) return [];
+          return pdpSellableVariants.filter(function (variant) {
+            return Object.keys(selected).every(function (key) {
+              if (key === excludeKey) return true;
+              return variantAttributeMatches(variant, key, selected[key]);
+            });
+          });
+        }
+
+        function getAvailableFacetValues(facetKey) {
+          return collectVariantFacetValues(getMatchingVariantsForSelection(facetKey), facetKey);
+        }
+
+        function syncPairedFacets(changedKey, changedValue) {
+          var optionFacet = facetDefs.find(function (facet) { return facet.key === "option"; });
+          var orientationFacet = facetDefs.find(function (facet) { return facet.key === "orientation"; });
+          if (!optionFacet || !orientationFacet) return;
+          var side = normalizeOptionValue(changedValue);
+          if (changedKey === "option" && (side === "left" || side === "right")) {
+            var pairedOrientation = findFacetValueBySide(orientationFacet, side);
+            if (pairedOrientation) selected.orientation = pairedOrientation;
+          }
+          if (changedKey === "orientation" && (side === "left" || side === "right")) {
+            var pairedOption = findFacetValueBySide(optionFacet, side);
+            if (pairedOption) selected.option = pairedOption;
+          }
+        }
+
         function syncChipStates() {
           facetDefs.forEach(function (facet) {
             var value = selected[facet.key] || "";
+            var available = pdpSellableVariants.length ? getAvailableFacetValues(facet.key) : facet.values.slice();
+            var availableSet = {};
+            available.forEach(function (v) { availableSet[v] = true; });
             $(".pdp-group[data-group='" + facet.key + "'] .pdp-option-chip").each(function () {
-              $(this).toggleClass("active", $(this).attr("data-value") === value);
+              var chipVal = $(this).attr("data-value") || "";
+              var isActive = chipVal === value;
+              var isAvailable = !pdpSellableVariants.length || isActive || !!availableSet[chipVal];
+              $(this).toggleClass("active", isActive);
+              $(this).toggleClass("unavailable", !isAvailable);
+              $(this).prop("disabled", !isAvailable);
             });
           });
         }
@@ -2355,6 +2635,7 @@
           var isConfigurable = isMaster && requiredFacets.length > 0;
 
           if (isMaster) {
+            variants = pdpSellableVariants.length ? pdpSellableVariants : variants;
             if (!variants.length) {
               unresolvedReason = "Variant data unavailable for this master.";
             } else {
@@ -2476,10 +2757,11 @@
         $(document).on("click", ".pdp-option-chip", function () {
           var $chip = $(this);
           var $group = $chip.closest(".pdp-group");
-          if ($group.hasClass("locked")) return;
+          if ($group.hasClass("locked") || $chip.prop("disabled")) return;
           var facet = $chip.attr("data-facet");
           var value = $chip.attr("data-value");
           selected[facet] = value;
+          syncPairedFacets(facet, value);
           var currentStep = stepByFacet[facet] || 0;
           if (currentStep > 0) {
             flowFacets.forEach(function (f) {
@@ -2729,9 +3011,14 @@
             return sum + Number(line.qty || 0);
           }, 0);
           var $el = $("#bulkSelectedCount");
+          var $addBtn = $("#bulkModalAdd");
           if (!$el.length) return;
           if (!lines.length) {
-            $el.text("No variants selected yet").removeClass("has-selection");
+            $el.text("Choose quantities for each variation you need").removeClass("has-selection");
+            if (isBulkMobileView()) {
+              $addBtn.prop("disabled", true).text("Add to Cart");
+            }
+            renderBulkMobileSelectionBar();
             return;
           }
           $el
@@ -2740,6 +3027,12 @@
               " across " + lines.length + " variant" + (lines.length === 1 ? "" : "s")
             )
             .addClass("has-selection");
+          if (isBulkMobileView()) {
+            $addBtn
+              .prop("disabled", false)
+              .text("Add " + totalQty + " Item" + (totalQty === 1 ? "" : "s") + " to Cart");
+          }
+          renderBulkMobileSelectionBar();
         }
 
         function getBulkOptionFacets(variants) {
@@ -2781,7 +3074,7 @@
           var activeFilterCount = getBulkActiveFilterCount();
           var filtersHtml = "<div class='bulk-mobile-toolbar'>" +
             "<div class='bulk-mobile-search-wrap'>" +
-              "<input id='bulkSearchFilter' class='bulk-filter-input bulk-mobile-search' type='search' placeholder='Search variants...' value='" + escapeHtml(bulkState.search) + "' autocomplete='off'>" +
+              "<input id='bulkSearchFilter' class='bulk-filter-input bulk-mobile-search' type='search' placeholder='Search size, color, SKU...' value='" + escapeHtml(bulkState.search) + "' autocomplete='off'>" +
             "</div>" +
             "<button type='button' class='bulk-mobile-filter-toggle" + (bulkState.filtersExpanded ? " is-open" : "") + "' id='bulkMobileFilterToggle' aria-expanded='" + (bulkState.filtersExpanded ? "true" : "false") + "'>" +
               "Filters" + (activeFilterCount ? ("<span class='bulk-filter-badge'>" + activeFilterCount + "</span>") : "") +
@@ -2841,6 +3134,43 @@
               "<span class='bulk-mobile-option-value'>" + escapeHtml(value) + "</span>" +
             "</span>";
           }).join("");
+        }
+
+        function buildBulkVariantTitle(variant, optionFacets) {
+          var parts = (optionFacets || []).map(function (facet) {
+            return getVariantFacetValue(variant, facet.key);
+          }).filter(function (value) { return !!value; });
+          if (parts.length) return parts.join(" · ");
+          return String(variant.sku || "Variant");
+        }
+
+        function renderBulkMobileSelectionBar() {
+          if (!isBulkMobileView()) {
+            $("#bulkMobileSelectionWrap").remove();
+            return;
+          }
+          var lines = getBulkSelectedLines();
+          var optionFacets = bulkState.optionFacets || [];
+          var $wrap = $("#bulkMobileSelectionWrap");
+          if (!$wrap.length) {
+            $("#bulkModalFilters").after("<div id='bulkMobileSelectionWrap' class='bulk-mobile-selection-wrap' aria-live='polite'></div>");
+            $wrap = $("#bulkMobileSelectionWrap");
+          }
+          if (!lines.length) {
+            $wrap.empty();
+            return;
+          }
+          var pills = lines.map(function (line) {
+            var variant = (bulkState.variants || []).find(function (v) {
+              return String(v.sku || "") === String(line.sku || "");
+            });
+            var label = variant ? buildBulkVariantTitle(variant, optionFacets) : line.sku;
+            return "<span class='bulk-mobile-selection-pill'>" + line.qty + "× " + escapeHtml(label) + "</span>";
+          }).join("");
+          $wrap.html(
+            "<p class='bulk-mobile-selection-label'>Your selections</p>" +
+            "<div class='bulk-mobile-selection-pills'>" + pills + "</div>"
+          );
         }
 
         function getFilteredBulkVariants() {
@@ -2930,21 +3260,24 @@
             var price = Number(v.price != null ? v.price : product.price || 0).toFixed(2);
             var stock = bulkState.inventoryBySku[sku] || "";
             var stockHtml = stock
-              ? "<div class='bulk-mobile-stock bulk-stock-text'>" + escapeHtml(stock) + "</div>"
+              ? "<p class='bulk-mobile-stock bulk-stock-text'>" + escapeHtml(stock) + "</p>"
               : "";
-            return "<div class='bulk-mobile-card" + (qtyVal > 0 ? " is-selected" : "") + "' data-sku='" + escapeHtml(sku) + "'>" +
-              "<div class='bulk-mobile-options'>" + buildBulkMobileOptionChips(v, optionFacets) + "</div>" +
-              "<div class='bulk-mobile-card-meta'>" +
-                "<span class='bulk-mobile-sku-sub'>" + escapeHtml(sku) + "</span>" +
-                "<span class='bulk-mobile-price'>$" + price + "</span>" +
+            var title = buildBulkVariantTitle(v, optionFacets);
+            return "<article class='bulk-mobile-row" + (qtyVal > 0 ? " is-selected" : "") + "' data-sku='" + escapeHtml(sku) + "'>" +
+              "<div class='bulk-mobile-row-copy'>" +
+                "<h4 class='bulk-mobile-variant-title'>" + escapeHtml(title) + "</h4>" +
+                "<p class='bulk-mobile-variant-meta'>" +
+                  "<span class='bulk-mobile-variant-sku'>" + escapeHtml(sku) + "</span>" +
+                  "<span class='bulk-mobile-price'>$" + price + "</span>" +
+                "</p>" +
+                stockHtml +
               "</div>" +
-              stockHtml +
-              "<div class='bulk-mobile-qty-stepper'>" +
-                "<button type='button' class='bulk-qty-step bulk-qty-minus' data-sku='" + escapeHtml(sku) + "' aria-label='Decrease quantity'>&minus;</button>" +
-                "<input class='bulk-qty' type='number' min='0' step='1' inputmode='numeric' value='" + qtyVal + "' data-sku='" + escapeHtml(sku) + "' aria-label='Quantity for " + escapeHtml(sku) + "'>" +
-                "<button type='button' class='bulk-qty-step bulk-qty-plus' data-sku='" + escapeHtml(sku) + "' aria-label='Increase quantity'>+</button>" +
+              "<div class='bulk-mobile-qty-stepper compact'>" +
+                "<button type='button' class='bulk-qty-step bulk-qty-minus' data-sku='" + escapeHtml(sku) + "' aria-label='Decrease quantity for " + escapeHtml(title) + "'>&minus;</button>" +
+                "<input class='bulk-qty' type='number' min='0' step='1' inputmode='numeric' pattern='[0-9]*' value='" + qtyVal + "' data-sku='" + escapeHtml(sku) + "' aria-label='Quantity for " + escapeHtml(title) + "'>" +
+                "<button type='button' class='bulk-qty-step bulk-qty-plus' data-sku='" + escapeHtml(sku) + "' aria-label='Increase quantity for " + escapeHtml(title) + "'>+</button>" +
               "</div>" +
-            "</div>";
+            "</article>";
           }).join("");
           $("#bulkModalContent").html(
             "<table class='bulk-table'>" +
@@ -2977,6 +3310,7 @@
             renderBulkTable();
           }
           $("#bulkOrderModal").addClass("open").attr("aria-hidden", "false");
+          updateBulkSelectedSummary();
         }
 
         function closeBulkModal() {
@@ -3055,7 +3389,7 @@
         $(document).on("click", "#bulkClearFilters", function () {
           bulkState.search = "";
           bulkState.facetFilters = {};
-          bulkState.filtersExpanded = true;
+          bulkState.filtersExpanded = false;
           renderBulkFilters(bulkState.variants);
           renderBulkTable();
         });
@@ -3072,7 +3406,7 @@
           bulkState.qtyBySku[sku] = qty > 0 ? qty : 0;
           delete bulkState.inventoryBySku[sku];
           $(this).closest("tr").find(".bulk-inventory-cell").text("");
-          $(this).closest(".bulk-mobile-card").toggleClass("is-selected", qty > 0);
+          $(this).closest(".bulk-mobile-row, .bulk-mobile-card").toggleClass("is-selected", qty > 0);
           updateBulkSelectedSummary();
         });
         $(document).on("click", ".bulk-qty-minus", function () {

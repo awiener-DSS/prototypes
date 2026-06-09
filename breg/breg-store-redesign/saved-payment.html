@@ -191,6 +191,144 @@
       color: #565959;
       line-height: 1.4;
     }
+    button.payments-add-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .payment-empty {
+      border: 1px dashed #c7ced4;
+      border-radius: 12px;
+      background: #fff;
+      padding: 28px 20px;
+      text-align: center;
+      color: #565959;
+      font-size: 14px;
+      line-height: 1.45;
+      grid-column: 1 / -1;
+    }
+    .payment-modal .modal-dialog {
+      width: min(620px, calc(100% - 30px));
+      margin: 70px auto;
+    }
+    .payment-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      overflow: hidden;
+    }
+    .payment-modal .modal-header {
+      border-bottom: 1px solid #eaeded;
+      padding: 16px 20px;
+      background: #fff;
+    }
+    .payment-modal .modal-title {
+      margin: 0;
+      font-size: 20px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .payment-modal .modal-body {
+      padding: 16px 20px 8px;
+      background: #fff;
+    }
+    .payment-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fff;
+    }
+    .payment-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+    }
+    .payment-form-field.full { grid-column: 1 / -1; }
+    .payment-form-label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+    }
+    .payment-form-input,
+    .payment-form-select {
+      width: 100%;
+      border: 1px solid #c7ced4;
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 0 14px;
+      font-size: 13px;
+      color: #0f1111;
+      background: #fff;
+      box-shadow: none;
+    }
+    .payment-form-input:focus,
+    .payment-form-select:focus {
+      border-color: var(--breg-primary, #0047bb);
+      outline: 0;
+      box-shadow: 0 0 0 2px rgba(0, 71, 187, 0.12);
+    }
+    .payment-form-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 13px;
+      color: #565959;
+      font-weight: 400;
+      cursor: pointer;
+      user-select: none;
+    }
+    .payment-form-check input { margin: 0; cursor: pointer; }
+    .payment-form-error {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #b12704;
+      display: none;
+    }
+    .payment-form-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 8px 14px;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .payment-form-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .payment-form-btn:hover,
+    .payment-form-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
+    .payment-form-btn.primary:hover,
+    .payment-form-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    button.payment-form-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
+    }
     @media (max-width: 1199px) {
       .payments-title { font-size: 30px; }
       .payments-subtitle { font-size: 14px; }
@@ -201,6 +339,7 @@
       .payments-subtitle { font-size: 13px; }
       .payments-add-btn { margin-top: 0; }
       .payment-grid { grid-template-columns: 1fr; }
+      .payment-form-grid { grid-template-columns: 1fr; }
     }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
@@ -261,62 +400,10 @@
           <h1 class="payments-title">Saved Payment Methods</h1>
           <p class="payments-subtitle">Manage your payment methods and billing information</p>
         </div>
-        <a class="payments-add-btn" href="#" id="addPaymentBtn"><span class="glyphicon glyphicon-plus"></span> Add Payment Method</a>
+        <button type="button" class="payments-add-btn" id="addPaymentBtn"><span class="glyphicon glyphicon-plus"></span> Add Payment Method</button>
       </div>
 
-      <section class="payment-grid" id="paymentGrid">
-        <article class="payment-card is-default">
-          <div class="card-band visa">VISA <span class="card-default"><span class="glyphicon glyphicon-star"></span> Default</span></div>
-          <p class="card-number">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</p>
-          <p class="card-holder">John Smith</p>
-          <p class="card-expiry"><span class="glyphicon glyphicon-calendar"></span> Expires 12/2026</p>
-          <div class="card-billing">
-            <p class="card-billing-label">Billing Address:</p>
-            <p class="card-billing-copy">123 Healthcare Blvd, Los Angeles, CA 90001</p>
-          </div>
-          <div class="payment-actions">
-            <a class="payment-action js-edit-payment" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-            <span class="payment-divider">|</span>
-            <a class="payment-action remove js-remove-payment" href="#"><span class="glyphicon glyphicon-trash"></span>Remove</a>
-          </div>
-        </article>
-
-        <article class="payment-card">
-          <div class="card-band mastercard">Mastercard <span class="card-default"><span class="glyphicon glyphicon-star"></span> Default</span></div>
-          <p class="card-number">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 5555</p>
-          <p class="card-holder">John Smith</p>
-          <p class="card-expiry"><span class="glyphicon glyphicon-calendar"></span> Expires 08/2025</p>
-          <div class="card-billing">
-            <p class="card-billing-label">Billing Address:</p>
-            <p class="card-billing-copy">456 Residential St, Santa Monica, CA 90401</p>
-          </div>
-          <div class="payment-actions">
-            <a class="payment-action js-edit-payment" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-            <span class="payment-divider">|</span>
-            <a class="payment-action remove js-remove-payment" href="#"><span class="glyphicon glyphicon-trash"></span>Remove</a>
-            <span class="payment-divider">|</span>
-            <a class="payment-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
-          </div>
-        </article>
-
-        <article class="payment-card">
-          <div class="card-band amex">AMEX <span class="card-default"><span class="glyphicon glyphicon-star"></span> Default</span></div>
-          <p class="card-number">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 1005</p>
-          <p class="card-holder">Medical Clinic Inc.</p>
-          <p class="card-expiry"><span class="glyphicon glyphicon-calendar"></span> Expires 03/2027</p>
-          <div class="card-billing">
-            <p class="card-billing-label">Billing Address:</p>
-            <p class="card-billing-copy">123 Healthcare Blvd, Los Angeles, CA 90001</p>
-          </div>
-          <div class="payment-actions">
-            <a class="payment-action js-edit-payment" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-            <span class="payment-divider">|</span>
-            <a class="payment-action remove js-remove-payment" href="#"><span class="glyphicon glyphicon-trash"></span>Remove</a>
-            <span class="payment-divider">|</span>
-            <a class="payment-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
-          </div>
-        </article>
-      </section>
+      <section class="payment-grid" id="paymentGrid"></section>
 
       <section class="payments-secure">
         <span class="glyphicon glyphicon-credit-card"></span>
@@ -328,46 +415,480 @@
     </div>
   </main>
 
+  <div class="modal fade payment-modal" id="paymentFormModal" tabindex="-1" role="dialog" aria-labelledby="paymentFormModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="paymentFormModalTitle">Add Payment Method</h2>
+        </div>
+        <div class="modal-body">
+          <div class="payment-form-grid">
+            <div class="payment-form-field full">
+              <label class="payment-form-label" for="paymentCardType">Card Type</label>
+              <select id="paymentCardType" class="payment-form-select">
+                <option value="Visa">Visa</option>
+                <option value="Mastercard">Mastercard</option>
+                <option value="American Express">American Express</option>
+              </select>
+            </div>
+            <div class="payment-form-field full">
+              <label class="payment-form-label" for="paymentCardName">Name on Card</label>
+              <input id="paymentCardName" class="payment-form-input" type="text" maxlength="80" autocomplete="cc-name">
+            </div>
+            <div class="payment-form-field full">
+              <label class="payment-form-label" for="paymentCardNumber">Card Number</label>
+              <input id="paymentCardNumber" class="payment-form-input" type="text" maxlength="19" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456">
+            </div>
+            <div class="payment-form-field">
+              <label class="payment-form-label" for="paymentExpMonth">Exp. Month</label>
+              <select id="paymentExpMonth" class="payment-form-select"></select>
+            </div>
+            <div class="payment-form-field">
+              <label class="payment-form-label" for="paymentExpYear">Exp. Year</label>
+              <select id="paymentExpYear" class="payment-form-select"></select>
+            </div>
+            <div class="payment-form-field full">
+              <label class="payment-form-label" for="paymentBillLine1">Billing Address</label>
+              <input id="paymentBillLine1" class="payment-form-input" type="text" maxlength="120" autocomplete="billing address-line1">
+            </div>
+            <div class="payment-form-field">
+              <label class="payment-form-label" for="paymentBillCity">Billing City</label>
+              <input id="paymentBillCity" class="payment-form-input" type="text" maxlength="80" autocomplete="billing address-level2">
+            </div>
+            <div class="payment-form-field">
+              <label class="payment-form-label" for="paymentBillState">Billing State</label>
+              <select id="paymentBillState" class="payment-form-select" autocomplete="billing address-level1"></select>
+            </div>
+            <div class="payment-form-field full">
+              <label class="payment-form-label" for="paymentBillZip">Billing ZIP</label>
+              <input id="paymentBillZip" class="payment-form-input" type="text" maxlength="20" autocomplete="billing postal-code">
+            </div>
+            <div class="payment-form-field full">
+              <label class="payment-form-check">
+                <input type="checkbox" id="paymentSetDefault">
+                Set as default payment method
+              </label>
+            </div>
+          </div>
+          <p class="payment-form-error" id="paymentFormError"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="payment-form-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="payment-form-btn primary" id="savePaymentBtn">Save Payment Method</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
   <script>
-    (function () {
+    (function ($) {
+      var STORAGE_KEY = "breg_saved_payment_methods_v1";
       var $grid = $("#paymentGrid");
+      var editingId = null;
 
-      function updateDefaultActions() {
-        $grid.find(".payment-card").each(function () {
-          var $card = $(this);
-          var isDefault = $card.hasClass("is-default");
-          var $setDefault = $card.find(".js-make-default");
-          if (isDefault) {
-            $setDefault.hide();
-            $card.find(".payment-divider").last().hide();
-          } else {
-            $setDefault.show();
-            $card.find(".payment-divider").last().show();
-          }
-        });
+      var US_STATES = [
+        ["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"], ["CA", "California"],
+        ["CO", "Colorado"], ["CT", "Connecticut"], ["DE", "Delaware"], ["DC", "District of Columbia"], ["FL", "Florida"],
+        ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"], ["IL", "Illinois"], ["IN", "Indiana"],
+        ["IA", "Iowa"], ["KS", "Kansas"], ["KY", "Kentucky"], ["LA", "Louisiana"], ["ME", "Maine"],
+        ["MD", "Maryland"], ["MA", "Massachusetts"], ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"],
+        ["MO", "Missouri"], ["MT", "Montana"], ["NE", "Nebraska"], ["NV", "Nevada"], ["NH", "New Hampshire"],
+        ["NJ", "New Jersey"], ["NM", "New Mexico"], ["NY", "New York"], ["NC", "North Carolina"], ["ND", "North Dakota"],
+        ["OH", "Ohio"], ["OK", "Oklahoma"], ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"],
+        ["SC", "South Carolina"], ["SD", "South Dakota"], ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"],
+        ["VT", "Vermont"], ["VA", "Virginia"], ["WA", "Washington"], ["WV", "West Virginia"], ["WI", "Wisconsin"],
+        ["WY", "Wyoming"]
+      ];
+
+      var seedPayments = [
+        {
+          id: "card-visa-1",
+          type: "Visa",
+          last4: "4242",
+          expMonth: "12",
+          expYear: "2026",
+          name: "John Smith",
+          billingLine1: "123 Healthcare Blvd",
+          billingCity: "Los Angeles",
+          billingState: "CA",
+          billingZip: "90001",
+          isDefault: true
+        },
+        {
+          id: "card-mc-1",
+          type: "Mastercard",
+          last4: "5555",
+          expMonth: "08",
+          expYear: "2025",
+          name: "John Smith",
+          billingLine1: "456 Residential St",
+          billingCity: "Santa Monica",
+          billingState: "CA",
+          billingZip: "90401",
+          isDefault: false
+        },
+        {
+          id: "card-amex-1",
+          type: "American Express",
+          last4: "1005",
+          expMonth: "03",
+          expYear: "2027",
+          name: "Medical Clinic Inc.",
+          billingLine1: "123 Healthcare Blvd",
+          billingCity: "Los Angeles",
+          billingState: "CA",
+          billingZip: "90001",
+          isDefault: false
+        }
+      ];
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
+
+      function normalizeStateCode(value) {
+        var raw = String(value || "").trim();
+        if (!raw) return "";
+        var upper = raw.toUpperCase();
+        var match = US_STATES.find(function (pair) {
+          return pair[0] === upper || pair[1].toLowerCase() === raw.toLowerCase();
+        });
+        return match ? match[0] : "";
+      }
+
+      function populateStateSelect($select, selected) {
+        $select.empty().append("<option value=''>Select state</option>");
+        US_STATES.forEach(function (pair) {
+          $select.append($("<option></option>").attr("value", pair[0]).text(pair[1]));
+        });
+        if (selected) $select.val(normalizeStateCode(selected));
+      }
+
+      function populateExpSelects() {
+        var $month = $("#paymentExpMonth");
+        var $year = $("#paymentExpYear");
+        $month.empty().append("<option value=''>Month</option>");
+        for (var m = 1; m <= 12; m += 1) {
+          var mm = String(m).padStart(2, "0");
+          $month.append($("<option></option>").attr("value", mm).text(mm));
+        }
+        $year.empty().append("<option value=''>Year</option>");
+        var currentYear = new Date().getFullYear();
+        for (var y = currentYear; y <= currentYear + 12; y += 1) {
+          $year.append($("<option></option>").attr("value", String(y)).text(String(y)));
+        }
+      }
+
+      function formatCardNumberInput(value, cardType) {
+        var maxDigits = cardType === "American Express" ? 15 : 16;
+        var digits = String(value || "").replace(/\D/g, "").slice(0, maxDigits);
+        if (cardType === "American Express") {
+          if (digits.length <= 4) return digits;
+          if (digits.length <= 10) return digits.slice(0, 4) + " " + digits.slice(4);
+          return digits.slice(0, 4) + " " + digits.slice(4, 10) + " " + digits.slice(10);
+        }
+        return digits.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+      }
+
+      function cardDigits(value) {
+        return String(value || "").replace(/\D/g, "");
+      }
+
+      function cardBandMeta(type) {
+        if (type === "Visa") return { label: "VISA", className: "visa" };
+        if (type === "Mastercard") return { label: "Mastercard", className: "mastercard" };
+        return { label: "AMEX", className: "amex" };
+      }
+
+      function formatBillingLine(card) {
+        var cityStateZip = "";
+        if (card.billingCity && card.billingState) {
+          cityStateZip = card.billingCity + ", " + card.billingState + (card.billingZip ? " " + card.billingZip : "");
+        }
+        return [card.billingLine1, cityStateZip].filter(Boolean).join(", ");
+      }
+
+      function normalizePayment(entry) {
+        var safe = entry && typeof entry === "object" ? entry : {};
+        var digits = cardDigits(safe.cardNumber || safe.number || safe.last4 || "");
+        var last4 = String(safe.last4 || (digits ? digits.slice(-4) : "")).replace(/\D/g, "").slice(-4);
+        return {
+          id: String(safe.id || ("card-" + Date.now() + "-" + Math.floor(Math.random() * 1000))),
+          type: ["Visa", "Mastercard", "American Express"].indexOf(safe.type) >= 0 ? safe.type : "Visa",
+          last4: last4,
+          expMonth: safe.expMonth ? String(safe.expMonth).padStart(2, "0").slice(-2) : "",
+          expYear: String(safe.expYear || "").trim(),
+          name: String(safe.name || "").trim(),
+          billingLine1: String(safe.billingLine1 || "").trim(),
+          billingCity: String(safe.billingCity || "").trim(),
+          billingState: normalizeStateCode(safe.billingState),
+          billingZip: String(safe.billingZip || "").trim(),
+          isDefault: !!safe.isDefault
+        };
+      }
+
+      function toCheckoutCard(card) {
+        return {
+          type: card.type,
+          last4: card.last4,
+          expMonth: card.expMonth,
+          expYear: card.expYear,
+          name: card.name
+        };
+      }
+
+      function toCheckoutBilling(card) {
+        var cityStateZip = "";
+        if (card.billingCity && card.billingState) {
+          cityStateZip = card.billingCity + ", " + card.billingState + (card.billingZip ? " " + card.billingZip : "");
+        }
+        return {
+          name: card.name,
+          line1: card.billingLine1,
+          cityStateZip: cityStateZip,
+          country: "United States"
+        };
+      }
+
+      function loadPayments() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if (Array.isArray(parsed) && parsed.length) {
+            var list = parsed.map(normalizePayment);
+            if (!list.some(function (item) { return item.isDefault; }) && list.length) {
+              list[0].isDefault = true;
+            }
+            return list;
+          }
+        } catch (e) {}
+        return seedPayments.map(normalizePayment);
+      }
+
+      function savePayments(list) {
+        var normalized = (Array.isArray(list) ? list : []).map(normalizePayment);
+        if (normalized.length && !normalized.some(function (item) { return item.isDefault; })) {
+          normalized[0].isDefault = true;
+        }
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized)); } catch (e) {}
+        syncCheckoutPayments(normalized);
+      }
+
+      function syncCheckoutPayments(list) {
+        var checkoutList = list.map(toCheckoutCard);
+        var defaultCard = list.find(function (item) { return item.isDefault; }) || list[0];
+        ["bregSavedCreditCards", "bregCreditCards"].forEach(function (key) {
+          try { localStorage.setItem(key, JSON.stringify(checkoutList)); } catch (e) {}
+        });
+        if (defaultCard) {
+          try { localStorage.setItem("bregDefaultCreditCard", JSON.stringify(toCheckoutCard(defaultCard))); } catch (e) {}
+          try { localStorage.setItem("bregDefaultCreditCardBillingAddress", JSON.stringify(toCheckoutBilling(defaultCard))); } catch (e) {}
+        }
+      }
+
+      function renderPayments(list) {
+        if (!list.length) {
+          $grid.html("<div class='payment-empty'>No saved payment methods yet. Click <strong>Add Payment Method</strong> to create one.</div>");
+          return;
+        }
+
+        var html = list.map(function (card) {
+          var band = cardBandMeta(card.type);
+          var actions = [
+            "<a class='payment-action js-edit-payment' href='#' data-id='" + escapeHtml(card.id) + "'><span class='glyphicon glyphicon-pencil'></span>Edit</a>",
+            "<span class='payment-divider'>|</span>",
+            "<a class='payment-action remove js-remove-payment' href='#' data-id='" + escapeHtml(card.id) + "'><span class='glyphicon glyphicon-trash'></span>Remove</a>"
+          ];
+          if (!card.isDefault) {
+            actions.push(
+              "<span class='payment-divider'>|</span>",
+              "<a class='payment-action js-make-default' href='#' data-id='" + escapeHtml(card.id) + "'><span class='glyphicon glyphicon-star-empty'></span>Set as Default</a>"
+            );
+          }
+          return (
+            "<article class='payment-card" + (card.isDefault ? " is-default" : "") + "' data-id='" + escapeHtml(card.id) + "'>" +
+              "<div class='card-band " + band.className + "'>" + escapeHtml(band.label) +
+                " <span class='card-default'><span class='glyphicon glyphicon-star'></span> Default</span>" +
+              "</div>" +
+              "<p class='card-number'>&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; " + escapeHtml(card.last4) + "</p>" +
+              "<p class='card-holder'>" + escapeHtml(card.name) + "</p>" +
+              "<p class='card-expiry'><span class='glyphicon glyphicon-calendar'></span> Expires " + escapeHtml(card.expMonth + "/" + card.expYear) + "</p>" +
+              "<div class='card-billing'>" +
+                "<p class='card-billing-label'>Billing Address:</p>" +
+                "<p class='card-billing-copy'>" + escapeHtml(formatBillingLine(card)) + "</p>" +
+              "</div>" +
+              "<div class='payment-actions'>" + actions.join("") + "</div>" +
+            "</article>"
+          );
+        }).join("");
+
+        $grid.html(html);
+      }
+
+      function resetPaymentForm() {
+        editingId = null;
+        $("#paymentFormModalTitle").text("Add Payment Method");
+        $("#paymentCardType").val("Visa");
+        $("#paymentCardName, #paymentCardNumber, #paymentBillLine1, #paymentBillCity, #paymentBillZip").val("");
+        populateStateSelect($("#paymentBillState"), "");
+        $("#paymentExpMonth, #paymentExpYear").val("");
+        $("#paymentSetDefault").prop("checked", false);
+        $("#paymentFormError").hide().text("");
+      }
+
+      function openPaymentModal(card) {
+        resetPaymentForm();
+        if (card) {
+          editingId = card.id;
+          $("#paymentFormModalTitle").text("Edit Payment Method");
+          $("#paymentCardType").val(card.type);
+          $("#paymentCardName").val(card.name);
+          $("#paymentCardNumber").val("•••• •••• •••• " + card.last4);
+          $("#paymentExpMonth").val(card.expMonth);
+          $("#paymentExpYear").val(card.expYear);
+          $("#paymentBillLine1").val(card.billingLine1);
+          $("#paymentBillCity").val(card.billingCity);
+          populateStateSelect($("#paymentBillState"), card.billingState);
+          $("#paymentBillZip").val(card.billingZip);
+          $("#paymentSetDefault").prop("checked", !!card.isDefault);
+        }
+        $("#paymentFormModal").modal("show");
+      }
+
+      populateExpSelects();
+      populateStateSelect($("#paymentBillState"), "");
+      var payments = loadPayments();
+      renderPayments(payments);
+
+      $("#addPaymentBtn").on("click", function () {
+        openPaymentModal(null);
+      });
+
+      $("#paymentCardType").on("change", function () {
+        $("#paymentCardNumber").val(formatCardNumberInput($("#paymentCardNumber").val(), $(this).val()));
+      });
+
+      $("#paymentCardNumber").on("input", function () {
+        var $input = $(this);
+        if (String($input.val()).indexOf("•") >= 0 && editingId) return;
+        var formatted = formatCardNumberInput($input.val(), $("#paymentCardType").val());
+        if ($input.val() !== formatted) $input.val(formatted);
+      });
+
+      $("#savePaymentBtn").on("click", function () {
+        var cardType = $("#paymentCardType").val();
+        var cardNumberRaw = $("#paymentCardNumber").val();
+        var existing = editingId ? payments.find(function (item) { return item.id === editingId; }) : null;
+        var isMaskedEdit = editingId && /[•]/.test(String(cardNumberRaw));
+        var digits = cardDigits(cardNumberRaw);
+        var last4 = isMaskedEdit && existing ? existing.last4 : digits.slice(-4);
+
+        var entry = normalizePayment({
+          id: editingId || undefined,
+          type: cardType,
+          last4: last4,
+          expMonth: $("#paymentExpMonth").val(),
+          expYear: $("#paymentExpYear").val(),
+          name: $.trim($("#paymentCardName").val() || ""),
+          billingLine1: $.trim($("#paymentBillLine1").val() || ""),
+          billingCity: $.trim($("#paymentBillCity").val() || ""),
+          billingState: $("#paymentBillState").val(),
+          billingZip: $.trim($("#paymentBillZip").val() || ""),
+          isDefault: $("#paymentSetDefault").is(":checked")
+        });
+
+        if (!entry.name) {
+          $("#paymentFormError").text("Name on card is required.").show();
+          return;
+        }
+        if (!isMaskedEdit) {
+          var minDigits = cardType === "American Express" ? 15 : 16;
+          if (!entry.last4 || digits.length < minDigits) {
+            $("#paymentFormError").text("Enter a valid card number.").show();
+            return;
+          }
+        } else if (!entry.last4) {
+          $("#paymentFormError").text("Enter a valid card number.").show();
+          return;
+        }
+        if (!entry.expMonth || !entry.expYear) {
+          $("#paymentFormError").text("Select an expiration month and year.").show();
+          return;
+        }
+        if (!entry.billingLine1 || !entry.billingCity || !entry.billingZip) {
+          $("#paymentFormError").text("Billing address, city, and ZIP are required.").show();
+          return;
+        }
+        if (!entry.billingState) {
+          $("#paymentFormError").text("Select a billing state.").show();
+          return;
+        }
+
+        if (editingId) {
+          payments = payments.map(function (item) {
+            return item.id === editingId ? entry : item;
+          });
+        } else {
+          payments.push(entry);
+        }
+
+        if (entry.isDefault) {
+          payments.forEach(function (item) {
+            item.isDefault = item.id === entry.id;
+          });
+        } else if (!payments.some(function (item) { return item.isDefault; })) {
+          var fallback = payments.find(function (item) { return item.id !== entry.id; }) || entry;
+          fallback.isDefault = true;
+        }
+
+        savePayments(payments);
+        renderPayments(payments);
+        $("#paymentFormModal").modal("hide");
+      });
+
+      $grid.on("click", ".js-edit-payment", function (event) {
+        event.preventDefault();
+        var id = $(this).data("id");
+        var card = payments.find(function (item) { return item.id === id; });
+        if (card) openPaymentModal(card);
+      });
+
+      $grid.on("click", ".js-remove-payment", function (event) {
+        event.preventDefault();
+        var id = $(this).data("id");
+        if (payments.length <= 1) {
+          window.alert("You must keep at least one saved payment method.");
+          return;
+        }
+        var removed = payments.find(function (item) { return item.id === id; });
+        payments = payments.filter(function (item) { return item.id !== id; });
+        if (removed && removed.isDefault && payments.length) {
+          payments[0].isDefault = true;
+        }
+        savePayments(payments);
+        renderPayments(payments);
+      });
 
       $grid.on("click", ".js-make-default", function (event) {
         event.preventDefault();
-        var $card = $(this).closest(".payment-card");
-        $grid.find(".payment-card").removeClass("is-default");
-        $card.addClass("is-default");
-        updateDefaultActions();
+        var id = $(this).data("id");
+        payments = payments.map(function (item) {
+          item.isDefault = item.id === id;
+          return item;
+        });
+        savePayments(payments);
+        renderPayments(payments);
       });
 
-      $grid.on("click", ".js-edit-payment, .js-remove-payment", function (event) {
-        event.preventDefault();
-      });
-
-      $("#addPaymentBtn").on("click", function (event) {
-        event.preventDefault();
-      });
-
-      updateDefaultActions();
-    })();
+      $("#paymentFormModal").on("hidden.bs.modal", resetPaymentForm);
+    })(jQuery);
   </script>
 </body>
 </html>

@@ -92,6 +92,25 @@
       letter-spacing: .45px;
       font-weight: 600;
     }
+    .preview-back-btn {
+      display: none;
+      border: 0;
+      background: transparent;
+      color: #007185;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.2;
+      padding: 0;
+      margin: 0 0 6px;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .preview-back-btn:hover,
+    .preview-back-btn:focus {
+      color: #005a6a;
+      outline: none;
+      text-decoration: none;
+    }
     .lists-filterbar {
       display: flex;
       gap: 8px;
@@ -1195,6 +1214,21 @@
       .lists-layout {
         grid-template-columns: 1fr;
       }
+      .lists-layout:not(.show-mobile-preview) .list-preview-panel {
+        display: none;
+      }
+      .lists-layout.show-mobile-preview .lists-panel {
+        display: none;
+      }
+      .preview-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-bottom: 0;
+      }
+      .preview-head-label {
+        display: none;
+      }
       .lists-head h1 {
         font-size: 30px;
       }
@@ -1284,7 +1318,7 @@
         <a href="#" class="btn-create-list" id="createListBtn">+ Create a List</a>
       </div>
 
-      <div class="lists-layout">
+      <div class="lists-layout" id="listsLayout">
         <section class="lists-panel">
           <div class="lists-panel-head">Saved Lists</div>
           <div class="lists-filterbar" id="listsFilterBar">
@@ -1296,7 +1330,10 @@
         </section>
 
         <aside class="list-preview-panel">
-          <div class="preview-head">List Preview</div>
+          <div class="preview-head">
+            <button type="button" class="preview-back-btn" id="mobileListBackBtn" aria-label="Back to saved lists">&larr; Saved Lists</button>
+            <span class="preview-head-label">List Preview</span>
+          </div>
           <div class="preview-body">
             <div class="preview-top">
               <div>
@@ -1497,6 +1534,8 @@
       ];
 
       var activeListId = lists[0].id;
+      var listsLayoutEl = document.getElementById("listsLayout");
+      var mobileListBackBtn = document.getElementById("mobileListBackBtn");
       var rowsEl = document.getElementById("listsRows");
       var previewTitleEl = document.getElementById("previewListTitle");
       var previewMetaEl = document.getElementById("previewMeta");
@@ -2325,6 +2364,22 @@
         return lists.slice();
       }
 
+      function isMobileListsView() {
+        return window.matchMedia("(max-width: 991px)").matches;
+      }
+
+      function setMobileListView(showPreview) {
+        if (!listsLayoutEl) return;
+        if (!isMobileListsView()) {
+          listsLayoutEl.classList.remove("show-mobile-preview");
+          return;
+        }
+        listsLayoutEl.classList.toggle("show-mobile-preview", !!showPreview);
+        if (showPreview) {
+          window.scrollTo(0, 0);
+        }
+      }
+
       function ensureActiveListVisible() {
         var visible = getVisibleLists();
         var hasActive = visible.some(function (list) { return list.id === activeListId; });
@@ -2502,6 +2557,19 @@
         activeListId = row.getAttribute("data-list-id");
         renderRows();
         renderPreview();
+        if (isMobileListsView()) {
+          setMobileListView(true);
+        }
+      });
+      if (mobileListBackBtn) {
+        mobileListBackBtn.addEventListener("click", function () {
+          setMobileListView(false);
+        });
+      }
+      window.addEventListener("resize", function () {
+        if (!isMobileListsView()) {
+          setMobileListView(false);
+        }
       });
       previewItemsEl.addEventListener("click", function (event) {
         var list = getListById(activeListId);
@@ -2816,6 +2884,9 @@
         ensureActiveListVisible();
         renderRows();
         renderPreview();
+        if (isMobileListsView()) {
+          setMobileListView(true);
+        }
         $createListModal.modal("hide");
       });
       $manageListForm.on("submit", function (event) {

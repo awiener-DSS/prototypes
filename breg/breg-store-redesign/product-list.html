@@ -206,6 +206,28 @@
       outline: 0;
     }
 
+    .pl-filter-footer {
+      display: none;
+    }
+
+    .pl-filter-apply {
+      width: 100%;
+      min-height: 44px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .pl-filter-apply:hover,
+    .pl-filter-apply:focus {
+      background: #003a99;
+      color: #fff;
+      outline: 0;
+    }
+
     .pl-filter-group {
       border-top: 1px solid #ecf0f3;
       padding-top: 10px;
@@ -1107,10 +1129,32 @@
         max-height: none;
         transform: translateX(-100%);
         transition: transform .2s ease;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        overflow: hidden;
       }
 
       .pl-sidebar.open {
         transform: translateX(0);
+      }
+
+      .pl-sidebar .pl-filter-top {
+        padding: 14px 14px 10px;
+        margin-bottom: 0;
+      }
+
+      .pl-sidebar .pl-filter-body {
+        flex: 1;
+        overflow: auto;
+        padding: 0 14px 12px;
+      }
+
+      .pl-filter-footer {
+        display: flex;
+        padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid #ecf0f3;
+        background: #fff;
       }
 
       .pl-grid:not(.list) {
@@ -1241,7 +1285,8 @@
             <button type="button" class="pl-filter-clear" id="clearAllFilters">Clear all</button>
           </div>
 
-          <details class="pl-filter-group" open>
+          <div class="pl-filter-body">
+          <details class="pl-filter-group">
             <summary>Subcategory</summary>
             <input type="search" class="pl-facet-search" placeholder="Search subcategory" autocomplete="off" aria-label="Search subcategory">
             <div id="subcategoryOptions" class="pl-filter-options"></div>
@@ -1282,6 +1327,11 @@
             <input type="search" class="pl-facet-search" placeholder="Search UOM" autocomplete="off" aria-label="Search UOM">
             <div id="uomOptions" class="pl-filter-options"></div>
           </details>
+          </div>
+
+          <div class="pl-filter-footer">
+            <button type="button" class="pl-filter-apply" id="mobileFilterApply">Apply Filters</button>
+          </div>
         </aside>
 
         <section class="pl-content">
@@ -1434,6 +1484,10 @@
           .replace(/>/g, "&gt;")
           .replace(/\"/g, "&quot;")
           .replace(/'/g, "&#39;");
+      }
+
+      function escapeSelectorValue(value) {
+        return String(value || "").replace(/(["\\])/g, "\\$1");
       }
 
       var descriptionMap = window.BREG_PRODUCT_DESCRIPTIONS || {};
@@ -2326,12 +2380,61 @@
         return true;
       }
 
+      function isMobileFilterView() {
+        return window.matchMedia("(max-width: 991px)").matches;
+      }
+
+      function isMobileFilterDrawerOpen() {
+        return isMobileFilterView() && $("#plSidebar").hasClass("open");
+      }
+
+      var mobileFilterSnapshot = null;
+
+      function captureMobileFilterSnapshot() {
+        mobileFilterSnapshot = currentState();
+      }
+
+      function restoreMobileFilterSnapshot() {
+        if (!mobileFilterSnapshot) return;
+        var snapshot = mobileFilterSnapshot;
+        $(".filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom").prop("checked", false);
+        snapshot.subcategories.forEach(function (value) {
+          $(".filter-subcategory[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        });
+        snapshot.sizes.forEach(function (value) {
+          $(".filter-size[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        });
+        snapshot.options.forEach(function (value) {
+          $(".filter-option[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        });
+        snapshot.colors.forEach(function (value) {
+          $(".filter-color[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        });
+        snapshot.genders.forEach(function (value) {
+          $(".filter-gender[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        });
+        snapshot.orientations.forEach(function (value) {
+          $(".filter-orientation[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        });
+        snapshot.uoms.forEach(function (value) {
+          $(".filter-uom[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+        });
+        buildFacetFilters();
+      }
+
+      function collapseMobileFacets() {
+        if (!isMobileFilterView()) return;
+        $(".pl-filter-group").prop("open", false);
+      }
+
       function renderFacetGroup(target, values, className, selectedSet, formatLabel) {
         var selected = (selectedSet || []).filter(function (value) { return values.indexOf(value) > -1; });
         renderFilterOptions(target, values, className, selected, formatLabel);
         var $group = $(target).closest(".pl-filter-group");
         $group.toggle(values.length > 0);
-        $group.prop("open", target === "#subcategoryOptions" || selected.length > 0);
+        if (!isMobileFilterView()) {
+          $group.prop("open", target === "#subcategoryOptions" || selected.length > 0);
+        }
         syncFacetSearchField($group, values.length);
       }
 
@@ -2492,6 +2595,7 @@
       function clearAllFilters() {
         $("#sortSelect").val("featured");
         $(".filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom").prop("checked", false);
+        if (isMobileFilterDrawerOpen()) return;
         applyFilters();
       }
 
@@ -2506,12 +2610,28 @@
         applyFilters();
       }
 
-      function toggleMobileFilters(open) {
-        if (window.matchMedia("(max-width: 991px)").matches) {
-          $("#plSidebar").toggleClass("open", open);
-          $("#filterBackdrop").toggleClass("open", open);
-          $("body").toggleClass("all-drawer-open", open);
+      function toggleMobileFilters(open, options) {
+        options = options || {};
+        if (!window.matchMedia("(max-width: 991px)").matches) return;
+        if (open) {
+          captureMobileFilterSnapshot();
+          collapseMobileFacets();
+        } else if (!options.commit && mobileFilterSnapshot) {
+          restoreMobileFilterSnapshot();
+          mobileFilterSnapshot = null;
+        } else if (options.commit) {
+          mobileFilterSnapshot = null;
         }
+        $("#plSidebar").toggleClass("open", open);
+        $("#filterBackdrop").toggleClass("open", open);
+        $("body").toggleClass("all-drawer-open", open);
+      }
+
+      function applyMobileFilters() {
+        applyFilters();
+        toggleMobileFilters(false, { commit: true });
+        var content = document.querySelector(".pl-content");
+        if (content) content.scrollIntoView({ behavior: "smooth", block: "start" });
       }
 
       function parseXmlString(xmlString) {
@@ -2603,7 +2723,11 @@
         .on("input", ".pl-facet-search", function () {
           applyFacetSearch($(this));
         })
-        .on("input change", "#sortSelect, .filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom", function () {
+        .on("input change", "#sortSelect", function () {
+          applyFilters();
+        })
+        .on("input change", ".filter-subcategory, .filter-size, .filter-option, .filter-color, .filter-gender, .filter-orientation, .filter-uom", function () {
+          if (isMobileFilterDrawerOpen()) return;
           applyFilters();
         })
         .on("click", "#clearAllFilters", function () {
@@ -2622,6 +2746,9 @@
         })
         .on("click", "#mobileFilterBtn", function () {
           toggleMobileFilters(true);
+        })
+        .on("click", "#mobileFilterApply", function () {
+          applyMobileFilters();
         })
         .on("click", "#filterBackdrop", function () {
           toggleMobileFilters(false);
@@ -2789,7 +2916,7 @@
 
       $(window).on("resize", function () {
         if (window.innerWidth > 991) {
-          toggleMobileFilters(false);
+          toggleMobileFilters(false, { commit: true });
         }
       });
     })();

@@ -1031,6 +1031,13 @@ body.all-drawer-open {
   pointer-events: auto;
   transform: translateY(0);
 }
+body.breg-scroll-controls-suppressed .scroll-top-btn,
+body.breg-scroll-controls-suppressed .scroll-quick-order-btn {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translateY(8px) !important;
+}
 .scroll-top-btn:hover {
   background: var(--breg-primary, #0047bb);
   color: #fff;

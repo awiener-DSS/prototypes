@@ -18,6 +18,26 @@
     .cat-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
     .cat-title { margin: 0 0 8px; font-size: 34px; line-height: 1.1; font-weight: 600; }
     .cat-subtitle { margin: 0 0 16px; color: #56626d; font-size: 14px; }
+    .cat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .cat-mobile-filter {
+      height: 38px;
+      padding: 0 12px;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      border: 1px solid #c7d0d8;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #0f1111;
+      background: #fff;
+    }
     .cat-layout { display: grid; grid-template-columns: 280px 1fr; gap: 14px; align-items: start; }
     .cat-facets {
       background: #fff; border: 1px solid #d7dee5; border-radius: 12px; padding: 12px;
@@ -26,6 +46,23 @@
     .cat-facet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .cat-facet-title { margin: 0; font-size: 17px; font-weight: 600; }
     .cat-facet-clear { border: 0; background: transparent; color: #007185; font-size: 12px; font-weight: 600; padding: 0; }
+    .cat-filter-footer { display: none; }
+    .cat-filter-apply {
+      width: 100%;
+      min-height: 44px;
+      border: 0;
+      border-radius: 10px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .cat-filter-apply:hover,
+    .cat-filter-apply:focus {
+      background: #003a99;
+      color: #fff;
+      outline: 0;
+    }
     .cat-facet-group { border-top: 1px solid #ecf0f3; padding-top: 10px; margin-top: 10px; }
     .cat-facet-group:first-of-type { border-top: 0; padding-top: 0; margin-top: 0; }
     .cat-facet-group summary { list-style: none; cursor: pointer; font-size: 13px; font-weight: 600; margin-bottom: 8px; position: relative; padding-right: 18px; }
@@ -84,16 +121,56 @@
     .cat-product-name { margin: 0; font-size: 13px; font-weight: 600; line-height: 1.35; color: #11181f; }
     .cat-product-sub { margin: 6px 0 0; font-size: 12px; color: #56626d; }
     .cat-empty.hidden { display: none; }
+    .cat-filter-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 15, 20, .48);
+      z-index: 1250;
+      display: none;
+    }
+    .cat-filter-backdrop.open { display: block; }
     @media (max-width: 991px) {
+      .cat-mobile-filter { display: inline-flex; }
       .cat-layout { grid-template-columns: 1fr; }
-      .cat-facets { position: static; max-height: none; }
+      .cat-facets {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: min(90vw, 340px);
+        border-radius: 0;
+        z-index: 1300;
+        max-height: none;
+        transform: translateX(-100%);
+        transition: transform .2s ease;
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        overflow: hidden;
+      }
+      .cat-facets.open { transform: translateX(0); }
+      .cat-facets .cat-facet-head {
+        padding: 14px 14px 10px;
+        margin-bottom: 0;
+      }
+      .cat-facets .cat-filter-body {
+        flex: 1;
+        overflow: auto;
+        padding: 0 14px 12px;
+      }
+      .cat-filter-footer {
+        display: flex;
+        padding: 12px 14px calc(12px + env(safe-area-inset-bottom, 0px));
+        border-top: 1px solid #ecf0f3;
+        background: #fff;
+      }
       .cat-sub-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .cat-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .cat-title { font-size: 30px; }
     }
     @media (max-width: 767px) {
       .cat-sub-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .cat-product-grid { grid-template-columns: 1fr; }
+      .cat-product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
       .cat-title { font-size: 26px; }
     }
   </style>
@@ -151,23 +228,29 @@
       <p class="cat-breadcrumb"><a href="index.html">Home</a><span class="sep">&gt;</span><span id="catBreadcrumb">Category</span></p>
       <h1 class="cat-title" id="catTitle">Category</h1>
       <p class="cat-subtitle" id="catSubtitle">Choose a sub-category to browse products.</p>
+      <div class="cat-header">
+        <button type="button" class="cat-mobile-filter" id="catMobileFilterBtn"><span class="glyphicon glyphicon-filter"></span> Filters</button>
+      </div>
       <div class="cat-layout">
-        <aside class="cat-facets">
+        <aside class="cat-facets" id="catSidebar">
           <div class="cat-facet-head">
-            <h2 class="cat-facet-title">Facets</h2>
+            <h2 class="cat-facet-title">Filters</h2>
             <button type="button" class="cat-facet-clear" id="catFacetClear">Clear all</button>
           </div>
-          <details class="cat-facet-group" open><summary>Subcategory</summary><input type="search" class="cat-facet-search" placeholder="Search subcategory" autocomplete="off" aria-label="Search subcategory"><div id="facetSubcategory" class="cat-facet-options"></div></details>
+          <div class="cat-filter-body">
+          <details class="cat-facet-group"><summary>Subcategory</summary><input type="search" class="cat-facet-search" placeholder="Search subcategory" autocomplete="off" aria-label="Search subcategory"><div id="facetSubcategory" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>Size</summary><input type="search" class="cat-facet-search" placeholder="Search size" autocomplete="off" aria-label="Search size"><div id="facetSize" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>Option</summary><input type="search" class="cat-facet-search" placeholder="Search option" autocomplete="off" aria-label="Search option"><div id="facetOption" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>Color</summary><input type="search" class="cat-facet-search" placeholder="Search color" autocomplete="off" aria-label="Search color"><div id="facetColor" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>Gender</summary><input type="search" class="cat-facet-search" placeholder="Search gender" autocomplete="off" aria-label="Search gender"><div id="facetGender" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>Orientation</summary><input type="search" class="cat-facet-search" placeholder="Search orientation" autocomplete="off" aria-label="Search orientation"><div id="facetOrientation" class="cat-facet-options"></div></details>
           <details class="cat-facet-group"><summary>UOM</summary><input type="search" class="cat-facet-search" placeholder="Search UOM" autocomplete="off" aria-label="Search UOM"><div id="facetUom" class="cat-facet-options"></div></details>
+          </div>
+          <div class="cat-filter-footer">
+            <button type="button" class="cat-filter-apply" id="catMobileFilterApply">Apply Filters</button>
+          </div>
         </aside>
         <section class="cat-content">
-          <div class="cat-toolbar">
-          </div>
           <div class="cat-active-filters" id="catActiveFilters"></div>
           <div class="cat-sub-grid" id="catSubGrid"></div>
           <div class="cat-product-grid" id="catProductGrid" style="display:none;"></div>
@@ -177,6 +260,8 @@
       <div class="cat-empty hidden" id="catEmpty">No sub-categories found. Redirecting to products...</div>
     </section>
   </main>
+
+  <div class="cat-filter-backdrop" id="catFilterBackdrop"></div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -401,6 +486,61 @@
         $("#catActiveFilters").html(chips.join(""));
       }
 
+      function isMobileFilterView() {
+        return window.matchMedia("(max-width: 991px)").matches;
+      }
+
+      function isMobileFilterDrawerOpen() {
+        return isMobileFilterView() && $("#catSidebar").hasClass("open");
+      }
+
+      var mobileFilterSnapshot = null;
+
+      function captureMobileFilterSnapshot() {
+        mobileFilterSnapshot = currentState();
+      }
+
+      function restoreMobileFilterSnapshot() {
+        if (!mobileFilterSnapshot) return;
+        var snapshot = mobileFilterSnapshot;
+        $(".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom").prop("checked", false);
+        facetDefs.forEach(function (facet) {
+          (snapshot[facet.key] || []).forEach(function (value) {
+            $("." + facet.className + "[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", true);
+          });
+        });
+        buildFacetPanels();
+      }
+
+      function collapseMobileFacets() {
+        if (!isMobileFilterView()) return;
+        $(".cat-facet-group").prop("open", false);
+      }
+
+      function toggleMobileFilters(open, options) {
+        options = options || {};
+        if (!isMobileFilterView()) return;
+        if (open) {
+          captureMobileFilterSnapshot();
+          collapseMobileFacets();
+        } else if (!options.commit && mobileFilterSnapshot) {
+          restoreMobileFilterSnapshot();
+          mobileFilterSnapshot = null;
+        } else if (options.commit) {
+          mobileFilterSnapshot = null;
+        }
+        $("#catSidebar").toggleClass("open", open);
+        $("#catFilterBackdrop").toggleClass("open", open);
+        $("body").toggleClass("all-drawer-open", open);
+      }
+
+      function applyMobileFilters() {
+        applyFacets();
+        toggleMobileFilters(false, { commit: true });
+        var content = document.querySelector(".cat-content");
+        if (content) content.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
       function buildFacetPanels() {
         var state = currentState();
         facetDefs.forEach(function (facet) {
@@ -411,7 +551,9 @@
           var selected = (state[facet.key] || []).filter(function (v) { return values.indexOf(v) > -1; });
           renderFacetOptions(facet.target, facet.className, values, selected);
           var $group = $(facet.target).closest(".cat-facet-group");
-          $group.prop("open", facet.key === "subcategory" || selected.length > 0);
+          if (!isMobileFilterView()) {
+            $group.prop("open", facet.key === "subcategory" || selected.length > 0);
+          }
           syncFacetSearchField($group, values.length);
         });
       }
@@ -458,10 +600,21 @@
           applyFacetSearch($(this));
         })
         .on("change", ".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom", function () {
+          if (isMobileFilterDrawerOpen()) return;
           applyFacets();
+        })
+        .on("click", "#catMobileFilterBtn", function () {
+          toggleMobileFilters(true);
+        })
+        .on("click", "#catMobileFilterApply", function () {
+          applyMobileFilters();
+        })
+        .on("click", "#catFilterBackdrop", function () {
+          toggleMobileFilters(false);
         })
         .on("click", "#catFacetClear", function () {
           $(".facet-subcategory, .facet-size, .facet-option, .facet-color, .facet-gender, .facet-orientation, .facet-uom").prop("checked", false);
+          if (isMobileFilterDrawerOpen()) return;
           applyFacets();
         })
         .on("click", "#catActiveFilters .remove", function () {
@@ -471,6 +624,12 @@
           $(".facet-" + key + "[value=\"" + escapeSelectorValue(value) + "\"]").prop("checked", false);
           applyFacets();
         });
+
+      $(window).on("resize.catfilters", function () {
+        if (!isMobileFilterView()) {
+          toggleMobileFilters(false, { commit: true });
+        }
+      });
     })();
   </script>
 </body>

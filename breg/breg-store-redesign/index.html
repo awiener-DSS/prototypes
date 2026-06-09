@@ -56,7 +56,7 @@
       background:var(--breg-primary, #0047bb);
       transform:scale(1.2);
     }
-    .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.12) 45%,rgba(0,0,0,.04) 100%); }
+    .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.12) 45%,rgba(0,0,0,.04) 100%); pointer-events:none; }
     .hero-panel::after {
       content:"";
       position:absolute;
@@ -69,7 +69,7 @@
       background:var(--hero-fade-bg, linear-gradient(to bottom, rgba(74,127,184,0) 0%, rgba(74,127,184,.28) 55%, transparent 100%));
       transition:background .45s ease;
     }
-    .hero-copy { position:absolute; z-index:3; top:50%; left:44px; transform:translateY(-50%); color:#fff; max-width:550px; }
+    .hero-copy { position:absolute; z-index:3; top:50%; left:44px; transform:translateY(-50%); color:#fff; max-width:550px; pointer-events:none; }
     .hero-copy h1 { margin:0 0 8px; font-size:46px; font-weight:700; font-family:var(--font-headline); letter-spacing:.2px; color:#fff; }
     .hero-copy p { margin:0; font-size:22px; font-family:var(--font-body); opacity:.95; color:#fff; }
     .hero-arrow {
@@ -333,6 +333,7 @@
       }
       .hero-track{
         position:relative;
+        z-index:1;
         display:flex;
         width:100%;
         height:100%;
@@ -341,7 +342,7 @@
         scroll-snap-type:x mandatory;
         -webkit-overflow-scrolling:touch;
         overscroll-behavior-x:contain;
-        touch-action:pan-x pan-y;
+        touch-action:pan-x;
         scrollbar-width:none;
       }
       .hero-track::-webkit-scrollbar{display:none;}
@@ -359,6 +360,11 @@
         transition:none;
       }
       .hero-slide.active{z-index:1;}
+      .hero-overlay,
+      .hero-copy{
+        z-index:2;
+        pointer-events:none;
+      }
       .hero-dots{display:flex;}
       .hero-copy{left:18px; right:18px; max-width:none;}
       .hero-copy h1{font-size:28px;}
@@ -691,7 +697,12 @@
         setHero(index, "smooth");
         resetHeroTimer();
       });
-      $heroTrack.on("touchend.herointeract", function () { resetHeroTimer(); });
+      $heroTrack.on("touchstart.herointeract", function () {
+        clearInterval(heroTimer);
+      });
+      $heroTrack.on("touchend.herointeract touchcancel.herointeract", function () {
+        resetHeroTimer();
+      });
 
       function initHeroCarousel() {
         if (isMobileHeroView()) {

@@ -2488,6 +2488,22 @@
     return isMobileViewport() ? 72 : 200;
   }
 
+  var MODAL_OPEN_SELECTOR =
+    ".bulk-modal.open," +
+    ".quick-order-modal.open," +
+    ".contact-email-modal.open," +
+    ".pl-quickview-modal.open," +
+    ".bulk-detail-modal.open," +
+    ".pl-filter-backdrop.open," +
+    ".cat-filter-backdrop.open," +
+    ".all-drawer-overlay.open";
+
+  function isAnyModalOpen() {
+    if (document.body.classList.contains("all-drawer-open")) return true;
+    if (document.body.classList.contains("pl-quickview-open")) return true;
+    return !!document.querySelector(MODAL_OPEN_SELECTOR);
+  }
+
   function ensureScrollControlsStyles() {
     if (document.getElementById(SCROLL_CONTROLS_STYLE_ID)) return;
     var style = document.createElement("style");
@@ -2497,6 +2513,7 @@
       ".scroll-top-btn{right:24px;bottom:24px;width:44px;height:44px;border-radius:999px;border:1px solid rgba(0,71,187,.3);background:#fff;color:#0047bb;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease;}" +
       ".scroll-quick-order-btn{right:24px;bottom:78px;min-height:38px;padding:0 14px;border-radius:999px;border:1px solid #0047bb;background:#0047bb;color:#fff!important;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.18);cursor:pointer;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(8px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease;}" +
       ".scroll-top-btn.visible,.scroll-quick-order-btn.visible{opacity:1!important;visibility:visible!important;pointer-events:auto!important;transform:translateY(0)!important;}" +
+      "body.breg-scroll-controls-suppressed .scroll-top-btn,body.breg-scroll-controls-suppressed .scroll-quick-order-btn{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:translateY(8px)!important;}" +
       ".scroll-quick-order-btn:hover,.scroll-quick-order-btn:focus{text-decoration:none;color:#fff!important;background:#001E62;border-color:#001E62;}" +
       "@media (max-width:991px){.scroll-quick-order-btn{right:12px;bottom:calc(62px + env(safe-area-inset-bottom,0px));min-height:36px;padding:0 12px;}.scroll-top-btn{right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:42px;height:42px;}}";
     document.head.appendChild(style);
@@ -2544,12 +2561,26 @@
     ensureScrollSentinel();
 
     function setVisible(show) {
-      btn.classList.toggle("visible", !!show);
-      quickOrderBtn.classList.toggle("visible", !!show);
+      var allowShow = !!show && !isAnyModalOpen();
+      document.body.classList.toggle("breg-scroll-controls-suppressed", isAnyModalOpen());
+      btn.classList.toggle("visible", allowShow);
+      quickOrderBtn.classList.toggle("visible", allowShow);
     }
 
     function updateVisibility() {
       setVisible(getScrollY() > scrollShowThreshold());
+    }
+
+    function watchModalVisibility() {
+      if (!window.MutationObserver) return;
+      var observer = new MutationObserver(function () {
+        updateVisibility();
+      });
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class"],
+        subtree: true
+      });
     }
 
     btn.addEventListener("click", function () {
@@ -2572,6 +2603,7 @@
       window.setInterval(updateVisibility, 250);
     }
 
+    watchModalVisibility();
     updateVisibility();
   }
 
@@ -2580,6 +2612,13 @@
       var btn = document.querySelector(".scroll-top-btn");
       var quickOrderBtn = document.querySelector(".scroll-quick-order-btn");
       if (!btn || !quickOrderBtn) initScrollTop();
+      else if (document.documentElement[SCROLL_CONTROLS_INIT_KEY]) {
+        var show = getScrollY() > scrollShowThreshold();
+        document.body.classList.toggle("breg-scroll-controls-suppressed", isAnyModalOpen());
+        var allowShow = show && !isAnyModalOpen();
+        btn.classList.toggle("visible", allowShow);
+        quickOrderBtn.classList.toggle("visible", allowShow);
+      }
     }
   };
 

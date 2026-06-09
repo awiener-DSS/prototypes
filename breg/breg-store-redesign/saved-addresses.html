@@ -68,7 +68,7 @@
     .address-card-head {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
       gap: 8px;
       margin-bottom: 10px;
     }
@@ -138,6 +138,143 @@
       line-height: 1;
       margin: 0 -2px;
     }
+    button.addresses-add-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .address-empty {
+      border: 1px dashed #c7ced4;
+      border-radius: 12px;
+      background: #fff;
+      padding: 28px 20px;
+      text-align: center;
+      color: #565959;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .address-modal .modal-dialog {
+      width: min(620px, calc(100% - 30px));
+      margin: 70px auto;
+    }
+    .address-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      overflow: hidden;
+    }
+    .address-modal .modal-header {
+      border-bottom: 1px solid #eaeded;
+      padding: 16px 20px;
+      background: #fff;
+    }
+    .address-modal .modal-title {
+      margin: 0;
+      font-size: 20px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .address-modal .modal-body {
+      padding: 16px 20px 8px;
+      background: #fff;
+    }
+    .address-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fff;
+    }
+    .address-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+    }
+    .address-form-field.full { grid-column: 1 / -1; }
+    .address-form-label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+    }
+    .address-form-input,
+    .address-form-select {
+      width: 100%;
+      border: 1px solid #c7ced4;
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 0 14px;
+      font-size: 13px;
+      color: #0f1111;
+      background: #fff;
+      box-shadow: none;
+    }
+    .address-form-input:focus,
+    .address-form-select:focus {
+      border-color: var(--breg-primary, #0047bb);
+      outline: 0;
+      box-shadow: 0 0 0 2px rgba(0, 71, 187, 0.12);
+    }
+    .address-form-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      font-size: 13px;
+      color: #565959;
+      font-weight: 400;
+      cursor: pointer;
+      user-select: none;
+    }
+    .address-form-check input { margin: 0; cursor: pointer; }
+    .address-form-error {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #b12704;
+      display: none;
+    }
+    .address-form-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 8px 14px;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .address-form-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .address-form-btn:hover,
+    .address-form-btn:focus {
+      color: var(--breg-primary-dark, #001E62);
+      background: rgba(0, 71, 187, 0.08);
+      border-color: var(--breg-primary-dark, #001E62);
+      text-decoration: none;
+    }
+    .address-form-btn.primary:hover,
+    .address-form-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    button.address-form-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
+    }
     @media (max-width: 1199px) {
       .addresses-title { font-size: 30px; }
       .addresses-subtitle { font-size: 14px; }
@@ -147,6 +284,7 @@
       .addresses-title { font-size: 28px; }
       .addresses-subtitle { font-size: 13px; }
       .address-grid { grid-template-columns: 1fr; }
+      .address-form-grid { grid-template-columns: 1fr; }
       .addresses-add-btn { margin-top: 0; }
     }
   </style>
@@ -208,102 +346,381 @@
           <h1 class="addresses-title">Saved Addresses</h1>
           <p class="addresses-subtitle">Manage your shipping and billing addresses</p>
         </div>
-        <a class="addresses-add-btn" href="#" id="addAddressBtn"><span class="glyphicon glyphicon-plus"></span> Add New Address</a>
+        <button type="button" class="addresses-add-btn" id="addAddressBtn"><span class="glyphicon glyphicon-plus"></span> Add New Address</button>
       </div>
 
-      <section class="address-grid" id="addressGrid">
-        <article class="address-card is-default">
-          <div class="address-card-head">
-            <div class="address-type"><span class="glyphicon glyphicon-briefcase"></span> Work Address</div>
-            <div class="address-default"><span class="glyphicon glyphicon-star"></span> Default</div>
-          </div>
-          <h2 class="address-name">Medical Clinic Inc.</h2>
-          <p class="address-lines">123 Healthcare Blvd<br>Los Angeles, CA 90001<br>United States</p>
-          <p class="address-phone">Phone: (555) 123-4567</p>
-          <div class="address-actions">
-            <a class="address-action js-edit-address" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-            <span class="address-divider">|</span>
-            <a class="address-action delete js-delete-address" href="#"><span class="glyphicon glyphicon-trash"></span>Delete</a>
-          </div>
-        </article>
-
-        <article class="address-card">
-          <div class="address-card-head">
-            <div class="address-type"><span class="glyphicon glyphicon-home"></span> Home Address</div>
-            <div class="address-default"><span class="glyphicon glyphicon-star"></span> Default</div>
-          </div>
-          <h2 class="address-name">John Smith</h2>
-          <p class="address-lines">456 Residential St<br>Santa Monica, CA 90401<br>United States</p>
-          <p class="address-phone">Phone: (555) 987-6543</p>
-          <div class="address-actions">
-            <a class="address-action js-edit-address" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-            <span class="address-divider">|</span>
-            <a class="address-action delete js-delete-address" href="#"><span class="glyphicon glyphicon-trash"></span>Delete</a>
-            <span class="address-divider">|</span>
-            <a class="address-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
-          </div>
-        </article>
-
-        <article class="address-card">
-          <div class="address-card-head">
-            <div class="address-type"><span class="glyphicon glyphicon-map-marker"></span> Other Address</div>
-            <div class="address-default"><span class="glyphicon glyphicon-star"></span> Default</div>
-          </div>
-          <h2 class="address-name">West Coast Distribution Center</h2>
-          <p class="address-lines">789 Warehouse Way<br>Long Beach, CA 90802<br>United States</p>
-          <p class="address-phone">Phone: (555) 456-7890</p>
-          <div class="address-actions">
-            <a class="address-action js-edit-address" href="#"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
-            <span class="address-divider">|</span>
-            <a class="address-action delete js-delete-address" href="#"><span class="glyphicon glyphicon-trash"></span>Delete</a>
-            <span class="address-divider">|</span>
-            <a class="address-action js-make-default" href="#"><span class="glyphicon glyphicon-star-empty"></span>Set as Default</a>
-          </div>
-        </article>
-      </section>
+      <section class="address-grid" id="addressGrid"></section>
     </div>
   </main>
+
+  <div class="modal fade address-modal" id="addressFormModal" tabindex="-1" role="dialog" aria-labelledby="addressFormModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="addressFormModalTitle">Add New Address</h2>
+        </div>
+        <div class="modal-body">
+          <div class="address-form-grid">
+            <div class="address-form-field full">
+              <label class="address-form-label" for="addressName">Organization / Name</label>
+              <input id="addressName" class="address-form-input" type="text" maxlength="120" autocomplete="organization">
+            </div>
+            <div class="address-form-field full">
+              <label class="address-form-label" for="addressLine1">Address Line 1</label>
+              <input id="addressLine1" class="address-form-input" type="text" maxlength="120" autocomplete="address-line1">
+            </div>
+            <div class="address-form-field">
+              <label class="address-form-label" for="addressCity">City</label>
+              <input id="addressCity" class="address-form-input" type="text" maxlength="80" autocomplete="address-level2">
+            </div>
+            <div class="address-form-field">
+              <label class="address-form-label" for="addressState">State</label>
+              <select id="addressState" class="address-form-select" autocomplete="address-level1"></select>
+            </div>
+            <div class="address-form-field full">
+              <label class="address-form-label" for="addressZip">ZIP</label>
+              <input id="addressZip" class="address-form-input" type="text" maxlength="20" autocomplete="postal-code">
+            </div>
+            <div class="address-form-field full">
+              <label class="address-form-label" for="addressPhone">Phone</label>
+              <input id="addressPhone" class="address-form-input" type="tel" maxlength="14" autocomplete="tel" placeholder="(555) 123-4567">
+            </div>
+            <div class="address-form-field full">
+              <label class="address-form-check">
+                <input type="checkbox" id="addressSetDefault">
+                Set as default address
+              </label>
+            </div>
+          </div>
+          <p class="address-form-error" id="addressFormError"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="address-form-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="address-form-btn primary" id="saveAddressBtn">Save Address</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
   <script>
-    (function () {
+    (function ($) {
+      var STORAGE_KEY = "breg_saved_addresses_v1";
       var $grid = $("#addressGrid");
+      var editingId = null;
 
-      function updateDefaultActions() {
-        $grid.find(".address-card").each(function () {
-          var $card = $(this);
-          var isDefault = $card.hasClass("is-default");
-          var $setDefault = $card.find(".js-make-default");
-          if (isDefault) {
-            $setDefault.hide();
-            $card.find(".address-divider").last().hide();
-          } else {
-            $setDefault.show();
-            $card.find(".address-divider").last().show();
-          }
-        });
+      var US_STATES = [
+        ["AL", "Alabama"], ["AK", "Alaska"], ["AZ", "Arizona"], ["AR", "Arkansas"], ["CA", "California"],
+        ["CO", "Colorado"], ["CT", "Connecticut"], ["DE", "Delaware"], ["DC", "District of Columbia"], ["FL", "Florida"],
+        ["GA", "Georgia"], ["HI", "Hawaii"], ["ID", "Idaho"], ["IL", "Illinois"], ["IN", "Indiana"],
+        ["IA", "Iowa"], ["KS", "Kansas"], ["KY", "Kentucky"], ["LA", "Louisiana"], ["ME", "Maine"],
+        ["MD", "Maryland"], ["MA", "Massachusetts"], ["MI", "Michigan"], ["MN", "Minnesota"], ["MS", "Mississippi"],
+        ["MO", "Missouri"], ["MT", "Montana"], ["NE", "Nebraska"], ["NV", "Nevada"], ["NH", "New Hampshire"],
+        ["NJ", "New Jersey"], ["NM", "New Mexico"], ["NY", "New York"], ["NC", "North Carolina"], ["ND", "North Dakota"],
+        ["OH", "Ohio"], ["OK", "Oklahoma"], ["OR", "Oregon"], ["PA", "Pennsylvania"], ["RI", "Rhode Island"],
+        ["SC", "South Carolina"], ["SD", "South Dakota"], ["TN", "Tennessee"], ["TX", "Texas"], ["UT", "Utah"],
+        ["VT", "Vermont"], ["VA", "Virginia"], ["WA", "Washington"], ["WV", "West Virginia"], ["WI", "Wisconsin"],
+        ["WY", "Wyoming"]
+      ];
+
+      var seedAddresses = [
+        {
+          id: "addr-work-1",
+          name: "Medical Clinic Inc.",
+          line1: "123 Healthcare Blvd",
+          city: "Los Angeles",
+          state: "CA",
+          zip: "90001",
+          country: "United States",
+          phone: "(555) 123-4567",
+          isDefault: true
+        },
+        {
+          id: "addr-home-1",
+          name: "John Smith",
+          line1: "456 Residential St",
+          city: "Santa Monica",
+          state: "CA",
+          zip: "90401",
+          country: "United States",
+          phone: "(555) 987-6543",
+          isDefault: false
+        },
+        {
+          id: "addr-other-1",
+          name: "West Coast Distribution Center",
+          line1: "789 Warehouse Way",
+          city: "Long Beach",
+          state: "CA",
+          zip: "90802",
+          country: "United States",
+          phone: "(555) 456-7890",
+          isDefault: false
+        }
+      ];
+
+      function escapeHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
       }
+
+      function cityStateZip(addr) {
+        var parts = [];
+        if (addr.city) parts.push(addr.city);
+        if (addr.state) parts.push(addr.state);
+        var line = parts.join(", ");
+        if (addr.zip) line = line ? line + " " + addr.zip : addr.zip;
+        return line;
+      }
+
+      function formatPhoneInput(value) {
+        var digits = String(value || "").replace(/\D/g, "").slice(0, 10);
+        if (!digits.length) return "";
+        if (digits.length < 4) return "(" + digits;
+        if (digits.length < 7) return "(" + digits.slice(0, 3) + ") " + digits.slice(3);
+        return "(" + digits.slice(0, 3) + ") " + digits.slice(3, 6) + "-" + digits.slice(6);
+      }
+
+      function normalizeStateCode(value) {
+        var raw = String(value || "").trim();
+        if (!raw) return "";
+        var upper = raw.toUpperCase();
+        var match = US_STATES.find(function (pair) {
+          return pair[0] === upper || pair[1].toLowerCase() === raw.toLowerCase();
+        });
+        return match ? match[0] : "";
+      }
+
+      function populateStateSelect(selected) {
+        var $select = $("#addressState");
+        $select.empty().append("<option value=''>Select state</option>");
+        US_STATES.forEach(function (pair) {
+          $select.append(
+            $("<option></option>").attr("value", pair[0]).text(pair[1])
+          );
+        });
+        if (selected) $select.val(normalizeStateCode(selected));
+      }
+
+      function normalizeAddress(entry) {
+        var safe = entry && typeof entry === "object" ? entry : {};
+        return {
+          id: String(safe.id || ("addr-" + Date.now() + "-" + Math.floor(Math.random() * 1000))),
+          name: String(safe.name || "").trim(),
+          line1: String(safe.line1 || "").trim(),
+          city: String(safe.city || "").trim(),
+          state: normalizeStateCode(safe.state),
+          zip: String(safe.zip || "").trim(),
+          country: "United States",
+          phone: formatPhoneInput(safe.phone || ""),
+          isDefault: !!safe.isDefault
+        };
+      }
+
+      function toCheckoutAddress(addr) {
+        return {
+          name: addr.name,
+          line1: addr.line1,
+          cityStateZip: cityStateZip(addr),
+          country: addr.country,
+          phone: addr.phone
+        };
+      }
+
+      function loadAddresses() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if (Array.isArray(parsed) && parsed.length) {
+            var list = parsed.map(normalizeAddress);
+            if (!list.some(function (item) { return item.isDefault; }) && list.length) {
+              list[0].isDefault = true;
+            }
+            return list;
+          }
+        } catch (e) {}
+        return seedAddresses.map(normalizeAddress);
+      }
+
+      function saveAddresses(list) {
+        var normalized = (Array.isArray(list) ? list : []).map(normalizeAddress);
+        if (normalized.length && !normalized.some(function (item) { return item.isDefault; })) {
+          normalized[0].isDefault = true;
+        }
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized)); } catch (e) {}
+        syncCheckoutAddresses(normalized);
+      }
+
+      function syncCheckoutAddresses(list) {
+        var checkoutList = list.map(toCheckoutAddress);
+        var defaultAddr = list.find(function (item) { return item.isDefault; }) || list[0];
+        ["bregSavedAddresses", "bregSavedShippingAddresses", "bregAddressBook"].forEach(function (key) {
+          try { localStorage.setItem(key, JSON.stringify(checkoutList)); } catch (e) {}
+        });
+        if (defaultAddr) {
+          try { localStorage.setItem("bregDefaultShippingAddress", JSON.stringify(toCheckoutAddress(defaultAddr))); } catch (e) {}
+        }
+      }
+
+      function renderAddresses(list) {
+        if (!list.length) {
+          $grid.html(
+            "<div class='address-empty'>No saved addresses yet. Click <strong>Add New Address</strong> to create one.</div>"
+          );
+          return;
+        }
+
+        var html = list.map(function (addr) {
+          var actions = [
+            "<a class='address-action js-edit-address' href='#' data-id='" + escapeHtml(addr.id) + "'><span class='glyphicon glyphicon-pencil'></span>Edit</a>",
+            "<span class='address-divider'>|</span>",
+            "<a class='address-action delete js-delete-address' href='#' data-id='" + escapeHtml(addr.id) + "'><span class='glyphicon glyphicon-trash'></span>Delete</a>"
+          ];
+          if (!addr.isDefault) {
+            actions.push(
+              "<span class='address-divider'>|</span>",
+              "<a class='address-action js-make-default' href='#' data-id='" + escapeHtml(addr.id) + "'><span class='glyphicon glyphicon-star-empty'></span>Set as Default</a>"
+            );
+          }
+          return (
+            "<article class='address-card" + (addr.isDefault ? " is-default" : "") + "' data-id='" + escapeHtml(addr.id) + "'>" +
+              (addr.isDefault
+                ? "<div class='address-card-head'><div class='address-default'><span class='glyphicon glyphicon-star'></span> Default</div></div>"
+                : "") +
+              "<h2 class='address-name'>" + escapeHtml(addr.name) + "</h2>" +
+              "<p class='address-lines'>" + escapeHtml(addr.line1) + "<br>" + escapeHtml(cityStateZip(addr)) + "</p>" +
+              (addr.phone ? "<p class='address-phone'>Phone: " + escapeHtml(formatPhoneInput(addr.phone)) + "</p>" : "") +
+              "<div class='address-actions'>" + actions.join("") + "</div>" +
+            "</article>"
+          );
+        }).join("");
+
+        $grid.html(html);
+      }
+
+      function resetAddressForm() {
+        editingId = null;
+        $("#addressFormModalTitle").text("Add New Address");
+        $("#addressName, #addressLine1, #addressCity, #addressZip, #addressPhone").val("");
+        populateStateSelect("");
+        $("#addressSetDefault").prop("checked", false);
+        $("#addressFormError").hide().text("");
+      }
+
+      function openAddressModal(addr) {
+        resetAddressForm();
+        if (addr) {
+          editingId = addr.id;
+          $("#addressFormModalTitle").text("Edit Address");
+          $("#addressName").val(addr.name);
+          $("#addressLine1").val(addr.line1);
+          $("#addressCity").val(addr.city);
+          populateStateSelect(addr.state);
+          $("#addressZip").val(addr.zip);
+          $("#addressPhone").val(formatPhoneInput(addr.phone));
+          $("#addressSetDefault").prop("checked", !!addr.isDefault);
+        }
+        $("#addressFormModal").modal("show");
+      }
+
+      populateStateSelect("");
+      var addresses = loadAddresses();
+      renderAddresses(addresses);
+
+      $("#addAddressBtn").on("click", function () {
+        openAddressModal(null);
+      });
+
+      $("#addressPhone").on("input", function () {
+        var $input = $(this);
+        var formatted = formatPhoneInput($input.val());
+        if ($input.val() !== formatted) $input.val(formatted);
+      });
+
+      $("#saveAddressBtn").on("click", function () {
+        var entry = normalizeAddress({
+          id: editingId || undefined,
+          name: $.trim($("#addressName").val() || ""),
+          line1: $.trim($("#addressLine1").val() || ""),
+          city: $.trim($("#addressCity").val() || ""),
+          state: $.trim($("#addressState").val() || ""),
+          zip: $.trim($("#addressZip").val() || ""),
+          phone: $("#addressPhone").val(),
+          isDefault: $("#addressSetDefault").is(":checked")
+        });
+
+        if (!entry.name || !entry.line1 || !entry.city || !entry.zip) {
+          $("#addressFormError").text("Name, address, city, and ZIP are required.").show();
+          return;
+        }
+        if (!entry.state) {
+          $("#addressFormError").text("Select a state.").show();
+          return;
+        }
+
+        if (editingId) {
+          addresses = addresses.map(function (item) {
+            return item.id === editingId ? entry : item;
+          });
+        } else {
+          addresses.push(entry);
+        }
+
+        if (entry.isDefault) {
+          addresses.forEach(function (item) {
+            item.isDefault = item.id === entry.id;
+          });
+        } else if (!addresses.some(function (item) { return item.isDefault; })) {
+          var fallback = addresses.find(function (item) { return item.id !== entry.id; }) || entry;
+          fallback.isDefault = true;
+        }
+
+        saveAddresses(addresses);
+        renderAddresses(addresses);
+        $("#addressFormModal").modal("hide");
+      });
+
+      $grid.on("click", ".js-edit-address", function (event) {
+        event.preventDefault();
+        var id = $(this).data("id");
+        var addr = addresses.find(function (item) { return item.id === id; });
+        if (addr) openAddressModal(addr);
+      });
+
+      $grid.on("click", ".js-delete-address", function (event) {
+        event.preventDefault();
+        var id = $(this).data("id");
+        if (addresses.length <= 1) {
+          window.alert("You must keep at least one saved address.");
+          return;
+        }
+        var removed = addresses.find(function (item) { return item.id === id; });
+        addresses = addresses.filter(function (item) { return item.id !== id; });
+        if (removed && removed.isDefault && addresses.length) {
+          addresses[0].isDefault = true;
+        }
+        saveAddresses(addresses);
+        renderAddresses(addresses);
+      });
 
       $grid.on("click", ".js-make-default", function (event) {
         event.preventDefault();
-        var $card = $(this).closest(".address-card");
-        $grid.find(".address-card").removeClass("is-default");
-        $card.addClass("is-default");
-        updateDefaultActions();
+        var id = $(this).data("id");
+        addresses = addresses.map(function (item) {
+          item.isDefault = item.id === id;
+          return item;
+        });
+        saveAddresses(addresses);
+        renderAddresses(addresses);
       });
 
-      $grid.on("click", ".js-edit-address, .js-delete-address", function (event) {
-        event.preventDefault();
-      });
-
-      $("#addAddressBtn").on("click", function (event) {
-        event.preventDefault();
-      });
-
-      updateDefaultActions();
-    })();
+      $("#addressFormModal").on("hidden.bs.modal", resetAddressForm);
+    })(jQuery);
   </script>
 </body>
 </html>

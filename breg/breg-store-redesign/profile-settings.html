@@ -87,6 +87,12 @@
       padding: 8px 14px;
       text-decoration: none;
       font-weight: 500;
+      cursor: pointer;
+    }
+    button.profile-btn {
+      appearance: none;
+      -webkit-appearance: none;
+      font-family: inherit;
     }
     .profile-btn:hover,
     .profile-btn:focus {
@@ -114,6 +120,96 @@
       color: #565959;
       line-height: 1.35;
     }
+    .profile-modal .modal-dialog {
+      width: min(620px, calc(100% - 30px));
+      margin: 70px auto;
+    }
+    .profile-modal .modal-content {
+      border-radius: 12px;
+      border: 1px solid #d5d9d9;
+      overflow: hidden;
+    }
+    .profile-modal .modal-header {
+      border-bottom: 1px solid #eaeded;
+      padding: 16px 20px;
+      background: #fff;
+    }
+    .profile-modal .modal-title {
+      margin: 0;
+      font-size: 20px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .profile-modal .modal-body {
+      padding: 16px 20px 8px;
+      background: #fff;
+    }
+    .profile-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #fff;
+    }
+    .profile-form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 16px;
+    }
+    .profile-form-field.full { grid-column: 1 / -1; }
+    .profile-form-label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+    }
+    .profile-form-input {
+      width: 100%;
+      border: 1px solid #c7ced4;
+      border-radius: 12px;
+      min-height: 44px;
+      padding: 0 14px;
+      font-size: 13px;
+      color: #0f1111;
+      background: #fff;
+      box-shadow: none;
+    }
+    .profile-form-input:focus {
+      border-color: var(--breg-primary, #0047bb);
+      outline: 0;
+      box-shadow: 0 0 0 2px rgba(0, 71, 187, 0.12);
+    }
+    .profile-form-error {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #b12704;
+      display: none;
+    }
+    .profile-form-success {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #0f8b24;
+      display: none;
+    }
+    .profile-password-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #565959;
+      font-weight: 400;
+      cursor: pointer;
+      user-select: none;
+    }
+    .profile-password-toggle input {
+      margin: 0;
+      cursor: pointer;
+    }
     @media (max-width: 1199px) {
       .profile-title { font-size: 30px; }
       .profile-subtitle { font-size: 14px; }
@@ -122,6 +218,7 @@
       .profile-title { font-size: 28px; }
       .profile-subtitle { font-size: 13px; }
       .profile-grid { grid-template-columns: 1fr; }
+      .profile-form-grid { grid-template-columns: 1fr; }
       .profile-card-head { align-items: flex-start; flex-direction: column; }
     }
   </style>
@@ -184,7 +281,7 @@
       <section class="profile-card">
         <div class="profile-card-head">
           <h2 class="profile-card-title">Personal Information</h2>
-          <a class="profile-btn primary" href="#">Edit Profile</a>
+          <button type="button" class="profile-btn primary" id="editProfileBtn">Edit Profile</button>
         </div>
         <div class="profile-grid">
           <div>
@@ -196,7 +293,7 @@
           </div>
           <div>
             <label class="profile-field-label">Last Name</label>
-            <div class="profile-field"><span class="glyphicon glyphicon-user"></span> Smith</div>
+            <div class="profile-field"><span class="glyphicon glyphicon-user"></span> <span id="profileLastNameValue">Smith</span></div>
           </div>
           <div>
             <label class="profile-field-label">Email Address</label>
@@ -207,7 +304,7 @@
           </div>
           <div>
             <label class="profile-field-label">Phone Number</label>
-            <div class="profile-field"><span class="glyphicon glyphicon-earphone"></span> (555) 123-4567</div>
+            <div class="profile-field"><span class="glyphicon glyphicon-earphone"></span> <span id="profilePhoneValue">(555) 123-4567</span></div>
           </div>
           <div>
             <label class="profile-field-label">Company</label>
@@ -218,7 +315,7 @@
           </div>
           <div>
             <label class="profile-field-label">Job Title</label>
-            <div class="profile-field"><span class="glyphicon glyphicon-user"></span> Procurement Manager</div>
+            <div class="profile-field"><span class="glyphicon glyphicon-user"></span> <span id="profileJobTitleValue">Procurement Manager</span></div>
           </div>
         </div>
       </section>
@@ -229,30 +326,235 @@
             <h2 class="profile-card-title">Password &amp; Security</h2>
             <p class="profile-security-copy">Change your password to keep your account secure</p>
           </div>
-          <a class="profile-btn" href="#">Change Password</a>
+          <button type="button" class="profile-btn" id="changePasswordBtn">Change Password</button>
         </div>
       </section>
     </div>
   </main>
 
+  <div class="modal fade profile-modal" id="editProfileModal" tabindex="-1" role="dialog" aria-labelledby="editProfileModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="editProfileModalTitle">Edit Profile</h2>
+        </div>
+        <div class="modal-body">
+          <div class="profile-form-grid">
+            <div class="profile-form-field">
+              <label class="profile-form-label" for="editProfileFirstName">First Name</label>
+              <input id="editProfileFirstName" class="profile-form-input" type="text" maxlength="60" autocomplete="given-name">
+            </div>
+            <div class="profile-form-field">
+              <label class="profile-form-label" for="editProfileLastName">Last Name</label>
+              <input id="editProfileLastName" class="profile-form-input" type="text" maxlength="60" autocomplete="family-name">
+            </div>
+            <div class="profile-form-field full">
+              <label class="profile-form-label" for="editProfilePhone">Phone Number</label>
+              <input id="editProfilePhone" class="profile-form-input" type="tel" maxlength="30" autocomplete="tel">
+            </div>
+            <div class="profile-form-field full">
+              <label class="profile-form-label" for="editProfileJobTitle">Job Title</label>
+              <input id="editProfileJobTitle" class="profile-form-input" type="text" maxlength="80" autocomplete="organization-title">
+            </div>
+          </div>
+          <p class="profile-form-error" id="editProfileError"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="profile-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="profile-btn primary" id="saveProfileBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade profile-modal" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="changePasswordModalTitle">Change Password</h2>
+        </div>
+        <div class="modal-body">
+          <div class="profile-form-grid">
+            <div class="profile-form-field full">
+              <label class="profile-form-label" for="currentPassword">Current Password</label>
+              <input id="currentPassword" class="profile-form-input" type="password" maxlength="64" autocomplete="current-password">
+            </div>
+            <div class="profile-form-field full">
+              <label class="profile-form-label" for="newPassword">New Password</label>
+              <input id="newPassword" class="profile-form-input" type="password" maxlength="64" autocomplete="new-password">
+            </div>
+            <div class="profile-form-field full">
+              <label class="profile-form-label" for="confirmPassword">Confirm New Password</label>
+              <input id="confirmPassword" class="profile-form-input" type="password" maxlength="64" autocomplete="new-password">
+              <label class="profile-password-toggle">
+                <input type="checkbox" id="showPasswordFields">
+                Show passwords
+              </label>
+            </div>
+          </div>
+          <p class="profile-form-error" id="changePasswordError"></p>
+          <p class="profile-form-success" id="changePasswordSuccess"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="profile-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="profile-btn primary" id="savePasswordBtn">Update Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="assets/shell.js?v=20260608b"></script>
   <script>
-    (function () {
-      try {
-        var firstName = localStorage.getItem("bregFirstName") || "John";
-        var company = localStorage.getItem("bregAccountName") || "Medical Clinic Inc.";
-        var email = localStorage.getItem("bregUserEmail") || "test@breg.com";
-        var el;
-        el = document.getElementById("profileFirstNameValue");
-        if (el) el.textContent = firstName;
-        el = document.getElementById("profileCompanyValue");
-        if (el) el.textContent = company;
-        el = document.getElementById("profileEmailValue");
-        if (el) el.textContent = email;
-      } catch (e) {}
-    })();
+    (function ($) {
+      var defaults = {
+        firstName: "John",
+        lastName: "Smith",
+        email: "test@breg.com",
+        phone: "(555) 123-4567",
+        company: "Medical Clinic Inc.",
+        jobTitle: "Procurement Manager"
+      };
+
+      function readProfile() {
+        return {
+          firstName: localStorage.getItem("bregFirstName") || defaults.firstName,
+          lastName: localStorage.getItem("bregLastName") || defaults.lastName,
+          email: localStorage.getItem("bregUserEmail") || defaults.email,
+          phone: localStorage.getItem("bregUserPhone") || defaults.phone,
+          company: localStorage.getItem("bregAccountName") || defaults.company,
+          jobTitle: localStorage.getItem("bregJobTitle") || defaults.jobTitle
+        };
+      }
+
+      function renderProfile(profile) {
+        $("#profileFirstNameValue").text(profile.firstName);
+        $("#profileLastNameValue").text(profile.lastName);
+        $("#profileEmailValue").text(profile.email);
+        $("#profilePhoneValue").text(profile.phone);
+        $("#profileCompanyValue").text(profile.company);
+        $("#profileJobTitleValue").text(profile.jobTitle);
+      }
+
+      function fillEditForm(profile) {
+        $("#editProfileFirstName").val(profile.firstName);
+        $("#editProfileLastName").val(profile.lastName);
+        $("#editProfilePhone").val(profile.phone);
+        $("#editProfileJobTitle").val(profile.jobTitle);
+      }
+
+      function saveProfile(profile) {
+        var fullName = String((profile.firstName + " " + profile.lastName).replace(/\s+/g, " ").trim());
+        localStorage.setItem("bregFirstName", profile.firstName);
+        localStorage.setItem("bregLastName", profile.lastName);
+        localStorage.setItem("bregUserName", fullName);
+        localStorage.setItem("bregUserPhone", profile.phone);
+        localStorage.setItem("bregJobTitle", profile.jobTitle);
+      }
+
+      var currentProfile = readProfile();
+      renderProfile(currentProfile);
+
+      $("#editProfileBtn").on("click", function () {
+        fillEditForm(readProfile());
+        $("#editProfileError").hide().text("");
+        $("#editProfileModal").modal("show");
+      });
+
+      $("#saveProfileBtn").on("click", function () {
+        var existing = readProfile();
+        var profile = {
+          firstName: $.trim($("#editProfileFirstName").val() || ""),
+          lastName: $.trim($("#editProfileLastName").val() || ""),
+          phone: $.trim($("#editProfilePhone").val() || ""),
+          jobTitle: $.trim($("#editProfileJobTitle").val() || ""),
+          email: existing.email,
+          company: existing.company
+        };
+        if (!profile.firstName || !profile.lastName) {
+          $("#editProfileError").text("First and last name are required.").show();
+          return;
+        }
+        if (!profile.phone) {
+          $("#editProfileError").text("Phone number is required.").show();
+          return;
+        }
+        saveProfile(profile);
+        renderProfile(profile);
+        if (window.BregAuth && typeof window.BregAuth.refresh === "function") {
+          window.BregAuth.refresh();
+        }
+        $("#editProfileModal").modal("hide");
+      });
+
+      var PASSWORD_KEY = "bregUserPassword";
+      var DEFAULT_PASSWORD = "password123";
+
+      function getStoredPassword() {
+        return localStorage.getItem(PASSWORD_KEY) || DEFAULT_PASSWORD;
+      }
+
+      function resetPasswordForm() {
+        $("#currentPassword, #newPassword, #confirmPassword").val("");
+        $("#showPasswordFields").prop("checked", false);
+        $("#currentPassword, #newPassword, #confirmPassword").attr("type", "password");
+        $("#changePasswordError").hide().text("");
+        $("#changePasswordSuccess").hide().text("");
+      }
+
+      $("#changePasswordBtn").on("click", function () {
+        resetPasswordForm();
+        $("#changePasswordModal").modal("show");
+      });
+
+      $("#showPasswordFields").on("change", function () {
+        var type = $(this).is(":checked") ? "text" : "password";
+        $("#currentPassword, #newPassword, #confirmPassword").attr("type", type);
+      });
+
+      $("#savePasswordBtn").on("click", function () {
+        var current = String($("#currentPassword").val() || "");
+        var next = String($("#newPassword").val() || "");
+        var confirm = String($("#confirmPassword").val() || "");
+        var $error = $("#changePasswordError");
+        var $success = $("#changePasswordSuccess");
+
+        $error.hide().text("");
+        $success.hide().text("");
+
+        if (!current || !next || !confirm) {
+          $error.text("All password fields are required.").show();
+          return;
+        }
+        if (current !== getStoredPassword()) {
+          $error.text("Current password is incorrect.").show();
+          return;
+        }
+        if (next.length < 8) {
+          $error.text("New password must be at least 8 characters.").show();
+          return;
+        }
+        if (next !== confirm) {
+          $error.text("New password and confirmation do not match.").show();
+          return;
+        }
+        if (next === current) {
+          $error.text("Choose a password different from your current one.").show();
+          return;
+        }
+
+        localStorage.setItem(PASSWORD_KEY, next);
+        $success.text("Password updated successfully.").show();
+        setTimeout(function () {
+          $("#changePasswordModal").modal("hide");
+        }, 900);
+      });
+
+      $("#changePasswordModal").on("hidden.bs.modal", resetPasswordForm);
+    })(jQuery);
   </script>
 </body>
 </html>

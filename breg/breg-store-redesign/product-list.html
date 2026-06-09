@@ -1054,6 +1054,10 @@
     }
 
     @media (max-width: 767px) {
+      .p-quickview-btn,
+      .pl-grid.list .p-quickview-btn {
+        display: none !important;
+      }
       .pl-quickview-body {
         grid-template-columns: 1fr;
       }
@@ -1902,7 +1906,12 @@
         refreshQuickViewListUi();
       }
 
+      function isQuickViewDesktop() {
+        return window.matchMedia("(min-width: 768px)").matches;
+      }
+
       function openQuickView(productId) {
+        if (!isQuickViewDesktop()) return;
         var product = findProductById(productId);
         if (!product) return;
         var fallbackImage = missingProductImage;
@@ -2756,6 +2765,7 @@
         .on("click", ".js-pl-quickview", function (event) {
           event.preventDefault();
           event.stopPropagation();
+          if (!isQuickViewDesktop()) return;
           openQuickView($(this).attr("data-product-id"));
         })
         .on("click", "#plQuickViewClose", function () {
@@ -2917,6 +2927,9 @@
       $(window).on("resize", function () {
         if (window.innerWidth > 991) {
           toggleMobileFilters(false, { commit: true });
+        }
+        if (!isQuickViewDesktop() && $("#plQuickViewModal").hasClass("open")) {
+          closeQuickView();
         }
       });
     })();

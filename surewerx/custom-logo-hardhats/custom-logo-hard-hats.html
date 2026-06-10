@@ -103,8 +103,6 @@
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
                 </select>
               </div>
             </div>
@@ -163,8 +161,6 @@
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
                 </select>
               </div>
             </div>
@@ -223,8 +219,6 @@
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
                 </select>
               </div>
             </div>
@@ -283,8 +277,6 @@
                   <option value="2">2</option>
                   <option value="3">3</option>
                   <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
                 </select>
               </div>
             </div>
@@ -292,7 +284,7 @@
             <!-- Overall color count -->
             <div class="custom-logo-logo-type-group">
               <label class="control-label custom-logo-label">
-                How many unique colors exist across all your uploaded logos?
+                How many unique colors exist across all your uploaded logos? (Max 4)
               </label>
               <select class="form-control input-sm" id="uniqueColorsSelect">
                 <option selected disabled></option>
@@ -300,8 +292,6 @@
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
               </select>
             </div>
 
@@ -677,6 +667,7 @@
     <script>
       (function ($) {
         var currentLogoLocation = null;
+        var MAX_LOGO_COLORS = 4;
         
         // Embedded calculation data (from Calculation.xlsx) - New format with codes
         var calculationData = [["Code","# of Units Min","# of Units Max","# of Colors","Price","Description"],["CPP021",20,29,1,4.76,"1 Color - 20-29 Units"],["CPP022",20,29,2,7.28,"2 Color - 20-29 Units"],["CPP023",20,29,3,8.47,"3 Color - 20-29 Units"],["CPP024",20,29,4,11.34,"4 Color - 20-29 Units"],["CPP025",20,29,5,12.6,"5 Color - 20-29 Units"],["CPP026",20,29,6,14.56,"6 Color - 20-29 Units"],["CPP021",30,39,1,4.76,"1 Color - 30-39 Units"],["CPP022",30,39,2,7.28,"2 Color - 30-39 Units"],["CPP023",30,39,3,8.47,"3 Color - 30-39 Units"],["CPP024",30,39,4,11.34,"4 Color - 30-39 Units"],["CPP025",30,39,5,12.6,"5 Color - 30-39 Units"],["CPP026",30,39,6,14.56,"6 Color - 30-39 Units"],["CPP021",40,49,1,4.76,"1 Color - 40-49 Units"],["CPP022",40,49,2,7.28,"2 Color - 40-49 Units"],["CPP023",40,49,3,8.47,"3 Color - 40-49 Units"],["CPP024",40,49,4,11.34,"4 Color - 40-49 Units"],["CPP025",40,49,5,12.6,"5 Color - 40-49 Units"],["CPP026",40,49,6,14.56,"6 Color - 40-49 Units"],["CPP021",50,59,1,4.76,"1 Color - 50-59 Units"],["CPP022",50,59,2,7.28,"2 Color - 50-59 Units"],["CPP023",50,59,3,8.47,"3 Color - 50-59 Units"],["CPP024",50,59,4,11.34,"4 Color - 50-59 Units"],["CPP025",50,59,5,12.6,"5 Color - 50-59 Units"],["CPP026",50,59,6,14.56,"6 Color - 50-59 Units"],["CPP061",60,69,1,2.8,"1 Color - 60-69 Units"],["CPP062",60,69,2,4.41,"2 Color - 60-69 Units"],["CPP063",60,69,3,6.16,"3 Color - 60-69 Units"],["CPP064",60,69,4,8.12,"4 Color - 60-69 Units"],["CPP065",60,69,5,9.73,"5 Color - 60-69 Units"],["CPP066",60,69,6,11.9,"6 Color - 60-69 Units"],["CPP061",70,79,1,2.8,"1 Color - 70-79 Units"],["CPP062",70,79,2,4.41,"2 Color - 70-79 Units"],["CPP063",70,79,3,6.16,"3 Color - 70-79 Units"],["CPP064",70,79,4,8.12,"4 Color - 70-79 Units"],["CPP065",70,79,5,9.73,"5 Color - 70-79 Units"],["CPP066",70,79,6,11.9,"6 Color - 70-79 Units"],["CPP061",80,89,1,2.8,"1 Color - 80-89 Units"],["CPP062",80,89,2,4.41,"2 Color - 80-89 Units"],["CPP063",80,89,3,6.16,"3 Color - 80-89 Units"],["CPP064",80,89,4,8.12,"4 Color - 80-89 Units"],["CPP065",80,89,5,9.73,"5 Color - 80-89 Units"],["CPP066",80,89,6,11.9,"6 Color - 80-89 Units"],["CPP101",90,99,1,1.96,"1 Color - 90-99 Units"],["CPP102",90,99,2,3.15,"2 Color - 90-99 Units"],["CPP103",90,99,3,4.41,"3 Color - 90-99 Units"],["CPP104",90,99,4,5.81,"4 Color - 90-99 Units"],["CPP105",90,99,5,6.79,"5 Color - 90-99 Units"],["CPP106",90,99,6,8.4,"6 Color - 90-99 Units"],["CPP101",100,199,1,1.96,"1 Color - 100-199 Units"],["CPP102",100,199,2,3.15,"2 Color - 100-199 Units"],["CPP103",100,199,3,4.41,"3 Color - 100-199 Units"],["CPP104",100,199,4,5.81,"4 Color - 100-199 Units"],["CPP105",100,199,5,6.79,"5 Color - 100-199 Units"],["CPP106",100,199,6,8.4,"6 Color - 100-199 Units"],["CPP101",200,299,1,1.96,"1 Color - 200-299 Units"],["CPP102",200,299,2,3.15,"2 Color - 200-299 Units"],["CPP103",200,299,3,4.41,"3 Color - 200-299 Units"],["CPP104",200,299,4,5.81,"4 Color - 200-299 Units"],["CPP105",200,299,5,6.79,"5 Color - 200-299 Units"],["CPP106",200,299,6,8.4,"6 Color - 200-299 Units"],["CPP301",300,399,1,1.75,"1 Color - 300-399 Units"],["CPP302",300,399,2,2.8,"2 Color - 300-399 Units"],["CPP303",300,399,3,4.13,"3 Color - 300-399 Units"],["CPP304",300,399,4,5.53,"4 Color - 300-399 Units"],["CPP305",300,399,5,6.58,"5 Color - 300-399 Units"],["CPP306",300,399,6,8.12,"6 Color - 300-399 Units"],["CPP301",400,499,1,1.75,"1 Color - 400-499 Units"],["CPP302",400,499,2,2.8,"2 Color - 400-499 Units"],["CPP303",400,499,3,4.13,"3 Color - 400-499 Units"],["CPP304",400,499,4,5.53,"4 Color - 400-499 Units"],["CPP305",400,499,5,6.58,"5 Color - 400-499 Units"],["CPP306",400,499,6,8.12,"6 Color - 400-499 Units"],["CPP501",500,999,1,1.4,"1 Color - 500-999 Units"],["CPP502",500,999,2,2.59,"2 Color - 500-999 Units"],["CPP503",500,999,3,3.92,"3 Color - 500-999 Units"],["CPP504",500,999,4,5.18,"4 Color - 500-999 Units"],["CPP505",500,999,5,6.44,"5 Color - 500-999 Units"],["CPP506",500,999,6,7.98,"6 Color - 500-999 Units"],["CPP111",1000,1999,1,1.33,"1 Color - 1000-1999 Units"],["CPP112",1000,1999,2,2.24,"2 Color - 1000-1999 Units"],["CPP113",1000,1999,3,3.5,"3 Color - 1000-1999 Units"],["CPP114",1000,1999,4,4.62,"4 Color - 1000-1999 Units"],["CPP115",1000,1999,5,5.74,"5 Color - 1000-1999 Units"],["CPP116",1000,1999,6,7.07,"6 Color - 1000-1999 Units"],["CPP211",2000,3499,1,1.26,"1 Color - 2000-3499 Units"],["CPP212",2000,3499,2,2.17,"2 Color - 2000-3499 Units"],["CPP213",2000,3499,3,3.36,"3 Color - 2000-3499 Units"],["CPP214",2000,3499,4,4.55,"4 Color - 2000-3499 Units"],["CPP215",2000,3499,5,5.67,"5 Color - 2000-3499 Units"],["CPP216",2000,3499,6,6.79,"6 Color - 2000-3499 Units"],["CPP351",3500,null,1,1.12,"1 Color - 3500+ Units"],["CPP352",3500,null,2,2.1,"2 Color - 3500+ Units"],["CPP353",3500,null,3,3.15,"3 Color - 3500+ Units"],["CPP354",3500,null,4,4.27,"4 Color - 3500+ Units"],["CPP355",3500,null,5,5.32,"5 Color - 3500+ Units"],["CPP356",3500,null,6,6.44,"6 Color - 3500+ Units"],["CPPH",null,null,null,0.85,"Handling"],["CPPS1C",null,null,null,75,"1st Setup Color"],["CPPSAC",null,null,null,45,"Set-up/colour"]];
@@ -827,7 +818,7 @@
               }
             }
           });
-          return maxPerLocationColors;
+          return Math.min(maxPerLocationColors, MAX_LOGO_COLORS);
         }
 
         // Update unique colors dropdown options visibility based on max per-location colors
@@ -835,7 +826,7 @@
           var maxPerLocationColors = getMaxPerLocationColors();
           var $select = $('#uniqueColorsSelect');
           
-          // Show/hide options based on max
+          // Show/hide options based on per-location max and overall color limit
           $select.find('option').each(function () {
             var $option = $(this);
             var optionValue = parseInt($option.val(), 10);
@@ -845,14 +836,15 @@
               return;
             }
             
-            // If no logos are uploaded, show all options
-            // Otherwise, hide options that are less than the max
-            if (maxPerLocationColors === 0) {
+            var showOption = optionValue <= MAX_LOGO_COLORS;
+            if (maxPerLocationColors > 0) {
+              showOption = showOption && optionValue >= maxPerLocationColors;
+            }
+            
+            if (showOption) {
               $option.show();
-            } else if (optionValue < maxPerLocationColors) {
-              $option.hide();
             } else {
-              $option.show();
+              $option.hide();
             }
           });
         }
@@ -934,14 +926,22 @@
 
         // Check on unique colors dropdown changes
         $(document).on('change', '#uniqueColorsSelect', function () {
-          // Ensure unique colors is at least the max per-location colors
+          // Ensure unique colors is within allowed range
           var maxPerLocationColors = getMaxPerLocationColors();
           var selectedUniqueColors = parseInt($(this).val(), 10);
 
-          if (maxPerLocationColors > 0 && (!isNaN(selectedUniqueColors) && selectedUniqueColors < maxPerLocationColors)) {
-            $(this).val(String(maxPerLocationColors));
+          if (isNaN(selectedUniqueColors)) {
+            return;
           }
 
+          if (maxPerLocationColors > 0 && selectedUniqueColors < maxPerLocationColors) {
+            selectedUniqueColors = maxPerLocationColors;
+          }
+          if (selectedUniqueColors > MAX_LOGO_COLORS) {
+            selectedUniqueColors = MAX_LOGO_COLORS;
+          }
+
+          $(this).val(String(selectedUniqueColors));
           recalcDemoPricing();
           checkConfirmButtonState();
         });
@@ -1111,9 +1111,12 @@
               $group.find('.custom-logo-dim-error').hide();
             }
             
-            // Restore unique colors
+            // Restore unique colors (capped at max allowed)
             if (savedSelections.uniqueColors) {
-              $('#uniqueColorsSelect').val(savedSelections.uniqueColors);
+              var restoredUniqueColors = parseInt(savedSelections.uniqueColors, 10);
+              if (!isNaN(restoredUniqueColors)) {
+                $('#uniqueColorsSelect').val(String(Math.min(restoredUniqueColors, MAX_LOGO_COLORS)));
+              }
             }
             
             // Re-enable confirm button
@@ -1370,7 +1373,7 @@
 
         // Look up price, code, and description from new calculation data based on quantity and number of colors
         function lookupPrice(quantity, numColors) {
-          if (!calculationData || !quantity || quantity < 1 || !numColors || numColors < 1 || numColors > 6) {
+          if (!calculationData || !quantity || quantity < 1 || !numColors || numColors < 1 || numColors > MAX_LOGO_COLORS) {
             return { price: 0, code: '', description: '' };
           }
 
@@ -1557,12 +1560,15 @@
             });
           }
 
-          // Get unique colors
+          // Get unique colors (capped at max allowed)
           var uniqueColors = 0;
           if (typeof savedSelections !== 'undefined' && savedSelections.uniqueColors) {
             uniqueColors = parseInt(savedSelections.uniqueColors, 10);
           } else {
             uniqueColors = parseInt($('#uniqueColorsSelect').val(), 10) || 0;
+          }
+          if (uniqueColors > MAX_LOGO_COLORS) {
+            uniqueColors = MAX_LOGO_COLORS;
           }
 
           var setupValues = lookupHandlingSetup();

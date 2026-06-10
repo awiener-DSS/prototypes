@@ -717,7 +717,7 @@ body.all-drawer-open {
 .sub-nav-submenu {
   position: absolute;
   left: 0;
-  top: calc(100% + 2px);
+  top: 100%;
   z-index: 1120;
   min-width: 240px;
   background: #fff;
@@ -726,6 +726,14 @@ body.all-drawer-open {
   box-shadow: 0 12px 22px rgba(7, 29, 73, 0.18);
   padding: 8px 0;
   display: none;
+}
+.sub-nav-submenu::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8px;
+  height: 8px;
 }
 .sub-nav-cat-item.open .sub-nav-submenu {
   display: block;

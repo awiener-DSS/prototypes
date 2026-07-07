@@ -1,0 +1,388 @@
+{
+  "config": {
+    "standardDiscount": 0.4,
+    "programYear": 2024,
+    "programName": "Truck Program",
+    "mountMaxRatio": 1.5,
+    "unitEquivDefaults": {
+      "PL": 0.25,
+      "AT": 0.5,
+      "MT": 0.25,
+      "CH": 1.0
+    }
+  },
+  "paymentTerms": {
+    "snowplows": [
+      {
+        "label": "April May June - Cash",
+        "discount": 0.045,
+        "code": "24",
+        "description": "4.5% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": "March / April"
+      },
+      {
+        "label": "April May June - Deferred",
+        "discount": 0.01,
+        "code": "71",
+        "description": "Payments due: 25% Sept 30, 25% Oct 31, 25% Nov 29, 25% Dec 20, 2024",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": "May"
+      },
+      {
+        "label": "April May June - Credit Card",
+        "discount": 0,
+        "code": "100",
+        "description": "Credit Card Paymant to DD.",
+        "creditCard": true,
+        "floorPlan": false,
+        "shipMonth": null
+      },
+      {
+        "label": "July - Cash",
+        "discount": 0.02,
+        "code": "21",
+        "description": "2% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": "June"
+      },
+      {
+        "label": "July - Deferred",
+        "discount": 0,
+        "code": "70",
+        "description": "Payments due: 25% Sept 30, 25% Oct 31, 25% Nov 29, 25% Dec 20, 2024",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": "July"
+      },
+      {
+        "label": "Aug - Cash",
+        "discount": 0.01,
+        "code": "20",
+        "description": "1% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": "August"
+      },
+      {
+        "label": "Aug - Deferred",
+        "discount": 0,
+        "code": "70",
+        "description": "Payments due: 25% Sept 30, 25% Oct 31, 25% Nov 29, 25% Dec 20, 2024",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": "September"
+      },
+      {
+        "label": "Aug - Interest Free Floor Plan & Deferred",
+        "discount": 0,
+        "code": "32/70",
+        "description": "Interest Free Floor Plan (serialized items) & Deferred terms (non-serialized items)",
+        "creditCard": false,
+        "floorPlan": true,
+        "shipMonth": null
+      },
+      {
+        "label": "Sept - Cash",
+        "discount": 0.01,
+        "code": "20",
+        "description": "1% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": null
+      },
+      {
+        "label": "Sept - Deferred",
+        "discount": 0,
+        "code": "70",
+        "description": "Payments due: 25% Sept 30, 25% Oct 31, 25% Nov 29, 25% Dec 20, 2024",
+        "creditCard": false,
+        "floorPlan": false,
+        "shipMonth": null
+      },
+      {
+        "label": "Sept - Interest Free Floor Plan & Deferred",
+        "discount": 0,
+        "code": "32/70",
+        "description": "Interest Free Floor Plan (serialized items) & Deferred terms (non-serialized items)",
+        "creditCard": false,
+        "floorPlan": true,
+        "shipMonth": null
+      }
+    ],
+    "hopperTailgate": [
+      {
+        "label": "April May June - Cash",
+        "discount": 0.045,
+        "code": "24",
+        "description": "4.5% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "April May June - Deferred",
+        "discount": 0.01,
+        "code": "85",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "April May June - Credit Card",
+        "discount": 0,
+        "code": "150",
+        "description": "Credit Card Paymant to DD.",
+        "creditCard": true,
+        "floorPlan": false
+      },
+      {
+        "label": "July - Cash",
+        "discount": 0.02,
+        "code": "21",
+        "description": "2% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "July - Deferred",
+        "discount": 0,
+        "code": "84",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Aug - Cash",
+        "discount": 0.01,
+        "code": "20",
+        "description": "1% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Aug - Deferred",
+        "discount": 0,
+        "code": "84",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Aug - Interest Free Floor Plan & Deferred",
+        "discount": 0,
+        "code": "32/84",
+        "description": "Interest Free Floor Plan (serialized items) & Deferred terms (non-serialized items)",
+        "creditCard": false,
+        "floorPlan": true
+      },
+      {
+        "label": "Sept - Cash",
+        "discount": 0.01,
+        "code": "20",
+        "description": "1% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Sept - Deferred",
+        "discount": 0,
+        "code": "84",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Sept - Interest Free Floor Plan & Deferred",
+        "discount": 0,
+        "code": "32/84",
+        "description": "Interest Free Floor Plan (serialized items) & Deferred terms (non-serialized items)",
+        "creditCard": false,
+        "floorPlan": true
+      }
+    ],
+    "nonTruck": [
+      {
+        "label": "April May June - Cash",
+        "discount": 0.03,
+        "code": "22",
+        "description": "3% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "April May June - Deferred",
+        "discount": 0,
+        "code": "84",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "April May June - Credit Card",
+        "discount": 0,
+        "code": "175",
+        "description": "Credit Card Paymant to DD.",
+        "creditCard": true,
+        "floorPlan": false
+      },
+      {
+        "label": "July - Cash",
+        "discount": 0.03,
+        "code": "22",
+        "description": "3% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "July - Deferred",
+        "discount": 0,
+        "code": "84",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Aug - Cash",
+        "discount": 0.03,
+        "code": "22",
+        "description": "3% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Aug - Deferred",
+        "discount": 0,
+        "code": "84",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Aug - Interest Free Floor Plan & Deferred",
+        "discount": 0,
+        "code": "32/84",
+        "description": "Interest Free Floor Plan (serialized items) & Deferred terms (non-serialized items)",
+        "creditCard": false,
+        "floorPlan": true
+      },
+      {
+        "label": "Sept - Cash",
+        "discount": 0.03,
+        "code": "22",
+        "description": "3% cash discount.  Balance due 10 days from invoice date.",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Sept - Deferred",
+        "discount": 0,
+        "code": "84",
+        "description": "Payments due: 25% Oct 31, 25% Nov 29, 25% Dec 20, 25% Jan 31, 2025",
+        "creditCard": false,
+        "floorPlan": false
+      },
+      {
+        "label": "Sept - Interest Free Floor Plan & Deferred",
+        "discount": 0,
+        "code": "32/84",
+        "description": "Interest Free Floor Plan (serialized items) & Deferred terms (non-serialized items)",
+        "creditCard": false,
+        "floorPlan": true
+      },
+      {
+        "label": "Pusher Demo 12/15/2023",
+        "discount": 0,
+        "code": "37",
+        "description": "Deferred payment till 12/15/2023",
+        "creditCard": false,
+        "floorPlan": false
+      }
+    ]
+  },
+  "volumeRules": {
+    "snowplows": [
+      {
+        "min": 75,
+        "max": 149,
+        "discount": 0.01,
+        "label": "75-149 (1%)"
+      },
+      {
+        "min": 150,
+        "max": 249,
+        "discount": 0.02,
+        "label": "150-249 (2%)"
+      },
+      {
+        "min": 250,
+        "max": null,
+        "discount": 0.03,
+        "label": "250+ (3%)"
+      }
+    ],
+    "hopper": [
+      {
+        "min": 5,
+        "max": 34,
+        "discount": 0.5,
+        "label": "5-34 (50% off list)"
+      },
+      {
+        "min": 35,
+        "max": 74,
+        "discount": 0.53,
+        "label": "35-74 (53% off list)"
+      },
+      {
+        "min": 75,
+        "max": null,
+        "discount": 0.55,
+        "label": "75+ (55% off list)"
+      }
+    ],
+    "tailgate": [
+      {
+        "min": 10,
+        "max": 29,
+        "discount": 0.5,
+        "label": "10-29 (50% off list)"
+      },
+      {
+        "min": 30,
+        "max": null,
+        "discount": 0.53,
+        "label": "30+ (53% off list)"
+      }
+    ],
+    "cuttingEdges": [
+      {
+        "min": 50,
+        "max": 99,
+        "discount": 0.02,
+        "label": "50-99 (2%)"
+      },
+      {
+        "min": 100,
+        "max": null,
+        "discount": 0.04,
+        "label": "100+ (4%)"
+      }
+    ]
+  },
+  "freight": {
+    "minUnits": 20,
+    "freeFreightUnits": 40,
+    "minPartsDollars": 5000
+  },
+  "nonTruck": {
+    "programName": "Non-Truck Program",
+    "standardDiscount": 0.4,
+    "freight": {
+      "minUnits": 10,
+      "minPartsDollars": 2500
+    }
+  }
+}

@@ -1,0 +1,84 @@
+@import url('https://use.typekit.net/zfc6eng.css');
+
+:root {
+  /* Western® brand (from western-logo.svg + Douglas Dynamics theme) */
+  --western-red: #e31937;
+  --western-black: #231f20;
+  --western-orange: #f7941e;
+  --western-blue: #005696;
+  --western-navy: #173768;
+
+  --bg: #ffffff;
+  --bg-elevated: #f8f9fa;
+  --bg-card: #ffffff;
+  --bg-dark: #343a40;
+  --border: #dee2e6;
+  --border-light: #e9ecef;
+
+  --text: #212529;
+  --text-muted: #6c757d;
+  --text-on-dark: #ffffff;
+  --text-muted-on-dark: rgba(255, 255, 255, 0.75);
+
+  --accent: #f7941e;
+  --accent-hover: #e0850f;
+  --accent-glow: rgba(247, 148, 30, 0.28);
+  --link: #005696;
+  --link-hover: #003d6b;
+
+  --blue-muted: rgba(0, 86, 150, 0.1);
+  --blue-muted-strong: rgba(0, 86, 150, 0.14);
+  --orange-muted: rgba(247, 148, 30, 0.14);
+  --success-muted: rgba(40, 167, 69, 0.12);
+  --warning-muted: rgba(255, 193, 7, 0.18);
+  --row-highlight: rgba(0, 86, 150, 0.06);
+  --row-hover: rgba(0, 0, 0, 0.03);
+
+  --success: #28a745;
+  --warning: #e6a800;
+  --danger: #dc3545;
+
+  --radius: 4px;
+  --radius-sm: 3px;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  font-family: urw-din, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  min-height: 100vh;
+  background: var(--bg-elevated);
+}
+
+#root { min-height: 100vh; }
+
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input, select, textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  padding: 0.6rem 0.75rem;
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--western-blue);
+  box-shadow: 0 0 0 3px var(--blue-muted);
+}
+
+button { cursor: pointer; border: none; }
+
+.req { color: var(--western-red); }

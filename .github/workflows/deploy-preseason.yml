@@ -4,7 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - 'douglas-dynamics/preseason/**'
+      - 'douglas-dynamics/preseason/web/**'
+      - 'douglas-dynamics/preseason/reference/**'
       - '.github/workflows/deploy-preseason.yml'
   workflow_dispatch:
 
@@ -38,16 +39,23 @@ jobs:
       - name: Build web app
         working-directory: douglas-dynamics/preseason/web
         env:
-          VITE_BASE_PATH: /prototypes/douglas-dynamics/preseason/web/
+          VITE_BASE_PATH: /prototypes/douglas-dynamics/preseason/site/
           VITE_STATIC_PROTOTYPE: 'true'
         run: |
           npm ci
           npm run build
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: douglas-dynamics/preseason/web/dist
-          destination_dir: douglas-dynamics/preseason/web
-          keep_files: true
+      - name: Publish built site to main
+        run: |
+          rm -rf douglas-dynamics/preseason/site
+          mkdir -p douglas-dynamics/preseason/site
+          cp -r douglas-dynamics/preseason/web/dist/* douglas-dynamics/preseason/site/
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add douglas-dynamics/preseason/site
+          if git diff --staged --quiet; then
+            echo "No site changes to publish"
+          else
+            git commit -m "Deploy preseason site to GitHub Pages [skip ci]"
+            git push
+          fi

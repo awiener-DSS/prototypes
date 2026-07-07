@@ -30,7 +30,7 @@ function App() {
     <div className="app">
       <header className="app-header">
         <div className="header-brand">
-          <img src="/western-logo.svg" alt="Western Products" className="header-logo" />
+          <img src={`${import.meta.env.BASE_URL}western-logo.svg`} alt="Western Products" className="header-logo" />
           <div className="header-text">
             <p className="header-eyebrow">{programLabel}</p>
             <h1>Preseason Order Form</h1>

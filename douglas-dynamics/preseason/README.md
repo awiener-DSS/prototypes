@@ -24,6 +24,14 @@ cd web && npm install && npm run dev
 
 Open http://localhost:5173
 
+## GitHub Pages (live demo)
+
+After enabling GitHub Pages on the `gh-pages` branch (repo **Settings → Pages → Branch: gh-pages / root**), the app deploys automatically on push to `main`:
+
+**https://awiener-DSS.github.io/prototypes/douglas-dynamics/preseason/web/**
+
+The GitHub Pages build is static only: calculations, PDF export, and admin calc audit work. Order submission requires running the API locally (see Quick Start).
+
 ## Programs
 
 | Program | Products | Categories |

@@ -110,6 +110,12 @@ export function exportOrderPdf(data: PdfOrderData): void {
 }
 
 export async function submitOrder(data: PdfOrderData): Promise<{ id: string; message: string }> {
+  if (import.meta.env.VITE_STATIC_PROTOTYPE === 'true') {
+    throw new Error(
+      'Order submission is disabled on the GitHub Pages demo. Use Download PDF to save your order.',
+    );
+  }
+
   const payload = {
     program: data.program,
     dealer: data.dealer,

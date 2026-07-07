@@ -1,0 +1,53 @@
+name: Deploy Preseason Prototype
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'douglas-dynamics/preseason/**'
+      - '.github/workflows/deploy-preseason.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-preseason
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: douglas-dynamics/preseason/web/package-lock.json
+
+      - name: Stage reference workbook for static hosting
+        run: |
+          mkdir -p "douglas-dynamics/preseason/web/public/reference"
+          cp "douglas-dynamics/preseason/reference/Copy of 1.18 One Prep - 2024 WESTERN EOF.xlsx" \
+            "douglas-dynamics/preseason/web/public/reference/"
+
+      - name: Build web app
+        working-directory: douglas-dynamics/preseason/web
+        env:
+          VITE_BASE_PATH: /prototypes/douglas-dynamics/preseason/web/
+          VITE_STATIC_PROTOTYPE: 'true'
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: douglas-dynamics/preseason/web/dist
+          destination_dir: douglas-dynamics/preseason/web
+          keep_files: true

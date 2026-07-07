@@ -22,7 +22,11 @@ export const EXCEL_SHEET_MAP: Record<string, string> = {
 
 export const EXCEL_WORKBOOK = 'Copy of 1.18 One Prep - 2024 WESTERN EOF.xlsx';
 
-export const EXCEL_WORKBOOK_DOWNLOAD = '/api/reference/workbook';
+/** Static file on GitHub Pages; API route when running locally with the server. */
+export const EXCEL_WORKBOOK_DOWNLOAD =
+  import.meta.env.VITE_STATIC_PROTOTYPE === 'true'
+    ? `${import.meta.env.BASE_URL}reference/${encodeURIComponent(EXCEL_WORKBOOK)}`
+    : '/api/reference/workbook';
 
 export const VOLUME_SHEET = 'Volume & Freight Summary';
 

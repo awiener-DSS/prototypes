@@ -1,7 +1,7 @@
 /**
  * Breg Brand Standards - Digital Implementation
  * Based on Breg Brand Standards Guide
- * Typography: Halogen (headlines) / Pathway Extreme (body) - Oswald used as Halogen substitute for web
+ * Typography: Pathway Extreme for headlines and body
  * Colors: PMS 2758, 2728, 2727, 2768, 354 (accent)
  */
 
@@ -10,7 +10,7 @@
   --breg-primary-dark: #001E62;      /* PMS 2758 - Keep Moving, header */
   --breg-primary: #0047bb;            /* PMS 2728 - Forward, main accent */
   --breg-primary-light: #307fe2;     /* PMS 2727 */
-  --breg-darkest: #071d49;           /* PMS 2768 - body text */
+  --breg-darkest: #0047bb;           /* lighter blue for headlines / primary text */
   --breg-accent-green: #00b140;      /* PMS 354 - accent, use sparingly */
   --breg-accent-cyan: #00a9e0;      /* PMS 2995 */
   --breg-accent-light: #9adbe8;      /* PMS 304 */
@@ -18,7 +18,7 @@
   --breg-white: #ffffff;
 
   /* Typography */
-  --font-headline: "Oswald", "Trebuchet MS", sans-serif;
+  --font-headline: "Pathway Extreme", "Trebuchet MS", sans-serif;
   --font-body: "Pathway Extreme", "Trebuchet MS", sans-serif;
 
   /* Font sizes - brand hierarchy */
@@ -60,21 +60,21 @@
 }
 .modal-header {
   background: #f6f8fa !important;
-  color: var(--breg-darkest, #071d49) !important;
+  color: var(--breg-darkest, #0047bb) !important;
   font-family: var(--font-headline) !important;
 }
 .modal-body, .modal-footer {
   font-family: var(--font-body) !important;
-  color: var(--breg-darkest, #071d49) !important;
+  color: var(--breg-darkest, #0047bb) !important;
 }
 .form-control {
   font-family: var(--font-body) !important;
   font-size: var(--font-size-body) !important;
 }
-h1, .h1 { font-family: var(--font-headline) !important; font-weight: 700 !important; color: var(--breg-darkest, #071d49) !important; }
-h2, .h2 { font-family: var(--font-headline) !important; font-weight: 600 !important; color: var(--breg-darkest, #071d49) !important; }
-h3, .h3 { font-family: var(--font-headline) !important; font-weight: 600 !important; color: var(--breg-darkest, #071d49) !important; }
-h4, .h4 { font-family: var(--font-body) !important; font-weight: 600 !important; color: var(--breg-darkest, #071d49) !important; }
+h1, .h1 { font-family: var(--font-headline) !important; font-weight: 700 !important; color: var(--breg-darkest, #0047bb) !important; text-transform: none !important; }
+h2, .h2 { font-family: var(--font-headline) !important; font-weight: 600 !important; color: var(--breg-darkest, #0047bb) !important; text-transform: none !important; }
+h3, .h3 { font-family: var(--font-headline) !important; font-weight: 600 !important; color: var(--breg-darkest, #0047bb) !important; text-transform: none !important; }
+h4, .h4 { font-family: var(--font-body) !important; font-weight: 600 !important; color: var(--breg-darkest, #0047bb) !important; text-transform: none !important; }
 a { color: var(--breg-primary, #0047bb); }
 a:hover { color: var(--breg-primary-dark, #001E62); }
 

@@ -484,7 +484,7 @@
           ".quick-order-sub{margin:0 0 12px;font-size:13px;color:var(--breg-darkest,#071d49);opacity:.85;font-family:var(--font-body);}" +
           ".quick-order-grid{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;}" +
           ".quick-order-cell{position:relative;}" +
-          ".quick-order-grid-head{font-size:12px;text-transform:uppercase;letter-spacing:.45px;color:var(--breg-darkest,#071d49);opacity:.8;font-weight:600;font-family:var(--font-headline);margin-bottom:6px;}" +
+          ".quick-order-grid-head{font-size:12px;text-transform:none;letter-spacing:normal;color:var(--breg-darkest,#0047bb);opacity:.8;font-weight:600;font-family:var(--font-headline);margin-bottom:6px;}" +
           ".quick-order-row{margin-bottom:8px;}" +
           ".quick-order-input{width:100%;height:36px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:13px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
           ".quick-order-input:focus{outline:0;border-color:var(--breg-primary,#0047bb);box-shadow:0 0 0 3px rgba(0,71,187,.15);}" +
@@ -921,7 +921,7 @@
       "<footer class='site-footer' data-shared-footer='1'>" +
         "<div class='site-footer-wrap'>" +
           "<div class='site-footer-grid'>" +
-            "<div>" +
+            "<div class='site-footer-col site-footer-col--start'>" +
               "<h3 class='site-footer-title'>Information</h3>" +
               "<ul class='site-footer-list'>" +
                 "<li><a href='#'>Contact Us</a></li>" +
@@ -1633,6 +1633,59 @@
       $accountOnlyLinks.addClass("disabled");
     }
     syncHomeLoginPanel();
+    initAccountDropdownFavoritesLinks();
+  }
+
+  function initAccountDropdownFavoritesLinks() {
+    if (!$accountDropdown.length) return;
+
+    var $yourAccountCol = $accountDropdown.find(".account-col").filter(function () {
+      return $.trim($(this).find(".account-col-title").first().text()).toLowerCase() === "your account";
+    }).first();
+    if ($yourAccountCol.length) {
+      $yourAccountCol.find("a.account-link").filter(function () {
+        return $.trim($(this).text()).toLowerCase() === "my favorites";
+      }).remove();
+    }
+
+    var listDefs = [
+      { id: "shopping", title: "Shopping List" },
+      { id: "recovery", title: "Recovery Supplies" },
+      { id: "postop", title: "Post-Surgery Essentials" },
+      { id: "athletic", title: "Athletic Support" },
+      { id: "clinic", title: "Clinic Supplies" }
+    ];
+    if (typeof DEFAULT_FAVORITES_LISTS !== "undefined" && Array.isArray(DEFAULT_FAVORITES_LISTS) && DEFAULT_FAVORITES_LISTS.length) {
+      listDefs = DEFAULT_FAVORITES_LISTS.slice();
+    }
+    if (typeof readJsonArray === "function" && typeof FAVORITES_LISTS_SNAPSHOT_KEY === "string") {
+      var snapshot = readJsonArray(FAVORITES_LISTS_SNAPSHOT_KEY);
+      if (snapshot.length) {
+        snapshot.forEach(function (entry) {
+          var id = String(entry && entry.id ? entry.id : "").trim();
+          var title = String(entry && entry.title ? entry.title : "").trim();
+          if (!id || !title) return;
+          var exists = listDefs.some(function (item) { return item.id === id; });
+          if (!exists) listDefs.push({ id: id, title: title });
+        });
+      }
+    }
+
+    var $favoritesCol = $accountDropdown.find(".account-col").filter(function () {
+      return $.trim($(this).find(".account-col-title").first().text()).toLowerCase() === "my favorites";
+    }).first();
+    if (!$favoritesCol.length) return;
+
+    $favoritesCol.find("a.account-link").each(function () {
+      var $link = $(this);
+      var label = $.trim($link.text()).replace(/\s*\(\d+\)\s*$/, "");
+      var match = listDefs.find(function (item) {
+        return String(item.title || "").toLowerCase() === label.toLowerCase();
+      });
+      if (!match) return;
+      $link.attr("href", "my-favorites.html?list=" + encodeURIComponent(match.id));
+      $link.attr("data-list-id", match.id);
+    });
   }
 
   function initAllDropdown() {
@@ -1845,12 +1898,21 @@
   });
   $accountSectionTitle.on("click", function () {
     var title = $.trim($(this).text()).toLowerCase();
-    if (title !== "your account") return;
-    if (isSignedIn) {
-      window.location.href = "your-account.html";
+    if (title === "your account") {
+      if (isSignedIn) {
+        window.location.href = "your-account.html";
+        return;
+      }
+      window.location.href = "login.html?redirect=" + encodeURIComponent("your-account.html");
       return;
     }
-    window.location.href = "login.html?redirect=" + encodeURIComponent("your-account.html");
+    if (title === "my favorites") {
+      if (isSignedIn) {
+        window.location.href = "my-favorites.html";
+        return;
+      }
+      window.location.href = "login.html?redirect=" + encodeURIComponent("my-favorites.html");
+    }
   }).css("cursor", "pointer");
   $(document).on("click", "#accountSignout, #accountSignoutLink", function (event) {
     event.preventDefault();
@@ -1967,6 +2029,7 @@
     { id: "athletic", title: "Athletic Support" },
     { id: "clinic", title: "Clinic Supplies" }
   ];
+  initAccountDropdownFavoritesLinks();
   var FAVORITES_LIST_THUMBNAIL_IDS = {
     shopping: "1060X",
     recovery: "1060X",

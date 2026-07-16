@@ -1,4 +1,20 @@
 (function () {
+  var page = String(window.location.pathname || "").split("/").pop() || "index.html";
+  var publicPages = {
+    "login.html": true
+  };
+  var signedIn = window.BregSessionAuth
+    ? window.BregSessionAuth.isSignedIn()
+    : localStorage.getItem("bregSignedIn") === "true";
+  if (!signedIn && !publicPages[page]) {
+    var redirectTarget = page + (window.location.search || "");
+    window.__bregAuthRedirecting = true;
+    window.location.replace("login.html?redirect=" + encodeURIComponent(redirectTarget));
+  }
+})();
+
+(function () {
+  if (window.__bregAuthRedirecting) return;
   var $searchWrap = $(".search-wrap");
   var $searchInput = $("#searchInput");
   var $searchClear = $("#searchClear");
@@ -851,8 +867,9 @@
     return out;
   })();
 
-  var storedAuth = localStorage.getItem("bregSignedIn");
-  var isSignedIn = storedAuth === "true";
+  var isSignedIn = window.BregSessionAuth
+    ? window.BregSessionAuth.isSignedIn()
+    : localStorage.getItem("bregSignedIn") === "true";
   var allMenuSections = [
     {
       title: "Shop by Category",
@@ -1481,32 +1498,31 @@
   }
 
   function syncHomeLoginPanel() {
-    var signedIn = localStorage.getItem("bregSignedIn") === "true";
-    var $panel = $("#homeLoginPanel");
-    if ($panel.length) $panel.toggleClass("show", !signedIn);
-    $("#homeGuestSignInModule").toggleClass("is-visible", !signedIn);
-    $("#homePreviousOrdersModule").toggleClass("is-hidden", !signedIn);
-    $("#homePickUpModule").toggleClass("is-hidden", !signedIn);
-    $("#homeTemplatesModule").toggleClass("is-hidden", !signedIn);
-    $("#homeGuestTopProductsModule").toggleClass("is-visible", !signedIn);
-    $("#homeGuestTopCategoriesModule").toggleClass("is-visible", !signedIn);
-    $("#homeSignedInSecondRow").toggleClass("is-visible", signedIn);
+    $("#homeLoginPanel").removeClass("show");
+    $("#homePreviousOrdersModule").removeClass("is-hidden").show();
+    $("#homePickUpModule").removeClass("is-hidden").show();
+    $("#homeTemplatesModule").removeClass("is-hidden").show();
+    $("#homeSignedInSecondRow").addClass("is-visible").show();
   }
 
   function performSignOut() {
     isSignedIn = false;
-    localStorage.setItem("bregSignedIn", "false");
-    localStorage.removeItem("bregFirstName");
-    localStorage.removeItem("bregLastName");
-    localStorage.removeItem("bregUserName");
-    localStorage.removeItem("bregAccountName");
-    localStorage.removeItem("bregUserEmail");
-    localStorage.removeItem("bregUserPhone");
+    if (window.BregSessionAuth) {
+      window.BregSessionAuth.markSignedOut();
+    } else {
+      localStorage.setItem("bregSignedIn", "false");
+      localStorage.removeItem("bregFirstName");
+      localStorage.removeItem("bregLastName");
+      localStorage.removeItem("bregUserName");
+      localStorage.removeItem("bregAccountName");
+      localStorage.removeItem("bregUserEmail");
+      localStorage.removeItem("bregUserPhone");
+    }
     updateAccountStateUI();
     $accountDropdown.removeClass("open");
     $contactDropdown.removeClass("open");
     closeAllDropdown();
-    window.location.replace("index.html");
+    window.location.replace("login.html");
   }
 
   function renderAllDrawerMenu() {
@@ -1603,7 +1619,9 @@
   }
 
   function updateAccountStateUI() {
-    isSignedIn = localStorage.getItem("bregSignedIn") === "true";
+    isSignedIn = window.BregSessionAuth
+      ? window.BregSessionAuth.isSignedIn()
+      : localStorage.getItem("bregSignedIn") === "true";
     var firstName = String(localStorage.getItem("bregFirstName") || "").trim();
     var lastName = String(localStorage.getItem("bregLastName") || "").trim();
     var explicitUserName = String(localStorage.getItem("bregUserName") || "").trim();
@@ -2043,6 +2061,60 @@
     { name: "Shoulder Immobilizer", displayName: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "" },
     { name: "Physical Therapy Resistance Bands Set", displayName: "Physical Therapy Resistance Bands Set", sku: "PF010YXX" }
   ];
+  var RECENT_ORDERS_STORAGE_KEY = "breg_recent_orders_v1";
+  var RECENT_ORDERS_MAX = 20;
+  var DEFAULT_RECENT_ORDERS = [
+    {
+      orderNumber: "ORD-2024-5690",
+      orderDate: "2026-04-18",
+      orderDateLabel: "April 18, 2026",
+      itemCount: 3,
+      lines: [
+        { name: "Breg Polar Care Kodiak Cold Therapy System", qty: 2, price: 299.99 },
+        { name: "T Scope Premier Post-Op Knee Brace", qty: 1, price: 449.99 }
+      ]
+    },
+    {
+      orderNumber: "ORD-2024-5665",
+      orderDate: "2026-04-02",
+      orderDateLabel: "April 2, 2026",
+      itemCount: 8,
+      lines: [
+        { name: "Shoulder Immobilizer Sling with Abduction Pillow", qty: 3, price: 89.99 },
+        { name: "Physical Therapy Resistance Bands Set", qty: 5, price: 29.99, sku: "PF010YXX" }
+      ]
+    },
+    {
+      orderNumber: "ORD-2024-5623",
+      orderDate: "2026-03-16",
+      orderDateLabel: "March 16, 2026",
+      itemCount: 2,
+      lines: [
+        { name: "VPULSE Cold Therapy System", qty: 1, price: 399.99 },
+        { name: "Universal Soft Goods Kit", qty: 1, price: 249.99 }
+      ]
+    },
+    {
+      orderNumber: "ORD-2024-5598",
+      orderDate: "2026-02-24",
+      orderDateLabel: "February 24, 2026",
+      itemCount: 4,
+      lines: [
+        { name: "Fusion Soft OA Plus", qty: 2, price: 189.99 },
+        { name: "Breg Polar Care Cube", qty: 2, price: 219.99 }
+      ]
+    },
+    {
+      orderNumber: "ORD-2024-5572",
+      orderDate: "2026-01-30",
+      orderDateLabel: "January 30, 2026",
+      itemCount: 3,
+      lines: [
+        { name: "Lumbar Support Belt", qty: 2, price: 79.99 },
+        { name: "Short Walker Boot", qty: 1, price: 149.99 }
+      ]
+    }
+  ];
   var ORDER_HISTORY_SKU_OVERRIDES = {
     "physical therapy resistance bands set": "PF010YXX"
   };
@@ -2175,14 +2247,33 @@
   function syncOrderHistoryFromDom() {
     if (!$ || !$.fn) return;
     var products = [];
+    var orders = [];
     var seen = {};
     $(".history-order-card").each(function () {
-      var orderDate = String($(this).attr("data-order-date") || "").trim();
-      $(this).find(".history-item").each(function () {
+      var $card = $(this);
+      var orderNumber = String($card.attr("data-order-number") || "").trim();
+      var orderDate = String($card.attr("data-order-date") || "").trim();
+      var orderDateLabel = $.trim($card.find(".history-order-head .history-value").eq(1).text() || "");
+      var lines = [];
+      var itemUnits = 0;
+      $card.find(".history-item").each(function () {
         var $item = $(this);
         var displayName = $.trim($item.find(".history-item-title").first().text());
         var sourceName = String($item.find("img").attr("data-product-name") || displayName).trim();
         var sku = resolveHistorySku(sourceName, displayName, $item.attr("data-item-number"));
+        var meta = $.trim($item.find(".history-item-meta").first().text() || "");
+        var qtyMatch = meta.match(/(?:Ordered|Quantity):\s*(\d+)/i);
+        var priceMatch = meta.match(/Price:\s*\$?\s*([0-9]+(?:\.[0-9]+)?)/i);
+        var qty = qtyMatch ? Math.max(1, parseInt(qtyMatch[1], 10) || 1) : 1;
+        var price = priceMatch ? toPriceNumber(priceMatch[1]) : 0;
+        itemUnits += qty;
+        lines.push({
+          sku: sku,
+          name: displayName || sourceName,
+          qty: qty,
+          price: price,
+          image: String($item.find("img").attr("src") || "")
+        });
         var dedupeKey = sku || normalizeCatalogName(sourceName || displayName);
         if (!dedupeKey || seen[dedupeKey]) return;
         seen[dedupeKey] = true;
@@ -2194,8 +2285,40 @@
           purchasedAt: orderDate ? (orderDate + "T12:00:00.000Z") : new Date().toISOString()
         });
       });
+      if (orderNumber) {
+        orders.push({
+          orderNumber: orderNumber,
+          orderDate: orderDate,
+          orderDateLabel: orderDateLabel || orderDate,
+          itemCount: itemUnits || lines.length,
+          lines: lines
+        });
+      }
     });
     if (products.length) saveJsonArray(ORDER_HISTORY_PRODUCTS_KEY, products, ORDER_HISTORY_PRODUCTS_MAX);
+    if (orders.length) saveJsonArray(RECENT_ORDERS_STORAGE_KEY, orders, RECENT_ORDERS_MAX);
+  }
+
+  function getRecentOrders(count) {
+    var limit = count || 5;
+    var orders = readJsonArray(RECENT_ORDERS_STORAGE_KEY);
+    if (!orders.length) orders = DEFAULT_RECENT_ORDERS.slice();
+    return orders.slice(0, limit).map(function (order) {
+      var lines = Array.isArray(order && order.lines) ? order.lines : [];
+      var itemCount = Number(order && order.itemCount ? order.itemCount : 0);
+      if (!itemCount) {
+        itemCount = lines.reduce(function (sum, line) {
+          return sum + Math.max(1, parseInt(line && line.qty, 10) || 1);
+        }, 0);
+      }
+      return {
+        orderNumber: String(order && order.orderNumber ? order.orderNumber : ""),
+        orderDate: String(order && order.orderDate ? order.orderDate : ""),
+        orderDateLabel: String(order && order.orderDateLabel ? order.orderDateLabel : (order && order.orderDate) || ""),
+        itemCount: itemCount,
+        lines: lines
+      };
+    }).filter(function (order) { return order.orderNumber; });
   }
 
   function mergeOrderHistoryProducts(lines, placedAt) {
@@ -2350,6 +2473,7 @@
   window.BregHomeActivity.getRecentPdpProducts = getRecentPdpProducts;
   window.BregHomeActivity.getRecentFavoritesLists = getRecentFavoritesLists;
   window.BregHomeActivity.getRecentPurchasedProducts = getRecentPurchasedProducts;
+  window.BregHomeActivity.getRecentOrders = getRecentOrders;
   window.BregHomeActivity.getTopCategories = getTopCategories;
 
   window.BregAuth = window.BregAuth || {};

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script src="assets/auth-gate.js?v=20260716i"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store Redesigned - Home</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,84 +12,28 @@
   <link rel="stylesheet" href="assets/shell.css?v=20260716d">
   <style>
     .hero-wrap {
-      position:relative;
-      background:#fff;
-      padding-bottom:0;
-      width:100vw;
-      margin-left:calc(50% - 50vw);
-      margin-right:calc(50% - 50vw);
-      --hero-panel-half:min(750px, calc((100vw - 32px) / 2));
+      position: relative;
+      background: transparent;
+      padding: 16px 0 0;
+      width: 100%;
     }
     .hero-panel {
-      position:relative;
-      height:380px;
-      overflow:hidden;
-      max-width:1500px;
-      width:calc(100% - 32px);
-      margin:0 auto;
+      position: relative;
+      height: 380px;
+      overflow: hidden;
+      max-width: 1500px;
+      width: calc(100% - 32px);
+      margin: 0 auto;
+      border-radius: 20px;
+      background: #d9e1e2 center / cover no-repeat;
     }
-    .hero-track {
-      position:absolute;
-      inset:0;
+    .hero-panel img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
     }
-    .hero-slide { position:absolute; inset:0; opacity:0; transition:opacity .45s ease; background-size:cover; background-position:center; }
-    .hero-slide.active { opacity:1; z-index:2; }
-    .hero-dots {
-      display:none;
-      justify-content:center;
-      align-items:center;
-      gap:6px;
-      margin:10px auto 0;
-      min-height:8px;
-      max-width:1500px;
-      width:calc(100% - 32px);
-    }
-    .hero-dot {
-      width:8px;
-      height:8px;
-      border-radius:999px;
-      border:0;
-      padding:0;
-      background:#cbd5e1;
-      transition:background .18s ease, transform .18s ease;
-    }
-    .hero-dot.active {
-      background:var(--breg-primary, #0047bb);
-      transform:scale(1.2);
-    }
-    .hero-overlay { position:absolute; inset:0; background:linear-gradient(90deg,rgba(0,0,0,.42) 0%,rgba(0,0,0,.12) 45%,rgba(0,0,0,.04) 100%); pointer-events:none; }
-    .hero-panel::after {
-      content:"";
-      position:absolute;
-      left:0;
-      right:0;
-      bottom:0;
-      height:140px;
-      z-index:3;
-      pointer-events:none;
-      background:var(--hero-fade-bg, linear-gradient(to bottom, rgba(74,127,184,0) 0%, rgba(74,127,184,.28) 55%, transparent 100%));
-      transition:background .45s ease;
-    }
-    .hero-copy { position:absolute; z-index:3; top:50%; left:44px; transform:translateY(-50%); color:#fff; max-width:550px; pointer-events:none; }
-    .hero-copy h1 { margin:0 0 8px; font-size:46px; font-weight:700; font-family:var(--font-headline); letter-spacing:.2px; color:#fff; }
-    .hero-copy p { margin:0; font-size:22px; font-family:var(--font-body); opacity:.95; color:#fff; }
-    .hero-arrow {
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      border:0;
-      width:40px;
-      height:40px;
-      border-radius:999px;
-      background:#fff;
-      color:#222;
-      box-shadow:0 2px 8px rgba(15,17,17,.12);
-      z-index:10;
-    }
-    .hero-arrow.left { left:max(8px, calc(50% - var(--hero-panel-half) - 42px)); }
-    .hero-arrow.right { right:max(8px, calc(50% - var(--hero-panel-half) - 42px)); }
-    .hero-arrow:hover,
-    .hero-arrow:focus { background:#fff; color:#111; }
 
     body { background:#eaeded; }
     .product-section {
@@ -137,44 +82,140 @@
     .product-carousel-wrap .carousel-btn { display:none; }
     .carousel-btn[disabled] { opacity:.35; cursor:not-allowed; }
     .home-modules-row {
-      margin-top:-52px;
-      position:relative;
-      z-index:6;
-    }
-    .home-modules-first-row {
-      position:relative;
-    }
-    .home-modules-first-row {
-      padding-bottom:16px;
-    }
-    .home-modules-row-inner {
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:10px;
-      align-items:start;
-      padding:0 20px;
+      margin-top:14px;
       position:relative;
       z-index:1;
     }
-    .home-hero-blend {
-      position:absolute;
-      top:0;
-      left:0;
-      right:0;
-      bottom:0;
-      width:100%;
-      height:auto;
-      z-index:0;
-      pointer-events:none;
-      border-radius:2px;
-      background:linear-gradient(to bottom, rgba(74,127,184,.34) 0%, rgba(74,127,184,.14) 48%, #eaeded 100%);
-      transition:background .45s ease;
+    .home-modules-first-row {
+      position: relative;
+      padding: 18px 48px;
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .home-modules-row-inner {
+      display: grid;
+      align-items: start;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+    .home-modules-first-row .home-modules-row-inner {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      border-radius: 10px;
+      padding: 0;
+      max-width: none;
+      width: 100%;
+      margin: 0;
+    }
+    .home-modules-first-row .product-section {
+      background: #fff;
+      margin-top: 0;
+      padding: 18px 18px 12px 24px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(15,17,17,.04);
+    }
+    .home-orders-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .home-order-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px 12px;
+      align-items: center;
+      padding: 10px 12px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #fafbfc;
+    }
+    .home-order-meta {
+      min-width: 0;
+    }
+    .home-order-number {
+      margin: 0 0 2px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--breg-darkest, #0047bb);
+      font-family: var(--font-body);
+      line-height: 1.25;
+    }
+    .home-order-details {
+      margin: 0;
+      font-size: 12px;
+      color: var(--breg-darkest, #0047bb);
+      opacity: 0.78;
+      font-family: var(--font-body);
+      line-height: 1.35;
+    }
+    .home-order-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .home-order-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid var(--breg-primary, #0047bb);
+      background: #fff;
+      color: var(--breg-primary, #0047bb);
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .home-order-btn.primary {
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .home-order-btn:hover,
+    .home-order-btn:focus {
+      text-decoration: none;
+      color: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+    }
+    .home-order-btn.primary:hover,
+    .home-order-btn.primary:focus {
+      color: #fff;
+      background: var(--breg-primary-dark, #001E62);
+      border-color: var(--breg-primary-dark, #001E62);
+    }
+    .home-orders-empty {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: #54616d;
+      font-family: var(--font-body);
+    }
+    .home-orders-all-link {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      color: var(--breg-primary, #0047bb);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .home-orders-all-link:hover,
+    .home-orders-all-link:focus {
+      color: var(--breg-primary-dark, #001E62);
+      text-decoration: underline;
     }
     .home-modules-row-inner .product-section,
     .home-modules-row .login-panel {
-      margin-top:0;
-      position:relative;
-      z-index:1;
+      margin-top: 0;
+      position: relative;
+      z-index: 1;
     }
     .home-modules-row .login-panel {
       display:none;
@@ -215,8 +256,8 @@
       box-shadow: none !important;
       outline: 0 !important;
     }
-    .p-body { padding:8px; display:flex; flex-direction:column; gap:4px; flex:1; }
-    .p-title { margin:4px 0 0; font-size:14px; font-weight:400 !important; font-family:var(--font-body); line-height:1.2; color:var(--breg-darkest); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:30px; text-transform:none; }
+    .p-body { padding:8px; display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; text-align:center; }
+    .p-title { margin:4px 0 0; font-size:14px; font-weight:400 !important; font-family:var(--font-body); line-height:1.2; color:var(--breg-darkest); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:30px; text-transform:none; text-align:center; width:100%; }
     .p-thumb-list {
       display:flex;
       align-items:center;
@@ -255,42 +296,10 @@
     .login-panel-btn.primary { background: var(--breg-primary, #0047bb); color: #fff; }
     .login-panel-btn.secondary { background: #fff; color: var(--breg-primary, #0047bb); }
     .login-panel-btn:hover, .login-panel-btn:focus { text-decoration: none; }
-    .home-guest-signin-module {
-      display:none;
-      flex-direction:column;
-      justify-content:space-between;
-      min-height:100%;
-    }
-    .home-guest-signin-module.is-visible { display:flex; }
-    .home-guest-signin-module h2 { margin-bottom:10px; }
-    .home-guest-signin-copy {
-      margin:0 0 14px;
-      color:#54616d;
-      font-size:12px;
-      line-height:1.4;
-      font-family:var(--font-body);
-    }
-    .home-guest-signin-actions {
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .home-guest-signin-actions .login-panel-btn {
-      width:100%;
-      justify-content:center;
-    }
-    .home-previous-orders-module.is-hidden,
-    .home-pickup-module.is-hidden,
-    .home-templates-module.is-hidden { display:none; }
-    .home-guest-top-products-module,
-    .home-guest-top-categories-module { display:none; }
-    .home-guest-top-products-module.is-visible,
-    .home-guest-top-categories-module.is-visible { display:block; }
     .home-modules-second-row {
-      display:none;
+      display:block;
       margin-top:14px;
     }
-    .home-modules-second-row.is-visible { display:block; }
     .home-modules-second-row .home-modules-row-inner {
       grid-template-columns:1fr;
       gap:14px;
@@ -309,70 +318,72 @@
 
     @media (max-width:1199px){
       .home-modules-row{margin-top:12px;}
-      .home-hero-blend{display:none;}
-      .home-modules-first-row .home-modules-row-inner{grid-template-columns:repeat(2, minmax(0, 1fr)); padding:0 14px;}
-      .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr));}
+      .home-modules-first-row{padding:16px 24px;}
+      .home-modules-first-row .home-modules-row-inner{
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:12px;
+        padding:0;
+      }
+      .home-modules-first-row .product-section{padding:14px 12px 10px;}
+      .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
+      .home-order-row{
+        grid-template-columns:1fr;
+        gap:8px;
+        align-items:stretch;
+        padding:8px 10px;
+      }
+      .home-order-actions{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:6px;
+      }
+      .home-order-btn{
+        width:100%;
+        min-height:32px;
+        font-size:11px;
+        padding:0 8px;
+      }
     }
     @media (max-width:991px){
       .home-modules-row{margin-top:12px;}
-      .home-hero-blend{display:none;}
-      .home-modules-first-row .home-modules-row-inner{grid-template-columns:1fr; padding:0 12px;}
+      .home-modules-first-row{padding:14px 16px;}
+      .home-modules-first-row .home-modules-row-inner{
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+        gap:10px;
+        padding:0;
+      }
+      .home-modules-first-row .product-section{padding:12px 10px 8px;}
       .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr));}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr));}
-      .hero-panel{height:330px;}
-      .hero-copy h1{font-size:34px;}
-      .hero-copy p{font-size:18px;}
+      .hero-panel{height:300px; border-radius:16px;}
+      .home-order-btn{
+        width:100%;
+        min-height:34px;
+        font-size:11px;
+        padding:0 8px;
+      }
     }
     @media (max-width:767px){
-      .hero-wrap{overflow:visible;}
-      .hero-arrow{display:none;}
+      .hero-wrap{padding-top:12px;}
       .hero-panel{
-        display:block;
-        height:260px;
-        overflow:hidden;
+        height:220px;
+        border-radius:14px;
+        width:calc(100% - 24px);
       }
-      .hero-track{
-        position:relative;
-        z-index:1;
-        display:flex;
-        width:100%;
-        height:100%;
-        overflow-x:auto;
-        overflow-y:hidden;
-        scroll-snap-type:x mandatory;
-        -webkit-overflow-scrolling:touch;
-        overscroll-behavior-x:contain;
-        touch-action:pan-x;
-        scrollbar-width:none;
+      .home-modules-first-row .home-modules-row-inner{
+        grid-template-columns:1fr;
+        gap:12px;
       }
-      .hero-track::-webkit-scrollbar{display:none;}
-      .hero-slide{
-        position:relative;
-        flex:0 0 100%;
-        width:100%;
-        min-width:100%;
-        max-width:100%;
-        height:260px;
-        opacity:1 !important;
-        z-index:1;
-        scroll-snap-align:start;
-        scroll-snap-stop:always;
-        transition:none;
-      }
-      .hero-slide.active{z-index:1;}
-      .hero-overlay,
-      .hero-copy{
-        z-index:2;
-        pointer-events:none;
-      }
-      .hero-dots{display:flex;}
-      .hero-copy{left:18px; right:18px; max-width:none;}
-      .hero-copy h1{font-size:28px;}
-      .hero-copy p{font-size:16px;}
-      .product-section{padding:14px 12px 12px;}
+      .home-modules-first-row .product-section{padding:16px 14px 12px;}
+      .home-modules-second-row .product-section{padding:14px 12px 12px;}
       .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;}
+      .home-orders-list{gap:10px;}
+      .home-order-row{padding:12px;}
+      .home-order-number{font-size:14px;}
+      .home-order-details{font-size:12px; line-height:1.4;}
+      .home-order-btn{min-height:40px; font-size:13px;}
       .promo-strip h3{font-size:28px;}
       .promo-strip p{font-size:16px;}
       .promo-strip img{width:180px;height:180px;margin-top:12px;}
@@ -428,27 +439,16 @@
     <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
   </header>
 
-  <section class="hero-wrap" aria-label="Featured promotions">
-    <button type="button" class="hero-arrow left" id="heroPrev" aria-label="Previous slide"><span class="glyphicon glyphicon-chevron-left"></span></button>
-    <div class="hero-panel" id="heroPanel">
-      <div class="hero-track" id="heroTrack" aria-label="Featured promotion slides">
-        <div class="hero-slide active" data-title="" data-subtitle="" data-blend="#4a7fb8" style="background-image:url('https://create-matter-17437700.figma.site/_assets/v11/d48d2f84cb49eabc90d3638a22a50b2aaa4d36e1.png');"></div>
-        <div class="hero-slide" data-title="Advanced Support Technology" data-subtitle="Trusted by Healthcare Professionals Worldwide" data-blend="#2f8f4e" style="background-image:url('https://images.unsplash.com/photo-1715531786031-7c4e30a45c62?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-        <div class="hero-slide" data-title="Recovery Made Simple" data-subtitle="Comprehensive Rehabilitation Solutions" data-blend="#8a6a4d" style="background-image:url('https://images.unsplash.com/photo-1545463913-5083aa7359a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-        <div class="hero-slide" data-title="Return to Performance" data-subtitle="Athletic Recovery and Support" data-blend="#3a6f86" style="background-image:url('https://images.unsplash.com/photo-1754941622117-97957c5d669b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral');"></div>
-      </div>
-      <div class="hero-overlay"></div>
-      <div class="hero-copy"><h1 id="heroTitle"></h1><p id="heroSubtitle"></p></div>
+  <section class="hero-wrap" aria-label="Featured promotion">
+    <div class="hero-panel">
+      <img src="assets/login-hero-keep-moving.png" alt="Keep Moving Forward — Breg">
     </div>
-    <div class="hero-dots" id="heroDots" aria-hidden="true"></div>
-    <button type="button" class="hero-arrow right" id="heroNext" aria-label="Next slide"><span class="glyphicon glyphicon-chevron-right"></span></button>
   </section>
 
   <main class="site-max">
     <section class="home-modules-row" aria-label="Home recommendations">
       <div class="home-modules-first-row">
-        <div class="home-hero-blend" id="homeHeroBlend" aria-hidden="true"></div>
-        <div class="home-modules-row-inner home-modules-row-inner--quad">
+        <div class="home-modules-row-inner">
       <section class="product-section home-pickup-module" id="homePickUpModule">
         <h2>Pick Up Where You Left Off</h2>
         <div class="product-carousel-wrap" data-carousel="pickUpGrid">
@@ -459,7 +459,7 @@
       </section>
 
       <section class="product-section home-templates-module" id="homeTemplatesModule">
-        <h2>Templates / Shopping List</h2>
+        <h2>My Favorites</h2>
         <div class="product-carousel-wrap" data-carousel="templatesGrid">
           <button type="button" class="carousel-btn left" data-target="templatesGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
           <div class="product-grid product-carousel" id="templatesGrid"></div>
@@ -467,49 +467,10 @@
         </div>
       </section>
 
-      <section class="product-section home-guest-top-products-module" id="homeGuestTopProductsModule">
-        <h2>Top Products</h2>
-        <div class="product-carousel-wrap" data-carousel="topRatedGrid">
-          <button type="button" class="carousel-btn left" data-target="topRatedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-          <div class="product-grid product-carousel" id="topRatedGrid"></div>
-          <button type="button" class="carousel-btn right" data-target="topRatedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-        </div>
-      </section>
-
-      <section class="product-section home-guest-top-categories-module" id="homeGuestTopCategoriesModule">
-        <h2>Top Categories</h2>
-        <div class="product-carousel-wrap" data-carousel="topCategoriesGrid">
-          <button type="button" class="carousel-btn left" data-target="topCategoriesGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-          <div class="product-grid product-carousel" id="topCategoriesGrid"></div>
-          <button type="button" class="carousel-btn right" data-target="topCategoriesGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-        </div>
-      </section>
-
-      <section class="product-section">
-        <h2>Recommended for you</h2>
-        <div class="product-carousel-wrap" data-carousel="recommendedGrid">
-          <button type="button" class="carousel-btn left" data-target="recommendedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-          <div class="product-grid product-carousel" id="recommendedGrid"></div>
-          <button type="button" class="carousel-btn right" data-target="recommendedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-        </div>
-      </section>
-
-      <section class="product-section home-guest-signin-module" id="homeGuestSignInModule">
-        <h2>Sign in to your account</h2>
-        <p class="home-guest-signin-copy">View order history, saved lists, and personalized product recommendations.</p>
-        <div class="home-guest-signin-actions">
-          <a class="login-panel-btn primary" href="login.html">Sign in</a>
-          <a class="login-panel-btn secondary" href="login.html">Register</a>
-        </div>
-      </section>
-
       <section class="product-section home-previous-orders-module" id="homePreviousOrdersModule">
         <h2>Your Previous Orders</h2>
-        <div class="product-carousel-wrap" data-carousel="previousOrdersGrid">
-          <button type="button" class="carousel-btn left" data-target="previousOrdersGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-          <div class="product-grid product-carousel" id="previousOrdersGrid"></div>
-          <button type="button" class="carousel-btn right" data-target="previousOrdersGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-        </div>
+        <div class="home-orders-list" id="previousOrdersList"></div>
+        <a class="home-orders-all-link" href="order-history.html">View all order history</a>
       </section>
         </div>
       </div>
@@ -526,11 +487,11 @@
           </section>
 
           <section class="product-section">
-            <h2>Top Categories</h2>
-            <div class="product-carousel-wrap" data-carousel="topCategoriesGridSignedIn">
-              <button type="button" class="carousel-btn left" data-target="topCategoriesGridSignedIn" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
-              <div class="product-grid product-carousel" id="topCategoriesGridSignedIn"></div>
-              <button type="button" class="carousel-btn right" data-target="topCategoriesGridSignedIn" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+            <h2>Recommended for you</h2>
+            <div class="product-carousel-wrap" data-carousel="recommendedGrid">
+              <button type="button" class="carousel-btn left" data-target="recommendedGrid" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+              <div class="product-grid product-carousel" id="recommendedGrid"></div>
+              <button type="button" class="carousel-btn right" data-target="recommendedGrid" data-dir="1" aria-label="Scroll right"><span class="glyphicon glyphicon-chevron-right"></span></button>
             </div>
           </section>
         </div>
@@ -541,206 +502,20 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260716f"></script>
+  <script src="assets/shell.js?v=20260716j"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
   <script src="assets/catalog-listing.js?v=20260609a"></script>
   <script src="assets/catalog-image-resolver.js"></script>
   <script>
     (function () {
-      var heroIndex = 0;
-      var $slides = $("#heroPanel .hero-slide");
-      var $title = $("#heroTitle");
-      var $subtitle = $("#heroSubtitle");
-      var $heroTrack = $("#heroTrack");
-      var $heroDots = $("#heroDots");
-      var heroTimer;
-      var heroMobileMq = window.matchMedia("(max-width: 767px)");
-
-      function isMobileHeroView() {
-        return heroMobileMq.matches;
-      }
-
-      function hexToRgb(hex) {
-        var value = String(hex || "#4a7fb8").replace("#", "").trim();
-        if (value.length === 3) {
-          value = value.split("").map(function (ch) { return ch + ch; }).join("");
-        }
-        var parsed = parseInt(value, 16);
-        if (!isFinite(parsed)) return { r: 74, g: 127, b: 184 };
-        return { r: (parsed >> 16) & 255, g: (parsed >> 8) & 255, b: parsed & 255 };
-      }
-
-      function applyHeroBlend(hex) {
-        var rgb = hexToRgb(hex);
-        var heroFade = "linear-gradient(to bottom, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",0) 0%, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.35) 58%, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.12) 82%, transparent 100%)";
-        var rowFade = "linear-gradient(to bottom, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.36) 0%, rgba(" + rgb.r + "," + rgb.g + "," + rgb.b + ",.14) 50%, #eaeded 100%)";
-        $("#heroPanel").css("--hero-fade-bg", heroFade);
-        $("#homeHeroBlend").css("background", rowFade);
-      }
-
-      function applyHeroCopy(index) {
-        var $active = $slides.eq(index);
-        $title.text($active.data("title"));
-        $subtitle.text($active.data("subtitle"));
-        applyHeroBlend($active.data("blend") || "#4a7fb8");
-      }
-
-      function getHeroActiveIndex() {
-        var track = document.getElementById("heroTrack");
-        if (!track) return 0;
-        var width = track.clientWidth || 1;
-        var index = Math.round(track.scrollLeft / width);
-        return Math.max(0, Math.min(index, $slides.length - 1));
-      }
-
-      function scrollHeroToIndex(index, behavior) {
-        var track = document.getElementById("heroTrack");
-        if (!track) return;
-        var width = track.clientWidth || 0;
-        if (!width) return;
-        track.scrollTo({
-          left: index * width,
-          behavior: behavior || "auto"
-        });
-      }
-
-      function renderHeroDots(activeIndex) {
-        if (!isMobileHeroView() || !$heroDots.length) {
-          $heroDots.empty().hide();
-          return;
-        }
-        if ($slides.length <= 1) {
-          $heroDots.empty().hide();
-          return;
-        }
-        var html = "";
-        for (var i = 0; i < $slides.length; i += 1) {
-          html += "<button type='button' class='hero-dot" + (i === activeIndex ? " active" : "") + "' data-index='" + i + "' aria-label='View slide " + (i + 1) + "'></button>";
-        }
-        $heroDots.html(html).show();
-      }
-
-      function updateHeroDots() {
-        if (!isMobileHeroView()) {
-          $heroDots.empty().hide();
-          return;
-        }
-        var index = getHeroActiveIndex();
-        if ($slides.length <= 1) {
-          $heroDots.empty().hide();
-          return;
-        }
-        if (!$heroDots.find(".hero-dot").length) {
-          renderHeroDots(index);
-          return;
-        }
-        $heroDots.find(".hero-dot").removeClass("active").eq(index).addClass("active");
-      }
-
-      function syncHeroFromScroll() {
-        var index = getHeroActiveIndex();
-        if (index === heroIndex) {
-          updateHeroDots();
-          return;
-        }
-        heroIndex = index;
-        $slides.removeClass("active").eq(heroIndex).addClass("active");
-        applyHeroCopy(heroIndex);
-        updateHeroDots();
-      }
-
-      function setHero(index, scrollBehavior) {
-        heroIndex = (index + $slides.length) % $slides.length;
-        $slides.removeClass("active").eq(heroIndex).addClass("active");
-        applyHeroCopy(heroIndex);
-        if (isMobileHeroView()) {
-          scrollHeroToIndex(heroIndex, scrollBehavior || "auto");
-          updateHeroDots();
-          return;
-        }
-      }
-
-      function bindMobileHero() {
-        $heroTrack.off("scroll.herogallery touchmove.herogallery touchend.herogallery");
-        if (!isMobileHeroView()) {
-          $heroDots.empty().hide();
-          return;
-        }
-        function onHeroScroll() {
-          window.requestAnimationFrame(syncHeroFromScroll);
-        }
-        $heroTrack.on("scroll.herogallery touchmove.herogallery touchend.herogallery", onHeroScroll);
-        renderHeroDots(heroIndex);
-        scrollHeroToIndex(heroIndex, "auto");
-        window.requestAnimationFrame(updateHeroDots);
-      }
-
-      function startHero() {
-        clearInterval(heroTimer);
-        heroTimer = setInterval(function () {
-          if (isMobileHeroView()) {
-            var nextIndex = (getHeroActiveIndex() + 1) % $slides.length;
-            scrollHeroToIndex(nextIndex, "smooth");
-          } else {
-            setHero(heroIndex + 1);
-          }
-        }, 5000);
-      }
-
-      function resetHeroTimer() {
-        startHero();
-      }
-
-      $("#heroPrev").on("click", function () { setHero(heroIndex - 1); resetHeroTimer(); });
-      $("#heroNext").on("click", function () { setHero(heroIndex + 1); resetHeroTimer(); });
-      $(document).on("click", ".hero-dot", function () {
-        var index = Number($(this).attr("data-index"));
-        if (!isFinite(index)) return;
-        setHero(index, "smooth");
-        resetHeroTimer();
-      });
-      $heroTrack.on("touchstart.herointeract", function () {
-        clearInterval(heroTimer);
-      });
-      $heroTrack.on("touchend.herointeract touchcancel.herointeract", function () {
-        resetHeroTimer();
-      });
-
-      function initHeroCarousel() {
-        if (isMobileHeroView()) {
-          bindMobileHero();
-          setHero(heroIndex, "auto");
-        } else {
-          $heroTrack.off("scroll.herogallery touchmove.herogallery touchend.herogallery touchend.herointeract");
-          $heroDots.empty().hide();
-          setHero(heroIndex);
-        }
-        startHero();
-      }
-
-      if (typeof heroMobileMq.addEventListener === "function") {
-        heroMobileMq.addEventListener("change", initHeroCarousel);
-      } else if (typeof heroMobileMq.addListener === "function") {
-        heroMobileMq.addListener(initHeroCarousel);
-      }
-      $(window).on("resize.hero", function () {
-        if (isMobileHeroView()) {
-          scrollHeroToIndex(heroIndex, "auto");
-          updateHeroDots();
-        }
-      });
-
-      setHero(0);
-      initHeroCarousel();
-
       var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
       var catalog = window.BREG_CATALOG_ITEMS || [];
       var sectionCounts = {
         pickUpGrid: 4,
         templatesGrid: 4,
-        recommendedGrid: 4,
-        previousOrdersGrid: 4,
+        recommendedGrid: 6,
+        previousOrdersList: 5,
         topRatedGrid: 4,
         topCategoriesGrid: 4,
         topRatedGridSignedIn: 6,
@@ -817,7 +592,10 @@
           ? homeActivity.getRecentFavoritesLists(limit("templatesGrid"))
           : [];
         var purchased = (typeof homeActivity.getRecentPurchasedProducts === "function")
-          ? homeActivity.getRecentPurchasedProducts(catalog, limit("previousOrdersGrid"))
+          ? homeActivity.getRecentPurchasedProducts(catalog, 8)
+          : [];
+        var recentOrders = (typeof homeActivity.getRecentOrders === "function")
+          ? homeActivity.getRecentOrders(limit("previousOrdersList"))
           : [];
         var topCategories = (typeof homeActivity.getTopCategories === "function")
           ? homeActivity.getTopCategories(catalog, limit("topCategoriesGrid"))
@@ -827,12 +605,12 @@
         sections.pickUpGrid = pickUp;
         sections.templatesGrid = favoriteLists;
         sections.recommendedGrid = buildRecommended(limit("recommendedGrid"), purchased);
-        sections.previousOrdersGrid = purchased;
+        sections.previousOrdersList = recentOrders;
         sections.topCategoriesGrid = topCategories;
         var disallowForTop = {};
         sections.pickUpGrid.forEach(function (p) { disallowForTop[p.id] = true; });
         sections.recommendedGrid.forEach(function (p) { disallowForTop[p.id] = true; });
-        sections.previousOrdersGrid.forEach(function (p) { disallowForTop[p.id] = true; });
+        purchased.forEach(function (p) { if (p && p.id) disallowForTop[p.id] = true; });
         sections.topRatedGrid = buildTopProducts(limit("topRatedGrid"), disallowForTop);
         sections.topRatedGrid.forEach(function (p) { disallowForTop[p.id] = true; });
         sections.topRatedGridSignedIn = buildTopProducts(limit("topRatedGridSignedIn"), disallowForTop);
@@ -852,6 +630,10 @@
       }
 
       function sectionLimit(id, fallback) {
+        if (id === "previousOrdersList") {
+          // Desktop: 5; tablet + mobile: 3
+          return window.matchMedia("(max-width: 1199px)").matches ? 3 : 5;
+        }
         return sectionCounts[id] || fallback || 4;
       }
 
@@ -883,6 +665,70 @@
           this.style.setProperty("border", "0", "important");
           this.style.setProperty("background", "#fff", "important");
         });
+      }
+
+      function renderPreviousOrders(orders) {
+        var $list = $("#previousOrdersList");
+        if (!$list.length) return;
+        var allOrders = Array.isArray(orders) ? orders : ($list.data("allOrders") || []);
+        if (Array.isArray(orders)) $list.data("allOrders", allOrders);
+        $list.empty();
+        var rows = allOrders.slice(0, sectionLimit("previousOrdersList", 5));
+        if (!rows.length) {
+          $list.append("<p class='home-orders-empty'>No previous orders yet.</p>");
+          $list.data("orders", []);
+          return;
+        }
+        rows.forEach(function (order, index) {
+          var orderNumber = escapeHtml(order.orderNumber || "");
+          var orderDate = escapeHtml(order.orderDateLabel || order.orderDate || "");
+          var itemCount = Number(order.itemCount || 0);
+          var itemLabel = itemCount === 1 ? "1 item" : itemCount + " items";
+          var viewHref = "order-confirmation.html?order=" + encodeURIComponent(order.orderNumber || "") + "&view=1";
+          $list.append(
+            "<div class='home-order-row' data-order-index='" + index + "'>" +
+              "<div class='home-order-meta'>" +
+                "<p class='home-order-number'>" + orderNumber + "</p>" +
+                "<p class='home-order-details'>" + orderDate + " · " + escapeHtml(itemLabel) + "</p>" +
+              "</div>" +
+              "<div class='home-order-actions'>" +
+                "<a class='home-order-btn' href='" + viewHref + "'>View order</a>" +
+                "<button type='button' class='home-order-btn primary js-home-order-add' data-order-index='" + index + "'>Add to cart</button>" +
+              "</div>" +
+            "</div>"
+          );
+        });
+        $list.data("orders", rows);
+      }
+
+      function skuFromName(name) {
+        return String(name || "")
+          .toUpperCase()
+          .replace(/[^A-Z0-9]+/g, "-")
+          .replace(/^-+|-+$/g, "");
+      }
+
+      function addOrderToCart(order) {
+        if (!order || !window.BregCart || typeof window.BregCart.addLines !== "function") return;
+        var lines = (Array.isArray(order.lines) ? order.lines : []).map(function (line) {
+          var name = String(line && line.name ? line.name : "").trim();
+          var sku = String(line && line.sku ? line.sku : "").trim() || skuFromName(name);
+          return {
+            sku: sku,
+            qty: Math.max(1, parseInt(line && line.qty, 10) || 1),
+            name: name || sku,
+            price: Number(line && line.price ? line.price : 0) || 0,
+            image: String(line && line.image ? line.image : "") || missingProductImage,
+            category: "Order History",
+            variant: "",
+            size: "Universal"
+          };
+        }).filter(function (line) { return line.sku; });
+        if (!lines.length) return;
+        window.BregCart.addLines(lines);
+        if (typeof window.BregCart.showAddedModal === "function") {
+          window.BregCart.showAddedModal(lines);
+        }
       }
 
       function renderListGrid(id, lists) {
@@ -998,44 +844,53 @@
         });
       }
 
-      function syncGuestHomeModules() {
-        var signedIn = localStorage.getItem("bregSignedIn") === "true";
-        $("#homeGuestSignInModule").toggleClass("is-visible", !signedIn);
-        $("#homePreviousOrdersModule").toggleClass("is-hidden", !signedIn);
-        $("#homePickUpModule").toggleClass("is-hidden", !signedIn);
-        $("#homeTemplatesModule").toggleClass("is-hidden", !signedIn);
-        $("#homeGuestTopProductsModule").toggleClass("is-visible", !signedIn);
-        $("#homeGuestTopCategoriesModule").toggleClass("is-visible", !signedIn);
-        $("#homeSignedInSecondRow").toggleClass("is-visible", signedIn);
+      function syncSignedInHomeModules() {
+        $("#homePreviousOrdersModule").removeClass("is-hidden").show();
+        $("#homePickUpModule").removeClass("is-hidden").show();
+        $("#homeTemplatesModule").removeClass("is-hidden").show();
+        $("#homeSignedInSecondRow").addClass("is-visible").show();
       }
 
       var sections = buildSectionsFromCatalog();
       renderGrid("pickUpGrid", sections.pickUpGrid || []);
       renderListGrid("templatesGrid", sections.templatesGrid || []);
-      renderGrid("recommendedGrid", sections.recommendedGrid || []);
-      renderGrid("previousOrdersGrid", sections.previousOrdersGrid || []);
-      renderGrid("topRatedGrid", sections.topRatedGrid || []);
-      renderCategoryGrid("topCategoriesGrid", sections.topCategoriesGrid || []);
+      renderGrid("recommendedGrid", sections.recommendedGrid || [], sectionLimit("recommendedGrid", 6));
+      renderPreviousOrders(sections.previousOrdersList || []);
       renderGrid("topRatedGridSignedIn", sections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
-      renderCategoryGrid("topCategoriesGridSignedIn", sections.topCategoriesGridSignedIn || [], sectionLimit("topCategoriesGridSignedIn", 6));
       initCarousels();
-      syncGuestHomeModules();
+      syncSignedInHomeModules();
       if (window.BregAuth && typeof window.BregAuth.syncHomeLoginPanel === "function") {
         window.BregAuth.syncHomeLoginPanel();
       }
       function refreshHomeModules() {
-        syncGuestHomeModules();
+        syncSignedInHomeModules();
         var nextSections = buildSectionsFromCatalog();
         renderGrid("pickUpGrid", nextSections.pickUpGrid || []);
         renderListGrid("templatesGrid", nextSections.templatesGrid || []);
-        renderGrid("recommendedGrid", nextSections.recommendedGrid || []);
-        renderGrid("previousOrdersGrid", nextSections.previousOrdersGrid || []);
-        renderGrid("topRatedGrid", nextSections.topRatedGrid || []);
-        renderCategoryGrid("topCategoriesGrid", nextSections.topCategoriesGrid || []);
+        renderGrid("recommendedGrid", nextSections.recommendedGrid || [], sectionLimit("recommendedGrid", 6));
+        renderPreviousOrders(nextSections.previousOrdersList || []);
         renderGrid("topRatedGridSignedIn", nextSections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
-        renderCategoryGrid("topCategoriesGridSignedIn", nextSections.topCategoriesGridSignedIn || [], sectionLimit("topCategoriesGridSignedIn", 6));
         initCarousels();
       }
+
+      $(document).on("click", ".js-home-order-add", function () {
+        var index = Number($(this).attr("data-order-index"));
+        var orders = $("#previousOrdersList").data("orders") || [];
+        if (!isFinite(index) || !orders[index]) return;
+        addOrderToCart(orders[index]);
+      });
+
+      var previousOrdersResizeTimer = null;
+      var previousOrdersViewportIsCompact = window.matchMedia("(max-width: 1199px)").matches;
+      $(window).on("resize", function () {
+        var isCompact = window.matchMedia("(max-width: 1199px)").matches;
+        if (isCompact === previousOrdersViewportIsCompact) return;
+        previousOrdersViewportIsCompact = isCompact;
+        clearTimeout(previousOrdersResizeTimer);
+        previousOrdersResizeTimer = setTimeout(function () {
+          renderPreviousOrders();
+        }, 100);
+      });
 
       $(window).on("pageshow", refreshHomeModules);
       window.addEventListener("storage", function (event) {
@@ -1048,6 +903,7 @@
           event.key === "breg_recent_pdp_v1" ||
           event.key === "breg_favorites_lists_snapshot_v1" ||
           event.key === "breg_order_history_products_v1" ||
+          event.key === "breg_recent_orders_v1" ||
           event.key === "breg_last_order_v1"
         ) {
           refreshHomeModules();

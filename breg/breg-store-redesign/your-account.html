@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script src="assets/auth-gate.js?v=20260716i"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Your Account</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -609,7 +610,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260716f"></script>
+  <script src="assets/shell.js?v=20260716j"></script>
   <script>
     (function () {
       function renderAccountUserMeta() {
@@ -638,15 +639,19 @@
 
       $(document).on("click", "#pageSignOutTile", function (event) {
         event.preventDefault();
-        try { localStorage.setItem("bregSignedIn", "false"); } catch (e) {}
-        try { localStorage.removeItem("bregFirstName"); } catch (e) {}
-        try { localStorage.removeItem("bregLastName"); } catch (e) {}
-        try { localStorage.removeItem("bregUserName"); } catch (e) {}
-        try { localStorage.removeItem("bregAccountName"); } catch (e) {}
-        try { localStorage.removeItem("bregUserEmail"); } catch (e) {}
-        try { localStorage.removeItem("bregUserPhone"); } catch (e) {}
+        if (window.BregSessionAuth) {
+          window.BregSessionAuth.markSignedOut();
+        } else {
+          try { localStorage.setItem("bregSignedIn", "false"); } catch (e) {}
+          try { localStorage.removeItem("bregFirstName"); } catch (e) {}
+          try { localStorage.removeItem("bregLastName"); } catch (e) {}
+          try { localStorage.removeItem("bregUserName"); } catch (e) {}
+          try { localStorage.removeItem("bregAccountName"); } catch (e) {}
+          try { localStorage.removeItem("bregUserEmail"); } catch (e) {}
+          try { localStorage.removeItem("bregUserPhone"); } catch (e) {}
+        }
         try { localStorage.removeItem("bregUserRole"); } catch (e) {}
-        window.location.replace("index.html");
+        window.location.replace("login.html");
       });
 
       renderAccountUserMeta();

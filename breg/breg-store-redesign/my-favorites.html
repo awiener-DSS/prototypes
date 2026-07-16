@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script src="assets/auth-gate.js?v=20260716i"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - My Favorites</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1479,10 +1480,10 @@
   <script src="analysis/variant-data.js?v=20260218a"></script>
   <script src="assets/catalog-listing.js?v=20260609a"></script>
   <script src="assets/catalog-image-resolver.js"></script>
-  <script src="assets/shell.js?v=20260716f"></script>
+  <script src="assets/shell.js?v=20260716j"></script>
   <script>
     (function () {
-      if (localStorage.getItem("bregSignedIn") === "false") {
+      if (!(window.BregSessionAuth ? window.BregSessionAuth.isSignedIn() : localStorage.getItem("bregSignedIn") === "true")) {
         window.location.href = "login.html?redirect=" + encodeURIComponent("my-favorites.html");
         return;
       }

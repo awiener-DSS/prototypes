@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script src="assets/auth-gate.js?v=20260716i"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Product List</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1041,7 +1042,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260716f"></script>
+  <script src="assets/shell.js?v=20260716j"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="assets/product-facets.js?v=20260609a"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
@@ -1140,7 +1141,9 @@
       }
 
       function isSignedIn() {
-        return localStorage.getItem("bregSignedIn") === "true";
+        return window.BregSessionAuth
+          ? window.BregSessionAuth.isSignedIn()
+          : localStorage.getItem("bregSignedIn") === "true";
       }
 
       function findProductById(productId) {

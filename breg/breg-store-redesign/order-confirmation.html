@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script src="assets/auth-gate.js?v=20260716i"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Order Confirmation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -379,9 +380,12 @@
   <main class="site-max">
     <section class="confirm-wrap">
       <div class="confirm-card">
-        <div class="confirm-ok"><span class="glyphicon glyphicon-ok"></span> Order Confirmed</div>
-        <h1 class="confirm-title">Thank you for your order</h1>
-        <p class="confirm-sub">Your order has been received and is being processed.</p>
+        <div class="confirm-hero" id="confirmHero">
+          <div class="confirm-ok"><span class="glyphicon glyphicon-ok"></span> Order Confirmed</div>
+          <h1 class="confirm-title">Thank you for your order</h1>
+          <p class="confirm-sub">Your order has been received and is being processed.</p>
+        </div>
+        <h1 class="confirm-title confirm-view-title" id="confirmViewTitle" hidden>Order details</h1>
         <p class="confirm-meta" id="confirmMeta"></p>
         <div id="confirmCheckoutSelections"></div>
         <div id="confirmTable"></div>
@@ -423,7 +427,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260716f"></script>
+  <script src="assets/shell.js?v=20260716j"></script>
   <script>
     (function () {
       function getHistoryOrderPreset(orderNumber) {
@@ -526,6 +530,14 @@
         order = getHistoryOrderPreset(requestedOrder) || order;
       }
       isHistoryDetail = !!requestedOrder;
+      if (isHistoryDetail) {
+        $("#confirmHero").attr("hidden", true).hide();
+        $("#confirmViewTitle").prop("hidden", false).show();
+        document.title = "Breg Store - Order Details";
+      } else {
+        $("#confirmHero").prop("hidden", false).show();
+        $("#confirmViewTitle").attr("hidden", true).hide();
+      }
       if (!order || !Array.isArray(order.lines) || !order.lines.length) {
         $("#confirmMeta").text("No recent order details were found.");
         $("#confirmTable").html("<div class='pdp-empty'>Order details unavailable.</div>");

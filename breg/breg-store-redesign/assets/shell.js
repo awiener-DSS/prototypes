@@ -489,45 +489,57 @@
   }
 
   function ensureQuickOrderModal() {
-    if ($("#quickOrderModal").length) return;
-
-    if (!$("#quickOrderModalStyles").length) {
-      var quickStyles = "" +
-        "<style id='quickOrderModalStyles'>" +
-          ".quick-order-modal{position:fixed;inset:0;z-index:12500;background:rgba(15,23,42,.56);display:none;align-items:center;justify-content:center;padding:16px;}" +
+    var quickStylesCss = "" +
+          ".quick-order-modal{position:fixed;inset:0;z-index:12500;background:rgba(15,23,42,.56);display:none;align-items:center;justify-content:center;padding:12px;box-sizing:border-box;overflow:auto;-webkit-overflow-scrolling:touch;}" +
           ".quick-order-modal.open{display:flex;}" +
-          ".quick-order-dialog{width:min(980px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:12px;border:1px solid #dbe3ea;box-shadow:0 18px 50px rgba(15,23,42,.28);}" +
+          ".quick-order-dialog{width:min(980px,100%);max-width:100%;max-height:min(92vh,92dvh);overflow:auto;overflow-x:hidden;background:#fff;border-radius:12px;border:1px solid #dbe3ea;box-shadow:0 18px 50px rgba(15,23,42,.28);box-sizing:border-box;}" +
           ".quick-order-head{padding:12px 16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:10px;}" +
           ".quick-order-head h3{margin:0;font-size:22px;line-height:1.2;color:var(--breg-darkest,#071d49);font-family:var(--font-headline);}" +
           ".quick-order-close{border:0;background:transparent;font-size:28px;line-height:1;color:var(--breg-darkest,#071d49);opacity:.8;padding:0 4px;}" +
-          ".quick-order-body{padding:14px 16px 16px;}" +
+          ".quick-order-body{padding:14px 16px 16px;box-sizing:border-box;}" +
           ".quick-order-sub{margin:0 0 12px;font-size:13px;color:var(--breg-darkest,#071d49);opacity:.85;font-family:var(--font-body);}" +
-          ".quick-order-grid{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;}" +
-          ".quick-order-cell{position:relative;}" +
+          ".quick-order-grid{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;width:100%;box-sizing:border-box;}" +
+          ".quick-order-cell{position:relative;min-width:0;}" +
           ".quick-order-grid-head{font-size:12px;text-transform:none;letter-spacing:normal;color:var(--breg-darkest,#0047bb);opacity:.8;font-weight:600;font-family:var(--font-headline);margin-bottom:6px;}" +
           ".quick-order-row{margin-bottom:8px;}" +
-          ".quick-order-input{width:100%;height:36px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:13px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
+          ".quick-order-input{width:100%;max-width:100%;height:40px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:16px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);box-sizing:border-box;}" +
           ".quick-order-input:focus{outline:0;border-color:var(--breg-primary,#0047bb);box-shadow:0 0 0 3px rgba(0,71,187,.15);}" +
           ".quick-order-suggest{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:3;background:#fff;border:1px solid #d6dee7;border-radius:10px;box-shadow:0 10px 20px rgba(15,23,42,.12);max-height:280px;overflow:auto;display:none;}" +
           ".quick-order-suggest.open{display:block;}" +
-          ".quick-order-suggest-item{width:100%;border:0;background:#fff;padding:8px 10px;display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:center;text-align:left;border-bottom:1px solid #eef2f6;}" +
+          ".quick-order-suggest-item{width:100%;border:0;background:#fff;padding:8px 10px;display:grid;grid-template-columns:44px minmax(0,1fr);gap:8px;align-items:center;text-align:left;border-bottom:1px solid #eef2f6;box-sizing:border-box;}" +
           ".quick-order-suggest-item:last-child{border-bottom:0;}" +
           ".quick-order-suggest-item:hover,.quick-order-suggest-item:focus{background:#f8fbff;outline:0;}" +
           ".quick-order-suggest-item img{width:44px;height:44px;object-fit:contain;border:1px solid #e4e8ee;border-radius:8px;background:#fff;padding:2px;}" +
           ".quick-order-suggest-name{display:block;font-size:12px;font-weight:700;color:var(--breg-darkest,#071d49);line-height:1.2;font-family:var(--font-body);}" +
           ".quick-order-suggest-sku{display:block;font-size:12px;color:var(--breg-darkest,#071d49);opacity:.8;line-height:1.3;margin-top:2px;font-family:var(--font-body);}" +
-          ".quick-order-qty{width:86px;height:36px;border:1px solid #cfd8e3;border-radius:8px;padding:0 10px;font-size:13px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
-          ".quick-order-del{height:36px;width:36px;border:1px solid #d1d5dc;border-radius:8px;background:#fff;color:var(--breg-darkest,#071d49);padding:0;font-size:14px;display:inline-flex;align-items:center;justify-content:center;}" +
+          ".quick-order-qty{width:72px;max-width:100%;height:40px;border:1px solid #cfd8e3;border-radius:8px;padding:0 8px;font-size:16px;color:var(--breg-darkest,#071d49);font-family:var(--font-body);box-sizing:border-box;}" +
+          ".quick-order-del{height:40px;width:40px;border:1px solid #d1d5dc;border-radius:8px;background:#fff;color:var(--breg-darkest,#071d49);padding:0;font-size:14px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;}" +
           ".quick-order-add-row{height:34px;border:1px solid var(--breg-primary,#0047bb);border-radius:999px;background:#fff;color:var(--breg-primary,#0047bb);padding:0 12px;font-size:12px;font-family:var(--font-body);}" +
-          ".quick-order-foot{padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:flex-end;gap:10px;}" +
+          ".quick-order-foot{padding:12px 16px;border-top:1px solid #e5e7eb;display:flex;align-items:center;justify-content:flex-end;gap:10px;flex-wrap:wrap;box-sizing:border-box;}" +
           ".quick-order-cancel,.quick-order-submit{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border-radius:999px;font-size:13px;text-decoration:none;}" +
           ".quick-order-cancel{border:1px solid #d1d5dc;background:#fff;color:var(--breg-darkest,#071d49);font-family:var(--font-body);}" +
           ".quick-order-submit{border:1px solid var(--breg-primary,#0047bb);background:var(--breg-primary,#0047bb);color:#fff;font-family:var(--font-body);}" +
           ".quick-order-cancel:hover,.quick-order-cancel:focus{text-decoration:none;color:var(--breg-darkest,#071d49);}.quick-order-submit:hover,.quick-order-submit:focus{text-decoration:none;color:#fff;background:var(--breg-primary-dark,#001E62);border-color:var(--breg-primary-dark,#001E62);}" +
-          "@media (max-width:767px){.quick-order-grid{grid-template-columns:1fr 92px 44px;}}" +
-        "</style>";
-      $("head").append(quickStyles);
+          "@media (max-width:767px){" +
+            ".quick-order-modal{padding:0;align-items:flex-end;}" +
+            ".quick-order-dialog{width:100%;max-width:100%;max-height:min(94vh,94dvh);border-radius:14px 14px 0 0;border-left:0;border-right:0;}" +
+            ".quick-order-head{padding:12px 14px;}" +
+            ".quick-order-head h3{font-size:18px;}" +
+            ".quick-order-body{padding:12px 14px 14px;}" +
+            ".quick-order-grid{grid-template-columns:minmax(0,1fr) 64px 40px;gap:6px;}" +
+            ".quick-order-grid-head{font-size:11px;}" +
+            ".quick-order-qty{width:64px;}" +
+            ".quick-order-foot{padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));}" +
+            ".quick-order-cancel,.quick-order-submit{flex:1 1 auto;min-height:40px;}" +
+          "}";
+    var $quickStyles = $("#quickOrderModalStyles");
+    if ($quickStyles.length) {
+      $quickStyles.html(quickStylesCss);
+    } else {
+      $("head").append("<style id='quickOrderModalStyles'>" + quickStylesCss + "</style>");
     }
+
+    if ($("#quickOrderModal").length) return;
 
     var quickHtml = "" +
       "<div class='quick-order-modal' id='quickOrderModal' aria-hidden='true'>" +
@@ -619,7 +631,20 @@
     }
 
     function closeQuickOrderModal() {
-      $("#quickOrderModal").removeClass("open").attr("aria-hidden", "true");
+      var $modal = $("#quickOrderModal");
+      var active = document.activeElement;
+      if (active && $modal[0] && $modal[0].contains(active) && typeof active.blur === "function") {
+        active.blur();
+      }
+      $modal.removeClass("open").attr("aria-hidden", "true");
+      $modal.find(".js-quick-order-suggest").removeClass("open").empty();
+      // Help iOS recover from input focus zoom after closing the modal.
+      window.setTimeout(function () {
+        if (document.activeElement && document.activeElement !== document.body && typeof document.activeElement.blur === "function") {
+          document.activeElement.blur();
+        }
+        window.scrollTo(window.scrollX, window.scrollY);
+      }, 50);
     }
 
     $(document).on("click", "#quickOrderClose, #quickOrderCancel", function () {
@@ -766,7 +791,10 @@
     }
     $("#quickOrderModal").data("quick-seeding", "0");
     $("#quickOrderModal").addClass("open").attr("aria-hidden", "false");
-    $("#quickOrderRows .js-quick-order-sku").first().trigger("focus");
+    // Avoid auto-focus on touch devices so iOS does not zoom into the field.
+    if (!window.matchMedia("(hover: none) and (pointer: coarse)").matches) {
+      $("#quickOrderRows .js-quick-order-sku").first().trigger("focus");
+    }
   }
 
   var recentSearches = ["knee brace", "cold therapy", "shoulder support", "lumbar support belt"];

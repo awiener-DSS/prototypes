@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/shell.css?v=20260716d">
+  <link rel="stylesheet" href="assets/shell.css?v=20260720f">
   <style>
     .hero-wrap {
       position: relative;
@@ -39,10 +39,10 @@
     .product-section {
       background:#fff;
       margin-top:14px;
-      padding:12px 12px 10px;
+      padding:18px 18px 12px 24px;
       border:1px solid #d5d9d9;
-      border-radius:2px;
-      box-shadow:0 1px 2px rgba(15,17,17,.04);
+      border-radius:10px;
+      box-shadow:0 4px 6px rgba(15,17,17,.04);
     }
     .product-section h2 {
       margin:0 0 20px 0;
@@ -107,6 +107,7 @@
       max-width: none;
       width: 100%;
       margin: 0;
+      align-items: stretch;
     }
     .home-modules-first-row .product-section {
       background: #fff;
@@ -115,6 +116,128 @@
       border: none;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(15,17,17,.04);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      box-sizing: border-box;
+      overflow: visible;
+    }
+    .home-modules-first-row .product-section > h2 {
+      flex: 0 0 auto;
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+    .home-modules-first-row .product-carousel-wrap {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .home-modules-first-row .product-grid.product-carousel {
+      flex: 1 1 auto;
+      min-height: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding-top: 2px;
+      padding-bottom: 0;
+    }
+    .home-modules-first-row .p-body {
+      flex: 0 0 auto;
+      padding: 4px 2px 2px;
+    }
+    .home-modules-first-row .p-title {
+      margin: 2px 0 0;
+      font-size: 12px;
+      min-height: 0;
+      line-height: 1.2;
+      -webkit-line-clamp: 2;
+    }
+    @media (min-width: 744px) {
+      .home-modules-first-row .product-grid.product-carousel {
+        height: 100%;
+        grid-template-rows: repeat(2, minmax(0, 1fr));
+        align-content: stretch;
+      }
+      .home-modules-first-row .product-grid.product-carousel .p-card {
+        height: calc(100% - 4px);
+        min-height: 0;
+        margin-top: 4px;
+      }
+      .home-modules-first-row .product-grid.product-carousel .p-card:hover {
+        margin-top: 0;
+        height: calc(100% - 0px);
+        transform: translateY(0);
+        box-shadow: 0 8px 20px rgba(0,71,187,.15);
+      }
+      .home-modules-first-row .product-grid.product-carousel .p-card-link {
+        height: 100%;
+        min-height: 0;
+      }
+      .home-modules-first-row .p-thumb,
+      .home-modules-first-row .p-thumb-list {
+        flex: 1 1 0;
+        width: 100%;
+        min-height: 0;
+        height: 0;
+        max-height: none;
+        aspect-ratio: auto;
+        object-fit: contain;
+        margin: 0 auto;
+        align-self: stretch;
+      }
+    }
+    /* Tablet: keep product thumbs compact so modules don't grow oversized */
+    @media (min-width: 744px) and (max-width: 1199px) {
+      .home-modules-first-row .product-section {
+        height: auto !important;
+      }
+      .home-modules-first-row .product-carousel-wrap {
+        flex: 0 0 auto;
+      }
+      .home-modules-first-row .product-grid.product-carousel {
+        height: auto;
+        grid-template-rows: auto;
+        align-content: start;
+      }
+      .home-modules-first-row .product-grid.product-carousel .p-card,
+      .home-modules-first-row .product-grid.product-carousel .p-card:hover {
+        height: auto;
+      }
+      .home-modules-first-row .product-grid.product-carousel .p-card-link {
+        height: auto;
+      }
+      .home-modules-first-row .p-thumb,
+      .home-modules-first-row .p-thumb-list {
+        flex: 0 0 auto;
+        width: 100%;
+        height: auto;
+        max-height: 112px;
+        aspect-ratio: 1 / 1;
+        object-fit: contain;
+        align-self: center;
+      }
+    }
+    @media (max-width: 743px) {
+      .home-modules-first-row .p-thumb,
+      .home-modules-first-row .p-thumb-list {
+        aspect-ratio: 1 / 1;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        object-fit: contain;
+      }
+    }
+    .home-modules-first-row .home-orders-list {
+      flex: 0 0 auto;
+      margin-top: 6px;
+      gap: 6px;
+    }
+    .home-modules-first-row .home-orders-all-link {
+      margin-top: 10px;
+      padding-top: 0;
+    }
+    .home-modules-first-row .home-order-row {
+      padding: 8px 10px;
     }
     .home-orders-list {
       display: flex;
@@ -226,10 +349,6 @@
       gap:18px;
     }
     .home-modules-row .login-panel.show { display:flex; }
-    .home-modules-first-row .product-grid.product-carousel {
-      grid-template-columns:repeat(2, minmax(0,1fr));
-      gap:8px;
-    }
     .product-grid.product-carousel {
       display:grid;
       grid-template-columns:repeat(4, minmax(0,1fr));
@@ -238,7 +357,7 @@
       padding-bottom:2px;
     }
     .product-grid.product-carousel::-webkit-scrollbar { display:none; }
-    .p-card { background:#fff; border:0; border-radius:14px; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease; display:flex; flex-direction:column; min-height:0; position:relative; font-family:var(--font-body); margin-top:4px; }
+    .p-card { background:#fff; border:0; border-radius:14px; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease, margin-top .16s ease; display:flex; flex-direction:column; min-height:0; position:relative; font-family:var(--font-body); margin-top:4px; }
     .product-grid.product-carousel .p-card { min-width:0; }
     .p-card-link { display:flex; flex-direction:column; color:inherit; text-decoration:none; height:100%; }
     .p-card-link:hover, .p-card-link:focus { color:inherit; text-decoration:none; }
@@ -248,7 +367,6 @@
     .product-grid.product-carousel .p-card:hover,
     .product-grid.product-carousel > * {
       border: 0 !important;
-      box-shadow: none !important;
     }
     .product-grid.product-carousel .p-thumb {
       border: 0 !important;
@@ -302,10 +420,19 @@
     }
     .home-modules-second-row .home-modules-row-inner {
       grid-template-columns:1fr;
-      gap:14px;
+      gap:18px;
+      padding:0;
+      align-items:stretch;
+      margin-bottom:2%;
     }
     .home-modules-second-row .product-section {
       width:100%;
+      margin-top:0;
+      padding:18px 18px 12px 24px;
+      border:1px solid #d5d9d9;
+      border-radius:10px;
+      box-shadow:0 4px 6px rgba(15,17,17,.04);
+      box-sizing:border-box;
     }
     .home-modules-second-row .product-carousel-wrap {
       overflow-x:auto;
@@ -324,8 +451,10 @@
         gap:12px;
         padding:0;
       }
-      .home-modules-first-row .product-section{padding:14px 12px 10px;}
+      .home-modules-first-row .product-section{padding:18px 18px 12px 24px;}
       .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px;}
+      .home-modules-second-row .home-modules-row-inner{gap:12px;}
+      .home-modules-second-row .product-section{padding:18px 18px 12px 24px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
       .home-order-row{
         grid-template-columns:1fr;
@@ -345,17 +474,27 @@
         padding:0 8px;
       }
     }
+    /* Tablet portrait only (includes iPad Mini at 744px): Pickup + Favorites on one row */
+    @media (max-width:1199px) and (min-width:744px) and (orientation: portrait){
+      .home-modules-first-row .home-modules-row-inner{
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+      .home-modules-first-row .home-previous-orders-module{
+        grid-column:1 / -1;
+      }
+    }
     @media (max-width:991px){
       .home-modules-row{margin-top:12px;}
       .home-modules-first-row{padding:14px 16px;}
       .home-modules-first-row .home-modules-row-inner{
-        grid-template-columns:repeat(3, minmax(0, 1fr));
         gap:10px;
         padding:0;
       }
-      .home-modules-first-row .product-section{padding:12px 10px 8px;}
+      .home-modules-first-row .product-section{padding:18px 14px 12px;}
       .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr));}
-      .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr));}
+      .home-modules-second-row .home-modules-row-inner{gap:12px;}
+      .home-modules-second-row .product-section{padding:18px 14px 12px;}
+      .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
       .hero-panel{height:300px; border-radius:16px;}
       .home-order-btn{
         width:100%;
@@ -364,7 +503,7 @@
         padding:0 8px;
       }
     }
-    @media (max-width:767px){
+    @media (max-width:743px){
       .hero-wrap{padding-top:12px;}
       .hero-panel{
         height:220px;
@@ -375,18 +514,31 @@
         grid-template-columns:1fr;
         gap:12px;
       }
+      .home-modules-first-row .home-previous-orders-module{
+        grid-column:auto;
+      }
       .home-modules-first-row .product-section{padding:16px 14px 12px;}
-      .home-modules-second-row .product-section{padding:14px 12px 12px;}
+      .home-modules-second-row .product-section{padding:16px 14px 12px;}
+      .home-modules-first-row .product-section > h2,
+      .home-modules-second-row .product-section > h2,
+      .product-section h2{font-size:18px;}
       .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px;}
+      .home-modules-first-row .p-title{font-size:13px; min-height:34px;}
+      .p-title{font-size:14px; min-height:34px;}
       .home-orders-list{gap:10px;}
       .home-order-row{padding:12px;}
-      .home-order-number{font-size:14px;}
-      .home-order-details{font-size:12px; line-height:1.4;}
-      .home-order-btn{min-height:40px; font-size:13px;}
+      .home-order-number{font-size:1.2em;}
+      .home-order-details{font-size:1em; line-height:1.4;}
+      .home-order-btn{min-height:40px; font-size:14px;}
+      .home-orders-all-link{font-size:15px;}
+      .home-orders-empty{font-size:14px;}
       .promo-strip h3{font-size:28px;}
       .promo-strip p{font-size:16px;}
       .promo-strip img{width:180px;height:180px;margin-top:12px;}
+      .login-panel h3{font-size:18px;}
+      .login-panel p,
+      .login-panel-btn{font-size:14px;}
     }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
@@ -406,7 +558,7 @@
           </form>
           <div class="search-dropdown" id="searchDropdown">
             <div class="search-left">
-              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Search Suggestions</div><div id="searchSuggestionList"></div></div>
               <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
             </div>
             <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
@@ -436,7 +588,7 @@
         </div>
       </div>
     </div>
-    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
   </header>
 
   <section class="hero-wrap" aria-label="Featured promotion">
@@ -478,7 +630,7 @@
       <div class="home-modules-second-row" id="homeSignedInSecondRow">
         <div class="home-modules-row-inner">
           <section class="product-section">
-            <h2>Top Products</h2>
+            <h2>Best Sellers</h2>
             <div class="product-carousel-wrap" data-carousel="topRatedGridSignedIn">
               <button type="button" class="carousel-btn left" data-target="topRatedGridSignedIn" data-dir="-1" aria-label="Scroll left"><span class="glyphicon glyphicon-chevron-left"></span></button>
               <div class="product-grid product-carousel" id="topRatedGridSignedIn"></div>
@@ -502,7 +654,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260716j"></script>
+  <script src="assets/shell.js?v=20260720f"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
   <script src="assets/catalog-listing.js?v=20260609a"></script>
@@ -851,6 +1003,23 @@
         $("#homeSignedInSecondRow").addClass("is-visible").show();
       }
 
+      function syncFirstRowModuleHeights() {
+        var $modules = $("#homePickUpModule, #homeTemplatesModule, #homePreviousOrdersModule");
+        var row = document.querySelector(".home-modules-first-row .home-modules-row-inner");
+        if (!$modules.length || !row) return;
+        $modules.css("height", "");
+        // Phone + tablet: let each card size to its content (avoids oversized product thumbs).
+        if (window.matchMedia("(max-width: 1199px)").matches) return;
+        var ordersEl = document.getElementById("homePreviousOrdersModule");
+        if (!ordersEl || !ordersEl.offsetParent) return;
+        var prevAlign = row.style.alignItems;
+        row.style.alignItems = "start";
+        var targetHeight = Math.ceil(ordersEl.getBoundingClientRect().height);
+        row.style.alignItems = prevAlign || "";
+        if (!targetHeight) return;
+        $modules.css("height", targetHeight + "px");
+      }
+
       var sections = buildSectionsFromCatalog();
       renderGrid("pickUpGrid", sections.pickUpGrid || []);
       renderListGrid("templatesGrid", sections.templatesGrid || []);
@@ -859,6 +1028,7 @@
       renderGrid("topRatedGridSignedIn", sections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
       initCarousels();
       syncSignedInHomeModules();
+      syncFirstRowModuleHeights();
       if (window.BregAuth && typeof window.BregAuth.syncHomeLoginPanel === "function") {
         window.BregAuth.syncHomeLoginPanel();
       }
@@ -871,6 +1041,7 @@
         renderPreviousOrders(nextSections.previousOrdersList || []);
         renderGrid("topRatedGridSignedIn", nextSections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
         initCarousels();
+        syncFirstRowModuleHeights();
       }
 
       $(document).on("click", ".js-home-order-add", function () {
@@ -881,15 +1052,21 @@
       });
 
       var previousOrdersResizeTimer = null;
+      var firstRowHeightResizeTimer = null;
       var previousOrdersViewportIsCompact = window.matchMedia("(max-width: 1199px)").matches;
       $(window).on("resize", function () {
         var isCompact = window.matchMedia("(max-width: 1199px)").matches;
-        if (isCompact === previousOrdersViewportIsCompact) return;
-        previousOrdersViewportIsCompact = isCompact;
-        clearTimeout(previousOrdersResizeTimer);
-        previousOrdersResizeTimer = setTimeout(function () {
-          renderPreviousOrders();
-        }, 100);
+        if (isCompact !== previousOrdersViewportIsCompact) {
+          previousOrdersViewportIsCompact = isCompact;
+          clearTimeout(previousOrdersResizeTimer);
+          previousOrdersResizeTimer = setTimeout(function () {
+            renderPreviousOrders();
+            syncFirstRowModuleHeights();
+          }, 100);
+          return;
+        }
+        clearTimeout(firstRowHeightResizeTimer);
+        firstRowHeightResizeTimer = setTimeout(syncFirstRowModuleHeights, 100);
       });
 
       $(window).on("pageshow", refreshHomeModules);

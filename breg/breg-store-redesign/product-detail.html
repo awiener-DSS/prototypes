@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/shell.css?v=20260716d">
+  <link rel="stylesheet" href="assets/shell.css?v=20260720f">
   <style>
     body { background: #EAEDED; }
     .pdp-page { margin: 16px 0 26px; }
@@ -311,6 +311,32 @@
       color: #0a0a0a;
       letter-spacing: -.15px;
     }
+    .pdp-related-strip {
+      display: none;
+      margin: 12px 0 0;
+      border: 1px solid #d5dde4;
+      border-radius: 14px;
+      background: #fff;
+      padding: 14px;
+    }
+    .pdp-related-strip h3 {
+      margin: 0 0 12px;
+      padding-bottom: 9px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 16px;
+      line-height: 24px;
+      font-weight: 500;
+      letter-spacing: -.31px;
+      color: #0a0a0a;
+    }
+    #pdpRailStrip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+    #pdpRailStrip > .pdp-empty {
+      grid-column: 1 / -1;
+    }
     .pdp-tabs { margin-top: 12px; background: #fff; border: 1px solid #d5dde4; border-radius: 14px; padding: 14px; }
     .pdp-tab-head { display: flex; gap: 0; border-bottom: 1px solid #e8edf1; padding-bottom: 1px; margin-bottom: 16px; height: 47px; }
     .pdp-tab { height: 46px; border: 0; border-bottom: 2px solid transparent; background: transparent; padding: 13px 24px; font-size: 14px; line-height: 20px; color: #4a5565; }
@@ -332,14 +358,46 @@
     .pdp-qty-row { display: flex; align-items: center; gap: 8px; justify-content: flex-end; margin-top: 2px; }
     .pdp-qty-label { margin: 0; font-size: 14px; line-height: 20px; color: #0a0a0a; }
     .pdp-qty-select { width: 64px; height: 37px; border: 1px solid #d1d5dc; border-radius: 4px; background: #fff; font-size: 14px; }
-    @media (max-width: 1200px) {
+    @media (max-width: 1200px) and (min-width: 744px) {
+      .pdp-layout {
+        grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.25fr) minmax(200px, 0.7fr);
+        gap: 12px;
+      }
+      .pdp-gallery-col,
+      .pdp-rail {
+        position: sticky;
+        top: 88px;
+      }
+      .pdp-gallery-slide { height: 340px; padding: 12px; }
+      .pdp-top h1 { font-size: 22px; line-height: 30px; }
+      .pdp-rail-name { font-size: 13px; }
+      .pdp-indications,
+      .pdp-feature-grid { grid-template-columns: 1fr 1fr; }
+      .pdp-models { grid-template-columns: 1fr 1fr; }
+      #pdpRail {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 1200px) and (min-width: 744px) and (orientation: portrait) {
+      .pdp-layout {
+        grid-template-columns: minmax(240px, 0.9fr) minmax(0, 1.2fr);
+      }
+      .pdp-layout > .pdp-rail {
+        display: none;
+      }
+      .pdp-related-strip.is-visible {
+        display: block;
+      }
+      #pdpRailStrip {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+    }
+    @media (max-width: 743px) {
       .pdp-layout { grid-template-columns: 1fr; }
       .pdp-gallery-col { position: static; top: auto; }
-      .pdp-top h1 { font-size: 24px; }
-      .pdp-rail-name { font-size: 14px; }
+      .pdp-rail { position: static; top: auto; }
       .pdp-indications, .pdp-models, .pdp-feature-grid { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 767px) {
       .pdp-mobile-sticky-cart {
         display: flex;
         flex-direction: column;
@@ -1333,7 +1391,7 @@
           </form>
           <div class="search-dropdown" id="searchDropdown">
             <div class="search-left">
-              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Recent Searches</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Search Suggestions</div><div id="searchSuggestionList"></div></div>
               <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
             </div>
             <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
@@ -1363,7 +1421,7 @@
         </div>
       </div>
     </div>
-    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a></div></div></div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
   </header>
   <div class="pdp-mobile-sticky-cart" id="pdpMobileStickyCart" aria-hidden="true">
     <div class="pdp-mobile-sticky-cart-top">
@@ -1391,6 +1449,11 @@
     </p>
 
     <section id="pdpRoot"></section>
+
+    <section class="pdp-related-strip" id="pdpRelatedStrip" aria-label="Frequently Purchased Together">
+      <h3>Frequently Purchased Together</h3>
+      <div id="pdpRailStrip"></div>
+    </section>
 
     <section class="pdp-tabs" id="pdpTabs" style="display:none;">
       <div class="pdp-tab-head">
@@ -1569,7 +1632,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260716j"></script>
+  <script src="assets/shell.js?v=20260720f"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
@@ -1738,6 +1801,8 @@
           document.body.classList.remove("pdp-sticky-cart-visible");
           document.documentElement.style.setProperty("--pdp-sticky-cart-offset", "0px");
           $("#pdpRoot").html("<div class='pdp-empty'>Product not found.</div>");
+          $("#pdpRelatedStrip").removeClass("is-visible");
+          $("#pdpTabs").hide();
           return;
         }
 
@@ -2139,6 +2204,8 @@
           "</a>";
         });
         $("#pdpRail").html(railHtml || "<div class='pdp-empty'>No related products found.</div>");
+        $("#pdpRailStrip").html(railHtml || "<div class='pdp-empty'>No related products found.</div>");
+        $("#pdpRelatedStrip").toggleClass("is-visible", related.length > 0);
 
         var currentResolvedSku = product.id;
         var LIST_STORAGE_KEY = "breg_saved_lists_v1";

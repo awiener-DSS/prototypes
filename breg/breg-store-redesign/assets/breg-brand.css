@@ -30,6 +30,17 @@
   --font-size-tiny: 12px;
 }
 
+@media (max-width: 767px) {
+  :root {
+    --font-size-h1: 32px;
+    --font-size-h2: 22px;
+    --font-size-h3: 18px;
+    --font-size-body: 16px;
+    --font-size-small: 15px;
+    --font-size-tiny: 14px;
+  }
+}
+
 /* Bootstrap overrides - Breg brand */
 .btn-primary, .btn-default.btn-primary {
   background: var(--breg-primary, #0047bb) !important;

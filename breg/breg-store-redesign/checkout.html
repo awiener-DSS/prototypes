@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/shell.css?v=20260716d">
+  <link rel="stylesheet" href="assets/shell.css?v=20260720f">
   <style>
     /* Match shopping cart background color */
     body.checkout-page { background: #EAEDED; }
@@ -20,18 +20,34 @@
     }
     .checkout-min-header .top-row {
       display: flex;
+      flex-wrap: nowrap;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
+      gap: 16px;
       padding: 10px 0;
+      position: relative;
+    }
+    .checkout-min-header .logo-link {
+      order: 0;
+      flex: 0 0 auto;
+      margin-right: 0;
+    }
+    .checkout-min-header .logo-link img {
+      height: 48px;
+      width: auto;
     }
     .checkout-header-title {
+      order: 0;
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      flex: 1 1 auto;
+      min-width: 0;
       font-size: 18px;
       font-weight: 600;
       color: #ffffff;
+      text-align: center;
     }
     .checkout-header-title .glyphicon-lock {
       color: #ffffff;
@@ -49,8 +65,45 @@
       color: #ffffff;
       outline: none;
     }
-    .checkout-cart-btn {
+    .checkout-min-header .checkout-cart-btn {
+      order: 0;
+      flex: 0 0 auto;
+      margin-left: 0;
       text-decoration: none;
+    }
+    @media (max-width: 991px) {
+      .checkout-min-header .top-row {
+        flex-wrap: nowrap;
+        gap: 12px;
+      }
+      .checkout-min-header .logo-link {
+        order: 0;
+        margin-right: 0;
+      }
+      .checkout-min-header .logo-link img {
+        height: 44px;
+      }
+      .checkout-header-title {
+        font-size: 16px;
+      }
+      .checkout-header-title .glyphicon-lock {
+        font-size: 16px;
+      }
+    }
+    @media (max-width: 743px) {
+      .checkout-min-header .logo-link img {
+        height: 40px;
+      }
+      .checkout-header-title {
+        font-size: 14px;
+        gap: 6px;
+      }
+      .checkout-header-title .glyphicon-lock {
+        font-size: 14px;
+      }
+      .checkout-min-header .cart-label {
+        display: none;
+      }
     }
     .checkout-wrap { margin: 18px 0 26px; }
     .checkout-title {
@@ -645,7 +698,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260716j"></script>
+  <script src="assets/shell.js?v=20260720f"></script>
   <script>
     (function () {
       var CART_STORAGE_KEY = "breg_cart_v1";

@@ -58,6 +58,10 @@
   var $allToggle = $(".sub-nav-inner .sub-nav-link").filter(function () {
     return $(this).find(".glyphicon-menu-hamburger").length > 0;
   }).first();
+  var $subNavQuickOrder = $(".sub-nav-inner > .sub-nav-link.quick-order").first();
+  if ($allToggle.length && $subNavQuickOrder.length) {
+    $subNavQuickOrder.insertAfter($allToggle);
+  }
   var allToggleOriginalHtml = $allToggle.length ? $allToggle.html() : "";
   var $allDrawerOverlay = $();
   var allMenuState = { expandedParent: null };
@@ -938,7 +942,7 @@
       "<footer class='site-footer' data-shared-footer='1'>" +
         "<div class='site-footer-wrap'>" +
           "<div class='site-footer-grid'>" +
-            "<div class='site-footer-col site-footer-col--start'>" +
+            "<div class='site-footer-col site-footer-col--info'>" +
               "<h3 class='site-footer-title'>Information</h3>" +
               "<ul class='site-footer-list'>" +
                 "<li><a href='#'>Contact Us</a></li>" +
@@ -951,7 +955,7 @@
             "</div>" +
             "<div class='site-footer-col site-footer-col--products'>" +
               "<h3 class='site-footer-title'>Products</h3>" +
-              "<ul class='site-footer-list site-footer-list--two-col'>" +
+              "<ul class='site-footer-list site-footer-list--three-col'>" +
                 "<li><a href='category-landing.html?category=Knee%20Bracing'>Knee Bracing</a></li>" +
                 "<li><a href='category-landing.html?category=Shoulder%20Bracing'>Shoulder Bracing</a></li>" +
                 "<li><a href='category-landing.html?category=Spine%20Bracing'>Spine Bracing</a></li>" +
@@ -965,19 +969,23 @@
                 "<li><a href='category-landing.html?category=Pediatrics'>Pediatrics</a></li>" +
               "</ul>" +
             "</div>" +
-            "<div>" +
-              "<h3 class='site-footer-title'>My Account</h3>" +
-              "<ul class='site-footer-list'>" +
-                "<li><a href='order-history.html'>Order History</a></li>" +
-                "<li><a href='#' class='js-quick-order-link'>Quick Order</a></li>" +
-              "</ul>" +
-            "</div>" +
-            "<div>" +
-              "<h3 class='site-footer-title'>Services</h3>" +
-              "<ul class='site-footer-list'>" +
-                "<li><a href='#'>Breg Impact&reg;</a></li>" +
-                "<li><a href='#'>Breg Vision&reg;</a></li>" +
-              "</ul>" +
+            "<div class='site-footer-col site-footer-col--account'>" +
+              "<div class='site-footer-stack'>" +
+                "<div class='site-footer-stack-block'>" +
+                  "<h3 class='site-footer-title'>My Account</h3>" +
+                  "<ul class='site-footer-list'>" +
+                    "<li><a href='order-history.html'>Order History</a></li>" +
+                    "<li><a href='#' class='js-quick-order-link'>Quick Order</a></li>" +
+                  "</ul>" +
+                "</div>" +
+                "<div class='site-footer-stack-block'>" +
+                  "<h3 class='site-footer-title'>Services</h3>" +
+                  "<ul class='site-footer-list'>" +
+                    "<li><a href='#'>Breg Impact&reg;</a></li>" +
+                    "<li><a href='#'>Breg Vision&reg;</a></li>" +
+                  "</ul>" +
+                "</div>" +
+              "</div>" +
             "</div>" +
           "</div>" +
           "<div class='site-footer-copy'>&copy; 2026 Breg, Inc. All rights reserved.</div>" +
@@ -1581,41 +1589,29 @@
   function renderSearchDropdown() {
     var q = $.trim($searchInput.val()).toLowerCase();
     var suggestionResults;
-    var categoryResults;
     $searchSuggestionList.empty();
     $searchCategoryList.empty();
+    $searchDropdown.find(".search-group").eq(1).hide();
+    $searchSuggestionTitle.text("Search Suggestions");
 
-    if (q) {
-      $searchSuggestionTitle.text("Search Suggestions");
-      suggestionResults = searchSuggestions.filter(function (item) {
-        return item.text.toLowerCase().indexOf(q) > -1 || item.category.toLowerCase().indexOf(q) > -1;
-      }).slice(0, 6);
-      if (!suggestionResults.length) {
-        $searchSuggestionList.append("<div class='search-row'><div class='search-row-copy'><div class='search-row-title muted'>No suggestions found</div></div></div>");
-      } else {
-        suggestionResults.forEach(function (item) {
-          $searchSuggestionList.append("<button type='button' class='search-row search-suggestion' data-category='" + escapeHtml(item.category) + "' data-value='" + escapeHtml(item.text) + "'><img src='" + item.image + "' alt='" + escapeHtml(item.text) + "'><div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(item.text) + "</div><div class='muted'>in " + escapeHtml(item.category) + "</div></div></button>");
-        });
-      }
-    } else {
-      $searchSuggestionTitle.text("Recent Searches");
-      recentSearches.forEach(function (term) {
-        $searchSuggestionList.append("<button type='button' class='search-row search-term' data-value='" + escapeHtml(term) + "'><img src='" + imageForRecentTerm(term) + "' alt='" + escapeHtml(term) + "'><div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(term) + "</div></div></button>");
-      });
+    if (!q) {
+      closeSearchDropdown();
+      return false;
     }
 
-    var recentCategories = loadRecentCategories();
-    categoryResults = recentCategories.filter(function (name) { return !q || name.toLowerCase().indexOf(q) > -1; });
-    $searchDropdown.find(".search-group-title").eq(1).text("Recent Categories");
-    if (!categoryResults.length) {
-      $searchCategoryList.append("<div class='search-row'><div class='search-row-copy'><div class='search-row-title muted'>No recent categories yet</div></div></div>");
+    suggestionResults = searchSuggestions.filter(function (item) {
+      return item.text.toLowerCase().indexOf(q) > -1 || item.category.toLowerCase().indexOf(q) > -1;
+    }).slice(0, 8);
+    if (!suggestionResults.length) {
+      $searchSuggestionList.append("<div class='search-row'><div class='search-row-copy'><div class='search-row-title muted'>No suggestions found</div></div></div>");
+      renderSearchPreview("Cold Therapy and DVT");
     } else {
-      categoryResults.forEach(function (name) {
-        $searchCategoryList.append("<button type='button' class='search-row search-category' data-category='" + escapeHtml(name) + "'><img src='" + (categoryImage[name] || categoryImage["Cold Therapy and DVT"]) + "' alt='" + escapeHtml(name) + "'><div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(name) + "</div></div></button>");
+      suggestionResults.forEach(function (item) {
+        $searchSuggestionList.append("<button type='button' class='search-row search-suggestion' data-category='" + escapeHtml(item.category) + "' data-value='" + escapeHtml(item.text) + "'><img src='" + item.image + "' alt='" + escapeHtml(item.text) + "'><div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(item.text) + "</div><div class='muted'>in " + escapeHtml(item.category) + "</div></div></button>");
       });
+      renderSearchPreview(suggestionResults[0].category);
     }
-
-    renderSearchPreview(categoryResults[0] || "Cold Therapy and DVT");
+    return true;
   }
 
   function updateAccountStateUI() {
@@ -1774,27 +1770,17 @@
 
   $searchInput.on("focus input", function () {
     setClearState();
-    renderSearchDropdown();
-    openSearchDropdown();
+    if (renderSearchDropdown()) openSearchDropdown();
   });
 
   $searchClear.on("click", function (event) {
     event.preventDefault();
     $searchInput.val("").focus();
     setClearState();
-    renderSearchDropdown();
+    closeSearchDropdown();
   });
 
-  $searchWrap.on("mouseenter", ".search-category", function () { renderSearchPreview($(this).data("category")); });
   $searchWrap.on("mouseenter", ".search-suggestion", function () { renderSearchPreview($(this).data("category")); });
-  $searchWrap.on("click", ".search-term", function () {
-    var value = $(this).data("value");
-    if (!value) return;
-    $searchInput.val(value);
-    setClearState();
-    recentSearches = [value].concat(recentSearches.filter(function (item) { return item !== value; })).slice(0, 6);
-    navigateSearchSelection(value, "");
-  });
   $searchWrap.on("click", ".search-suggestion", function () {
     var value = String($(this).data("value") || "").trim();
     var category = String($(this).data("category") || "").trim();

@@ -19,21 +19,16 @@
     }
     .hero-panel {
       position: relative;
-      height: auto;
-      aspect-ratio: 1024 / 204;
       overflow: hidden;
       max-width: 1500px;
       width: calc(100% - 32px);
       margin: 0 auto;
       border-radius: 20px;
-      background: #d9e1e2 center / cover no-repeat;
     }
     .hero-panel img {
       display: block;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
+      height: auto;
     }
 
     body { background:#eaeded; }
@@ -496,7 +491,7 @@
       .home-modules-second-row .home-modules-row-inner{gap:12px;}
       .home-modules-second-row .product-section{padding:18px 14px 12px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
-      .hero-panel{height:auto; border-radius:16px;}
+      .hero-panel{border-radius:16px;}
       .home-order-btn{
         width:100%;
         min-height:34px;
@@ -507,8 +502,6 @@
     @media (max-width:743px){
       .hero-wrap{padding-top:12px;}
       .hero-panel{
-        height:auto;
-        aspect-ratio:413 / 220;
         border-radius:14px;
         width:calc(100% - 24px);
       }
@@ -596,8 +589,8 @@
   <section class="hero-wrap" aria-label="Featured promotion">
     <div class="hero-panel">
       <picture>
-        <source media="(max-width: 743px)" srcset="assets/Freestyle+_Banner-portrait.webp">
-        <img src="assets/Freestyle+_Banner.webp" alt="Freestyle Plus OA knee brace">
+        <source media="(max-width: 743px)" srcset="assets/Freestyle+_Banner-portrait.webp?v=20260721b">
+        <img src="assets/Freestyle+_Banner.webp?v=20260721b" alt="Freestyle Plus OA knee brace">
       </picture>
     </div>
   </section>

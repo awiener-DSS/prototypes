@@ -19,7 +19,8 @@
     }
     .hero-panel {
       position: relative;
-      height: 380px;
+      height: auto;
+      aspect-ratio: 1024 / 204;
       overflow: hidden;
       max-width: 1500px;
       width: calc(100% - 32px);
@@ -495,7 +496,7 @@
       .home-modules-second-row .home-modules-row-inner{gap:12px;}
       .home-modules-second-row .product-section{padding:18px 14px 12px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
-      .hero-panel{height:300px; border-radius:16px;}
+      .hero-panel{height:auto; border-radius:16px;}
       .home-order-btn{
         width:100%;
         min-height:34px;
@@ -506,7 +507,8 @@
     @media (max-width:743px){
       .hero-wrap{padding-top:12px;}
       .hero-panel{
-        height:220px;
+        height:auto;
+        aspect-ratio:413 / 220;
         border-radius:14px;
         width:calc(100% - 24px);
       }
@@ -593,7 +595,10 @@
 
   <section class="hero-wrap" aria-label="Featured promotion">
     <div class="hero-panel">
-      <img src="assets/login-hero-keep-moving.png" alt="Keep Moving Forward — Breg">
+      <picture>
+        <source media="(max-width: 743px)" srcset="assets/Freestyle+_Banner-portrait.webp">
+        <img src="assets/Freestyle+_Banner.webp" alt="Freestyle Plus OA knee brace">
+      </picture>
     </div>
   </section>
 

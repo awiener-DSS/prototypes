@@ -864,9 +864,14 @@
     catalog.forEach(function (p) {
       if (!isListableCatalogProduct(p) || !p.name || !p.category || p.category === "Uncategorized" || seen[p.id]) return;
       seen[p.id] = true;
-      out.push({ text: p.name, category: p.category, image: normalizeSearchImage(p.image) });
+      out.push({
+        text: p.name,
+        partNumber: String(p.id || p.sku || "").trim(),
+        category: p.category,
+        image: normalizeSearchImage(p.image)
+      });
     });
-    return out.slice(0, 12);
+    return out;
   }
 
   var searchSuggestionsFallback = [
@@ -1116,6 +1121,32 @@
     return partial || "";
   }
 
+  function findSubcategoryByTerm(rawTerm) {
+    var term = String(rawTerm || "").trim().toLowerCase();
+    if (!term) return null;
+    var matches = [];
+    Object.keys(headerSubCategoryMap).forEach(function (category) {
+      (headerSubCategoryMap[category] || []).forEach(function (subcategory) {
+        var label = String(subcategory || "").trim();
+        if (!label) return;
+        if (label.toLowerCase() === term) {
+          matches.unshift({ category: category, subcategory: label, exact: true });
+        } else if (label.toLowerCase().indexOf(term) > -1) {
+          matches.push({ category: category, subcategory: label, exact: false });
+        }
+      });
+    });
+    return matches[0] || null;
+  }
+
+  function goToSubcategoryPage(category, subcategory) {
+    var categoryLabel = normalizeCategoryLabel(category);
+    var subcategoryLabel = String(subcategory || "").trim();
+    if (!categoryLabel || !subcategoryLabel) return;
+    trackRecentCategory(categoryLabel);
+    window.location.href = headerSubmenuItemHref(categoryLabel, subcategoryLabel);
+  }
+
   function findCatalogProduct(rawTerm, preferredCategory) {
     var term = String(rawTerm || "").trim().toLowerCase();
     if (!term) return null;
@@ -1195,8 +1226,17 @@
     }
 
     var categoryMatch = findCategoryByTerm(categoryHint || value);
+    var subcategoryMatch = categoryHint ? null : findSubcategoryByTerm(value);
     var hasLoadedCatalog = Array.isArray(quickOrderCatalog) && quickOrderCatalog.length > 0;
     if (hasLoadedCatalog) {
+      if (categoryMatch && !categoryHint) {
+        goToCategoryPage(categoryMatch);
+        return;
+      }
+      if (subcategoryMatch) {
+        goToSubcategoryPage(subcategoryMatch.category, subcategoryMatch.subcategory);
+        return;
+      }
       var productMatch = findCatalogProduct(value, categoryHint || "");
       if (productMatch) {
         goToProductPage(productMatch, categoryMatch || categoryHint || "");
@@ -1211,14 +1251,23 @@
     }
 
     ensureQuickOrderCatalogLoaded().done(function () {
+      var loadedCategory = findCategoryByTerm(categoryHint || value);
+      var loadedSubcategory = categoryHint ? null : findSubcategoryByTerm(value);
+      if (loadedCategory && !categoryHint) {
+        goToCategoryPage(loadedCategory);
+        return;
+      }
+      if (loadedSubcategory) {
+        goToSubcategoryPage(loadedSubcategory.category, loadedSubcategory.subcategory);
+        return;
+      }
       var loadedProduct = findCatalogProduct(value, categoryHint || "");
       if (loadedProduct) {
         goToProductPage(loadedProduct, categoryHint || "");
         return;
       }
-      var fallbackCategory = findCategoryByTerm(categoryHint || value);
-      if (fallbackCategory) {
-        goToCategoryPage(fallbackCategory);
+      if (loadedCategory) {
+        goToCategoryPage(loadedCategory);
         return;
       }
       goToSearchResultsPage(value);
@@ -1262,8 +1311,18 @@
 
   var headerSubNavCloseTimer = null;
 
+  function syncHeaderSubmenuOpenState() {
+    var $subNav = $(".sub-nav").first();
+    if (!$subNav.length) return;
+    $subNav.toggleClass("submenu-open", $subNav.find(".sub-nav-cat-item.open").length > 0);
+  }
+
   function closeHeaderCategoryDropdowns() {
-    $(".sub-nav-cat-item").removeClass("open");
+    $(".sub-nav-cat-item.open").each(function () {
+      clearHeaderSubmenuPosition($(this).children(".sub-nav-submenu"));
+    });
+    $(".sub-nav-cat-item").removeClass("open submenu-align-right");
+    syncHeaderSubmenuOpenState();
   }
 
   function scheduleCloseHeaderCategoryDropdowns() {
@@ -1488,16 +1547,54 @@
     };
   }
 
-  function updateHeaderSubmenuAlignment($item) {
+  function clearHeaderSubmenuPosition($menu) {
+    if (!$menu || !$menu.length) return;
+    $menu.css({ top: "", left: "", right: "", width: "", minWidth: "" });
+  }
+
+  function positionHeaderSubmenu($item) {
     if (!$item || !$item.length) return;
     var $menu = $item.children(".sub-nav-submenu");
-    if (!$menu.length) return;
+    var $link = $item.children(".sub-nav-link").first();
+    if (!$menu.length || !$link.length) return;
+
     $item.removeClass("submenu-align-right");
-    if (window.matchMedia("(max-width: 991px)").matches) return;
-    var rect = $menu[0].getBoundingClientRect();
-    if (rect.right > window.innerWidth - 8) {
+    clearHeaderSubmenuPosition($menu);
+
+    var linkRect = $link[0].getBoundingClientRect();
+    var gap = window.matchMedia("(max-width: 991px)").matches ? 4 : 0;
+    var top = Math.round(linkRect.bottom + gap);
+    var left = Math.round(linkRect.left);
+    var minWidth = Math.max(240, Math.round(linkRect.width));
+
+    $menu.css({
+      top: top + "px",
+      left: left + "px",
+      right: "auto",
+      minWidth: minWidth + "px"
+    });
+
+    var menuRect = $menu[0].getBoundingClientRect();
+    var maxRight = window.innerWidth - 8;
+    if (menuRect.right > maxRight) {
+      var rightAlignedLeft = Math.round(linkRect.right - menuRect.width);
+      left = Math.max(8, rightAlignedLeft);
+      $menu.css({ left: left + "px" });
       $item.addClass("submenu-align-right");
     }
+
+    var maxBottom = window.innerHeight - 8;
+    menuRect = $menu[0].getBoundingClientRect();
+    if (menuRect.bottom > maxBottom) {
+      var flippedTop = Math.round(linkRect.top - menuRect.height - gap);
+      if (flippedTop >= 8) {
+        $menu.css({ top: flippedTop + "px" });
+      }
+    }
+  }
+
+  function updateHeaderSubmenuAlignment($item) {
+    positionHeaderSubmenu($item);
   }
 
   function initHeaderCategoryDropdowns() {
@@ -1617,6 +1714,10 @@
   function renderSearchDropdown() {
     var q = $.trim($searchInput.val()).toLowerCase();
     var suggestionResults;
+    var categoryResults;
+    var subcategoryResults = [];
+    var catalogSuggestions = buildSearchSuggestionsFromCatalog();
+    var availableSuggestions = catalogSuggestions.length ? catalogSuggestions : searchSuggestions;
     $searchSuggestionList.empty();
     $searchCategoryList.empty();
     $searchDropdown.find(".search-group").eq(1).hide();
@@ -1627,15 +1728,48 @@
       return false;
     }
 
-    suggestionResults = searchSuggestions.filter(function (item) {
-      return item.text.toLowerCase().indexOf(q) > -1 || item.category.toLowerCase().indexOf(q) > -1;
-    }).slice(0, 8);
-    if (!suggestionResults.length) {
+    categoryResults = categories.filter(function (category) {
+      return category.toLowerCase().indexOf(q) > -1;
+    }).slice(0, 4);
+    Object.keys(headerSubCategoryMap).forEach(function (category) {
+      (headerSubCategoryMap[category] || []).forEach(function (subcategory) {
+        var label = String(subcategory || "").trim();
+        if (!label || label.toLowerCase().indexOf(q) === -1) return;
+        subcategoryResults.push({ category: category, subcategory: label });
+      });
+    });
+    subcategoryResults = subcategoryResults.slice(0, Math.max(0, 4 - categoryResults.length));
+    suggestionResults = availableSuggestions.filter(function (item) {
+      return item.text.toLowerCase().indexOf(q) > -1 ||
+        item.category.toLowerCase().indexOf(q) > -1 ||
+        String(item.partNumber || "").toLowerCase().indexOf(q) > -1;
+    }).slice(0, Math.max(0, 8 - categoryResults.length - subcategoryResults.length));
+    if (!categoryResults.length && !subcategoryResults.length && !suggestionResults.length) {
       $searchSuggestionList.append("<div class='search-row'><div class='search-row-copy'><div class='search-row-title muted'>No suggestions found</div></div></div>");
       renderSearchPreview("Cold Therapy and DVT");
     } else {
+      categoryResults.forEach(function (category) {
+        $searchSuggestionList.append(
+          "<button type='button' class='search-row search-category' data-category='" + escapeHtml(category) + "'>" +
+            "<img src='" + escapeHtml(categoryImage[category] || SEARCH_MISSING_IMAGE) + "' alt=''>" +
+            "<div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(category) + "</div><div class='muted'>Category</div></div>" +
+          "</button>"
+        );
+      });
+      subcategoryResults.forEach(function (result) {
+        $searchSuggestionList.append(
+          "<button type='button' class='search-row search-subcategory' data-category='" + escapeHtml(result.category) + "' data-subcategory='" + escapeHtml(result.subcategory) + "'>" +
+            "<img src='" + escapeHtml(categoryImage[result.category] || SEARCH_MISSING_IMAGE) + "' alt=''>" +
+            "<div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(result.subcategory) + "</div><div class='muted'>Sub-category in " + escapeHtml(result.category) + "</div></div>" +
+          "</button>"
+        );
+      });
       suggestionResults.forEach(function (item) {
-        $searchSuggestionList.append("<button type='button' class='search-row search-suggestion' data-category='" + escapeHtml(item.category) + "' data-value='" + escapeHtml(item.text) + "'><img src='" + item.image + "' alt='" + escapeHtml(item.text) + "'><div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(item.text) + "</div><div class='muted'>in " + escapeHtml(item.category) + "</div></div></button>");
+        var partNumber = String(item.partNumber || "").trim();
+        var detail = partNumber
+          ? ("Part #: " + escapeHtml(partNumber) + " · " + escapeHtml(item.category))
+          : ("in " + escapeHtml(item.category));
+        $searchSuggestionList.append("<button type='button' class='search-row search-suggestion' data-category='" + escapeHtml(item.category) + "' data-value='" + escapeHtml(item.text) + "'><img src='" + item.image + "' alt='" + escapeHtml(item.text) + "'><div class='search-row-copy'><div class='search-row-title'>" + escapeHtml(item.text) + "</div><div class='muted'>" + detail + "</div></div></button>");
       });
       renderSearchPreview(suggestionResults[0].category);
     }
@@ -1825,6 +1959,14 @@
     setClearState();
     goToCategoryPage(category);
   });
+  $searchWrap.on("click", ".search-subcategory", function () {
+    var category = String($(this).data("category") || "").trim();
+    var subcategory = String($(this).data("subcategory") || "").trim();
+    if (!category || !subcategory) return;
+    $searchInput.val(subcategory);
+    setClearState();
+    goToSubcategoryPage(category, subcategory);
+  });
   $searchWrap.on("click", ".js-search-preview-product", function () {
     var name = String($(this).data("name") || "").trim();
     var category = String($(this).data("category") || "").trim();
@@ -2000,15 +2142,27 @@
     if (window.matchMedia("(max-width: 991px)").matches) return;
     cancelCloseHeaderCategoryDropdowns();
     var $item = $(this);
-    $item.addClass("open").siblings(".sub-nav-cat-item").removeClass("open");
-    updateHeaderSubmenuAlignment($item);
+    $item.addClass("open").siblings(".sub-nav-cat-item").removeClass("open")
+      .each(function () { clearHeaderSubmenuPosition($(this).children(".sub-nav-submenu")); });
+    syncHeaderSubmenuOpenState();
+    positionHeaderSubmenu($item);
   });
   $(".sub-nav-inner").on("click", ".sub-nav-cat-item > .sub-nav-link", function (event) {
     if (!window.matchMedia("(max-width: 991px)").matches) return;
     var $item = $(this).closest(".sub-nav-cat-item");
     if (!$item.find(".sub-nav-submenu-link").length) return;
     event.preventDefault();
-    $item.toggleClass("open").siblings(".sub-nav-cat-item").removeClass("open");
+    var willOpen = !$item.hasClass("open");
+    $item.siblings(".sub-nav-cat-item").removeClass("open")
+      .each(function () { clearHeaderSubmenuPosition($(this).children(".sub-nav-submenu")); });
+    $item.toggleClass("open", willOpen);
+    if (!willOpen) clearHeaderSubmenuPosition($item.children(".sub-nav-submenu"));
+    syncHeaderSubmenuOpenState();
+    if (willOpen) positionHeaderSubmenu($item);
+  });
+  $(window).on("scroll.headerSubmenu", function () {
+    var $open = $(".sub-nav-cat-item.open").first();
+    if ($open.length) positionHeaderSubmenu($open);
   });
   $(".sub-nav-inner").on("click", ".sub-nav-submenu-link", function (event) {
     event.preventDefault();

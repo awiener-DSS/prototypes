@@ -74,6 +74,7 @@ body.all-drawer-open {
   position: sticky;
   top: 0;
   z-index: 1030;
+  overflow: visible;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
 }
 .top-header .site-max,
@@ -170,19 +171,17 @@ body.all-drawer-open {
   box-shadow: 0 6px 18px rgba(15, 17, 17, 0.22);
   overflow: hidden;
   display: none;
-  min-height: 320px;
+  min-height: 0;
 }
 .search-dropdown.open {
-  display: flex;
+  display: block;
 }
 .search-left {
-  flex: 1;
-  border-right: 1px solid #eaeded;
+  width: 100%;
+  border-right: 0;
 }
 .search-right {
-  width: 360px;
-  background: #f7f8fa;
-  padding: 14px;
+  display: none;
 }
 .search-group-title {
   font-size: var(--font-size-tiny);
@@ -292,6 +291,9 @@ body.all-drawer-open {
   align-items: center;
   gap: 6px;
   white-space: nowrap;
+}
+.header-actions .lang-wrap {
+  display: none !important;
 }
 .header-mobile-icon {
   display: none;
@@ -647,12 +649,15 @@ body.all-drawer-open {
   background: #f0f0f0;
   border-top: 1px solid #d5d9d9;
   max-width: 100%;
+  position: relative;
+  z-index: 1040;
+  overflow: visible;
 }
 .sub-nav .site-max {
   position: relative;
   max-width: 100%;
   min-width: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 .sub-nav-inner {
   display: flex;
@@ -671,6 +676,11 @@ body.all-drawer-open {
   font-family: var(--font-body);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: thin;
+}
+/* Absolute submenus cannot escape overflow-x scroll containers; open state unlocks them. */
+.sub-nav.submenu-open .site-max,
+.sub-nav.submenu-open .sub-nav-inner {
+  overflow: visible;
 }
 .sub-nav-link {
   border: 0;
@@ -727,10 +737,10 @@ body.all-drawer-open {
   text-overflow: clip;
 }
 .sub-nav-submenu {
-  position: absolute;
+  position: fixed;
   left: 0;
-  top: 100%;
-  z-index: 1120;
+  top: 0;
+  z-index: 12000;
   min-width: 240px;
   background: #fff;
   border: 1px solid #d8dce0;
@@ -749,10 +759,6 @@ body.all-drawer-open {
 }
 .sub-nav-cat-item.open .sub-nav-submenu {
   display: block;
-}
-.sub-nav-cat-item.submenu-align-right .sub-nav-submenu {
-  left: auto;
-  right: 0;
 }
 .sub-nav-submenu-link {
   display: block;
@@ -1319,6 +1325,9 @@ body.breg-scroll-controls-suppressed .scroll-quick-order-btn {
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
+  .sub-nav.submenu-open .sub-nav-inner {
+    overflow: visible;
+  }
   .sub-nav-inner::-webkit-scrollbar {
     display: none;
   }
@@ -1368,16 +1377,16 @@ body.breg-scroll-controls-suppressed .scroll-quick-order-btn {
     flex-direction: column;
   }
   .sub-nav-submenu {
-    position: absolute;
+    position: fixed;
     left: 0;
-    top: calc(100% + 4px);
+    top: 0;
     min-width: 220px;
     width: max-content;
     max-width: min(88vw, 320px);
     margin-top: 0;
     border-radius: 10px;
     box-shadow: 0 8px 16px rgba(7, 29, 73, 0.14);
-    z-index: 1125;
+    z-index: 12000;
   }
   .sub-nav-submenu-link {
     white-space: normal;

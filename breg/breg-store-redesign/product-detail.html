@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <link rel="stylesheet" href="assets/shell.css?v=20260720f">
+  <link rel="stylesheet" href="assets/shell.css?v=20260721b">
   <style>
     body { background: #EAEDED; }
     .pdp-page { margin: 16px 0 26px; }
@@ -1632,7 +1632,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260720g"></script>
+  <script src="assets/shell.js?v=20260721b"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
@@ -2154,17 +2154,48 @@
           syncGalleryToSrc(src);
         }
 
+        var galleryAutoScrollTimer = null;
+
+        function stopGalleryAutoScroll() {
+          if (!galleryAutoScrollTimer) return;
+          window.clearInterval(galleryAutoScrollTimer);
+          galleryAutoScrollTimer = null;
+        }
+
+        function startGalleryAutoScroll() {
+          stopGalleryAutoScroll();
+          var track = document.getElementById("pdpGalleryTrack");
+          if (!track || track.querySelectorAll(".pdp-gallery-slide").length <= 1) return;
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+          galleryAutoScrollTimer = window.setInterval(function () {
+            if (document.hidden || $("#imageZoomModal").hasClass("open")) return;
+            var currentTrack = document.getElementById("pdpGalleryTrack");
+            if (!currentTrack) {
+              stopGalleryAutoScroll();
+              return;
+            }
+            var slideCount = currentTrack.querySelectorAll(".pdp-gallery-slide").length;
+            if (slideCount <= 1) return;
+            var nextIndex = (getGalleryActiveIndex(currentTrack) + 1) % slideCount;
+            scrollGalleryToIndex(nextIndex, "smooth");
+          }, 4000);
+        }
+
         function bindGallery() {
           var track = document.getElementById("pdpGalleryTrack");
           var $track = $("#pdpGalleryTrack");
           if (!track || !$track.length) return;
-          $track.off("scroll.pdpgallery touchmove.pdpgallery touchend.pdpgallery");
+          $track.off("scroll.pdpgallery touchmove.pdpgallery touchend.pdpgallery mouseenter.pdpgallery mouseleave.pdpgallery focusin.pdpgallery focusout.pdpgallery");
           function onGalleryScroll() {
             window.requestAnimationFrame(updateGalleryDots);
           }
           $track.on("scroll.pdpgallery touchmove.pdpgallery touchend.pdpgallery", onGalleryScroll);
+          $track.on("mouseenter.pdpgallery focusin.pdpgallery touchmove.pdpgallery", stopGalleryAutoScroll);
+          $track.on("mouseleave.pdpgallery focusout.pdpgallery touchend.pdpgallery", startGalleryAutoScroll);
           renderGalleryDots(0);
           window.requestAnimationFrame(updateGalleryDots);
+          startGalleryAutoScroll();
         }
 
         $("#pdpGalleryTrack").html(buildGallerySlides(galleryImages, product.name));
@@ -2814,6 +2845,7 @@
           var index = Number($(this).attr("data-index"));
           if (!isFinite(index)) return;
           scrollGalleryToIndex(index, "smooth");
+          startGalleryAutoScroll();
         });
         $(window).on("resize.pdpgallery", function () {
           bindGallery();

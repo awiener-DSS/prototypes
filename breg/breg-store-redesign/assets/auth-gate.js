@@ -107,7 +107,9 @@
 
   var page = String(window.location.pathname || "").split("/").pop() || "index.html";
   var publicPages = {
-    "login.html": true
+    "login.html": true,
+    "okta-sign-in.html": true,
+    "reset-password.html": true
   };
   if (isSignedIn()) return;
   if (publicPages[page]) return;

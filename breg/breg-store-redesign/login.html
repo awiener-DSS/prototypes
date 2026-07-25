@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="assets/auth-gate.js?v=20260716i"></script>
+  <script src="assets/auth-gate.js?v=20260725a"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Sign In</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +24,7 @@
     }
 
     * { box-sizing: border-box; }
-    html, body { height: 100%; }
+    html { min-height: 100%; }
     body {
       margin: 0;
       font-family: var(--font-body);
@@ -43,6 +43,7 @@
 
     .auth-shell {
       width: min(1120px, 100%);
+      height: auto;
       min-height: min(680px, calc(100vh - 56px));
       display: grid;
       grid-template-columns: minmax(320px, 0.92fr) minmax(340px, 1.08fr);
@@ -53,6 +54,64 @@
         0 40px 80px rgba(0, 30, 98, 0.22),
         0 8px 24px rgba(0, 30, 98, 0.1);
       animation: authEnter 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .auth-shell.register-mode {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .auth-shell.register-mode .auth-visual-pane {
+      display: none;
+    }
+
+    .auth-shell.register-mode .auth-form-pane {
+      padding: 26px 64px 22px;
+    }
+
+    .auth-shell.register-mode .auth-form-body {
+      max-width: 880px;
+    }
+
+    .auth-shell.register-mode .healthcare-note {
+      display: none;
+    }
+
+    .auth-shell.register-mode .auth-title {
+      font-size: 27px;
+      margin-bottom: 5px;
+    }
+
+    .auth-shell.register-mode .auth-subtitle {
+      margin-bottom: 16px;
+    }
+
+    .auth-shell.register-mode .field {
+      margin-bottom: 10px;
+    }
+
+    .auth-shell.register-mode .field-label {
+      margin-bottom: 4px;
+    }
+
+    .auth-shell.register-mode .field-input {
+      height: 44px;
+    }
+
+    .auth-shell.register-mode .auth-footer {
+      margin-top: 16px;
+    }
+
+    /* Once the org account is verified the account-type toggle and intro copy
+       no longer apply, so reclaim that vertical space for the longer form. */
+    .auth-shell.org-verified .choice-row,
+    .auth-shell.org-verified #registerPanel .auth-subtitle {
+      display: none;
+    }
+
+    .auth-shell.org-verified .success-msg {
+      margin-bottom: 10px;
+      padding: 7px 14px;
     }
 
     @keyframes authEnter {
@@ -71,6 +130,7 @@
       flex-direction: column;
       padding: 36px 44px 28px;
       min-height: 0;
+      overflow: visible;
     }
 
     .auth-logo {
@@ -94,10 +154,10 @@
     }
 
     .auth-form-body {
-      flex: 1;
+      flex: 1 0 auto;
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: safe center;
       max-width: 360px;
       width: 100%;
       margin: 0 auto;
@@ -136,6 +196,11 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--auth-ink);
+    }
+
+    .optional-label {
+      font-weight: 400;
+      opacity: 0.65;
     }
 
     .field-input-wrap {
@@ -202,6 +267,135 @@
       stroke-width: 1.8;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .field-row-three {
+      grid-template-columns: 0.65fr 1fr 1fr;
+    }
+
+    .submit-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-top: 2px;
+    }
+
+    .submit-row .auth-submit {
+      margin-top: 0;
+    }
+
+    .field-select {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%230047bb' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+
+    .field-hint {
+      margin: 6px 0 0 4px;
+      font-size: 12px;
+      color: var(--auth-ink);
+      opacity: 0.65;
+    }
+
+    .captcha-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px;
+      border: 1px solid var(--auth-line);
+      border-radius: 14px;
+      background: #fff;
+    }
+
+    .captcha-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--auth-ink);
+      user-select: none;
+    }
+
+    .captcha-check input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .captcha-box-mark {
+      width: 24px;
+      height: 24px;
+      border: 2px solid #b7bfca;
+      border-radius: 4px;
+      background: #fafbfc;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .captcha-check input:focus-visible + .captcha-box-mark {
+      outline: 2px solid var(--auth-primary);
+      outline-offset: 2px;
+    }
+
+    .captcha-box-mark::after {
+      content: "";
+      width: 6px;
+      height: 11px;
+      border: solid #fff;
+      border-width: 0 2.5px 2.5px 0;
+      transform: rotate(45deg) scale(0);
+      margin-top: -2px;
+      transition: transform 0.15s ease;
+    }
+
+    .captcha-check input:checked + .captcha-box-mark {
+      background: var(--auth-primary);
+      border-color: var(--auth-primary);
+    }
+
+    .captcha-check input:checked + .captcha-box-mark::after {
+      transform: rotate(45deg) scale(1);
+    }
+
+    .captcha-badge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: var(--auth-muted);
+      opacity: 0.75;
+    }
+
+    .captcha-badge-mark {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-right-color: transparent;
+      transform: rotate(45deg);
+    }
+
+    .captcha-badge-text {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
     }
 
     .choice-row {
@@ -323,7 +517,8 @@
     }
 
     #modeFooterSignIn a,
-    #modeFooterRegister a {
+    #modeFooterRegister a,
+    #modeFooterForgot a {
       margin-left: 6px;
     }
 
@@ -335,6 +530,11 @@
       font-weight: 500;
       color: var(--auth-ink);
       opacity: 0.85;
+      flex-shrink: 0;
+    }
+
+    .auth-footer > div {
+      white-space: nowrap;
     }
 
     .auth-panel[hidden] {
@@ -380,7 +580,8 @@
       border-radius: 32px;
       overflow: hidden;
       background: #0b1a33;
-      min-height: 520px;
+      min-height: 0;
+      align-self: stretch;
     }
 
     .auth-visual-img {
@@ -390,6 +591,7 @@
       height: 100%;
       object-fit: cover;
       object-position: center top;
+      display: block;
     }
 
     .healthcare-note {
@@ -404,27 +606,76 @@
       margin-right: auto;
     }
 
+    /* Phone + tablet layout adjustments. Scrolling is allowed on all sizes;
+       desktop still uses a compact layout so scrolling is usually unnecessary. */
+    @media (max-width: 1180px) {
+      body {
+        padding: 16px 12px;
+        align-items: flex-start;
+      }
+      .auth-shell {
+        min-height: 0;
+      }
+      .submit-row {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      .submit-row .auth-submit {
+        width: 100%;
+      }
+    }
+
     @media (max-width: 920px) {
-      body { padding: 16px 12px; align-items: flex-start; }
       .auth-shell {
         grid-template-columns: 1fr;
-        min-height: auto;
         border-radius: 28px;
       }
-      .auth-form-pane { padding: 28px 24px 22px; }
+      .auth-form-pane {
+        padding: 28px 24px 22px;
+      }
+      .auth-shell.register-mode .auth-form-pane {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+      .field-row-three { grid-template-columns: 1fr 1fr; }
+      .field-row-three .field:first-child { grid-column: 1 / -1; }
       .auth-visual-pane {
         min-height: 280px;
+        height: 280px;
         margin: 0 12px 12px;
         border-radius: 22px;
       }
       .auth-title { font-size: 28px; }
       .auth-logo { margin-bottom: 20px; }
-      .auth-logo img { height: 38px; }
     }
 
     @media (max-width: 520px) {
-      .choice-row { grid-template-columns: 1fr; }
+      .choice-row,
+      .field-row,
+      .field-row-three { grid-template-columns: 1fr; }
+      .field-row-three .field:first-child { grid-column: auto; }
       .auth-footer { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* Desktop density: tighten spacing on short screens so content usually fits,
+       but still allow the page to scroll if needed. */
+    @media (max-height: 800px) and (min-width: 1181px) {
+      body { padding: 12px; }
+      .auth-shell {
+        min-height: 0;
+      }
+      .auth-form-pane { padding: 20px 36px 18px; }
+      .auth-logo { margin-bottom: 12px; }
+      .auth-title { font-size: 26px; }
+      .auth-subtitle { margin-bottom: 14px; }
+      .field { margin-bottom: 10px; }
+      .field-input { height: 44px; }
+      .auth-footer { margin-top: 14px; }
+      .healthcare-note { display: none; }
+      .auth-shell.register-mode .auth-form-pane { padding: 18px 48px 16px; }
+      .auth-shell.register-mode .auth-title { font-size: 24px; }
+      .auth-shell.register-mode .field { margin-bottom: 8px; }
+      .auth-shell.register-mode .field-input { height: 42px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -432,6 +683,122 @@
       .auth-form-body {
         animation: none !important;
       }
+    }
+
+    .terms-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 12000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+      background: rgba(0, 30, 98, 0.52);
+      box-sizing: border-box;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .terms-modal.open {
+      display: flex;
+    }
+    .terms-dialog {
+      width: min(680px, 100%);
+      max-height: min(86vh, 820px);
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 28px 60px rgba(0, 30, 98, 0.28);
+      overflow: hidden;
+      animation: fadeSlide 0.28s ease both;
+    }
+    .terms-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(0, 71, 187, 0.12);
+      background: #f7f9fc;
+    }
+    .terms-head h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--auth-ink);
+      letter-spacing: -0.2px;
+    }
+    .terms-close {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--auth-ink);
+      font-size: 28px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .terms-close:hover,
+    .terms-close:focus {
+      background: rgba(0, 71, 187, 0.08);
+      outline: 0;
+    }
+    .terms-body {
+      padding: 18px 22px 8px;
+      overflow: auto;
+      color: var(--auth-ink);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .terms-body h3 {
+      margin: 18px 0 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--auth-primary-dark);
+    }
+    .terms-body h3:first-child {
+      margin-top: 0;
+    }
+    .terms-body p,
+    .terms-body ul {
+      margin: 0 0 12px;
+    }
+    .terms-body ul {
+      padding-left: 18px;
+    }
+    .terms-body li {
+      margin-bottom: 6px;
+    }
+    .terms-foot {
+      padding: 14px 20px 18px;
+      border-top: 1px solid rgba(0, 71, 187, 0.12);
+      display: flex;
+      justify-content: flex-end;
+      background: #fff;
+    }
+    .terms-accept {
+      min-height: 42px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--auth-primary);
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .terms-accept:hover,
+    .terms-accept:focus {
+      background: var(--auth-primary-dark);
+      outline: 0;
+    }
+    body.terms-modal-open {
+      overflow: hidden;
     }
   </style>
 </head>
@@ -464,8 +831,8 @@
             </div>
             <button type="submit" class="auth-submit">Sign in</button>
             <div class="auth-links">
-              <a class="auth-link" href="#">Forgot password?</a>
-              <a class="auth-link" href="#">Breg Sales Representative sign-in</a>
+              <a class="auth-link" href="#" id="forgotPasswordLink">Forgot password?</a>
+              <a class="auth-link" href="#" id="salesRepSignIn">Breg Sales Representative sign-in</a>
             </div>
             <div class="error-msg" id="loginError">Invalid email or password. Please try test@breg.com / password123</div>
           </form>
@@ -500,19 +867,76 @@
             <div id="orgRegisterStep" hidden>
               <p class="success-msg" id="orgVerifiedSummary"></p>
               <form id="orgRegisterForm">
-                <div class="field">
-                  <label class="field-label" for="orgUserName">Full name</label>
-                  <input id="orgUserName" class="field-input" type="text" autocomplete="name" placeholder="First and last name" required>
+                <div class="field-row field-row-three">
+                  <div class="field">
+                    <label class="field-label" for="orgUserTitle">Title <span class="optional-label">(optional)</span></label>
+                    <select id="orgUserTitle" class="field-input field-select">
+                      <option value="" selected>Select a title</option>
+                      <option value="Dr.">Dr.</option>
+                      <option value="Mr.">Mr.</option>
+                      <option value="Mrs.">Mrs.</option>
+                      <option value="Ms.">Ms.</option>
+                      <option value="Mx.">Mx.</option>
+                      <option value="Prof.">Prof.</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="orgUserFirstName">First name</label>
+                    <input id="orgUserFirstName" class="field-input" type="text" autocomplete="given-name" placeholder="First name" required>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="orgUserLastName">Last name</label>
+                    <input id="orgUserLastName" class="field-input" type="text" autocomplete="family-name" placeholder="Last name" required>
+                  </div>
+                </div>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field-label" for="orgUserPhone">Phone number</label>
+                    <input id="orgUserPhone" class="field-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="14" placeholder="(555) 123-4567" required>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="orgUserDepartment">Department <span class="optional-label">(optional)</span></label>
+                    <input id="orgUserDepartment" class="field-input" type="text" autocomplete="organization-title" placeholder="e.g. Orthopedics, Purchasing">
+                  </div>
                 </div>
                 <div class="field">
                   <label class="field-label" for="orgUserEmail">Email</label>
                   <input id="orgUserEmail" class="field-input" type="email" autocomplete="email" placeholder="Enter your email" required>
                 </div>
-                <div class="field">
-                  <label class="field-label" for="orgUserPhone">Phone number</label>
-                  <input id="orgUserPhone" class="field-input" type="tel" autocomplete="tel" placeholder="Enter your phone number" required>
+                <div class="field-row">
+                  <div class="field">
+                    <label class="field-label" for="orgUserPassword">Password</label>
+                    <div class="field-input-wrap">
+                      <input id="orgUserPassword" class="field-input has-toggle" type="password" autocomplete="new-password" placeholder="Create a password (8+ characters)" required>
+                      <button type="button" class="password-toggle" id="toggleOrgPassword" aria-label="Show password">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field">
+                    <label class="field-label" for="orgUserPasswordConfirm">Confirm password</label>
+                    <div class="field-input-wrap">
+                      <input id="orgUserPasswordConfirm" class="field-input has-toggle" type="password" autocomplete="new-password" placeholder="Re-enter your password" required>
+                      <button type="button" class="password-toggle" id="toggleOrgPasswordConfirm" aria-label="Show password">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <button type="submit" class="auth-submit">Create account</button>
+                <div class="submit-row">
+                  <div class="captcha-box">
+                    <label class="captcha-check">
+                      <input type="checkbox" id="orgCaptcha">
+                      <span class="captcha-box-mark" aria-hidden="true"></span>
+                      <span class="captcha-label">I'm not a robot</span>
+                    </label>
+                    <div class="captcha-badge" aria-hidden="true">
+                      <span class="captcha-badge-mark"></span>
+                      <span class="captcha-badge-text">CAPTCHA</span>
+                    </div>
+                  </div>
+                  <button type="submit" class="auth-submit">Create account</button>
+                </div>
                 <div class="error-msg" id="orgRegisterError">Please complete all fields with valid information.</div>
               </form>
               <a href="#" class="org-back" id="orgVerifyAgainLink">Verify a different account</a>
@@ -527,6 +951,35 @@
           </div>
         </div>
 
+        <!-- Forgot password -->
+        <div class="auth-panel" id="forgotPanel" hidden>
+          <div id="forgotRequestStep">
+            <h1 class="auth-title">Forgot password</h1>
+            <p class="auth-subtitle">Enter the email for your BregStore account and we’ll send a one-time reset link.</p>
+            <form id="forgotPasswordForm">
+              <div class="field">
+                <label class="field-label" for="forgotEmail">Email</label>
+                <input id="forgotEmail" class="field-input" type="email" autocomplete="email" placeholder="Enter your email" required>
+              </div>
+              <button type="submit" class="auth-submit">Send reset link</button>
+              <div class="error-msg" id="forgotError">Please enter a valid email address.</div>
+            </form>
+          </div>
+
+          <div id="forgotSentStep" hidden>
+            <h1 class="auth-title">Check your email</h1>
+            <p class="auth-subtitle" id="forgotSentSummary">
+              If an account exists for that email, we sent a one-time password reset link. The link expires in 30 minutes.
+            </p>
+            <p class="success-msg" id="forgotSentDetail"></p>
+            <p class="field-hint" id="forgotDemoHint" hidden>
+              Demo only:
+              <a class="auth-link" href="#" id="forgotDemoLink">Open the one-time reset link</a>
+            </p>
+            <button type="button" class="auth-submit" id="forgotBackToSignIn">Back to sign in</button>
+          </div>
+        </div>
+
         <div class="auth-footer">
           <div id="modeFooterSignIn">
             Need an account? <a href="#" id="goToRegister">Create one</a>
@@ -534,7 +987,10 @@
           <div id="modeFooterRegister" hidden>
             Have an account? <a href="#" id="goToSignIn">Sign in</a>
           </div>
-          <a class="terms-link" href="#">Terms &amp; Conditions</a>
+          <div id="modeFooterForgot" hidden>
+            Remember your password? <a href="#" id="goToSignInFromForgot">Sign in</a>
+          </div>
+          <a class="terms-link" href="#" id="termsLink">Terms &amp; Conditions</a>
         </div>
 
         <p class="healthcare-note">
@@ -553,6 +1009,61 @@
     </aside>
   </div>
 
+  <div class="terms-modal" id="termsModal" aria-hidden="true">
+    <div class="terms-dialog" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+      <div class="terms-head">
+        <h2 id="termsTitle">Terms &amp; Conditions</h2>
+        <button type="button" class="terms-close" id="termsClose" aria-label="Close">&times;</button>
+      </div>
+      <div class="terms-body" id="termsBody" tabindex="0">
+        <h3>1. Authorized Use</h3>
+        <p>
+          BregStore is a wholesale ordering platform for authorized distributors, clinics, and healthcare
+          providers with an active Breg account. By signing in or creating an account, you confirm that you
+          are an authorized user acting on behalf of your organization.
+        </p>
+        <h3>2. Account Responsibility</h3>
+        <p>
+          You are responsible for maintaining the confidentiality of your login credentials and for all
+          activity that occurs under your account. Notify Breg promptly if you suspect unauthorized access
+          or misuse of your credentials.
+        </p>
+        <h3>3. Ordering &amp; Pricing</h3>
+        <ul>
+          <li>Product availability, pricing, and lead times may change without notice.</li>
+          <li>Orders are subject to acceptance, credit approval, and applicable purchasing terms.</li>
+          <li>Displayed catalog content in this prototype is for demonstration purposes only.</li>
+        </ul>
+        <h3>4. Shipping, Returns &amp; Warranty</h3>
+        <p>
+          Shipping methods, drop-shipment fees, returns, and warranty coverage are governed by Breg’s
+          published purchasing, return, and warranty policies. Returns may require an RMA and are limited to
+          eligible unused product within the published return window.
+        </p>
+        <h3>5. Medical Devices</h3>
+        <p>
+          Breg products are FDA-regulated medical devices and are dispensed at the discretion of healthcare
+          providers. BregStore is not intended for patient self-purchase. Patients should contact a
+          prescribing provider or a Breg Patient Service Center.
+        </p>
+        <h3>6. Privacy &amp; Data</h3>
+        <p>
+          Account and order information is used to operate the storefront, process orders, and support
+          customer service. Do not enter protected health information unless expressly requested for an
+          authorized workflow.
+        </p>
+        <h3>7. Acceptance</h3>
+        <p>
+          Continued use of BregStore constitutes acceptance of these Terms &amp; Conditions and any updates
+          published by Breg. For questions, contact Customer Care at 800-321-0607.
+        </p>
+      </div>
+      <div class="terms-foot">
+        <button type="button" class="terms-accept" id="termsAccept">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       var params = new URLSearchParams(window.location.search);
@@ -564,8 +1075,11 @@
 
       var signInPanel = document.getElementById("signInPanel");
       var registerPanel = document.getElementById("registerPanel");
+      var forgotPanel = document.getElementById("forgotPanel");
       var modeFooterSignIn = document.getElementById("modeFooterSignIn");
       var modeFooterRegister = document.getElementById("modeFooterRegister");
+      var modeFooterForgot = document.getElementById("modeFooterForgot");
+      var authShell = document.querySelector(".auth-shell");
       var authFormBody = document.getElementById("authFormBody");
       var hasOrgBtn = document.getElementById("hasOrgBtn");
       var newCustomerBtn = document.getElementById("newCustomerBtn");
@@ -578,6 +1092,9 @@
       var orgRegisterError = document.getElementById("orgRegisterError");
       var orgVerifiedSummary = document.getElementById("orgVerifiedSummary");
       var loginPassword = document.getElementById("loginPassword");
+      var forgotRequestStep = document.getElementById("forgotRequestStep");
+      var forgotSentStep = document.getElementById("forgotSentStep");
+      var forgotError = document.getElementById("forgotError");
       var verifiedOrg = null;
 
       var VALID_ORG_ACCOUNTS = {
@@ -599,19 +1116,70 @@
       }
 
       function showSignIn() {
+        authShell.classList.remove("register-mode", "forgot-mode");
         signInPanel.hidden = false;
         registerPanel.hidden = true;
+        forgotPanel.hidden = true;
         modeFooterSignIn.hidden = false;
         modeFooterRegister.hidden = true;
+        modeFooterForgot.hidden = true;
+        resetForgotPassword();
         replayFormAnim();
       }
 
       function showRegister() {
+        authShell.classList.add("register-mode");
+        authShell.classList.remove("forgot-mode");
         signInPanel.hidden = true;
         registerPanel.hidden = false;
+        forgotPanel.hidden = true;
         modeFooterSignIn.hidden = true;
         modeFooterRegister.hidden = false;
+        modeFooterForgot.hidden = true;
+        resetForgotPassword();
         replayFormAnim();
+      }
+
+      function resetForgotPassword() {
+        hideError(forgotError);
+        forgotRequestStep.hidden = false;
+        forgotSentStep.hidden = true;
+        document.getElementById("forgotPasswordForm").reset();
+        document.getElementById("forgotDemoHint").hidden = true;
+        document.getElementById("forgotDemoLink").removeAttribute("href");
+        document.getElementById("forgotSentDetail").textContent = "";
+      }
+
+      function showForgotPassword() {
+        authShell.classList.remove("register-mode");
+        authShell.classList.add("forgot-mode");
+        signInPanel.hidden = true;
+        registerPanel.hidden = true;
+        forgotPanel.hidden = false;
+        modeFooterSignIn.hidden = true;
+        modeFooterRegister.hidden = true;
+        modeFooterForgot.hidden = false;
+        resetForgotPassword();
+        var loginEmail = document.getElementById("loginEmail").value.trim();
+        if (loginEmail) document.getElementById("forgotEmail").value = loginEmail;
+        replayFormAnim();
+        window.setTimeout(function () {
+          document.getElementById("forgotEmail").focus();
+        }, 0);
+      }
+
+      function createPasswordResetToken(email) {
+        var token =
+          "breg-reset-" +
+          Math.random().toString(36).slice(2) +
+          Date.now().toString(36);
+        var payload = {
+          token: token,
+          email: email,
+          expiresAt: Date.now() + 30 * 60 * 1000
+        };
+        localStorage.setItem("bregPasswordReset", JSON.stringify(payload));
+        return token;
       }
 
       function normalizeZip(value) {
@@ -624,6 +1192,7 @@
 
       function resetOrgVerification() {
         verifiedOrg = null;
+        authShell.classList.remove("org-verified");
         orgVerifyStep.hidden = false;
         orgRegisterStep.hidden = true;
         hideError(orgVerifyError);
@@ -662,16 +1231,21 @@
         };
       }
 
-      function persistNewUserSession(name, email, phone) {
-        var trimmedName = String(name || "").trim();
-        var parts = trimmedName.split(/\s+/).filter(Boolean);
-        var firstName = parts[0] || trimmedName;
-        var lastName = parts.length > 1 ? parts.slice(1).join(" ") : "";
+      function persistNewUserSession(details) {
+        var firstName = String(details.firstName || "").trim();
+        var lastName = String(details.lastName || "").trim();
+        var title = String(details.title || "").trim();
+        var fullName = [firstName, lastName].filter(Boolean).join(" ");
         localStorage.setItem("bregFirstName", firstName);
         localStorage.setItem("bregLastName", lastName);
-        localStorage.setItem("bregUserName", trimmedName);
-        localStorage.setItem("bregUserEmail", String(email || "").trim());
-        localStorage.setItem("bregUserPhone", String(phone || "").trim());
+        localStorage.setItem("bregUserName", fullName);
+        localStorage.setItem("bregUserTitle", title);
+        localStorage.setItem("bregUserDepartment", String(details.department || "").trim());
+        localStorage.setItem("bregUserEmail", String(details.email || "").trim());
+        localStorage.setItem("bregUserPhone", String(details.phone || "").trim());
+        if (details.password) {
+          localStorage.setItem("bregUserPassword", details.password);
+        }
         localStorage.setItem("bregAccountName", verifiedOrg ? verifiedOrg.accountName : "Medical Clinic Inc.");
         if (verifiedOrg && verifiedOrg.accountNumber) {
           localStorage.setItem("bregOrgAccountNumber", verifiedOrg.accountNumber);
@@ -693,6 +1267,44 @@
         showSignIn();
       });
 
+      document.getElementById("forgotPasswordLink").addEventListener("click", function (event) {
+        event.preventDefault();
+        showForgotPassword();
+      });
+
+      document.getElementById("goToSignInFromForgot").addEventListener("click", function (event) {
+        event.preventDefault();
+        showSignIn();
+      });
+
+      document.getElementById("forgotBackToSignIn").addEventListener("click", function () {
+        showSignIn();
+      });
+
+      document.getElementById("forgotPasswordForm").addEventListener("submit", function (event) {
+        event.preventDefault();
+        var email = document.getElementById("forgotEmail").value.trim().toLowerCase();
+        var emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!emailValid) {
+          showError(forgotError);
+          return;
+        }
+        hideError(forgotError);
+        var token = createPasswordResetToken(email);
+        var resetHref =
+          "reset-password.html?token=" +
+          encodeURIComponent(token) +
+          "&redirect=" +
+          encodeURIComponent(redirect);
+        document.getElementById("forgotSentDetail").textContent =
+          "A one-time reset link was sent to " + email + ".";
+        document.getElementById("forgotDemoLink").href = resetHref;
+        document.getElementById("forgotDemoHint").hidden = false;
+        forgotRequestStep.hidden = true;
+        forgotSentStep.hidden = false;
+        replayFormAnim();
+      });
+
       hasOrgBtn.addEventListener("click", showHasOrgPanel);
       newCustomerBtn.addEventListener("click", showNewCustomerPanel);
 
@@ -700,6 +1312,12 @@
         var showing = loginPassword.type === "text";
         loginPassword.type = showing ? "password" : "text";
         this.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+      });
+
+      document.getElementById("salesRepSignIn").addEventListener("click", function (event) {
+        event.preventDefault();
+        var oktaHref = "okta-sign-in.html?redirect=" + encodeURIComponent(redirect);
+        window.location.href = oktaHref;
       });
 
       document.getElementById("orgVerifyAgainLink").addEventListener("click", function (event) {
@@ -718,6 +1336,7 @@
           return;
         }
         verifiedOrg = org;
+        authShell.classList.add("org-verified");
         orgVerifyStep.hidden = true;
         orgRegisterStep.hidden = false;
         hideError(orgVerifyError);
@@ -726,24 +1345,76 @@
           "Account " + org.accountNumber + " verified for " + org.accountName + ".";
       });
 
+      function formatPhoneInput(value) {
+        var digits = String(value || "").replace(/\D/g, "").slice(0, 10);
+        if (!digits.length) return "";
+        if (digits.length < 4) return "(" + digits;
+        if (digits.length < 7) return "(" + digits.slice(0, 3) + ") " + digits.slice(3);
+        return "(" + digits.slice(0, 3) + ") " + digits.slice(3, 6) + "-" + digits.slice(6);
+      }
+
+      function isValidPhone(value) {
+        return String(value || "").replace(/\D/g, "").length === 10;
+      }
+
+      function bindPasswordToggle(toggleId, inputId) {
+        var toggle = document.getElementById(toggleId);
+        var input = document.getElementById(inputId);
+        if (!toggle || !input) return;
+        toggle.addEventListener("click", function () {
+          var showing = input.type === "text";
+          input.type = showing ? "password" : "text";
+          this.setAttribute("aria-label", showing ? "Show password" : "Hide password");
+        });
+      }
+
+      document.getElementById("orgUserPhone").addEventListener("input", function () {
+        this.value = formatPhoneInput(this.value);
+      });
+
       document.getElementById("orgRegisterForm").addEventListener("submit", function (event) {
         event.preventDefault();
         if (!verifiedOrg) {
           resetOrgVerification();
           return;
         }
-        var name = document.getElementById("orgUserName").value.trim();
+        var title = document.getElementById("orgUserTitle").value.trim();
+        var firstName = document.getElementById("orgUserFirstName").value.trim();
+        var lastName = document.getElementById("orgUserLastName").value.trim();
+        var phone = formatPhoneInput(document.getElementById("orgUserPhone").value);
+        var department = document.getElementById("orgUserDepartment").value.trim();
         var email = document.getElementById("orgUserEmail").value.trim();
-        var phone = document.getElementById("orgUserPhone").value.trim();
+        var password = document.getElementById("orgUserPassword").value;
+        var passwordConfirm = document.getElementById("orgUserPasswordConfirm").value;
+        var captchaChecked = document.getElementById("orgCaptcha").checked;
         var emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        if (!name || !emailValid || !phone) {
+        document.getElementById("orgUserPhone").value = phone;
+
+        if (!firstName || !lastName || !isValidPhone(phone) || !emailValid || password.length < 8 || !captchaChecked) {
+          orgRegisterError.textContent = "Please complete all fields with valid information.";
+          showError(orgRegisterError);
+          return;
+        }
+        if (password !== passwordConfirm) {
+          orgRegisterError.textContent = "Passwords do not match. Please re-enter your password.";
           showError(orgRegisterError);
           return;
         }
         hideError(orgRegisterError);
-        persistNewUserSession(name, email, phone);
+        persistNewUserSession({
+          title: title,
+          firstName: firstName,
+          lastName: lastName,
+          phone: phone,
+          department: department,
+          email: email,
+          password: password
+        });
         window.location.href = redirect;
       });
+
+      bindPasswordToggle("toggleOrgPassword", "orgUserPassword");
+      bindPasswordToggle("toggleOrgPasswordConfirm", "orgUserPasswordConfirm");
 
       document.getElementById("loginForm").addEventListener("submit", function (event) {
         event.preventDefault();
@@ -769,8 +1440,47 @@
         showError(loginError);
       });
 
+      var termsModal = document.getElementById("termsModal");
+      var termsLink = document.getElementById("termsLink");
+      var termsClose = document.getElementById("termsClose");
+      var termsAccept = document.getElementById("termsAccept");
+      var termsBody = document.getElementById("termsBody");
+
+      function openTermsModal() {
+        termsModal.classList.add("open");
+        termsModal.setAttribute("aria-hidden", "false");
+        document.body.classList.add("terms-modal-open");
+        window.setTimeout(function () {
+          if (termsBody) termsBody.focus();
+        }, 0);
+      }
+
+      function closeTermsModal() {
+        termsModal.classList.remove("open");
+        termsModal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("terms-modal-open");
+        if (termsLink) termsLink.focus();
+      }
+
+      termsLink.addEventListener("click", function (event) {
+        event.preventDefault();
+        openTermsModal();
+      });
+      termsClose.addEventListener("click", closeTermsModal);
+      termsAccept.addEventListener("click", closeTermsModal);
+      termsModal.addEventListener("click", function (event) {
+        if (event.target === termsModal) closeTermsModal();
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && termsModal.classList.contains("open")) {
+          closeTermsModal();
+        }
+      });
+
       if (params.get("mode") === "register") {
         showRegister();
+      } else if (params.get("mode") === "forgot") {
+        showForgotPassword();
       } else {
         showSignIn();
       }

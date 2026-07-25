@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="assets/auth-gate.js?v=20260725a"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg - Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --okta-bg: #ebebed;
+      --okta-card: #ffffff;
+      --okta-ink: #1d1d21;
+      --okta-muted: #6e6e78;
+      --okta-line: #c3c3c8;
+      --okta-primary: #1662dd;
+      --okta-primary-hover: #124a9f;
+      --okta-error: #d93838;
+      --okta-focus: rgba(22, 98, 221, 0.2);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: Inter, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--okta-ink);
+      background: var(--okta-bg);
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .okta-topbar {
+      height: 56px;
+      background: #fff;
+      border-bottom: 1px solid #e4e4e7;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      flex: 0 0 auto;
+    }
+
+    .okta-brand {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: #1d1d21;
+      text-decoration: none;
+    }
+
+    .okta-main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 28px 16px 40px;
+    }
+
+    .okta-card {
+      width: min(400px, 100%);
+      background: var(--okta-card);
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      padding: 36px 32px 28px;
+      animation: oktaEnter 0.35s ease both;
+    }
+
+    @keyframes oktaEnter {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .okta-app-logo {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .okta-app-logo-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: #001e62;
+    }
+
+    .okta-app-logo img {
+      height: 28px;
+      width: auto;
+      display: block;
+    }
+
+    .okta-beacon {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--okta-muted);
+    }
+
+    .okta-title {
+      margin: 0 0 8px;
+      text-align: center;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .okta-subtitle {
+      margin: 0 0 24px;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--okta-muted);
+    }
+
+    .okta-field {
+      margin-bottom: 16px;
+    }
+
+    .okta-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .okta-input {
+      width: 100%;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--okta-line);
+      border-radius: 3px;
+      background: #fff;
+      font: inherit;
+      font-size: 14px;
+      color: var(--okta-ink);
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    .okta-input:focus {
+      border-color: var(--okta-primary);
+      box-shadow: 0 0 0 3px var(--okta-focus);
+    }
+
+    .okta-hint {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: var(--okta-muted);
+      line-height: 1.4;
+    }
+
+    .okta-error {
+      display: none;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border-radius: 3px;
+      border: 1px solid #f3b4b4;
+      background: #fff5f5;
+      color: var(--okta-error);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .okta-error.show { display: block; }
+
+    .okta-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .okta-actions .okta-btn {
+      margin-left: auto;
+    }
+
+    .okta-link {
+      color: var(--okta-primary);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .okta-link:hover { text-decoration: underline; }
+
+    .okta-btn {
+      min-width: 88px;
+      height: 40px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 3px;
+      background: var(--okta-primary);
+      color: #fff;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .okta-btn:hover,
+    .okta-btn:focus {
+      background: var(--okta-primary-hover);
+      outline: 0;
+    }
+
+    .okta-btn:disabled {
+      opacity: 0.65;
+      cursor: wait;
+    }
+
+    .okta-user-chip {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 16px;
+      padding: 10px 12px;
+      border: 1px solid #e4e4e7;
+      border-radius: 3px;
+      background: #f8f8fa;
+      font-size: 13px;
+    }
+
+    .okta-user-chip.show { display: flex; }
+
+    .okta-user-chip strong {
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .okta-user-chip button {
+      border: 0;
+      background: transparent;
+      color: var(--okta-primary);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      white-space: nowrap;
+    }
+
+    .okta-footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--okta-muted);
+    }
+
+    .okta-footer a {
+      color: var(--okta-muted);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .okta-powered {
+      margin-top: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    .okta-step[hidden] { display: none !important; }
+
+    .okta-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-top-color: #fff;
+      border-radius: 50%;
+      display: inline-block;
+      animation: spin .7s linear infinite;
+      vertical-align: -3px;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 480px) {
+      .okta-card { padding: 28px 20px 22px; }
+      .okta-title { font-size: 22px; }
+      .okta-actions { flex-direction: column-reverse; align-items: stretch; }
+      .okta-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="okta-topbar">
+    <a class="okta-brand" href="login.html" aria-label="Okta">okta</a>
+  </header>
+
+  <main class="okta-main">
+    <section class="okta-card" aria-labelledby="oktaTitle">
+      <div class="okta-app-logo">
+        <div class="okta-app-logo-badge">
+          <img src="assets/breg-logo-header.png" alt="Breg">
+        </div>
+      </div>
+      <p class="okta-beacon">Connecting to <strong>Breg-OOC</strong></p>
+      <h1 class="okta-title" id="oktaTitle">Sign In</h1>
+      <p class="okta-subtitle">Sign in with your account to access Breg-OOC</p>
+
+      <div class="okta-error" id="oktaError" role="alert"></div>
+
+      <div class="okta-user-chip" id="oktaUserChip">
+        <strong id="oktaUserChipEmail"></strong>
+        <button type="button" id="oktaChangeUser">Not you?</button>
+      </div>
+
+      <form id="oktaUsernameForm" class="okta-step" autocomplete="username">
+        <div class="okta-field">
+          <label class="okta-label" for="oktaUsername">Username</label>
+          <input
+            id="oktaUsername"
+            class="okta-input"
+            type="text"
+            name="username"
+            autocomplete="username"
+            autocapitalize="none"
+            spellcheck="false"
+            placeholder="username@breg.com"
+            required
+          >
+          <p class="okta-hint">Sales representatives use their Breg Okta credentials.</p>
+        </div>
+        <div class="okta-actions">
+          <a class="okta-link" href="login.html" id="oktaBackToStore">Back to store sign-in</a>
+          <button type="submit" class="okta-btn" id="oktaNextBtn">Next</button>
+        </div>
+      </form>
+
+      <form id="oktaPasswordForm" class="okta-step" hidden autocomplete="current-password">
+        <div class="okta-field">
+          <label class="okta-label" for="oktaPassword">Password</label>
+          <input
+            id="oktaPassword"
+            class="okta-input"
+            type="password"
+            name="password"
+            autocomplete="current-password"
+            placeholder="Password"
+            required
+          >
+        </div>
+        <div class="okta-actions">
+          <a class="okta-link" href="#" id="oktaHelpLink">Need help signing in?</a>
+          <button type="submit" class="okta-btn" id="oktaVerifyBtn">Verify</button>
+        </div>
+      </form>
+
+      <div class="okta-footer">
+        <div><a href="https://www.okta.com/privacy-policy/" target="_blank" rel="noopener noreferrer">Privacy Policy</a></div>
+        <div class="okta-powered">Powered by Okta</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var redirect = params.get("redirect") || "index.html";
+      if (window.BregSessionAuth ? window.BregSessionAuth.isSignedIn() : localStorage.getItem("bregSignedIn") === "true") {
+        window.location.replace(redirect);
+        return;
+      }
+
+      var usernameForm = document.getElementById("oktaUsernameForm");
+      var passwordForm = document.getElementById("oktaPasswordForm");
+      var usernameInput = document.getElementById("oktaUsername");
+      var passwordInput = document.getElementById("oktaPassword");
+      var errorEl = document.getElementById("oktaError");
+      var userChip = document.getElementById("oktaUserChip");
+      var userChipEmail = document.getElementById("oktaUserChipEmail");
+      var nextBtn = document.getElementById("oktaNextBtn");
+      var verifyBtn = document.getElementById("oktaVerifyBtn");
+      var pendingUsername = "";
+
+      var DEMO_USERS = {
+        "rep@breg.com": "password123",
+        "sales@breg.com": "password123"
+      };
+
+      function showError(message) {
+        errorEl.textContent = message;
+        errorEl.classList.add("show");
+      }
+
+      function hideError() {
+        errorEl.textContent = "";
+        errorEl.classList.remove("show");
+      }
+
+      function setBusy(button, busy, label) {
+        button.disabled = !!busy;
+        button.innerHTML = busy
+          ? "<span class='okta-spinner' aria-hidden='true'></span>" + label
+          : label;
+      }
+
+      function showPasswordStep(username) {
+        pendingUsername = username;
+        usernameForm.hidden = true;
+        passwordForm.hidden = false;
+        userChip.classList.add("show");
+        userChipEmail.textContent = username;
+        hideError();
+        passwordInput.value = "";
+        window.setTimeout(function () { passwordInput.focus(); }, 0);
+      }
+
+      function showUsernameStep() {
+        pendingUsername = "";
+        passwordForm.hidden = true;
+        usernameForm.hidden = false;
+        userChip.classList.remove("show");
+        hideError();
+        window.setTimeout(function () { usernameInput.focus(); }, 0);
+      }
+
+      function completeSalesRepSignIn(username) {
+        var localPart = String(username || "").split("@")[0] || "Sales";
+        var firstName = localPart.charAt(0).toUpperCase() + localPart.slice(1);
+        localStorage.setItem("bregFirstName", firstName);
+        localStorage.setItem("bregLastName", "Rep");
+        localStorage.setItem("bregUserName", firstName + " Rep");
+        localStorage.setItem("bregAccountName", "Breg Sales");
+        localStorage.setItem("bregUserEmail", username);
+        localStorage.setItem("bregUserPhone", "800-321-0607");
+        localStorage.setItem("bregUserRole", "sales-rep");
+        if (window.BregSessionAuth) {
+          window.BregSessionAuth.markSignedIn();
+        } else {
+          localStorage.setItem("bregSignedIn", "true");
+        }
+        window.location.href = redirect;
+      }
+
+      usernameForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        hideError();
+        var username = String(usernameInput.value || "").trim().toLowerCase();
+        if (!username) {
+          showError("Please enter a username.");
+          return;
+        }
+        if (username.indexOf("@") === -1) {
+          showError("Enter your full Okta username (for example, rep@breg.com).");
+          return;
+        }
+        setBusy(nextBtn, true, "Next");
+        window.setTimeout(function () {
+          setBusy(nextBtn, false, "Next");
+          showPasswordStep(username);
+        }, 450);
+      });
+
+      passwordForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+        hideError();
+        var password = String(passwordInput.value || "");
+        if (!password) {
+          showError("Please enter your password.");
+          return;
+        }
+        setBusy(verifyBtn, true, "Verify");
+        window.setTimeout(function () {
+          var expected = DEMO_USERS[pendingUsername];
+          var allowedDomain = /@breg\.com$/i.test(pendingUsername);
+          var ok = (expected && password === expected) || (allowedDomain && password === "password123");
+          if (!ok) {
+            setBusy(verifyBtn, false, "Verify");
+            showError("Unable to sign in. Check your username and password, then try again.");
+            return;
+          }
+          completeSalesRepSignIn(pendingUsername);
+        }, 700);
+      });
+
+      document.getElementById("oktaChangeUser").addEventListener("click", function () {
+        showUsernameStep();
+      });
+
+      document.getElementById("oktaHelpLink").addEventListener("click", function (event) {
+        event.preventDefault();
+        showError("For help with Okta access, contact Breg IT or your manager. Demo credentials: rep@breg.com / password123");
+      });
+
+      document.getElementById("oktaBackToStore").addEventListener("click", function (event) {
+        event.preventDefault();
+        window.location.href = "login.html" + (params.get("redirect") ? ("?redirect=" + encodeURIComponent(redirect)) : "");
+      });
+
+      usernameInput.focus();
+    })();
+  </script>
+</body>
+</html>

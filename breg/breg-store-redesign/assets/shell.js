@@ -2760,6 +2760,8 @@
   window.BregFavorites.shoppingListName = FAVORITES_SHOPPING_LIST;
   window.BregFavorites.readLists = readFavoriteLists;
   window.BregFavorites.readItems = readFavoriteItemMeta;
+  window.BregFavorites.saveLists = saveFavoriteLists;
+  window.BregFavorites.saveItems = saveFavoriteItemMeta;
   window.BregFavorites.toggleShoppingListItem = function (item) {
     return toggleFavoriteSku(FAVORITES_SHOPPING_LIST, item);
   };
@@ -2770,6 +2772,34 @@
   };
   window.BregFavorites.getShoppingListItems = function () {
     return favoriteListItems(FAVORITES_SHOPPING_LIST);
+  };
+  window.BregFavorites.addToList = function (listName, item) {
+    var meta = normalizeFavoriteMeta(item);
+    if (!meta) return false;
+    var lists = readFavoriteLists();
+    var items = readFavoriteItemMeta();
+    var targetList = ensureFavoriteList(lists, listName);
+    if (lists[targetList].indexOf(meta.sku) === -1) lists[targetList].push(meta.sku);
+    items[meta.sku] = meta;
+    saveFavoriteLists(lists);
+    saveFavoriteItemMeta(items);
+    return true;
+  };
+  window.BregFavorites.removeFromList = function (listName, sku) {
+    var key = String(sku || "").trim();
+    if (!key) return false;
+    var lists = readFavoriteLists();
+    var targetList = ensureFavoriteList(lists, listName);
+    var idx = lists[targetList].indexOf(key);
+    if (idx === -1) return false;
+    lists[targetList].splice(idx, 1);
+    saveFavoriteLists(lists);
+    return true;
+  };
+  window.BregFavorites.isInList = function (listName, sku) {
+    var lists = readFavoriteLists();
+    var list = lists[String(listName || "").trim()] || [];
+    return list.indexOf(String(sku || "").trim()) > -1;
   };
 
   window.addEventListener("storage", function (event) {

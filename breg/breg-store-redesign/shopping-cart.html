@@ -123,15 +123,56 @@
       gap: 12px;
       flex-wrap: wrap;
     }
-    .cart-qty {
-      width: 92px;
-      height: 34px;
-      border: 1px solid #cdd6df;
+    .cart-qty-stepper {
+      display: grid;
+      grid-template-columns: 32px 44px 32px;
+      height: 38px;
+      border: 1px solid #d4deea;
       border-radius: 8px;
+      overflow: hidden;
       background: #fff;
-      padding: 0 8px;
-      font-size: 14px;
-      color: #11181f;
+      flex: 0 0 auto;
+    }
+    .cart-qty-stepper button {
+      border: 0;
+      background: #f7faff;
+      font-size: 17px;
+      line-height: 1;
+      color: #17233a;
+      padding: 0;
+      cursor: pointer;
+    }
+    .cart-qty-stepper button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .cart-qty {
+      display: block;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      border: 0;
+      border-left: 1px solid #d4deea;
+      border-right: 1px solid #d4deea;
+      border-radius: 0;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #17233a;
+      background: #fff;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .cart-qty::-webkit-outer-spin-button,
+    .cart-qty::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .cart-qty:focus {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(23, 101, 220, 0.28);
     }
     .cart-link-btn {
       border: 0;
@@ -461,7 +502,11 @@
               "<p class='cart-item-meta'>Size: " + sizeText + "</p>" +
               "<p class='cart-item-stock'>In Stock</p>" +
               "<div class='cart-item-controls'>" +
-                "<input class='cart-qty' type='number' min='1' step='1' value='" + qty + "' data-index='" + i + "'>" +
+                "<div class='cart-qty-stepper'>" +
+                  "<button type='button' class='cart-qty-dec' data-index='" + i + "' aria-label='Decrease quantity'>&minus;</button>" +
+                  "<input class='cart-qty' type='number' min='1' max='99' step='1' value='" + qty + "' data-index='" + i + "' inputmode='numeric' aria-label='Quantity'>" +
+                  "<button type='button' class='cart-qty-inc' data-index='" + i + "' aria-label='Increase quantity'>&plus;</button>" +
+                "</div>" +
                 "<button type='button' class='cart-link-btn cart-remove' data-index='" + i + "'><span class='glyphicon glyphicon-trash' style='font-size:11px; margin-right:4px;'></span>Delete</button>" +
                 "<button type='button' class='cart-link-btn cart-save-later' data-index='" + i + "'>Save for later</button>" +
               "</div>" +
@@ -493,14 +538,39 @@
           savedHtml
         );
       }
-      $(document).on("change", ".cart-qty", function () {
-        var idx = Number($(this).attr("data-index"));
-        var qty = Math.max(1, Number($(this).val() || 1));
+      function normalizeCartQty(value, fallback) {
+        var parsed = Math.round(Number(value));
+        if (!isFinite(parsed) || parsed < 1) return fallback != null ? fallback : 1;
+        return Math.min(99, parsed);
+      }
+      function updateCartQty(idx, qty) {
         var cart = loadCart();
         if (!cart[idx]) return;
-        cart[idx].qty = qty;
+        cart[idx].qty = normalizeCartQty(qty, Number(cart[idx].qty || 1));
         saveCart(cart);
         renderCart();
+      }
+      $(document).on("click", ".cart-qty-dec", function () {
+        var idx = Number($(this).attr("data-index"));
+        var cart = loadCart();
+        if (!cart[idx]) return;
+        updateCartQty(idx, Number(cart[idx].qty || 1) - 1);
+      });
+      $(document).on("click", ".cart-qty-inc", function () {
+        var idx = Number($(this).attr("data-index"));
+        var cart = loadCart();
+        if (!cart[idx]) return;
+        updateCartQty(idx, Number(cart[idx].qty || 1) + 1);
+      });
+      $(document).on("keydown", ".cart-qty", function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          $(this).trigger("blur");
+        }
+      });
+      $(document).on("change blur", ".cart-qty", function () {
+        var idx = Number($(this).attr("data-index"));
+        updateCartQty(idx, $(this).val());
       });
       $(document).on("click", ".cart-remove", function () {
         var idx = Number($(this).attr("data-index"));

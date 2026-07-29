@@ -158,16 +158,84 @@
       display: none;
     }
     .pdp-top-cart-row { margin-top: 12px; }
-    .pdp-top-cart-controls { display: flex; align-items: center; gap: 10px; }
-    .pdp-top-cart-controls .pdp-top-cart-btn { flex: 1; }
+    .pdp-top-cart-controls {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+    }
+    .pdp-top-cart-controls .pdp-top-cart-btn { flex: 1; min-width: 0; }
     .pdp-top-qty {
       display: none;
-      align-items: center;
-      gap: 6px;
-      padding: 0 2px;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-end;
+      gap: 5px;
+      padding: 0;
       white-space: nowrap;
+      flex: 0 0 auto;
     }
-    .pdp-top-qty-label { margin: 0; font-size: 13px; line-height: 18px; color: #364153; }
+    .pdp-top-qty-label {
+      margin: 0;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1;
+      color: #17233a;
+    }
+    .pdp-qty-stepper {
+      display: grid;
+      grid-template-columns: 32px 48px 32px;
+      height: 42px;
+      border: 1px solid #d4deea;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+    }
+    .pdp-qty-stepper button {
+      border: 0;
+      background: #f7faff;
+      font-size: 17px;
+      line-height: 1;
+      color: #17233a;
+      padding: 0;
+      cursor: pointer;
+    }
+    .pdp-qty-stepper button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .pdp-qty-input {
+      display: block;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      border: 0;
+      border-left: 1px solid #d4deea;
+      border-right: 1px solid #d4deea;
+      border-radius: 0;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #17233a;
+      background: #fff;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .pdp-qty-input::-webkit-outer-spin-button,
+    .pdp-qty-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .pdp-qty-input:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      background: #f8fafc;
+    }
+    .pdp-qty-input:focus {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(23, 101, 220, 0.28);
+    }
     .pdp-top-cart-btn {
       border: 1px solid var(--breg-primary, #0047bb);
       background: var(--breg-primary, #0047bb);
@@ -501,7 +569,7 @@
       .pdp-btn-primary { font-size: 18px; }
       .pdp-top-cart-controls {
         flex-direction: row;
-        align-items: center;
+        align-items: flex-end;
         gap: 8px;
       }
       .pdp-top-cart-controls .pdp-top-cart-btn {
@@ -515,12 +583,12 @@
         padding: 8px 16px;
       }
       .pdp-top-qty {
-        justify-content: flex-start;
+        justify-content: flex-end;
         padding: 0;
       }
-      .pdp-top-qty-label { display: none; }
-      .pdp-top-qty .pdp-qty-select {
-        width: 64px;
+      .pdp-top-qty-label { display: block; }
+      .pdp-qty-stepper {
+        grid-template-columns: 32px 44px 32px;
         height: 38px;
       }
       .pdp-page,
@@ -1913,8 +1981,8 @@
                 "</div>" +
                 "<div class='pdp-top-cart-row'>" +
                   "<div class='pdp-top-cart-controls'>" +
+                    "<div class='pdp-top-qty' id='topQtyWrap'><p class='pdp-top-qty-label'>Quantity</p><div class='pdp-qty-stepper'><button type='button' id='topQtyDec' aria-label='Decrease quantity' disabled>&minus;</button><input type='number' id='topQtyInput' class='pdp-qty-input' min='1' max='99' step='1' value='1' inputmode='numeric' aria-label='Quantity' disabled><button type='button' id='topQtyInc' aria-label='Increase quantity' disabled>&plus;</button></div></div>" +
                     "<button type='button' id='topAddToCartBtn' class='pdp-top-cart-btn'" + (isSignedIn && hasConfigurableOptions ? " disabled" : "") + ">" + (isSignedIn ? (hasConfigurableOptions ? "Select Options to Continue" : "Add to Cart") : "Login to Continue") + "</button>" +
-                    "<div class='pdp-top-qty' id='topQtyWrap'><p class='pdp-top-qty-label'>Qty</p><select id='topQtySelect' class='pdp-qty-select' disabled><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option></select></div>" +
                   "</div>" +
                   "<button type='button' id='topCheckInventoryBtn' class='pdp-check-inventory-btn' style='display:none;'>Check Inventory</button>" +
                   "<p class='pdp-inventory-msg' id='topInventoryMsg' style='display:none;'></p>" +
@@ -1954,6 +2022,26 @@
 
         function formatPdpPriceText() {
           return "$" + BregFormatMoney(Number(product.price || 0));
+        }
+
+        function normalizePdpQty(value, fallback) {
+          var parsed = Math.round(Number(value));
+          if (!isFinite(parsed) || parsed < 1) return fallback != null ? fallback : 1;
+          return Math.min(99, parsed);
+        }
+
+        function getPdpQty() {
+          return normalizePdpQty($("#topQtyInput").val(), 1);
+        }
+
+        function setPdpQty(qty) {
+          var next = normalizePdpQty(qty, 1);
+          $("#topQtyInput").val(String(next));
+          return next;
+        }
+
+        function setPdpQtyEnabled(enabled) {
+          $("#topQtyInput, #topQtyDec, #topQtyInc").prop("disabled", !enabled);
         }
 
         function syncPdpAddToCartButton() {
@@ -2826,7 +2914,7 @@
             }
             $("#topAddToCartBtn").text(isSignedIn ? "Select Options to Continue" : "Login to Continue");
             $("#topQtyWrap").hide();
-            $("#topQtySelect").prop("disabled", true);
+            setPdpQtyEnabled(false);
             $("#topCheckInventoryBtn").hide();
             $("#topInventoryMsg").hide().text("");
           } else {
@@ -2837,11 +2925,11 @@
             }
             if (isSignedIn) {
               $("#topQtyWrap").css("display", "flex");
-              $("#topQtySelect").prop("disabled", false);
+              setPdpQtyEnabled(true);
               $("#topCheckInventoryBtn").show();
             } else {
               $("#topQtyWrap").hide();
-              $("#topQtySelect").prop("disabled", true);
+              setPdpQtyEnabled(false);
               $("#topCheckInventoryBtn").hide();
             }
             $("#topInventoryMsg").hide().text("");
@@ -3451,7 +3539,7 @@
             window.location.href = loginRedirectHref;
             return;
           }
-          var qty = Number($("#topQtySelect").val() || 1);
+          var qty = getPdpQty();
           var sku = String(currentResolvedSku || product.id || "");
           var line = {
             sku: sku,
@@ -3463,6 +3551,23 @@
           };
           addToCartLine(line);
           openCartAddedModal(line);
+        });
+        $("#topQtyDec").on("click", function () {
+          if ($(this).prop("disabled")) return;
+          setPdpQty(getPdpQty() - 1);
+        });
+        $("#topQtyInc").on("click", function () {
+          if ($(this).prop("disabled")) return;
+          setPdpQty(getPdpQty() + 1);
+        });
+        $("#topQtyInput").on("keydown", function (event) {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            $(this).trigger("blur");
+          }
+        });
+        $("#topQtyInput").on("change blur", function () {
+          setPdpQty($(this).val());
         });
         $("#stickyAddToCartBtn").on("click", function () {
           if ($(this).hasClass("is-select-options")) {

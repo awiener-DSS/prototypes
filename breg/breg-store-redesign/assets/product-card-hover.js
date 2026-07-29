@@ -178,6 +178,12 @@
     return String($card.find(".p-card-hover-panel").attr("data-product-id") || "");
   }
 
+  function normalizeHoverQty(value, fallback) {
+    var parsed = Math.round(Number(value));
+    if (!isFinite(parsed) || parsed < 1) return fallback != null ? fallback : 1;
+    return Math.min(99, parsed);
+  }
+
   function getCardHoverState(productId) {
     return cardHoverStates[String(productId || "")] || null;
   }
@@ -497,7 +503,10 @@
         .show();
     }
 
-    $card.find(".js-card-hover-qty-val").text(String(state.qty || 1));
+    $card.find(".js-card-hover-qty-val").each(function () {
+      if (this === document.activeElement) return;
+      $(this).val(String(state.qty || 1));
+    });
     refreshCardHoverAddButton($card, state, resolved);
 
     var image = getQuickViewImage(product, resolved.variant);
@@ -541,9 +550,9 @@
           "<div>" +
             "<div class='p-hover-qty-label'>Quantity</div>" +
             "<div class='p-hover-qty-stepper'>" +
-              "<button type='button' class='js-card-hover-qty-dec' aria-label='Decrease quantity'>&minus;</button>" +
-              "<span class='p-hover-qty-val js-card-hover-qty-val'>1</span>" +
-              "<button type='button' class='js-card-hover-qty-inc' aria-label='Increase quantity'>&plus;</button>" +
+                    "<button type='button' class='js-card-hover-qty-dec' aria-label='Decrease quantity'>&minus;</button>" +
+                    "<input type='number' class='p-hover-qty-val js-card-hover-qty-val' min='1' max='99' step='1' value='1' inputmode='numeric' aria-label='Quantity'>" +
+                    "<button type='button' class='js-card-hover-qty-inc' aria-label='Increase quantity'>&plus;</button>" +
             "</div>" +
           "</div>" +
           "<div>" +
@@ -677,6 +686,36 @@
         if (!state) return;
         state.qty = Math.min(99, Number(state.qty || 1) + 1);
         updateCardHoverPanel($card);
+      })
+      .on("click.bregCardHover focus.bregCardHover", ".has-product-card-hover .js-card-hover-qty-val", function (event) {
+        event.stopPropagation();
+      })
+      .on("keydown.bregCardHover", ".has-product-card-hover .js-card-hover-qty-val", function (event) {
+        event.stopPropagation();
+        if (event.key === "Enter") {
+          event.preventDefault();
+          $(this).trigger("blur");
+        }
+      })
+      .on("input.bregCardHover", ".has-product-card-hover .js-card-hover-qty-val", function (event) {
+        event.stopPropagation();
+        var $card = $(this).closest(".p-card");
+        var state = getCardHoverState(stateKeyForCard($card));
+        if (!state) return;
+        var raw = String($(this).val() || "").trim();
+        if (!raw) return;
+        var parsed = Math.round(Number(raw));
+        if (!isFinite(parsed)) return;
+        state.qty = Math.max(1, Math.min(99, parsed));
+      })
+      .on("change.bregCardHover blur.bregCardHover", ".has-product-card-hover .js-card-hover-qty-val", function (event) {
+        event.stopPropagation();
+        var $input = $(this);
+        var $card = $input.closest(".p-card");
+        var state = getCardHoverState(stateKeyForCard($card));
+        if (!state) return;
+        state.qty = normalizeHoverQty($input.val(), state.qty || 1);
+        $input.val(String(state.qty));
       })
       .on("click.bregCardHover", ".has-product-card-hover .js-card-hover-add", function (event) {
         event.preventDefault();

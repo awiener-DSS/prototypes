@@ -773,14 +773,40 @@
     }
 
     .p-hover-qty-val {
-      display: grid;
-      place-items: center;
+      display: block;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      border: 0;
       border-left: 1px solid #d4deea;
       border-right: 1px solid #d4deea;
+      border-radius: 0;
+      margin: 0;
+      padding: 0;
+      text-align: center;
       font-size: 12px;
       font-weight: 800;
       color: #17233a;
       background: #fff;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .p-hover-qty-val::-webkit-outer-spin-button,
+    .p-hover-qty-val::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .p-hover-qty-val:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      background: #f8fafc;
+    }
+
+    .p-hover-qty-val:focus {
+      outline: none;
+      box-shadow: inset 0 0 0 2px rgba(23, 101, 220, 0.28);
     }
 
     .p-hover-price-box {
@@ -1802,7 +1828,10 @@
             .show();
         }
 
-        $card.find(".js-card-hover-qty-val").text(String(state.qty || 1));
+        $card.find(".js-card-hover-qty-val").each(function () {
+          if (this === document.activeElement) return;
+          $(this).val(String(state.qty || 1));
+        });
         refreshCardHoverAddButton($card, state, resolved);
 
         var image = getQuickViewImage(product, resolved.variant);
@@ -2438,7 +2467,7 @@
                   "<div class='p-hover-qty-label'>Quantity</div>" +
                   "<div class='p-hover-qty-stepper'>" +
                     "<button type='button' class='js-card-hover-qty-dec' aria-label='Decrease quantity'>&minus;</button>" +
-                    "<span class='p-hover-qty-val js-card-hover-qty-val'>1</span>" +
+                    "<input type='number' class='p-hover-qty-val js-card-hover-qty-val' min='1' max='99' step='1' value='1' inputmode='numeric' aria-label='Quantity'>" +
                     "<button type='button' class='js-card-hover-qty-inc' aria-label='Increase quantity'>&plus;</button>" +
                   "</div>" +
                 "</div>" +
@@ -2697,6 +2726,37 @@
           if (!state) return;
           state.qty = Math.min(99, Number(state.qty || 1) + 1);
           updateCardHoverPanel($card);
+        })
+        .on("click focus", ".js-card-hover-qty-val", function (event) {
+          event.stopPropagation();
+        })
+        .on("keydown", ".js-card-hover-qty-val", function (event) {
+          event.stopPropagation();
+          if (event.key === "Enter") {
+            event.preventDefault();
+            $(this).trigger("blur");
+          }
+        })
+        .on("input", ".js-card-hover-qty-val", function (event) {
+          event.stopPropagation();
+          var $card = $(this).closest(".p-card");
+          var state = getCardHoverState($card.find(".p-card-hover-panel").attr("data-product-id"));
+          if (!state) return;
+          var raw = String($(this).val() || "").trim();
+          if (!raw) return;
+          var parsed = Math.round(Number(raw));
+          if (!isFinite(parsed)) return;
+          state.qty = Math.max(1, Math.min(99, parsed));
+        })
+        .on("change blur", ".js-card-hover-qty-val", function (event) {
+          event.stopPropagation();
+          var $input = $(this);
+          var $card = $input.closest(".p-card");
+          var state = getCardHoverState($card.find(".p-card-hover-panel").attr("data-product-id"));
+          if (!state) return;
+          var parsed = Math.round(Number($input.val()));
+          state.qty = (!isFinite(parsed) || parsed < 1) ? Math.max(1, Number(state.qty || 1)) : Math.min(99, parsed);
+          $input.val(String(state.qty));
         })
         .on("click", ".js-card-hover-add", function (event) {
           event.preventDefault();

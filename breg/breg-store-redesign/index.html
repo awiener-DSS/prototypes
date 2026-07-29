@@ -85,9 +85,13 @@
     }
     .home-modules-first-row {
       position: relative;
+      z-index: 2;
       padding: 18px 48px;
       background: #f1f1f1;
       border-radius: 10px;
+    }
+    .home-modules-first-row:has(.p-card:hover) {
+      z-index: 40;
     }
     .home-modules-row-inner {
       display: grid;
@@ -142,6 +146,9 @@
       flex: 0 0 auto;
       padding: 4px 2px 2px;
     }
+    .home-modules-first-row .has-product-card-hover .p-card-default-body .p-body {
+      padding: 4px 2px 2px;
+    }
     .home-modules-first-row .p-title {
       margin: 2px 0 0;
       font-size: 12px;
@@ -169,6 +176,28 @@
       .home-modules-first-row .product-grid.product-carousel .p-card-link {
         height: 100%;
         min-height: 0;
+      }
+      /* Match My Favorites image sizing for hover-enabled pickup cards */
+      .home-modules-first-row .has-product-card-hover .p-card {
+        display: flex;
+        flex-direction: column;
+      }
+      .home-modules-first-row .has-product-card-hover .p-media {
+        flex: 1 1 0;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .home-modules-first-row .has-product-card-hover .p-media .p-card-link {
+        flex: 1 1 0;
+        min-height: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .home-modules-first-row .has-product-card-hover .p-card-default-body {
+        flex: 0 0 auto;
+        padding: 0;
       }
       .home-modules-first-row .p-thumb,
       .home-modules-first-row .p-thumb-list {
@@ -203,8 +232,15 @@
       .home-modules-first-row .product-grid.product-carousel .p-card-link {
         height: auto;
       }
+      .home-modules-first-row .has-product-card-hover .p-media,
+      .home-modules-first-row .has-product-card-hover .p-media .p-card-link {
+        flex: 0 0 auto;
+        height: auto;
+        min-height: 0;
+      }
       .home-modules-first-row .p-thumb,
-      .home-modules-first-row .p-thumb-list {
+      .home-modules-first-row .p-thumb-list,
+      .home-modules-first-row .has-product-card-hover .p-thumb {
         flex: 0 0 auto;
         width: 100%;
         height: auto;
@@ -337,6 +373,9 @@
       position: relative;
       z-index: 1;
     }
+    .home-modules-first-row .product-section:has(.p-card:hover) {
+      z-index: 50;
+    }
     .home-modules-row .login-panel {
       display:none;
       flex-direction:column;
@@ -353,10 +392,32 @@
       padding-top:4px;
       padding-bottom:2px;
     }
+    .product-grid.product-carousel.has-product-card-hover,
+    .product-carousel-wrap:has(.has-product-card-hover),
+    .product-section:has(.has-product-card-hover) {
+      overflow: visible;
+    }
     .product-grid.product-carousel::-webkit-scrollbar { display:none; }
     .p-card { background:#fff; border:0; border-radius:14px; overflow:hidden; transition:transform .16s ease, box-shadow .16s ease, margin-top .16s ease; display:flex; flex-direction:column; min-height:0; position:relative; font-family:var(--font-body); margin-top:4px; }
+    .has-product-card-hover .p-card { overflow: visible; }
     .product-grid.product-carousel .p-card { min-width:0; }
     .p-card-link { display:flex; flex-direction:column; color:inherit; text-decoration:none; height:100%; }
+    /* Hover panels are absolute; media must keep intrinsic thumb height or sections stack on each other */
+    .has-product-card-hover .p-media {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      min-height: 0;
+    }
+    .has-product-card-hover .p-media .p-card-link {
+      height: auto;
+      flex: 0 0 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .has-product-card-hover .p-card-default-body { flex:0 0 auto; }
     .p-card-link:hover, .p-card-link:focus { color:inherit; text-decoration:none; }
     .p-card:hover { transform:translateY(0); margin-top:0; box-shadow:0 8px 20px rgba(0,71,187,.15); }
     .p-thumb { width:100%; aspect-ratio:4/3; object-fit:cover; background:#fff; display:block; border:0; }
@@ -412,32 +473,72 @@
     .login-panel-btn.secondary { background: #fff; color: var(--breg-primary, #0047bb); }
     .login-panel-btn:hover, .login-panel-btn:focus { text-decoration: none; }
     .home-modules-second-row {
-      display:block;
-      margin-top:14px;
+      display: block;
+      margin-top: 14px;
+      position: relative;
+      z-index: 1;
+    }
+    .home-modules-second-row:has(.p-card:hover) {
+      z-index: 20;
     }
     .home-modules-second-row .home-modules-row-inner {
-      grid-template-columns:1fr;
-      gap:18px;
-      padding:0;
-      align-items:stretch;
-      margin-bottom:2%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 28px;
+      padding: 0;
+      align-items: start;
+      margin-bottom: 2%;
     }
     .home-modules-second-row .product-section {
-      width:100%;
-      margin-top:0;
-      padding:18px 18px 12px 24px;
-      border:1px solid #d5d9d9;
-      border-radius:10px;
-      box-shadow:0 4px 6px rgba(15,17,17,.04);
-      box-sizing:border-box;
+      width: 100%;
+      margin-top: 0;
+      padding: 18px 18px 12px 24px;
+      border: 1px solid #d5d9d9;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(15, 17, 17, 0.04);
+      box-sizing: border-box;
+      background: #fff;
+      position: relative;
+      z-index: 1;
+      overflow: visible;
+    }
+    .home-modules-second-row .product-section:has(.p-card:hover) {
+      z-index: 5;
     }
     .home-modules-second-row .product-carousel-wrap {
-      overflow-x:auto;
-      -webkit-overflow-scrolling:touch;
+      overflow: visible;
+      position: relative;
+      z-index: 1;
+      -webkit-overflow-scrolling: touch;
+    }
+    .home-modules-second-row .has-product-card-hover .p-card {
+      height: auto;
+    }
+    .home-modules-second-row .has-product-card-hover .p-media,
+    .home-modules-second-row .has-product-card-hover .p-media .p-card-link {
+      flex: 0 0 auto;
+      height: auto;
+      min-height: 0;
+    }
+    .home-modules-second-row .has-product-card-hover .p-thumb {
+      width: 100%;
+      height: auto;
+      max-height: none;
+      aspect-ratio: 4 / 3;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+    .home-modules-second-row .has-product-card-hover .p-card:hover {
+      z-index: 30;
+    }
+    @media (max-width: 767px) {
+      .home-modules-second-row .product-carousel-wrap {
+        overflow-x: auto;
+      }
     }
     .home-modules-second-row .product-grid.product-carousel {
-      grid-template-columns:repeat(6, minmax(0, 1fr));
-      gap:10px;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
     }
 
     @media (max-width:1199px){
@@ -450,7 +551,7 @@
       }
       .home-modules-first-row .product-section{padding:18px 18px 12px 24px;}
       .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px;}
-      .home-modules-second-row .home-modules-row-inner{gap:12px;}
+      .home-modules-second-row .home-modules-row-inner{gap:28px;}
       .home-modules-second-row .product-section{padding:18px 18px 12px 24px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
       .home-order-row{
@@ -489,7 +590,7 @@
       }
       .home-modules-first-row .product-section{padding:18px 14px 12px;}
       .home-modules-first-row .product-grid.product-carousel{grid-template-columns:repeat(2, minmax(0,1fr));}
-      .home-modules-second-row .home-modules-row-inner{gap:12px;}
+      .home-modules-second-row .home-modules-row-inner{gap:28px;}
       .home-modules-second-row .product-section{padding:18px 14px 12px;}
       .home-modules-second-row .product-grid.product-carousel{grid-template-columns:repeat(3, minmax(0, 1fr));}
       .hero-panel{border-radius:16px;}
@@ -538,6 +639,7 @@
     }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
+  <link rel="stylesheet" href="assets/product-card-hover.css?v=20260729c">
 </head>
 <body>
   <header class="top-header">
@@ -653,11 +755,14 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260721b"></script>
+  <script src="assets/shell.js?v=20260729c"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
+  <script src="assets/product-facets.js?v=20260609a"></script>
   <script src="assets/catalog-listing.js?v=20260609a"></script>
   <script src="assets/catalog-image-resolver.js"></script>
+  <script src="assets/price-loading.js?v=20260609a"></script>
+  <script src="assets/product-card-hover.js?v=20260729b"></script>
   <script>
     (function () {
       var missingProductImage = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
@@ -788,11 +893,31 @@
         return sectionCounts[id] || fallback || 4;
       }
 
+      var HOVER_GRID_IDS = {
+        pickUpGrid: true,
+        topRatedGridSignedIn: true,
+        recommendedGrid: true
+      };
+
+      function findCatalogProductById(productId) {
+        var id = String(productId || "");
+        if (!id) return null;
+        return catalog.find(function (item) { return String(item.id) === id; }) || null;
+      }
+
       function renderGrid(id, products, maxCount) {
         var $grid = $("#" + id);
         var limit = maxCount || sectionLimit(id, 4);
+        var enableHover = !!HOVER_GRID_IDS[id] && !!(window.BregProductCardHover);
         $grid.empty();
         products.slice(0, limit).forEach(function (p) {
+          if (enableHover) {
+            $grid.append(window.BregProductCardHover.buildCardHtml(p, {
+              missingImage: missingProductImage,
+              enableHover: true
+            }));
+            return;
+          }
           var name = escapeHtml(p.name || "");
           var category = encodeURIComponent(p.category || "Knee Bracing");
           var productHref = "product-detail.html?category=" + category + "&id=" + encodeURIComponent(p.id);
@@ -816,6 +941,12 @@
           this.style.setProperty("border", "0", "important");
           this.style.setProperty("background", "#fff", "important");
         });
+        if (enableHover) {
+          window.BregProductCardHover.bindEvents();
+          window.BregProductCardHover.initContainer("#" + id, {
+            findProduct: findCatalogProductById
+          });
+        }
       }
 
       function renderPreviousOrders(orders) {

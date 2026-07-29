@@ -186,7 +186,7 @@
     .pdp-top-cart-btn[disabled] { opacity: .55; cursor: not-allowed; }
     .pdp-mobile-sticky-cart { display: none; }
     .pdp-top-bulk-btn {
-      margin-top: 8px;
+      margin-top: 14px;
       border: 1px solid #d1d5dc;
       background: #fff;
       border-radius: 999px;
@@ -207,6 +207,9 @@
       color: #0a0a0a;
       width: 100%;
       height: 38px;
+    }
+    .pdp-config-wrap {
+      margin-top: 14px;
     }
     .pdp-config {
       display: grid;
@@ -1004,127 +1007,158 @@
       font-size: 13px;
       color: #0f172a;
     }
-    .cart-added-dialog { width: min(980px, 96vw); }
-    .cart-added-body { padding: 14px 16px 16px; }
-    .cart-added-note {
-      margin: 0 0 10px;
-      font-size: 14px;
+    #cartAddedModal .cart-added-dialog {
+      width: min(560px, 96vw);
+      max-height: min(92vh, 92dvh);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    /* iPad / tablet: keep confirmation in the upper-middle of the visible viewport */
+    @media (min-width: 744px) and (max-width: 1199px) {
+      #cartAddedModal.bulk-modal.open {
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: max(40px, calc(env(safe-area-inset-top, 0px) + 24px), 8vh);
+        padding-bottom: max(24px, env(safe-area-inset-bottom, 0px));
+        overflow-x: hidden;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        height: 100dvh;
+        max-height: 100dvh;
+        box-sizing: border-box;
+      }
+      #cartAddedModal .cart-added-dialog {
+        width: min(560px, 94vw);
+        max-height: min(78dvh, 78vh);
+        margin: 0 auto;
+      }
+      #cartAddedModal .cart-added-lines {
+        max-height: min(32vh, 280px);
+      }
+    }
+    #cartAddedModal .cart-added-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+    #cartAddedModal .cart-added-top { flex: 0 0 auto; }
+    #cartAddedModal .cart-added-note {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 600;
       color: #0f172a;
     }
-    .cart-added-sub {
+    #cartAddedModal .cart-added-sub {
       margin: 0 0 12px;
       font-size: 13px;
       color: #475569;
     }
-    .cart-added-picked {
-      margin: 0 0 12px;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      background: #fff;
-      padding: 10px;
-    }
-    .cart-added-picked h4 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      color: #0f172a;
-    }
-    .cart-added-picked-list {
+    #cartAddedModal .cart-added-lines {
+      display: grid;
+      gap: 10px;
       margin: 0;
-      padding: 0;
-      list-style: none;
+      padding: 2px 2px 12px;
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: min(42vh, 360px);
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    #cartAddedModal .cart-added-line {
       display: grid;
-      gap: 6px;
-    }
-    .cart-added-picked-row {
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      gap: 10px;
-      align-items: baseline;
-      border-bottom: 1px solid #eef2f7;
-      padding-bottom: 6px;
-    }
-    .cart-added-picked-row:last-child {
-      border-bottom: 0;
-      padding-bottom: 0;
-    }
-    .cart-added-picked-name {
-      font-size: 12px;
-      color: #0f172a;
-      line-height: 1.35;
-    }
-    .cart-added-picked-sku,
-    .cart-added-picked-qty {
-      font-size: 12px;
-      color: #475569;
-      white-space: nowrap;
-    }
-    .cart-added-related {
+      grid-template-columns: 72px 1fr;
+      gap: 12px;
+      align-items: start;
       border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      background: #f8fafc;
+      border-radius: 12px;
+      background: #fff;
       padding: 10px;
     }
-    .cart-added-related h4 {
-      margin: 0 0 8px;
-      font-size: 14px;
-      color: #0f172a;
-    }
-    .cart-added-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .cart-added-item {
-      border: 1px solid #dbe3ea;
-      border-radius: 8px;
-      background: #fff;
-      padding: 8px;
-      display: grid;
-      grid-template-columns: 64px 1fr;
-      gap: 8px;
-      align-items: center;
-    }
-    .cart-added-item img {
-      width: 64px;
-      height: 64px;
+    #cartAddedModal .cart-added-line img {
+      width: 72px;
+      height: 72px;
       object-fit: contain;
-      border: 1px solid #e5e7eb;
-      border-radius: 6px;
-      background: #fff;
+      border: 1px solid #e8edf1;
+      border-radius: 8px;
+      background: #f8fafc;
       padding: 4px;
     }
-    .cart-added-item-title {
+    #cartAddedModal .cart-added-line-name {
       margin: 0 0 4px;
-      font-size: 12px;
+      font-size: 14px;
+      font-weight: 600;
       line-height: 1.35;
       color: #0f172a;
     }
-    .cart-added-item-title a {
+    #cartAddedModal .cart-added-line-name a {
       color: inherit;
       text-decoration: none;
     }
-    .cart-added-item-title a:hover,
-    .cart-added-item-title a:focus {
+    #cartAddedModal .cart-added-line-name a:hover,
+    #cartAddedModal .cart-added-line-name a:focus {
       text-decoration: underline;
+      color: #0047bb;
     }
-    .cart-added-item-price {
-      margin: 0 0 6px;
+    #cartAddedModal .cart-added-line-meta {
+      margin: 0 0 2px;
       font-size: 12px;
-      color: #b12704;
+      color: #475569;
+      line-height: 1.4;
     }
-    .cart-added-add {
-      border: 1px solid #d1d5dc;
-      background: #fff;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
+    #cartAddedModal .cart-added-line-pricing {
+      margin: 6px 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      font-size: 13px;
       color: #0f172a;
+    }
+    #cartAddedModal .cart-added-line-pricing strong {
+      color: #0047bb;
+      font-weight: 700;
+    }
+    #cartAddedModal .cart-added-summary {
+      border: 1px solid #dbe7f5;
+      border-radius: 12px;
+      background: #f4f8fc;
+      padding: 12px 14px;
+      display: grid;
+      gap: 6px;
+      flex: 0 0 auto;
+      margin-top: auto;
+    }
+    #cartAddedModal .cart-added-summary-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 13px;
+      color: #334155;
+    }
+    #cartAddedModal .cart-added-summary-row strong {
+      color: #0f172a;
+      font-size: 14px;
+    }
+    #cartAddedModal .cart-added-picked {
+      display: none !important;
+    }
+    #cartAddedModal .bulk-foot {
+      flex: 0 0 auto;
     }
     @media (max-width: 767px) {
       .bulk-filters { grid-template-columns: 1fr; }
       .image-zoom-thumbs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .buy-now-grid { grid-template-columns: 1fr; }
-      .cart-added-list { grid-template-columns: 1fr; }
+      #cartAddedModal .cart-added-dialog { width: 100%; }
+      #cartAddedModal .cart-added-lines { max-height: min(48vh, 420px); }
+      #cartAddedModal .cart-added-line {
+        grid-template-columns: 64px 1fr;
+      }
       #bulkOrderModal {
         padding: 0;
         align-items: flex-end;
@@ -1450,8 +1484,8 @@
 
     <section id="pdpRoot"></section>
 
-    <section class="pdp-related-strip" id="pdpRelatedStrip" aria-label="Frequently Purchased Together">
-      <h3>Frequently Purchased Together</h3>
+    <section class="pdp-related-strip" id="pdpRelatedStrip" aria-label="Accessories">
+      <h3>Accessories</h3>
       <div id="pdpRailStrip"></div>
     </section>
 
@@ -1612,13 +1646,13 @@
           <button type="button" class="bulk-close" id="cartAddedClose" aria-label="Close">×</button>
         </div>
         <div class="cart-added-body">
-          <p class="cart-added-note" id="cartAddedSummary"></p>
-          <p class="cart-added-sub" id="cartAddedOtherItems"></p>
-          <div class="cart-added-picked" id="cartAddedPicked" style="display:none;"></div>
-          <div class="cart-added-related">
-            <h4>Frequently Purchased Together</h4>
-            <div class="cart-added-list" id="cartAddedRelated"></div>
+          <div class="cart-added-top">
+            <p class="cart-added-note" id="cartAddedSummary"></p>
+            <p class="cart-added-sub" id="cartAddedOtherItems"></p>
           </div>
+          <div class="cart-added-lines" id="cartAddedLines"></div>
+          <div class="cart-added-summary" id="cartAddedCartSummary"></div>
+          <div class="cart-added-picked" id="cartAddedPicked" style="display:none;"></div>
         </div>
         <div class="bulk-foot">
           <button type="button" class="bulk-btn-cancel" id="cartAddedContinue">Continue Shopping</button>
@@ -1632,7 +1666,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260721b"></script>
+  <script src="assets/shell.js?v=20260729c"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
@@ -1863,30 +1897,32 @@
                     "</div>" +
                   "</div>" +
                 "</div>" +
-	                "<div class='pdp-price-wrap'>" +
-	                  "<div class='pdp-price-row breg-price-loading-wrap breg-price-loading-wrap--pdp'>" +
-	                    "<span class='breg-price-loading js-pdp-price-loading' role='status' aria-label='Loading price'></span>" +
-	                    "<p class='pdp-price' id='pdpPriceValue' style='display:none;'>$" + BregFormatMoney(Number(product.price || 0)) + "</p>" +
-	                  "</div>" +
-	                  "<p class='pdp-inventory-msg' id='topInventoryMsg' style='display:none;'></p>" +
-	                  "<div class='pdp-top-cart-row'>" +
-	                    "<div class='pdp-top-cart-controls'>" +
-	                      "<button type='button' id='topAddToCartBtn' class='pdp-top-cart-btn'" + (isSignedIn && hasConfigurableOptions ? " disabled" : "") + ">" + (isSignedIn ? (hasConfigurableOptions ? "Select Options to Continue" : "Add to Cart") : "Login to Continue") + "</button>" +
-	                      "<div class='pdp-top-qty' id='topQtyWrap'><p class='pdp-top-qty-label'>Qty</p><select id='topQtySelect' class='pdp-qty-select' disabled><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option></select></div>" +
-	                    "</div>" +
-	                    "<button type='button' id='topCheckInventoryBtn' class='pdp-check-inventory-btn' style='display:none;'>Check Inventory</button>" +
-	                    (hasConfigurableOptions ? "<button type='button' id='topBulkOrderBtn' class='pdp-top-bulk-btn'>Or Bulk Order Multiple Variants</button>" : "") +
-	                  "</div>" +
-	                "</div>" +
+                (hasConfigurableOptions ? "<button type='button' id='topBulkOrderBtn' class='pdp-top-bulk-btn'>Bulk Order Multiple Variants</button>" : "") +
+                (hasConfigurableOptions
+                  ? ("<div class='pdp-config-wrap'>" +
+                      "<div class='pdp-config' id='pdpConfig'></div>" +
+                      "<div class='pdp-sku-selected' id='pdpSelectedSku'></div>" +
+                    "</div>")
+                  : ("<div class='pdp-config' id='pdpConfig' style='display:none;'></div>" +
+                    "<div class='pdp-sku-selected' id='pdpSelectedSku' style='display:none;'></div>")) +
+                "<div class='pdp-price-wrap'>" +
+                  "<div class='pdp-price-row breg-price-loading-wrap breg-price-loading-wrap--pdp'>" +
+                    "<span class='breg-price-loading js-pdp-price-loading' role='status' aria-label='Loading price'></span>" +
+                    "<p class='pdp-price' id='pdpPriceValue' style='display:none;'>$" + BregFormatMoney(Number(product.price || 0)) + "</p>" +
+                  "</div>" +
+                "</div>" +
+                "<div class='pdp-top-cart-row'>" +
+                  "<div class='pdp-top-cart-controls'>" +
+                    "<button type='button' id='topAddToCartBtn' class='pdp-top-cart-btn'" + (isSignedIn && hasConfigurableOptions ? " disabled" : "") + ">" + (isSignedIn ? (hasConfigurableOptions ? "Select Options to Continue" : "Add to Cart") : "Login to Continue") + "</button>" +
+                    "<div class='pdp-top-qty' id='topQtyWrap'><p class='pdp-top-qty-label'>Qty</p><select id='topQtySelect' class='pdp-qty-select' disabled><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>10</option></select></div>" +
+                  "</div>" +
+                  "<button type='button' id='topCheckInventoryBtn' class='pdp-check-inventory-btn' style='display:none;'>Check Inventory</button>" +
+                  "<p class='pdp-inventory-msg' id='topInventoryMsg' style='display:none;'></p>" +
+                "</div>" +
               "</div>" +
-              (hasConfigurableOptions ? ("<div class='pdp-card'>" +
-                "<div class='pdp-config' id='pdpConfig'></div>" +
-                "<div class='pdp-sku-selected' id='pdpSelectedSku'></div>" +
-              "</div>") : ("<div class='pdp-config' id='pdpConfig' style='display:none;'></div>" +
-                "<div class='pdp-sku-selected' id='pdpSelectedSku' style='display:none;'></div>")) +
             "</section>" +
             "<aside class='pdp-rail'>" +
-              "<h3>Frequently Purchased Together</h3>" +
+              "<h3>Accessories</h3>" +
               "<div id='pdpRail'></div>" +
             "</aside>" +
 	          "</div>";
@@ -2234,8 +2270,8 @@
             "<div class='pdp-rail-name'>" + escapeHtml(p.name) + "</div>" +
           "</a>";
         });
-        $("#pdpRail").html(railHtml || "<div class='pdp-empty'>No related products found.</div>");
-        $("#pdpRailStrip").html(railHtml || "<div class='pdp-empty'>No related products found.</div>");
+        $("#pdpRail").html(railHtml || "<div class='pdp-empty'>No accessories found.</div>");
+        $("#pdpRailStrip").html(railHtml || "<div class='pdp-empty'>No accessories found.</div>");
         $("#pdpRelatedStrip").toggleClass("is-visible", related.length > 0);
 
         var currentResolvedSku = product.id;
@@ -2495,73 +2531,75 @@
           updateCartBadge(cart);
           return cart;
         }
+        function buildCartAddedLineHtml(line) {
+          var sku = String(line.sku || "");
+          var name = String(line.name || sku || "Product");
+          var qty = Number(line.qty || 0);
+          var price = Number(line.price || 0);
+          var lineTotal = qty * price;
+          var category = String(line.category || product.category || "");
+          var img = normalizeImage(line.image) || normalizeImage(product.image) || missingProductImage;
+          var href = "product-detail.html?category=" + encodeURIComponent(category) + "&id=" + encodeURIComponent(sku || product.id || "");
+          return "<article class='cart-added-line'>" +
+            "<a href='" + href + "'><img src='" + escapeHtml(img) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(name) + "'></a>" +
+            "<div>" +
+              "<p class='cart-added-line-name'><a href='" + href + "'>" + escapeHtml(name) + "</a></p>" +
+              "<p class='cart-added-line-meta'>Item #: " + escapeHtml(sku) + "</p>" +
+              (category ? "<p class='cart-added-line-meta'>" + escapeHtml(category) + "</p>" : "") +
+              "<div class='cart-added-line-pricing'>" +
+                "<span>Qty <strong>" + qty + "</strong></span>" +
+                "<span>$" + BregFormatMoney(price) + " each</span>" +
+                "<span>Line total <strong>$" + BregFormatMoney(lineTotal) + "</strong></span>" +
+              "</div>" +
+            "</div>" +
+          "</article>";
+        }
+        function renderCartAddedDetails(addedLines, cart) {
+          var lines = Array.isArray(addedLines) ? addedLines : [];
+          var cartLines = Array.isArray(cart) ? cart : loadCartState();
+          var addedQty = lines.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
+          var addedSubtotal = lines.reduce(function (sum, line) {
+            return sum + (Number(line.qty || 0) * Number(line.price || 0));
+          }, 0);
+          var cartQty = cartLines.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
+          var cartSubtotal = cartLines.reduce(function (sum, line) {
+            return sum + (Number(line.qty || 0) * Number(line.price || 0));
+          }, 0);
+          var linesHtml = lines.map(buildCartAddedLineHtml).join("");
+          $("#cartAddedLines").html(linesHtml || "<div class='pdp-empty'>No items were added.</div>");
+          $("#cartAddedCartSummary").html(
+            "<div class='cart-added-summary-row'><span>Just added</span><strong>" + addedQty + " item" + (addedQty === 1 ? "" : "s") + " · $" + BregFormatMoney(addedSubtotal) + "</strong></div>" +
+            "<div class='cart-added-summary-row'><span>Cart total</span><strong>" + cartQty + " item" + (cartQty === 1 ? "" : "s") + " · $" + BregFormatMoney(cartSubtotal) + "</strong></div>"
+          );
+          if (lines.length === 1) {
+            $("#cartAddedSummary").text("1 SKU added to cart");
+          } else {
+            $("#cartAddedSummary").text(lines.length + " SKUs added to cart");
+          }
+          $("#cartAddedOtherItems").text(
+            "You have " + cartQty + " item" + (cartQty === 1 ? "" : "s") + " in your cart."
+          );
+          $("#cartAddedLines").scrollTop(0);
+          return { addedQty: addedQty, cartQty: cartQty };
+        }
         function openCartAddedModal(mainLine) {
           var cart = loadCartState();
-          var totalQty = cart.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
           var thisQty = Number(mainLine.qty || 0);
-          var otherQty = Math.max(0, totalQty - thisQty);
-          $("#cartAddedSummary").text(mainLine.name + " (Qty " + thisQty + ") was added to your cart.");
-          $("#cartAddedOtherItems").text(
-            otherQty > 0
-              ? ("You also have " + otherQty + " other item" + (otherQty === 1 ? "" : "s") + " in your cart.")
-              : "This is the first item in your cart."
-          );
+          renderCartAddedDetails([mainLine], cart);
           $("#cartAddedPicked").hide().html("");
-          var relatedHtml = "";
-          related.forEach(function (p) {
-            var pImg = normalizeImage(p.image) || missingProductImage;
-            var pHref = "product-detail.html?category=" + encodeURIComponent(p.category || "") + "&id=" + encodeURIComponent(p.id || "");
-            relatedHtml += "<div class='cart-added-item'>" +
-              "<a href='" + pHref + "'><img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'></a>" +
-              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + BregFormatMoney(Number(p.price || 0)) + "</p>" +
-              "<button type='button' class='cart-added-add js-cart-added-add' data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-price='" + Number(p.price || 0).toFixed(2) + "' data-image='" + escapeHtml(pImg) + "' data-category='" + escapeHtml(p.category || "") + "'>Add</button></div>" +
-            "</div>";
-          });
-          $("#cartAddedRelated").html(relatedHtml || "<div class='pdp-empty'>No related products found.</div>");
           $("#cartAddedModal").data("buy-now-sku", mainLine.sku).data("buy-now-qty", thisQty).data("buy-now-price", Number(mainLine.price || 0));
           $("#cartAddedModal").addClass("open").attr("aria-hidden", "false");
+          $("#cartAddedModal").scrollTop(0);
         }
         function openCartAddedModalForBulk(lines) {
           var totalAdded = lines.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
-          var lineCount = lines.length;
           var first = lines[0] || { sku: product.id, qty: 1, price: Number(product.price || 0) };
           var cart = loadCartState();
-          var totalQty = cart.reduce(function (sum, line) { return sum + Number(line.qty || 0); }, 0);
-          var otherQty = Math.max(0, totalQty - totalAdded);
-          $("#cartAddedSummary").text(
-            lineCount + " SKU" + (lineCount === 1 ? "" : "s") + " (Qty " + totalAdded + ") were added to your cart."
-          );
-          $("#cartAddedOtherItems").text(
-            otherQty > 0
-              ? ("You also have " + otherQty + " other item" + (otherQty === 1 ? "" : "s") + " in your cart.")
-              : "These are the first items in your cart."
-          );
-          var pickedHtml = "<h4>Items added</h4><ul class='cart-added-picked-list'>";
-          lines.forEach(function (line) {
-            var sku = String(line.sku || "");
-            var qty = Number(line.qty || 0);
-            var name = String(line.name || sku || "Product");
-            pickedHtml += "<li class='cart-added-picked-row'>" +
-              "<span class='cart-added-picked-name'>" + escapeHtml(name) + "</span>" +
-              "<span class='cart-added-picked-sku'>" + escapeHtml(sku) + "</span>" +
-              "<span class='cart-added-picked-qty'>Qty " + qty + "</span>" +
-            "</li>";
-          });
-          pickedHtml += "</ul>";
-          $("#cartAddedPicked").html(pickedHtml).show();
-          var relatedHtml = "";
-          related.forEach(function (p) {
-            var pImg = normalizeImage(p.image) || missingProductImage;
-            var pHref = "product-detail.html?category=" + encodeURIComponent(p.category || "") + "&id=" + encodeURIComponent(p.id || "");
-            relatedHtml += "<div class='cart-added-item'>" +
-              "<a href='" + pHref + "'><img src='" + escapeHtml(pImg) + "' onerror=\"this.onerror=null;this.src='" + missingProductImage + "';\" alt='" + escapeHtml(p.name) + "'></a>" +
-              "<div><p class='cart-added-item-title'><a href='" + pHref + "'>" + escapeHtml(p.name) + "</a></p><p class='cart-added-item-price'>$" + BregFormatMoney(Number(p.price || 0)) + "</p>" +
-              "<button type='button' class='cart-added-add js-cart-added-add' data-sku='" + escapeHtml(p.id) + "' data-name='" + escapeHtml(p.name) + "' data-price='" + Number(p.price || 0).toFixed(2) + "' data-image='" + escapeHtml(pImg) + "' data-category='" + escapeHtml(p.category || "") + "'>Add</button></div>" +
-            "</div>";
-          });
-          $("#cartAddedRelated").html(relatedHtml || "<div class='pdp-empty'>No related products found.</div>");
-          $("#cartAddedModal").data("buy-now-sku", first.sku).data("buy-now-qty", Number(first.qty || 1)).data("buy-now-price", Number(first.price || 0));
+          renderCartAddedDetails(lines, cart);
+          $("#cartAddedPicked").hide().html("");
+          $("#cartAddedModal").data("buy-now-sku", first.sku).data("buy-now-qty", Number(first.qty || 1) || totalAdded).data("buy-now-price", Number(first.price || 0));
           $("#cartAddedModal").addClass("open").attr("aria-hidden", "false");
+          $("#cartAddedModal").scrollTop(0);
         }
         function closeCartAddedModal() {
           $("#cartAddedModal").removeClass("open").attr("aria-hidden", "true");
@@ -2706,6 +2744,19 @@
           });
         }
 
+        function scrollToPriceAndCart() {
+          var node = document.querySelector(".pdp-price-wrap") ||
+            document.querySelector(".pdp-top-cart-row") ||
+            document.getElementById("topAddToCartBtn");
+          if (!node) return;
+          var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          node.scrollIntoView({
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+            block: "center",
+            inline: "nearest"
+          });
+        }
+
         function getDefaultSellableSku(variants) {
           if (!variants || !variants.length) return String(product.id || "");
           var masterStem = String(product.id || "").split("-")[0] || "";
@@ -2720,7 +2771,7 @@
           var variants = variantsByMaster[product.id] || [];
           var resolved = product.id;
           var unresolvedReason = "";
-          var wasEnabled = !$("#topAddToCartBtn").prop("disabled");
+          var wasUnresolved = !!pdpCartState.unresolvedReason;
           var isConfigurable = hasConfigurableOptions;
 
           if (isMaster) {
@@ -2794,16 +2845,8 @@
               $("#topCheckInventoryBtn").hide();
             }
             $("#topInventoryMsg").hide().text("");
-            if (!wasEnabled && requiredFacets.length) {
-              var topCard = $("#pdpTopCard").get(0);
-              if (topCard) {
-                var prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-                topCard.scrollIntoView({
-                  behavior: prefersReducedMotion ? "auto" : "smooth",
-                  block: "center",
-                  inline: "nearest"
-                });
-              }
+            if (wasUnresolved && requiredFacets.length) {
+              scrollToPriceAndCart();
             }
           }
           pdpCartState.unresolvedReason = unresolvedReason;
@@ -2995,27 +3038,6 @@
         $("#cartAddedBuyNow").on("click", function () {
           closeCartAddedModal();
           window.location.href = "checkout.html";
-        });
-        $(document).on("click", ".js-cart-added-add", function () {
-          var line = {
-            sku: String($(this).attr("data-sku") || ""),
-            qty: 1,
-            name: String($(this).attr("data-name") || ""),
-            price: Number($(this).attr("data-price") || 0),
-            image: String($(this).attr("data-image") || ""),
-            category: String($(this).attr("data-category") || "")
-          };
-          addToCartLine(line);
-          $(this).text("Added").prop("disabled", true);
-          var cart = loadCartState();
-          var totalQty = cart.reduce(function (sum, item) { return sum + Number(item.qty || 0); }, 0);
-          var baseQty = Number($("#cartAddedModal").data("buy-now-qty") || 0);
-          var otherQty = Math.max(0, totalQty - baseQty);
-          $("#cartAddedOtherItems").text(
-            otherQty > 0
-              ? ("You also have " + otherQty + " other item" + (otherQty === 1 ? "" : "s") + " in your cart.")
-              : "This is the first item in your cart."
-          );
         });
         $(document).on("keydown", function (e) {
           if (e.key === "Escape") {

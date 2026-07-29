@@ -527,152 +527,242 @@
 
     .p-card-hover-panel {
       display: none;
-      padding: 0 12px 12px;
+      position: relative;
+      box-sizing: border-box;
+      width: min(400px, calc(100vw - 24px));
+      max-height: min(510px, 78vh);
       background: #fff;
+      border: 1px solid #d3dfed;
+      border-radius: 14px;
+      box-shadow: 0 18px 44px rgba(14, 41, 87, 0.23);
+      overflow: hidden;
+      opacity: 1;
+      transform: translateY(0);
+      flex-direction: column;
+    }
+
+    .p-hover-head {
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 12px;
+      align-items: center;
+      padding: 14px 15px 11px;
+      border-bottom: 1px solid #e2e9f2;
+      background: #fff;
+      flex: 0 0 auto;
+    }
+
+    .p-hover-thumb {
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .p-hover-thumb img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      mix-blend-mode: multiply;
     }
 
     .p-hover-name {
-      margin: 0 0 4px;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.35;
-      color: #11181f;
-    }
-
-    .p-hover-price-wrap {
-      display: flex;
-      align-items: center;
-      min-height: 22px;
-      margin: 0 0 6px;
-    }
-
-    .p-hover-price {
       margin: 0;
-      font-size: 15px;
-      font-weight: 700;
+      font-size: 16px;
+      font-weight: 800;
       line-height: 1.2;
-      color: #00a7e1;
-    }
-
-    .p-hover-desc {
-      margin: 0 0 10px;
-      font-size: 12px;
-      line-height: 1.45;
-      color: #5f6c78;
+      color: #17233a;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
 
-    .p-hover-config {
-      display: grid;
-      gap: 10px;
-    }
-
-    .p-hover-facet-label {
-      display: block;
-      margin: 0 0 6px;
+    .p-hover-sub {
+      margin: 5px 0 0;
       font-size: 12px;
-      font-weight: 600;
-      color: #37424d;
+      color: #64738a;
+      line-height: 1.3;
     }
 
-    .p-hover-options {
+    .p-hover-progress-wrap {
+      flex: 0 0 auto;
+    }
+
+    .p-hover-progress-line {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .p-hover-swatch {
-      width: 28px;
-      height: 28px;
-      border-radius: 999px;
-      border: 2px solid transparent;
-      padding: 0;
-      cursor: pointer;
-      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
-    }
-
-    .p-hover-swatch.active {
-      border-color: #11181f;
-      box-shadow: 0 0 0 1px #fff, 0 0 0 3px rgba(17, 24, 31, 0.28);
-    }
-
-    .p-hover-size {
-      min-width: 36px;
-      height: 36px;
-      border: 0;
-      border-radius: 8px;
-      background: #f1f5f9;
-      color: #11181f;
-      font-size: 13px;
-      font-weight: 600;
-      padding: 0 10px;
-      cursor: pointer;
-    }
-
-    .p-hover-size.active {
-      background: #e2e8f0;
-      box-shadow: inset 0 0 0 1px #94a3b8;
-    }
-
-    .p-hover-chip {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      background: #f8fafc;
-      color: #11181f;
-      font-size: 12px;
-      font-weight: 600;
-      line-height: 1;
-      padding: 9px 12px;
-      cursor: pointer;
-    }
-
-    .p-hover-chip.active {
-      background: #e2e8f0;
-      box-shadow: inset 0 0 0 1px #94a3b8;
-    }
-
-    .p-hover-msg {
-      margin: 8px 0 0;
-      font-size: 11px;
-      line-height: 1.35;
-      color: #64748b;
-    }
-
-    .p-hover-cart-row {
-      margin-top: 12px;
-      display: flex;
-      align-items: flex-end;
       justify-content: space-between;
       gap: 10px;
+      padding: 10px 15px 7px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #435774;
     }
 
-    .p-hover-qty-label {
+    .p-hover-bar {
+      height: 4px;
+      margin: 0 15px;
+      background: #e6edf6;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .p-hover-bar > span {
       display: block;
-      margin: 0 0 6px;
+      height: 100%;
+      width: 0;
+      background: #1765dc;
+      transition: width 0.2s ease;
+    }
+
+    .p-hover-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: 310px;
+      overflow: auto;
+      padding: 5px 15px 12px;
+      scrollbar-width: thin;
+    }
+
+    .p-hover-config {
+      display: block;
+    }
+
+    .p-hover-group {
+      padding: 10px 0;
+      border-bottom: 1px solid #edf1f6;
+    }
+
+    .p-hover-group:last-of-type {
+      border-bottom: 0;
+    }
+
+    .p-hover-group-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
       font-size: 12px;
-      font-weight: 600;
-      color: #37424d;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #17233a;
+    }
+
+    .p-hover-step {
+      display: grid;
+      place-items: center;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #0759cc;
+      color: #fff;
+      font-size: 10px;
+      flex: 0 0 auto;
+    }
+
+    .p-hover-req {
+      color: #d8333f;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .p-hover-choices {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .p-hover-choice {
+      min-width: 60px;
+      padding: 7px 10px;
+      border-radius: 7px;
+      border: 1px solid #d4deea;
+      background: #fbfdff;
+      color: #25334a;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
+    }
+
+    .p-hover-choice:hover,
+    .p-hover-choice:focus {
+      border-color: #6f9eea;
+      background: #f2f7ff;
+      outline: 0;
+    }
+
+    .p-hover-choice.selected {
+      background: #073f9f;
+      color: #fff;
+      border-color: #073f9f;
+    }
+
+    .p-hover-choice.selected::after {
+      content: " ✓";
+    }
+
+    .p-hover-choice:disabled {
+      opacity: 0.7;
+      cursor: default;
+    }
+
+    .p-hover-notice {
+      margin-top: 10px;
+      border: 1px solid #cddff7;
+      background: #f3f7fd;
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-size: 11px;
+      color: #405b7e;
+      line-height: 1.35;
+    }
+
+    .p-hover-notice.success {
+      border-color: #bfe4d1;
+      background: #eff9f4;
+      color: #11673f;
+    }
+
+    .p-hover-footer {
+      position: relative;
+      left: auto;
+      right: auto;
+      bottom: auto;
+      display: grid;
+      grid-template-columns: 105px 82px minmax(0, 1fr);
+      gap: 12px;
+      align-items: end;
+      padding: 10px 14px 12px;
+      background: #fff;
+      border-top: 1px solid #dde6f1;
+      flex: 0 0 auto;
+    }
+
+    .p-hover-qty-label,
+    .p-hover-price-label {
+      font-size: 10px;
+      font-weight: 800;
+      margin-bottom: 5px;
+      color: #17233a;
     }
 
     .p-hover-qty-stepper {
       display: grid;
-      grid-template-columns: 36px 40px 36px;
-      align-items: center;
-      border-radius: 10px;
+      grid-template-columns: 32px 38px 32px;
+      height: 38px;
+      border: 1px solid #d4deea;
+      border-radius: 8px;
       overflow: hidden;
-      background: #f1f5f9;
+      background: #fff;
     }
 
     .p-hover-qty-stepper button {
       border: 0;
-      background: transparent;
-      color: #334155;
-      font-size: 18px;
+      background: #f7faff;
+      font-size: 17px;
       line-height: 1;
-      height: 36px;
+      color: #17233a;
       padding: 0;
       cursor: pointer;
     }
@@ -683,40 +773,104 @@
     }
 
     .p-hover-qty-val {
-      text-align: center;
+      display: grid;
+      place-items: center;
+      border-left: 1px solid #d4deea;
+      border-right: 1px solid #d4deea;
+      font-size: 12px;
+      font-weight: 800;
+      color: #17233a;
+      background: #fff;
+    }
+
+    .p-hover-price-box {
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #d4deea;
+      border-radius: 8px;
+      background: #f8fafc;
       font-size: 14px;
-      font-weight: 600;
-      color: #11181f;
-      border-left: 1px solid #e2e8f0;
-      border-right: 1px solid #e2e8f0;
-      height: 36px;
-      line-height: 36px;
+      font-weight: 800;
+      color: #17233a;
+      position: relative;
+      padding: 0 4px;
+      box-sizing: border-box;
+    }
+
+    .p-hover-price-box.pending {
+      color: #8a97aa;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .p-hover-price-pending {
+      display: none;
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .p-hover-price-box.pending .p-hover-price-pending {
+      display: inline;
+    }
+
+    .p-hover-price {
+      display: none;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #17233a;
     }
 
     .p-hover-add-btn {
-      width: 44px;
-      height: 44px;
+      height: 40px;
+      width: 100%;
       border: 0;
-      border-radius: 12px;
-      background: var(--breg-primary, #0047bb);
+      border-radius: 8px;
+      background: #a6bee9;
       color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.2;
+      padding: 0 8px;
+      cursor: not-allowed;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      flex: 0 0 auto;
+      text-align: center;
+    }
+
+    .p-hover-add-btn.enabled {
+      background: #073f9f;
       cursor: pointer;
     }
 
-    .p-hover-add-btn:hover,
-    .p-hover-add-btn:focus {
-      background: var(--breg-primary-dark, #001E62);
+    .p-hover-add-btn.enabled:hover,
+    .p-hover-add-btn.enabled:focus {
+      background: #062f78;
       outline: 0;
     }
 
     .p-hover-add-btn:disabled {
-      opacity: 0.45;
       cursor: not-allowed;
+    }
+
+    .p-card-hover-panel.no-options .p-hover-progress-wrap {
+      display: none;
+    }
+
+    .p-card-hover-panel.no-options .p-hover-sub {
+      display: none;
+    }
+
+    .p-card-hover-panel.no-options .p-hover-body {
+      display: none;
+    }
+
+    .p-card-hover-panel.no-options .p-hover-head {
+      border-bottom: 0;
     }
 
     @media (min-width: 768px) {
@@ -734,26 +888,27 @@
       }
 
       .pl-grid:not(.list) .p-card-hover-panel {
+        display: none;
         position: absolute;
-        left: 0;
-        right: 0;
-        top: 100%;
-        z-index: 8;
-        border: 1px solid #e8edf1;
-        border-top: 0;
-        border-radius: 0 0 14px 14px;
-        box-shadow: 0 16px 32px rgba(16, 26, 35, 0.18);
-        max-height: min(420px, 70vh);
-        overflow-y: auto;
+        left: 50%;
+        top: calc(100% - 8px);
+        bottom: auto;
+        z-index: 30;
+        transform: translateX(-50%);
       }
 
       .pl-grid:not(.list) .p-card:hover {
-        z-index: 20;
-        box-shadow: 0 8px 20px rgba(16, 26, 35, 0.12);
+        z-index: 40;
+        transform: translateY(-6px);
+        box-shadow: 0 10px 24px rgba(27, 42, 67, 0.16);
+      }
+
+      .pl-grid:not(.list) .p-card:hover .p-card-default-body {
+        visibility: hidden;
       }
 
       .pl-grid:not(.list) .p-card:hover .p-card-hover-panel {
-        display: block;
+        display: flex;
       }
     }
 
@@ -1042,7 +1197,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260721b"></script>
+  <script src="assets/shell.js?v=20260729c"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="assets/product-facets.js?v=20260609a"></script>
   <script src="analysis/product-descriptions.js?v=20260218a"></script>
@@ -1318,6 +1473,54 @@
         return window.matchMedia("(min-width: 768px)").matches;
       }
 
+      function positionCardHoverPanel($card) {
+        var $panel = $card.find(".p-card-hover-panel");
+        if (!$panel.length) return;
+        var panelEl = $panel.get(0);
+        if (!panelEl) return;
+
+        $panel.removeClass("is-above is-fixed").css({
+          position: "",
+          top: "",
+          bottom: "",
+          right: "",
+          width: "",
+          maxHeight: "",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: ""
+        });
+
+        requestAnimationFrame(function () {
+          if (!$card.is(":hover")) return;
+          var pad = 12;
+          $panel.css({ left: "50%", transform: "translateX(-50%)" });
+          var panelRect = panelEl.getBoundingClientRect();
+          var shift = 0;
+          if (panelRect.left < pad) shift = pad - panelRect.left;
+          if (panelRect.right > window.innerWidth - pad) shift = (window.innerWidth - pad) - panelRect.right;
+          if (shift) {
+            $panel.css("transform", "translateX(calc(-50% + " + shift + "px))");
+          }
+        });
+      }
+
+      function clearCardHoverPanelPosition($card) {
+        $card.find(".p-card-hover-panel")
+          .removeClass("is-above is-fixed")
+          .css({
+            left: "",
+            top: "",
+            bottom: "",
+            right: "",
+            width: "",
+            maxHeight: "",
+            transform: "",
+            position: "",
+            zIndex: ""
+          });
+      }
+
       function initCardHoverState(product) {
         if (!product) return null;
         var config = getQuickViewConfig(product);
@@ -1347,21 +1550,23 @@
           return;
         }
         var html = "";
-        (state.config.facetDefs || []).forEach(function (facet) {
+        (state.config.facetDefs || []).forEach(function (facet, index) {
           var isLocked = facet.values.length === 1;
+          var selectedValue = state.selected[facet.key];
           var optionsHtml = facet.values.map(function (value) {
-            var active = state.selected[facet.key] === value ? " active" : "";
+            var selected = selectedValue === value ? " selected" : "";
             var disabledAttr = isLocked ? " disabled" : "";
-            if (facet.key === "size") {
-              return "<button type='button' class='p-hover-size js-card-hover-option" + active + "' data-facet='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(value) + "'" + disabledAttr + ">" + escapeHtml(value) + "</button>";
-            }
-            return "<button type='button' class='p-hover-chip js-card-hover-option" + active + "' data-facet='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(value) + "'" + disabledAttr + ">" + escapeHtml(value) + "</button>";
+            return "<button type='button' class='p-hover-choice js-card-hover-option" + selected + "' data-facet='" + escapeHtml(facet.key) + "' data-value='" + escapeHtml(value) + "'" + disabledAttr + ">" + escapeHtml(value) + "</button>";
           }).join("");
           html +=
-            "<div class='p-hover-facet' data-facet='" + escapeHtml(facet.key) + "'>" +
-              "<span class='p-hover-facet-label'>" + escapeHtml(facet.label) + "</span>" +
-              "<div class='p-hover-options'>" + optionsHtml + "</div>" +
-            "</div>";
+            "<section class='p-hover-group' data-facet='" + escapeHtml(facet.key) + "'>" +
+              "<div class='p-hover-group-title'>" +
+                "<span class='p-hover-step'>" + (index + 1) + "</span>" +
+                escapeHtml(facet.label) +
+                (selectedValue ? "" : " <span class='p-hover-req'>• Required</span>") +
+              "</div>" +
+              "<div class='p-hover-choices'>" + optionsHtml + "</div>" +
+            "</section>";
         });
         $config.html(html);
       }
@@ -1389,27 +1594,127 @@
         return !resolved.reason;
       }
 
-      function refreshCardHoverAddButton($card, state, resolved) {
-        var $addBtn = $card.find(".js-card-hover-add");
-        var canAdd = !!resolved.sku && !resolved.reason;
-        var waitingForPrice = isSignedIn() && canShowHoverPrice(state.config, resolved) && !state.priceDisplayed;
-        if (!isSignedIn()) {
-          $addBtn.prop("disabled", false).attr("title", "Login to add to cart").attr("aria-label", "Login to add to cart");
+      function getHoverSelectionProgress(state) {
+        var facets = (state && state.config && state.config.facetDefs) || [];
+        var total = facets.length;
+        var done = facets.reduce(function (sum, facet) {
+          return sum + (state.selected && state.selected[facet.key] ? 1 : 0);
+        }, 0);
+        return { done: done, total: total, complete: total === 0 || done === total };
+      }
+
+      function nextHoverPrompt(state, resolved) {
+        if (resolved && resolved.reason) return resolved.reason;
+        var facets = (state && state.config && state.config.facetDefs) || [];
+        var next = facets.find(function (facet) {
+          return !(state.selected && state.selected[facet.key]);
+        });
+        return next ? ("Select " + next.label + " to continue.") : "All options selected.";
+      }
+
+      function getNextHoverFacetKey(state) {
+        var facets = (state && state.config && state.config.facetDefs) || [];
+        var next = facets.find(function (facet) {
+          return !(state.selected && state.selected[facet.key]);
+        });
+        return next ? String(next.key || "") : "";
+      }
+
+      function scrollCardHoverToNextOption($card, state) {
+        var $body = $card.find(".p-hover-body");
+        var nextKey = getNextHoverFacetKey(state);
+        if (nextKey) {
+          if (!$body.length) return;
+          var $target = $body.find(".p-hover-group").filter(function () {
+            return String($(this).attr("data-facet") || "") === nextKey;
+          }).first();
+          if (!$target.length) return;
+
+          var bodyEl = $body.get(0);
+          var targetEl = $target.get(0);
+          if (!bodyEl || !targetEl) return;
+
+          var bodyRect = bodyEl.getBoundingClientRect();
+          var targetRect = targetEl.getBoundingClientRect();
+          var nextTop = bodyEl.scrollTop + (targetRect.top - bodyRect.top) - 8;
+          var maxTop = Math.max(0, bodyEl.scrollHeight - bodyEl.clientHeight);
+          nextTop = Math.max(0, Math.min(nextTop, maxTop));
+
+          if (typeof bodyEl.scrollTo === "function") {
+            bodyEl.scrollTo({ top: nextTop, behavior: "smooth" });
+          } else {
+            bodyEl.scrollTop = nextTop;
+          }
           return;
         }
-        var enabled = canAdd && !waitingForPrice;
+
+        // All options selected — scroll options to the end and bring Add to Cart into view
+        if ($body.length) {
+          var scrollBody = $body.get(0);
+          if (scrollBody) {
+            if (typeof scrollBody.scrollTo === "function") {
+              scrollBody.scrollTo({ top: scrollBody.scrollHeight, behavior: "smooth" });
+            } else {
+              scrollBody.scrollTop = scrollBody.scrollHeight;
+            }
+          }
+        }
+        var footerEl = $card.find(".p-hover-footer, .js-card-hover-add").get(0);
+        if (footerEl && typeof footerEl.scrollIntoView === "function") {
+          footerEl.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+        }
+      }
+
+      function refreshCardHoverAddButton($card, state, resolved) {
+        var $addBtn = $card.find(".js-card-hover-add");
+        var progress = getHoverSelectionProgress(state);
+        var canAdd = !!resolved.sku && !resolved.reason;
+        var waitingForPrice = isSignedIn() && canShowHoverPrice(state.config, resolved) && !state.priceDisplayed;
+        var remaining = Math.max(0, progress.total - progress.done);
+        var label;
+        var enabled = false;
+
+        if (!isSignedIn()) {
+          label = "Login to add to cart";
+          enabled = true;
+        } else if (!canAdd) {
+          label = remaining > 0
+            ? ("Select " + remaining + " more option" + (remaining === 1 ? "" : "s"))
+            : "Select options";
+          enabled = false;
+        } else if (waitingForPrice) {
+          label = "Loading price";
+          enabled = false;
+        } else {
+          label = "Add to Cart";
+          enabled = true;
+        }
+
         $addBtn
+          .text(label)
+          .toggleClass("enabled", enabled)
           .prop("disabled", !enabled)
-          .attr("title", enabled ? "Add to cart" : (canAdd ? "Loading price" : "Select options"))
-          .attr("aria-label", enabled ? "Add to cart" : (canAdd ? "Loading price" : "Select options"));
+          .attr("title", label)
+          .attr("aria-label", label);
       }
 
       function updateCardHoverPrice($card, state, product, resolved) {
         var $price = $card.find(".js-card-hover-price");
         var $loading = $card.find(".js-card-hover-price-loading");
+        var $box = $card.find(".js-card-hover-price-box");
+        var $pending = $card.find(".js-card-hover-price-pending");
         var shouldShow = canShowHoverPrice(state.config, resolved);
         var priceText = formatHoverPrice(product);
         var readyKey = String(resolved.sku || product.id || "") + "|" + priceText;
+
+        function setPending(active) {
+          $box.toggleClass("pending", !!active);
+          if (active) {
+            $pending.show();
+          } else {
+            $pending.hide();
+          }
+        }
 
         function refreshAddButton() {
           var currentResolved = resolveQuickViewVariant(product, state.config, state.selected || {});
@@ -1418,9 +1723,11 @@
 
         if (!window.BregPriceLoading) {
           if (shouldShow) {
+            setPending(false);
             $price.text(priceText).show();
             state.priceDisplayed = true;
           } else {
+            setPending(true);
             $price.hide().text("");
             state.priceDisplayed = false;
           }
@@ -1437,14 +1744,17 @@
           $loading: $loading,
           $price: $price,
           onLoading: function () {
+            setPending(false);
             state.priceDisplayed = false;
             refreshAddButton();
           },
           onHidden: function () {
+            setPending(true);
             state.priceDisplayed = false;
             refreshAddButton();
           },
           onShown: function () {
+            setPending(false);
             state.priceDisplayed = true;
             refreshAddButton();
           },
@@ -1469,33 +1779,34 @@
         state.resolvedSku = resolved.sku;
         state.resolvedVariant = resolved.variant;
 
+        var progress = getHoverSelectionProgress(state);
+        var needsOptions = productNeedsOptionSelection(state.config);
+        $card.find(".p-card-hover-panel").toggleClass("no-options", !needsOptions);
         $card.find(".p-hover-name").text(product.name || product.id);
+        $card.find(".js-card-hover-progress-count").text(progress.done + " of " + progress.total + " selected");
+        $card.find(".js-card-hover-progress-bar").css("width", (progress.total ? (progress.done / progress.total) * 100 : 100) + "%");
+
         if (!options.skipPrice) {
           updateCardHoverPrice($card, state, product, resolved);
         }
 
-        var shortDesc = getProductShortDescription(product);
-        var $desc = $card.find(".p-hover-desc");
-        if (shortDesc) {
-          $desc.text(shortDesc).show();
-        } else {
-          $desc.hide().text("");
-        }
-
         renderCardHoverFacets($card, state);
 
-        var $msg = $card.find(".js-card-hover-msg");
-        if (resolved.reason) {
-          $msg.text(resolved.reason).show();
+        var $notice = $card.find(".js-card-hover-msg");
+        if (!needsOptions || (progress.complete && !resolved.reason)) {
+          $notice.hide().text("").removeClass("success");
         } else {
-          $msg.hide().text("");
+          $notice
+            .text(nextHoverPrompt(state, resolved))
+            .removeClass("success")
+            .show();
         }
 
         $card.find(".js-card-hover-qty-val").text(String(state.qty || 1));
         refreshCardHoverAddButton($card, state, resolved);
 
         var image = getQuickViewImage(product, resolved.variant);
-        $card.find(".p-thumb").attr("src", image);
+        $card.find(".p-thumb, .js-card-hover-thumb").attr("src", image);
       }
 
       function initCardHoverPanels() {
@@ -2102,31 +2413,44 @@
               metaHtml += "<p class='p-desc'>" + escapeHtml(shortDesc) + "</p>";
             }
           }
-          var shortDesc = getProductShortDescription(p);
-          var priceHtml =
-            "<div class='p-hover-price-wrap'>" +
-              "<span class='p-hover-price-loading js-card-hover-price-loading' role='status' aria-label='Loading price'></span>" +
-              "<p class='p-hover-price js-card-hover-price' style='display:none;'></p>" +
-            "</div>";
           var hoverPanelHtml = listLayout ? "" : (
             "<div class='p-card-hover-panel' data-product-id='" + escapeHtml(p.id) + "'>" +
-              "<h3 class='p-hover-name'>" + escapeHtml(p.name) + "</h3>" +
-              priceHtml +
-              (shortDesc ? ("<p class='p-hover-desc'>" + escapeHtml(shortDesc) + "</p>") : "<p class='p-hover-desc' style='display:none;'></p>") +
-              "<div class='p-hover-config js-card-hover-config'></div>" +
-              "<p class='p-hover-msg js-card-hover-msg' style='display:none;'></p>" +
-              "<div class='p-hover-cart-row'>" +
-                "<div class='p-hover-qty-wrap'>" +
-                  "<span class='p-hover-qty-label'>Quantity</span>" +
+              "<div class='p-hover-head'>" +
+                "<div class='p-hover-thumb'><img class='js-card-hover-thumb' src='" + p.image + "' onerror=\"this.onerror=null;this.src='" + fallbackImage + "';\" alt=''></div>" +
+                "<div>" +
+                  "<div class='p-hover-name'>" + escapeHtml(p.name) + "</div>" +
+                  "<p class='p-hover-sub'>Choose all required options before adding this item to the cart.</p>" +
+                "</div>" +
+              "</div>" +
+              "<div class='p-hover-progress-wrap'>" +
+                "<div class='p-hover-progress-line'>" +
+                  "<span>Complete all required selections</span>" +
+                  "<span class='js-card-hover-progress-count'>0 of 0 selected</span>" +
+                "</div>" +
+                "<div class='p-hover-bar'><span class='js-card-hover-progress-bar'></span></div>" +
+              "</div>" +
+              "<div class='p-hover-body'>" +
+                "<div class='p-hover-config js-card-hover-config'></div>" +
+                "<div class='p-hover-notice js-card-hover-msg'></div>" +
+              "</div>" +
+              "<div class='p-hover-footer'>" +
+                "<div>" +
+                  "<div class='p-hover-qty-label'>Quantity</div>" +
                   "<div class='p-hover-qty-stepper'>" +
                     "<button type='button' class='js-card-hover-qty-dec' aria-label='Decrease quantity'>&minus;</button>" +
                     "<span class='p-hover-qty-val js-card-hover-qty-val'>1</span>" +
                     "<button type='button' class='js-card-hover-qty-inc' aria-label='Increase quantity'>&plus;</button>" +
                   "</div>" +
                 "</div>" +
-                "<button type='button' class='p-hover-add-btn js-card-hover-add' disabled aria-label='Add to cart'>" +
-                  "<span class='glyphicon glyphicon-shopping-cart' aria-hidden='true'></span>" +
-                "</button>" +
+                "<div>" +
+                  "<div class='p-hover-price-label'>Price</div>" +
+                  "<div class='p-hover-price-box js-card-hover-price-box pending'>" +
+                    "<span class='p-hover-price-loading js-card-hover-price-loading' role='status' aria-label='Loading price'></span>" +
+                    "<span class='p-hover-price-pending js-card-hover-price-pending'>Select options</span>" +
+                    "<span class='p-hover-price js-card-hover-price' style='display:none;'></span>" +
+                  "</div>" +
+                "</div>" +
+                "<button type='button' class='p-hover-add-btn js-card-hover-add' disabled aria-label='Select options'>Select options</button>" +
               "</div>" +
             "</div>"
           );
@@ -2324,7 +2648,9 @@
         .on("mouseenter", "#productGrid .p-card", function () {
           if (viewMode === "list" || !isDesktopGridView()) return;
           var $card = $(this);
-          var productId = String($card.find(".p-card-hover-panel").attr("data-product-id") || "");
+          var $panel = $card.find(".p-card-hover-panel");
+          positionCardHoverPanel($card);
+          var productId = String($panel.attr("data-product-id") || "");
           var state = getCardHoverState(productId);
           if (!state || !state.product || !isSignedIn()) return;
           if (!productNeedsOptionSelection(state.config)) {
@@ -2332,6 +2658,9 @@
             var resolved = resolveQuickViewVariant(state.product, state.config, state.selected || {});
             updateCardHoverPrice($card, state, state.product, resolved);
           }
+        })
+        .on("mouseleave", "#productGrid .p-card", function () {
+          clearCardHoverPanelPosition($(this));
         })
         .on("click", ".js-card-hover-option", function (event) {
           event.preventDefault();
@@ -2346,6 +2675,10 @@
           if (!facetKey) return;
           state.selected[facetKey] = facetValue;
           updateCardHoverPanel($card);
+          requestAnimationFrame(function () {
+            scrollCardHoverToNextOption($card, state);
+            positionCardHoverPanel($card);
+          });
         })
         .on("click", ".js-card-hover-qty-dec", function (event) {
           event.preventDefault();

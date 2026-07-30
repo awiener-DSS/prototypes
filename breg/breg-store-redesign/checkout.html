@@ -311,6 +311,15 @@
       color: #5f6b76;
       line-height: 1.35;
     }
+    .checkout-line-stock {
+      margin: 4px 0 0;
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1.3;
+    }
+    .checkout-line-stock.in-stock { color: #166534; }
+    .checkout-line-stock.low-stock { color: #92400e; }
+    .checkout-line-stock.out-stock { color: #991b1b; }
     .checkout-line-price {
       font-size: 14px;
       color: #11181f;
@@ -355,8 +364,8 @@
       display: flex;
       justify-content: space-between;
       font-size: 24px;
-      color: #b12704;
-      font-weight: 600;
+      color: #00a7e1;
+      font-weight: 700;
     }
     .checkout-place {
       margin-top: 12px;
@@ -1270,6 +1279,21 @@
 
         var summaryLines = "";
         var linesHtml = "";
+        function inventoryFromSku(sku, qty) {
+          var code = String(sku || "");
+          if (!code) return "In Stock";
+          var hash = 0;
+          for (var i = 0; i < code.length; i += 1) hash = (hash + code.charCodeAt(i) * (i + 1)) % 997;
+          if (hash % 9 === 0 || Number(qty || 0) > 12) return "Out of Stock";
+          if (hash % 4 === 0 || Number(qty || 0) > 6) return "Low Stock";
+          return "In Stock";
+        }
+        function stockStatusClass(status) {
+          if (status === "In Stock") return "in-stock";
+          if (status === "Low Stock") return "low-stock";
+          if (status === "Out of Stock") return "out-stock";
+          return "";
+        }
         cart.forEach(function (line) {
           var name = escapeHtml(line.name || line.sku || "Product");
           var qty = Number(line.qty || 0);
@@ -1283,11 +1307,13 @@
           var qty = Number(line.qty || 0);
           var price = Number(line.price || 0);
           var image = escapeHtml(line.image || MISSING_IMAGE);
+          var stockStatus = inventoryFromSku(line.sku, qty);
           linesHtml += "<div class='checkout-line'>" +
             "<img src='" + image + "' onerror=\"this.onerror=null;this.src='" + MISSING_IMAGE + "';\" alt='" + escapeHtml(line.name || line.sku || "Product") + "'>" +
             "<div>" +
               "<p class='checkout-line-name'>" + escapeHtml(line.name || line.sku || "Product") + "</p>" +
               "<p class='checkout-line-meta'>SKU: " + escapeHtml(line.sku || "") + " | Qty: " + qty + "</p>" +
+              "<p class='checkout-line-stock " + stockStatusClass(stockStatus) + "'>" + escapeHtml(stockStatus) + "</p>" +
             "</div>" +
             "<div class='checkout-line-price'>$" + BregFormatMoney(qty * price) + "</div>" +
           "</div>";

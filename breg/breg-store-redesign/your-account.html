@@ -473,7 +473,7 @@
               <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
               <div class="account-grid">
                 <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=shopping">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=recovery">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=postop">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=athletic">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=clinic">Clinic Supplies (22)</a></div>
-                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a><a class="account-link account-only" data-auth-required="1" href="cost-centers.html">Cost Centers</a></div>
               </div>
             </div>
           </div>
@@ -501,6 +501,7 @@
         <symbol id="ic-signout" viewBox="0 0 64 64"><path d="M24 54H14a4 4 0 0 1-4-4V14a4 4 0 0 1 4-4h10" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M38 44l12-12-12-12M22 32h28" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
         <symbol id="ic-user-plus" viewBox="0 0 64 64"><circle cx="24" cy="21" r="9" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M8 50c0-8.8 7.2-16 16-16s16 7.2 16 16" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/><path d="M51 22v14M44 29h14" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></symbol>
         <symbol id="ic-users" viewBox="0 0 64 64"><circle cx="24" cy="21" r="8.5" fill="none" stroke="currentColor" stroke-width="2.7"/><circle cx="43" cy="22" r="6.5" fill="none" stroke="currentColor" stroke-width="2.7"/><path d="M9 50c0-8.5 6.9-15.5 15.5-15.5S40 41.5 40 50M44.5 35c6.2 0 11.5 5.1 11.5 11.3" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round"/></symbol>
+        <symbol id="ic-building" viewBox="0 0 64 64"><path d="M14 54V18l18-8 18 8v36" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linejoin="round"/><path d="M14 54h36M26 54V40h12v14M24 26h4M36 26h4M24 34h4M36 34h4" fill="none" stroke="currentColor" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></symbol>
       </svg>
 
       <div class="account-title-row">
@@ -510,7 +511,7 @@
         <div class="account-title-side">
           <span class="account-user-meta">
             <span id="accountUserName">Test User</span>
-            <span id="accountUserRole">Account Administrator</span>
+            <span id="accountUserRole">Account Admin</span>
             <span id="accountUserCompany">Medical Clinic Inc.</span>
           </span>
           <a href="#" id="pageSignOutTile" class="account-page-signout">Sign Out</a>
@@ -565,6 +566,7 @@
         <h2 class="account-section-title">My Organization</h2>
         <div class="account-grid">
           <a class="account-tile" href="add-users.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-user-plus"></use></svg><div><h3 class="tile-title">Add Users</h3><p class="tile-copy">Invite and manage team members for your organization</p></div></div></a>
+          <a class="account-tile" href="cost-centers.html"><div class="tile-row"><svg class="tile-icon"><use href="#ic-building"></use></svg><div><h3 class="tile-title">Cost Centers</h3><p class="tile-copy">Create and manage cost centers, budgets, managers, and buyers</p></div></div></a>
           <a class="account-tile" href="#" data-toggle="modal" data-target="#accountAdministratorsModal"><div class="tile-row"><svg class="tile-icon"><use href="#ic-users"></use></svg><div><h3 class="tile-title">Account Administrators</h3><p class="tile-copy">View contact information for your account administrators</p></div></div></a>
         </div>
       </section>
@@ -617,12 +619,12 @@
         var firstName = "Jordan";
         var lastName = "Lee";
         var userName = "";
-        var role = "Account Administrator";
+        var role = "Account Admin";
         var company = "Medical Clinic Inc.";
         try { firstName = localStorage.getItem("bregFirstName") || "Jordan"; } catch (e) {}
         try { lastName = localStorage.getItem("bregLastName") || "Lee"; } catch (e) {}
         try { userName = localStorage.getItem("bregUserName") || ""; } catch (e) {}
-        try { role = localStorage.getItem("bregUserRole") || "Account Administrator"; } catch (e) {}
+        try { role = localStorage.getItem("bregUserRole") || "Account Admin"; } catch (e) {}
         try { company = localStorage.getItem("bregAccountName") || "Medical Clinic Inc."; } catch (e) {}
         firstName = String(firstName || "").trim();
         lastName = String(lastName || "").trim();
@@ -633,7 +635,7 @@
         var fullName = (firstName + " " + lastName).trim();
         if (userName && userName.indexOf(" ") > -1) fullName = userName;
         $("#accountUserName").text(fullName);
-        $("#accountUserRole").text(String(role || "Account Administrator"));
+        $("#accountUserRole").text(String(role || "Account Admin"));
         $("#accountUserCompany").text(String(company || "Medical Clinic Inc."));
       }
 

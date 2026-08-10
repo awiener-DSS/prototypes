@@ -1,0 +1,1812 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <script src="assets/auth-gate.js?v=20260716i"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Breg Store - Cost Centers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Pathway+Extreme:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/shell.css?v=20260721b">
+  <style>
+    body { background: #EAEDED; }
+    .cc-page { margin: 12px 0 18px; }
+    .cc-breadcrumb { margin: 0 0 10px; font-size: 12px; color: #5f6b76; }
+    .cc-breadcrumb a { color: #007185; text-decoration: none; }
+    .cc-breadcrumb a:hover,.cc-breadcrumb a:focus { color: #005a6a; text-decoration: none; }
+    .cc-breadcrumb .sep { margin: 0 6px; color: #9ba6b2; }
+    .cc-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .cc-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+    .cc-subtitle { margin: 4px 0 0; font-size: 14px; color: #565959; line-height: 1.35; }
+    .cc-create-btn {
+      display: inline-block;
+      border: 1px solid var(--breg-primary, #0047bb);
+      border-radius: 16px;
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1.25;
+      padding: 8px 18px;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+      margin-top: 8px;
+    }
+    .cc-create-btn .glyphicon { margin-right: 6px; top: 2px; }
+    .cc-create-btn:hover,
+    .cc-create-btn:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+      text-decoration: none;
+    }
+    .cc-search-wrap {
+      position: relative;
+      max-width: 500px;
+      margin-bottom: 12px;
+    }
+    .cc-search-wrap .glyphicon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6f777d;
+      font-size: 18px;
+      pointer-events: none;
+    }
+    .cc-search {
+      width: 100%;
+      height: 46px;
+      border: 1px solid #c7ced4;
+      border-radius: 12px;
+      padding: 0 14px 0 44px;
+      font-size: 13px;
+      color: #0f1111;
+      box-shadow: none;
+    }
+    .cc-search:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+      outline: 0;
+    }
+    .cc-table-wrap {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+    .cc-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    .cc-table th:nth-child(1),
+    .cc-table td:nth-child(1) { width: 12%; }
+    .cc-table th:nth-child(2),
+    .cc-table td:nth-child(2) { width: 24%; }
+    .cc-table th:nth-child(3),
+    .cc-table td:nth-child(3) { width: 12%; }
+    .cc-table th:nth-child(4),
+    .cc-table td:nth-child(4) { width: 40%; }
+    .cc-table th:nth-child(5),
+    .cc-table td:nth-child(5) { width: 12%; }
+    .cc-table th,
+    .cc-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #eaeded;
+      font-size: 13px;
+      color: #0f1111;
+      text-align: left;
+      vertical-align: middle;
+      word-wrap: break-word;
+    }
+    .cc-table thead th {
+      background: #f7f8f9;
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .cc-table tbody tr:last-child td { border-bottom: 0; }
+    .cc-id {
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .cc-name {
+      font-weight: 500;
+      color: #0f1111;
+    }
+    .table-action {
+      color: #007185;
+      text-decoration: none;
+      margin-right: 10px;
+      font-size: 14px;
+    }
+    .table-action:last-child { margin-right: 0; }
+    .table-action:hover,.table-action:focus { color: #c7511f; text-decoration: none; }
+    .table-action.delete { color: #d95f19; }
+    .table-action.delete:hover,.table-action.delete:focus { color: #b54812; }
+    .cc-empty {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      color: #565959;
+      font-size: 13px;
+      border-top: 1px solid #eaeded;
+    }
+    .budget-value {
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.25;
+      display: block;
+    }
+    .budget-sub {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.25;
+    }
+    .budget-meter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .budget-ring {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      transform: rotate(-90deg);
+    }
+    .budget-ring.budget-ring-lg {
+      width: 72px;
+      height: 72px;
+    }
+    .budget-ring-bg {
+      fill: none;
+      stroke: #e6eaed;
+      stroke-width: 3.2;
+    }
+    .budget-ring-fill {
+      fill: none;
+      stroke: #05798f;
+      stroke-width: 3.2;
+      stroke-linecap: round;
+      transition: stroke-dasharray .35s ease;
+    }
+    .budget-meter.is-ok .budget-ring-fill { stroke: #05798f; }
+    .budget-meter.is-warn .budget-ring-fill { stroke: #d97706; }
+    .budget-meter.is-over .budget-ring-fill { stroke: #c73c2f; }
+    .budget-meter.is-empty .budget-ring-fill { stroke: #c9d3db; }
+    .budget-meter-copy {
+      min-width: 0;
+      flex: 1;
+    }
+    .budget-meter-pct {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f1111;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+    .budget-meter.is-warn .budget-meter-pct { color: #b54708; }
+    .budget-meter.is-over .budget-meter-pct { color: #b12704; }
+    .budget-meter-lg {
+      gap: 14px;
+      padding: 4px 0;
+    }
+    .budget-meter-lg .budget-meter-pct {
+      font-size: 22px;
+      font-weight: 500;
+    }
+    .budget-period {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #eef2f4;
+      color: #565959;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
+      text-transform: capitalize;
+    }
+    .actions-muted {
+      color: #9ba6b2;
+      font-size: 12px;
+    }
+    .cc-field.is-disabled {
+      opacity: .55;
+      pointer-events: none;
+    }
+    .cc-access-denied {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 28px 22px;
+      margin-bottom: 12px;
+    }
+    .cc-access-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 500;
+      color: #0f1111;
+      line-height: 1.2;
+    }
+    .cc-access-copy {
+      margin: 0;
+      font-size: 14px;
+      color: #565959;
+      line-height: 1.45;
+      max-width: 560px;
+    }
+    .cc-link {
+      color: #007185;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .cc-link:hover,
+    .cc-link:focus {
+      color: #c7511f;
+      text-decoration: none;
+    }
+    .cc-name-link {
+      color: #0f1111;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .cc-name-link:hover,
+    .cc-name-link:focus {
+      color: #007185;
+      text-decoration: underline;
+    }
+    .cc-back {
+      display: inline-block;
+      margin: 0 0 12px;
+      color: #007185;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .cc-back:hover,
+    .cc-back:focus {
+      color: #005a6a;
+      text-decoration: none;
+    }
+    .cc-back .glyphicon {
+      margin-right: 4px;
+      top: 2px;
+      font-size: 11px;
+    }
+    .detail-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .detail-title {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 400;
+      color: #0f1111;
+      line-height: 1.15;
+      letter-spacing: -0.4px;
+    }
+    .detail-id {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: #565959;
+    }
+    .detail-card {
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+    .detail-card-title {
+      margin: 0 0 12px;
+      font-size: 17px;
+      font-weight: 500;
+      color: #0f1111;
+      line-height: 1.2;
+    }
+    .detail-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .detail-card-head .detail-card-title { margin: 0; }
+    .detail-meta {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .detail-meta-item {
+      border: 1px solid #e3e7ea;
+      border-radius: 10px;
+      background: #f7f8f8;
+      padding: 10px 12px;
+      min-height: 72px;
+    }
+    .detail-meta-label {
+      display: block;
+      margin: 0 0 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #565959;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+    .detail-meta-value {
+      display: block;
+      font-size: 15px;
+      font-weight: 500;
+      color: #0f1111;
+      line-height: 1.3;
+    }
+    .detail-budget-primary {
+      font-size: 22px;
+      font-weight: 500;
+      color: #0f1111;
+      line-height: 1.2;
+    }
+    .detail-budget-spent {
+      margin-top: 4px;
+      font-size: 13px;
+      color: #565959;
+    }
+    .buyer-list {
+      display: grid;
+      gap: 8px;
+    }
+    .buyer-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border: 1px solid #eaeded;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #fff;
+    }
+    .buyer-chip-main {
+      min-width: 0;
+    }
+    .buyer-chip-name {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #0f1111;
+    }
+    .buyer-chip-email {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #565959;
+    }
+    .buyer-empty {
+      margin: 0;
+      font-size: 13px;
+      color: #565959;
+    }
+    .orders-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .orders-table th,
+    .orders-table td {
+      padding: 10px 0;
+      border-bottom: 1px solid #eaeded;
+      font-size: 13px;
+      text-align: left;
+      vertical-align: middle;
+    }
+    .orders-table th {
+      color: #565959;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      padding-top: 0;
+    }
+    .orders-table tbody tr:last-child td { border-bottom: 0; }
+    .order-status {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+    .order-status.pending {
+      background: #fff4e5;
+      color: #b54708;
+    }
+    .order-status.approved {
+      background: #ecfdf3;
+      color: #067647;
+    }
+    .orders-empty {
+      margin: 0;
+      font-size: 13px;
+      color: #565959;
+    }
+    @media (max-width: 991px) {
+      .detail-meta { grid-template-columns: 1fr 1fr; }
+      .detail-title { font-size: 24px; }
+    }
+    @media (max-width: 767px) {
+      .detail-head { flex-direction: column; }
+      .detail-meta { grid-template-columns: 1fr; }
+      .orders-table thead { display: none; }
+      .orders-table tbody tr {
+        display: block;
+        border: 1px solid #eaeded;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+      .orders-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        border: 0;
+        padding: 4px 0;
+      }
+      .orders-table tbody td::before {
+        content: attr(data-label);
+        font-size: 10px;
+        font-weight: 600;
+        color: #565959;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+      }
+    }
+    .cc-modal .modal-dialog {
+      width: min(640px, calc(100% - 40px));
+      margin: 70px auto;
+    }
+    .cc-modal .modal-content {
+      border-radius: 16px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 18px 36px rgba(15, 17, 17, .28);
+      overflow: hidden;
+    }
+    .cc-modal .modal-header {
+      border-bottom: 1px solid #d5d9d9;
+      padding: 18px 22px;
+    }
+    .cc-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      color: #0f1111;
+      font-weight: 400;
+    }
+    .cc-modal .close {
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 300;
+      opacity: .65;
+      margin-top: -6px;
+    }
+    .cc-modal .close:hover,
+    .cc-modal .close:focus { opacity: .9; }
+    .cc-modal .modal-body {
+      padding: 20px 22px;
+      background: #fff;
+    }
+    .cc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .cc-field.full {
+      grid-column: 1 / -1;
+    }
+    .cc-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f1111;
+      line-height: 1.25;
+    }
+    .cc-input,
+    .cc-select {
+      width: 100%;
+      height: 42px;
+      border: 1px solid #c7ced4;
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 13px;
+      color: #0f1111;
+      box-shadow: none;
+      background: #fff;
+    }
+    .cc-input:focus,
+    .cc-select:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+      outline: 0;
+    }
+    .cc-hint {
+      margin: 0;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.3;
+    }
+    .cc-error {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #b12704;
+      display: none;
+    }
+    .buyers-box {
+      border: 1px solid #c7ced4;
+      border-radius: 10px;
+      padding: 10px 12px;
+      max-height: 168px;
+      overflow-y: auto;
+      background: #fff;
+    }
+    .buyer-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      font-size: 13px;
+      color: #0f1111;
+      line-height: 1.3;
+    }
+    .buyer-option + .buyer-option {
+      border-top: 1px solid #eaeded;
+    }
+    .buyer-option input {
+      margin: 0;
+      flex-shrink: 0;
+    }
+    .buyer-option .buyer-meta {
+      color: #565959;
+      font-size: 12px;
+    }
+    .cc-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .cc-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 0 14px;
+      text-decoration: none;
+      line-height: 1;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      color: #0f1111;
+    }
+    .cc-btn:hover,
+    .cc-btn:focus {
+      color: #0f1111;
+      text-decoration: none;
+      background: #f7f8f8;
+    }
+    .cc-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .cc-btn.primary:hover,
+    .cc-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
+    .delete-modal .modal-dialog {
+      width: min(500px, calc(100% - 40px));
+      margin: 90px auto;
+    }
+    .delete-modal .modal-content {
+      border-radius: 16px;
+      border: 1px solid #d5d9d9;
+      box-shadow: 0 18px 36px rgba(15, 17, 17, .28);
+      overflow: hidden;
+    }
+    .delete-modal .modal-header {
+      border-bottom: 1px solid #d5d9d9;
+      padding: 18px 22px;
+    }
+    .delete-modal .modal-title {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.1;
+      color: #0f1111;
+      font-weight: 400;
+    }
+    .delete-modal .close {
+      font-size: 38px;
+      line-height: 1;
+      font-weight: 300;
+      opacity: .65;
+      margin-top: -6px;
+    }
+    .delete-modal .close:hover,
+    .delete-modal .close:focus { opacity: .9; }
+    .delete-modal .modal-body {
+      padding: 16px 22px 10px;
+      background: #fff;
+    }
+    .delete-modal-copy {
+      margin: 0;
+      font-size: 14px;
+      color: #565959;
+      line-height: 1.45;
+    }
+    .delete-modal .modal-footer {
+      border-top: 1px solid #eaeded;
+      padding: 12px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .delete-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 0 14px;
+      text-decoration: none;
+      line-height: 1;
+      border: 1px solid #d1d5dc;
+      background: #fff;
+      color: #0f1111;
+    }
+    .delete-btn:hover,
+    .delete-btn:focus {
+      color: #0f1111;
+      text-decoration: none;
+      background: #f7f8f8;
+    }
+    .delete-btn.danger {
+      border-color: #f3b7b0;
+      background: #fff4f4;
+      color: #b12704;
+    }
+    .delete-btn.danger:hover,
+    .delete-btn.danger:focus {
+      border-color: #e7a19a;
+      background: #ffe9e9;
+      color: #9f1f02;
+    }
+    @media (max-width: 1199px) {
+      .cc-title { font-size: 30px; }
+    }
+    @media (max-width: 767px) {
+      .cc-head { flex-direction: column; }
+      .cc-title { font-size: 28px; }
+      .cc-subtitle { font-size: 13px; }
+      .cc-create-btn { margin-top: 0; }
+      .cc-grid { grid-template-columns: 1fr; }
+      .cc-table-wrap {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+      }
+      .cc-table {
+        min-width: 0;
+        table-layout: auto;
+      }
+      .cc-table thead { display: none; }
+      .cc-table tbody { display: block; }
+      .cc-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 4px 10px;
+        padding: 12px 14px;
+        border: 1px solid #d5d9d9;
+        border-radius: 10px;
+        background: #fff;
+        margin-bottom: 10px;
+      }
+      .cc-table tbody tr:last-child { margin-bottom: 0; }
+      .cc-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 4px 0;
+        border: 0;
+        font-size: 13px;
+      }
+      .cc-table tbody td::before {
+        content: attr(data-label);
+        flex: 0 0 38%;
+        max-width: 42%;
+        font-weight: 600;
+        color: #565959;
+        font-size: 10px;
+        line-height: 1.35;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+      }
+      .cc-table tbody td:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+        justify-content: flex-start;
+        padding-top: 0;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #eaeded;
+        margin-bottom: 2px;
+      }
+      .cc-table tbody td:nth-child(1)::before { display: none; }
+      .cc-table tbody td:nth-child(2) {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+      .cc-table tbody td:nth-child(3),
+      .cc-table tbody td:nth-child(4) {
+        grid-column: 1 / -1;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 2px;
+      }
+      .cc-table tbody td:nth-child(5) {
+        grid-column: 1 / -1;
+        justify-content: center;
+        gap: 18px;
+        margin-top: 6px;
+        padding-top: 10px;
+        border-top: 1px solid #eaeded;
+      }
+      .cc-table tbody td:nth-child(5)::before { display: none; }
+      .cc-table tbody .table-action {
+        margin-right: 0;
+        font-size: 16px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="assets/breg-overrides.css">
+</head>
+<body>
+  <header class="top-header">
+    <div class="container site-max">
+      <div class="top-row">
+        <a class="logo-link" href="index.html">
+          <img src="assets/breg-logo-header.png" alt="Breg">
+        </a>
+        <div class="search-wrap">
+          <form class="search-box" id="searchForm">
+            <input id="searchInput" type="text" placeholder="Search Breg Store" autocomplete="off">
+            <button class="search-clear" id="searchClear" type="button" aria-label="Clear search"><span class="glyphicon glyphicon-remove"></span></button>
+            <button class="search-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+          </form>
+          <div class="search-dropdown" id="searchDropdown">
+            <div class="search-left">
+              <div class="search-group"><div class="search-group-title" id="searchSuggestionTitle">Search Suggestions</div><div id="searchSuggestionList"></div></div>
+              <div class="search-group"><div class="search-group-title">Product Categories</div><div id="searchCategoryList"></div></div>
+            </div>
+            <div class="search-right"><h4 class="search-preview-title" id="searchPreviewTitle">Top Products</h4><div class="search-preview-list" id="searchPreviewList"></div></div>
+          </div>
+        </div>
+        <div class="header-actions">
+          <div class="lang-wrap">
+            <button class="action-box lang-box" id="langToggle" type="button"><span class="flag">🇺🇸</span> <span id="langCodeLabel">EN</span> <span class="caret"></span></button>
+            <div class="country-dropdown" id="countryDropdown">
+              <div class="country-block"><div class="country-title">Change language</div><button type="button" class="country-option js-lang-option" data-lang="EN">English - EN</button></div>
+              <div class="country-block"><div class="country-title">Additional languages</div><button type="button" class="country-minor js-lang-option" data-lang="ES">Español - ES</button><button type="button" class="country-minor js-lang-option" data-lang="FR">Français - FR</button><button type="button" class="country-minor js-lang-option" data-lang="DE">Deutsch - DE</button></div>
+              <div class="country-block"><div class="country-title">Change country/region</div><button type="button" class="country-option js-country-option" data-country="United States" data-market="US">🇺🇸 <span id="countryLabel">United States</span></button><div class="country-note">You are shopping on Breg <span id="marketLabel">US</span></div></div>
+            </div>
+          </div>
+          <div class="account-wrap">
+            <button class="action-box account-toggle" id="accountToggle" type="button"><div class="action-muted" id="accountGreeting">Hello, sign in</div><div class="action-strong">Account &amp; Lists <span class="caret"></span></div></button>
+            <div class="account-dropdown" id="accountDropdown">
+              <div class="account-head"><div class="account-logged">Logged in as: <strong id="accountName">Medical Clinic Inc.</strong></div><div class="account-email" id="accountEmail">test@breg.com</div><button type="button" class="account-signout" id="accountSignout">Sign out</button></div>
+              <div class="account-grid">
+                <div class="account-col"><div class="account-col-title">My Favorites</div><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=shopping">Shopping List (12)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=recovery">Recovery Supplies (8)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=postop">Post-Surgery Essentials (15)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=athletic">Athletic Support (6)</a><a class="account-link account-only" data-auth-required="1" href="my-favorites.html?list=clinic">Clinic Supplies (22)</a></div>
+                <div class="account-col"><div class="account-col-title">Your Account</div><a class="account-link account-only" data-auth-required="1" href="pending-orders.html">Pending &amp; Rejected Orders</a><a class="account-link account-only" data-auth-required="1" href="invoices.html">Invoices</a><a class="account-link account-only" data-auth-required="1" href="order-history.html">Order History</a><a class="account-link account-only" data-auth-required="1" href="profile-settings.html">Profile Settings</a><a class="account-link account-only" data-auth-required="1" href="saved-addresses.html">Saved Addresses</a><a class="account-link account-only" data-auth-required="1" href="saved-payment.html">Saved Payment Information</a><a class="account-link account-only" data-auth-required="1" href="add-users.html">Add Users</a><a class="account-link account-only" data-auth-required="1" href="cost-centers.html">Cost Centers</a></div>
+              </div>
+            </div>
+          </div>
+          <a class="action-box" href="order-history.html"><div class="action-muted">Returns</div><div class="action-strong">&amp; Orders</div></a>
+          <a class="action-box cart-box" href="shopping-cart.html"><span class="glyphicon glyphicon-shopping-cart" style="font-size:22px;"></span><span class="cart-label">Cart</span><span class="cart-count">0</span></a>
+        </div>
+      </div>
+    </div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
+  </header>
+
+  <main class="site-max">
+    <div class="cc-page">
+      <div class="cc-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Cost Centers</span></div>
+      <div class="cc-head">
+        <div>
+          <h1 class="cc-title">Cost Centers</h1>
+          <p class="cc-subtitle">Create and manage cost centers, budgets, managers, and buyers for your organization</p>
+        </div>
+        <a class="cc-create-btn" href="#" id="createCostCenterBtn"><span class="glyphicon glyphicon-plus"></span>Create Cost Center</a>
+      </div>
+
+      <div class="cc-access-denied" id="ccAccessDenied" style="display:none;">
+        <h2 class="cc-access-title">Access restricted</h2>
+        <p class="cc-access-copy">Your role does not include permission to view or manage cost centers. Contact an Account Admin if you need access.</p>
+      </div>
+
+      <div id="ccManageContent">
+      <div id="ccListView">
+      <div class="cc-search-wrap">
+        <span class="glyphicon glyphicon-search"></span>
+        <input id="ccSearch" class="cc-search" type="text" placeholder="Search by ID, name, or manager...">
+      </div>
+
+      <section class="cc-table-wrap">
+        <table class="cc-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cost Center Name</th>
+              <th># of Orders</th>
+              <th class="js-budget-col">Budget</th>
+              <th class="js-actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ccTableBody"></tbody>
+        </table>
+        <div class="cc-empty" id="ccEmpty">No cost centers match your search.</div>
+      </section>
+      </div>
+
+      <div id="ccDetailView" style="display:none;">
+        <a class="cc-back" href="#" id="ccBackToList"><span class="glyphicon glyphicon-chevron-left"></span>Back to Cost Centers</a>
+        <div class="detail-head">
+          <div>
+            <h2 class="detail-title" id="detailName">Cost Center</h2>
+            <p class="detail-id" id="detailIdLine">ID</p>
+          </div>
+          <a class="cc-create-btn" href="#" id="detailEditBtn" style="display:none;"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+        </div>
+
+        <section class="detail-card">
+          <h3 class="detail-card-title">Overview</h3>
+          <div class="detail-meta">
+            <div class="detail-meta-item">
+              <span class="detail-meta-label">Manager</span>
+              <span class="detail-meta-value" id="detailManager">—</span>
+            </div>
+            <div class="detail-meta-item">
+              <span class="detail-meta-label"># of Orders</span>
+              <span class="detail-meta-value" id="detailOrderCount">0</span>
+            </div>
+            <div class="detail-meta-item">
+              <span class="detail-meta-label">Per-order limit</span>
+              <span class="detail-meta-value" id="detailPerOrder">—</span>
+            </div>
+            <div class="detail-meta-item">
+              <span class="detail-meta-label">Period budget</span>
+              <span class="detail-meta-value" id="detailBudgetLimit">—</span>
+            </div>
+          </div>
+          <div id="detailBudgetMeter" style="margin-top:14px;"></div>
+        </section>
+
+        <section class="detail-card">
+          <div class="detail-card-head">
+            <h3 class="detail-card-title">Assigned Buyers</h3>
+            <button type="button" class="cc-btn primary" id="detailSaveBuyersBtn" style="display:none;">Save Buyers</button>
+          </div>
+          <div id="detailBuyersRead" class="buyer-list"></div>
+          <div id="detailBuyersEdit" class="buyers-box" style="display:none;"></div>
+          <p class="cc-error" id="detailBuyersError"></p>
+        </section>
+
+        <section class="detail-card">
+          <h3 class="detail-card-title">Pending Orders</h3>
+          <div id="detailPendingOrders"></div>
+        </section>
+
+        <section class="detail-card">
+          <h3 class="detail-card-title">Approved Orders</h3>
+          <div id="detailApprovedOrders"></div>
+        </section>
+      </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal fade cc-modal" id="costCenterModal" tabindex="-1" role="dialog" aria-labelledby="costCenterModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="costCenterModalTitle">Create Cost Center</h2>
+        </div>
+        <div class="modal-body">
+          <div class="cc-grid">
+            <div class="cc-field">
+              <label class="cc-label" for="ccIdInput">ID</label>
+              <input id="ccIdInput" class="cc-input" type="text" maxlength="40" placeholder="e.g. CC-1001">
+            </div>
+            <div class="cc-field">
+              <label class="cc-label" for="ccNameInput">Cost Center Name</label>
+              <input id="ccNameInput" class="cc-input" type="text" maxlength="80" placeholder="Enter name">
+            </div>
+            <div class="cc-field full">
+              <label class="cc-label" for="ccManagerSelect">Cost Center Manager</label>
+              <select id="ccManagerSelect" class="cc-select"></select>
+            </div>
+            <div class="cc-field js-budget-field">
+              <label class="cc-label" for="ccPerOrderInput">Spend per order (USD)</label>
+              <input id="ccPerOrderInput" class="cc-input" type="number" min="0" step="1" placeholder="Enter per-order limit">
+            </div>
+            <div class="cc-field js-budget-field">
+              <label class="cc-label" for="ccPerPeriodInput">Spend per period (USD)</label>
+              <input id="ccPerPeriodInput" class="cc-input" type="number" min="0" step="1" placeholder="Enter period limit">
+            </div>
+            <div class="cc-field full js-budget-field">
+              <label class="cc-label" for="ccPeriodSelect">Period</label>
+              <select id="ccPeriodSelect" class="cc-select">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div class="cc-field full js-budget-field">
+              <p class="cc-hint">Set either one or both limits. Leave a field empty for no limit.</p>
+            </div>
+            <div class="cc-field full">
+              <label class="cc-label">Assign Buyers</label>
+              <div class="buyers-box" id="ccBuyersBox"></div>
+            </div>
+          </div>
+          <p class="cc-error" id="ccFormError"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="cc-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="cc-btn primary" id="saveCostCenterBtn">Save Cost Center</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade delete-modal" id="deleteCostCenterModal" tabindex="-1" role="dialog" aria-labelledby="deleteCostCenterModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="deleteCostCenterModalTitle">Delete Cost Center</h2>
+        </div>
+        <div class="modal-body">
+          <p class="delete-modal-copy" id="deleteCostCenterModalCopy"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="delete-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="delete-btn danger" id="confirmDeleteCostCenterBtn">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <script src="assets/shell.js?v=20260729c"></script>
+  <script>
+    (function () {
+      var STORAGE_KEY = "breg_cost_centers_v1";
+      var ROLE_KEY = "bregUserRole";
+      var TEAM_ROSTER = [
+        { name: "John Smith", email: "john.smith@medicalclinic.com" },
+        { name: "Sarah Johnson", email: "sarah.j@medicalclinic.com" },
+        { name: "Michael Chen", email: "mchen@medicalclinic.com" },
+        { name: "Emily Davis", email: "emily.davis@medicalclinic.com" }
+      ];
+      var DEFAULT_CENTERS = [
+        {
+          id: "CC-1001",
+          name: "Orthopedics",
+          managerEmail: "sarah.j@medicalclinic.com",
+          managerName: "Sarah Johnson",
+          buyerEmails: ["mchen@medicalclinic.com", "emily.davis@medicalclinic.com"],
+          orderCount: 42,
+          budgetSpent: 18640,
+          perOrderAmount: 2500,
+          perPeriodAmount: 20000,
+          period: "monthly"
+        },
+        {
+          id: "CC-1002",
+          name: "Sports Medicine",
+          managerEmail: "john.smith@medicalclinic.com",
+          managerName: "John Smith",
+          buyerEmails: ["emily.davis@medicalclinic.com"],
+          orderCount: 28,
+          budgetSpent: 9420,
+          perOrderAmount: 1500,
+          perPeriodAmount: 12000,
+          period: "monthly"
+        },
+        {
+          id: "CC-1003",
+          name: "Outpatient Clinic",
+          managerEmail: "sarah.j@medicalclinic.com",
+          managerName: "Sarah Johnson",
+          buyerEmails: ["mchen@medicalclinic.com"],
+          orderCount: 15,
+          budgetSpent: 3180,
+          perOrderAmount: 800,
+          perPeriodAmount: 5000,
+          period: "weekly"
+        }
+      ];
+
+      var $search = $("#ccSearch");
+      var $empty = $("#ccEmpty");
+      var $tableBody = $("#ccTableBody");
+      var $idInput = $("#ccIdInput");
+      var $nameInput = $("#ccNameInput");
+      var $managerSelect = $("#ccManagerSelect");
+      var $perOrder = $("#ccPerOrderInput");
+      var $perPeriod = $("#ccPerPeriodInput");
+      var $period = $("#ccPeriodSelect");
+      var $buyersBox = $("#ccBuyersBox");
+      var $formError = $("#ccFormError");
+      var $deleteCopy = $("#deleteCostCenterModalCopy");
+      var $createBtn = $("#createCostCenterBtn");
+
+      var centers = [];
+      var editingId = null;
+      var pendingDeleteId = null;
+      var activeDetailId = null;
+      var permissions = getPermissionsForRole(readStoredRole());
+
+      var ORDERS_BY_CENTER = {
+        "CC-1001": {
+          pending: [
+            { id: "REQ-240198", buyer: "Michael Chen", date: "Aug 10, 2026", items: 4, total: 612 },
+            { id: "REQ-240211", buyer: "Emily Davis", date: "Aug 9, 2026", items: 2, total: 248 }
+          ],
+          approved: [
+            { id: "ORD-119842", buyer: "Michael Chen", date: "Aug 4, 2026", items: 6, total: 980 },
+            { id: "ORD-119701", buyer: "Emily Davis", date: "Jul 28, 2026", items: 3, total: 412 },
+            { id: "ORD-119540", buyer: "Michael Chen", date: "Jul 19, 2026", items: 5, total: 765 }
+          ]
+        },
+        "CC-1002": {
+          pending: [
+            { id: "REQ-240173", buyer: "Emily Davis", date: "Aug 9, 2026", items: 2, total: 189 }
+          ],
+          approved: [
+            { id: "ORD-119660", buyer: "Emily Davis", date: "Jul 30, 2026", items: 4, total: 540 },
+            { id: "ORD-119410", buyer: "Emily Davis", date: "Jul 12, 2026", items: 1, total: 126 }
+          ]
+        },
+        "CC-1003": {
+          pending: [],
+          approved: [
+            { id: "ORD-119220", buyer: "Michael Chen", date: "Jul 2, 2026", items: 3, total: 294 },
+            { id: "ORD-119088", buyer: "Michael Chen", date: "Jun 21, 2026", items: 2, total: 178 }
+          ]
+        }
+      };
+
+      function escapeHtml(value) {
+        return $("<div>").text(String(value == null ? "" : value)).html();
+      }
+
+      function formatMoney(amount) {
+        var value = Number(amount || 0);
+        return "$" + value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      }
+
+      function formatPeriodLabel(period) {
+        var key = String(period || "monthly").toLowerCase();
+        if (key === "weekly") return "Weekly";
+        if (key === "quarterly") return "Quarterly";
+        if (key === "yearly") return "Yearly";
+        return "Monthly";
+      }
+
+      function normalizeRole(raw) {
+        var value = String(raw || "").trim().toLowerCase();
+        if (!value) return "Account Admin";
+        if (value.indexOf("account admin") !== -1 || value === "admin" || value === "administrator" || value.indexOf("account administrator") !== -1) {
+          return "Account Admin";
+        }
+        if (value.indexOf("cost center manager") !== -1 || value === "cc manager" || value === "cc_manager") {
+          return "Cost Center Manager";
+        }
+        if (value.indexOf("approver") !== -1) return "Approver";
+        if (value.indexOf("view only") !== -1 || value === "view-only") return "View Only";
+        if (value.indexOf("buyer") !== -1 || value === "user") return "Buyer";
+        return "Account Admin";
+      }
+
+      function getPermissionsForRole(roleLabel) {
+        var role = normalizeRole(roleLabel);
+        // Only Account Admin and Cost Center Manager can view/manage cost centers.
+        if (role === "Account Admin" || role === "Cost Center Manager") {
+          return {
+            role: role,
+            viewCostCenters: true,
+            createCostCenter: true,
+            updateCostCenter: true,
+            deleteCostCenter: true,
+            viewBudget: true,
+            updateBudget: true
+          };
+        }
+        return {
+          role: role,
+          viewCostCenters: false,
+          createCostCenter: false,
+          updateCostCenter: false,
+          deleteCostCenter: false,
+          viewBudget: false,
+          updateBudget: false
+        };
+      }
+
+      function readStoredRole() {
+        try {
+          return normalizeRole(localStorage.getItem(ROLE_KEY) || "Account Admin");
+        } catch (e) {
+          return "Account Admin";
+        }
+      }
+
+      function applyRoleUi() {
+        permissions = getPermissionsForRole(readStoredRole());
+        var canView = !!permissions.viewCostCenters;
+        $("#ccAccessDenied").toggle(!canView);
+        $("#ccManageContent").toggle(canView);
+        $createBtn.toggle(canView && !!permissions.createCostCenter && !activeDetailId);
+        $(".js-budget-col").toggle(canView && !!permissions.viewBudget);
+        var showActions = canView && (permissions.updateCostCenter || permissions.deleteCostCenter);
+        $(".js-actions-col").toggle(!!showActions);
+        $(".js-budget-field").toggleClass("is-disabled", !permissions.updateBudget);
+        $(".js-budget-field").find("input, select").prop("disabled", !permissions.updateBudget);
+        if (!canView) return;
+        if (activeDetailId) {
+          var center = findCenterById(activeDetailId);
+          if (center) {
+            showDetail(center.id);
+            return;
+          }
+          activeDetailId = null;
+        }
+        showList();
+      }
+
+      function budgetLimitLabel(center) {
+        var total = Number(center && center.perPeriodAmount || 0);
+        var periodLabel = formatPeriodLabel(center && center.period).toLowerCase();
+        if (total > 0) return formatMoney(total) + " / " + periodLabel;
+        return "No period limit";
+      }
+
+      function budgetMeterHtml(spent, total, options) {
+        options = options || {};
+        var period = String(options.period || "");
+        var perOrder = Number(options.perOrder || 0);
+        var large = !!options.large;
+        var pct = 0;
+        var state = "is-empty";
+
+        if (total > 0) {
+          pct = Math.max(0, Math.min(100, (spent / total) * 100));
+          if (spent > total) {
+            state = "is-over";
+            pct = 100;
+          } else if (spent / total >= 0.8) {
+            state = "is-warn";
+          } else if (spent > 0) {
+            state = "is-ok";
+          }
+        }
+
+        var displayPct = total > 0 ? Math.round(Math.max(0, (spent / total) * 100)) : 0;
+        var pctLabel = total > 0 ? displayPct + "%" : "—";
+        var primary = total > 0
+          ? formatMoney(spent) + " of " + formatMoney(total)
+          : "No period limit";
+        var extras = [];
+        if (period && total > 0) {
+          extras.push("<span class='budget-sub'>" + escapeHtml(period) + " budget</span>");
+        }
+        if (perOrder > 0) {
+          extras.push("<span class='budget-sub'>" + escapeHtml(formatMoney(perOrder)) + " / order limit</span>");
+        }
+        if (total <= 0 && perOrder <= 0) {
+          return "<span class='budget-sub'>No limit set</span>";
+        }
+        if (total <= 0) {
+          return ""
+            + "<div class='budget-meter-copy'>"
+            + "<span class='budget-value'>" + escapeHtml(formatMoney(spent)) + " spent</span>"
+            + extras.join("")
+            + "</div>";
+        }
+
+        var dash = Math.max(0, Math.min(100, (spent / total) * 100)).toFixed(2);
+        return ""
+          + "<div class='budget-meter " + state + (large ? " budget-meter-lg" : "") + "' role='img' aria-label='"
+          + escapeHtml(primary + " (" + pctLabel + ")")
+          + "'>"
+          + "<svg class='budget-ring" + (large ? " budget-ring-lg" : "") + "' viewBox='0 0 36 36' aria-hidden='true'>"
+          + "<circle class='budget-ring-bg' cx='18' cy='18' r='15.5'></circle>"
+          + "<circle class='budget-ring-fill' cx='18' cy='18' r='15.5' stroke-dasharray='" + dash + " 100' pathLength='100'></circle>"
+          + "</svg>"
+          + "<div class='budget-meter-copy'>"
+          + "<span class='budget-meter-pct'>" + escapeHtml(pctLabel) + " used</span>"
+          + "<span class='budget-value'>" + escapeHtml(primary) + "</span>"
+          + extras.join("")
+          + "</div>"
+          + "</div>";
+      }
+
+      function budgetSummaryHtml(center) {
+        if (!permissions.viewBudget) return "";
+        return budgetMeterHtml(
+          Number(center && center.budgetSpent || 0),
+          Number(center && center.perPeriodAmount || 0),
+          {
+            period: formatPeriodLabel(center && center.period),
+            perOrder: Number(center && center.perOrderAmount || 0)
+          }
+        );
+      }
+
+      function actionsHtml() {
+        if (!permissions.updateCostCenter && !permissions.deleteCostCenter) {
+          return "<span class='actions-muted'>—</span>";
+        }
+        var html = "";
+        if (permissions.updateCostCenter) {
+          html += "<a class='table-action js-edit-cc' href='#' title='Edit'><span class='glyphicon glyphicon-pencil'></span></a>";
+        }
+        if (permissions.deleteCostCenter) {
+          html += "<a class='table-action delete js-delete-cc' href='#' title='Delete'><span class='glyphicon glyphicon-trash'></span></a>";
+        }
+        return html;
+      }
+
+      function normalizeCenter(raw) {
+        var managerEmail = String(raw && raw.managerEmail || "").toLowerCase();
+        var manager = TEAM_ROSTER.find(function (member) {
+          return member.email === managerEmail;
+        });
+        var buyerEmails = Array.isArray(raw && raw.buyerEmails) ? raw.buyerEmails : [];
+        return {
+          id: String(raw && raw.id || "").trim(),
+          name: String(raw && raw.name || "").trim(),
+          managerEmail: managerEmail,
+          managerName: manager ? manager.name : String(raw && raw.managerName || "").trim(),
+          buyerEmails: buyerEmails.map(function (email) {
+            return String(email || "").toLowerCase();
+          }).filter(Boolean),
+          orderCount: Math.max(0, Number(raw && raw.orderCount || 0) || 0),
+          budgetSpent: Math.max(0, Number(raw && raw.budgetSpent || 0) || 0),
+          perOrderAmount: Math.max(0, Number(raw && raw.perOrderAmount || 0) || 0),
+          perPeriodAmount: Math.max(0, Number(raw && raw.perPeriodAmount || 0) || 0),
+          period: String(raw && raw.period || "monthly")
+        };
+      }
+
+      function loadCenters() {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+          if (Array.isArray(parsed) && parsed.length) {
+            return parsed.map(normalizeCenter);
+          }
+        } catch (e) {}
+        return DEFAULT_CENTERS.map(normalizeCenter);
+      }
+
+      function saveCenters() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(centers));
+        } catch (e) {}
+      }
+
+      function findCenterById(id) {
+        var key = String(id || "").trim().toLowerCase();
+        return centers.find(function (center) {
+          return String(center.id || "").toLowerCase() === key;
+        }) || null;
+      }
+
+      function hasIdCollision(id, excludeId) {
+        var target = String(id || "").trim().toLowerCase();
+        var exclude = String(excludeId || "").trim().toLowerCase();
+        return centers.some(function (center) {
+          var current = String(center.id || "").toLowerCase();
+          if (exclude && current === exclude) return false;
+          return current === target;
+        });
+      }
+
+      function applyMobileLabels() {
+        var labels = [];
+        $(".cc-table thead th:visible").each(function () {
+          labels.push(String($(this).text() || "").trim());
+        });
+        $tableBody.find("tr").each(function () {
+          var $cells = $(this).children("td:visible");
+          labels.forEach(function (label, index) {
+            if ($cells.eq(index).length) {
+              $cells.eq(index).attr("data-label", label);
+            }
+          });
+        });
+      }
+
+      function searchHaystack(center) {
+        return [
+          center.id,
+          center.name,
+          center.managerName,
+          center.managerEmail
+        ].join(" ").toLowerCase();
+      }
+
+      function renderTable() {
+        var query = $.trim($search.val().toLowerCase());
+        var visible = 0;
+        var showBudget = !!permissions.viewBudget;
+        var showActions = permissions.updateCostCenter || permissions.deleteCostCenter;
+        var html = centers.map(function (center) {
+          var haystack = searchHaystack(center);
+          var match = !query || haystack.indexOf(query) !== -1;
+          if (match) visible++;
+          return ""
+            + "<tr data-id='" + escapeHtml(center.id) + "' data-search='" + escapeHtml(haystack) + "'" + (match ? "" : " style='display:none'") + ">"
+            + "<td><a class='cc-link js-open-cc' href='#' data-id='" + escapeHtml(center.id) + "'>" + escapeHtml(center.id) + "</a></td>"
+            + "<td><a class='cc-name-link js-open-cc' href='#' data-id='" + escapeHtml(center.id) + "'>" + escapeHtml(center.name) + "</a></td>"
+            + "<td>" + escapeHtml(String(center.orderCount)) + "</td>"
+            + (showBudget ? "<td>" + budgetSummaryHtml(center) + "</td>" : "")
+            + (showActions ? "<td>" + actionsHtml() + "</td>" : "")
+            + "</tr>";
+        }).join("");
+        $tableBody.html(html);
+        $empty.toggle(visible === 0);
+        applyMobileLabels();
+      }
+
+      function ordersForCenter(centerId) {
+        var key = String(centerId || "").trim();
+        return ORDERS_BY_CENTER[key] || { pending: [], approved: [] };
+      }
+
+      function renderOrdersTable(orders, statusClass, statusLabel) {
+        if (!orders || !orders.length) {
+          return "<p class='orders-empty'>No " + escapeHtml(statusLabel.toLowerCase()) + " orders.</p>";
+        }
+        var rows = orders.map(function (order) {
+          return ""
+            + "<tr>"
+            + "<td data-label='Order'>" + escapeHtml(order.id) + "</td>"
+            + "<td data-label='Buyer'>" + escapeHtml(order.buyer) + "</td>"
+            + "<td data-label='Date'>" + escapeHtml(order.date) + "</td>"
+            + "<td data-label='Items'>" + escapeHtml(String(order.items)) + "</td>"
+            + "<td data-label='Total'>" + escapeHtml(formatMoney(order.total)) + "</td>"
+            + "<td data-label='Status'><span class='order-status " + statusClass + "'>" + escapeHtml(statusLabel) + "</span></td>"
+            + "</tr>";
+        }).join("");
+        return ""
+          + "<table class='orders-table'>"
+          + "<thead><tr><th>Order</th><th>Buyer</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th></tr></thead>"
+          + "<tbody>" + rows + "</tbody>"
+          + "</table>";
+      }
+
+      function renderDetailBuyers(center) {
+        var canAssign = !!permissions.updateCostCenter;
+        $("#detailBuyersError").hide().text("");
+        $("#detailSaveBuyersBtn").toggle(canAssign);
+        if (canAssign) {
+          $("#detailBuyersRead").hide();
+          $("#detailBuyersEdit").show();
+          var selected = {};
+          (center.buyerEmails || []).forEach(function (email) {
+            selected[String(email || "").toLowerCase()] = true;
+          });
+          var html = TEAM_ROSTER.map(function (member) {
+            var checked = selected[member.email] ? " checked" : "";
+            return ""
+              + "<label class='buyer-option'>"
+              + "<input type='checkbox' class='js-detail-buyer-check' value='" + escapeHtml(member.email) + "'" + checked + ">"
+              + "<span>" + escapeHtml(member.name)
+              + " <span class='buyer-meta'>" + escapeHtml(member.email) + "</span></span>"
+              + "</label>";
+          }).join("");
+          $("#detailBuyersEdit").html(html);
+          return;
+        }
+
+        $("#detailBuyersEdit").hide().empty();
+        $("#detailBuyersRead").show();
+        var buyers = (center.buyerEmails || []).map(function (email) {
+          return TEAM_ROSTER.find(function (member) { return member.email === email; }) || {
+            name: email,
+            email: email
+          };
+        });
+        if (!buyers.length) {
+          $("#detailBuyersRead").html("<p class='buyer-empty'>No buyers assigned.</p>");
+          return;
+        }
+        $("#detailBuyersRead").html(buyers.map(function (buyer) {
+          return ""
+            + "<div class='buyer-chip'>"
+            + "<div class='buyer-chip-main'>"
+            + "<span class='buyer-chip-name'>" + escapeHtml(buyer.name) + "</span>"
+            + "<span class='buyer-chip-email'>" + escapeHtml(buyer.email) + "</span>"
+            + "</div>"
+            + "</div>";
+        }).join(""));
+      }
+
+      function showList() {
+        activeDetailId = null;
+        $("#ccDetailView").hide();
+        $("#ccListView").show();
+        $createBtn.toggle(!!permissions.createCostCenter);
+        $(".cc-breadcrumb").html('<a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Cost Centers</span>');
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, "", "cost-centers.html");
+        }
+        renderTable();
+      }
+
+      function showDetail(centerId) {
+        var center = findCenterById(centerId);
+        if (!center || !permissions.viewCostCenters) {
+          showList();
+          return;
+        }
+        activeDetailId = center.id;
+        $("#ccListView").hide();
+        $("#ccDetailView").show();
+        $createBtn.hide();
+        $(".cc-breadcrumb").html(
+          '<a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <a href="cost-centers.html" id="ccBreadcrumbList">Cost Centers</a> <span class="sep">&gt;</span> <span>'
+          + escapeHtml(center.name) + "</span>"
+        );
+
+        $("#detailName").text(center.name);
+        $("#detailIdLine").text("ID: " + center.id);
+        $("#detailManager").text(center.managerName || center.managerEmail || "—");
+        $("#detailOrderCount").text(String(center.orderCount || 0));
+        $("#detailBudgetLimit").text(budgetLimitLabel(center));
+        $("#detailPerOrder").text(Number(center.perOrderAmount || 0) > 0 ? formatMoney(center.perOrderAmount) + " / order" : "No per-order limit");
+        $("#detailBudgetMeter").html(budgetMeterHtml(
+          Number(center.budgetSpent || 0),
+          Number(center.perPeriodAmount || 0),
+          {
+            period: formatPeriodLabel(center.period),
+            perOrder: Number(center.perOrderAmount || 0),
+            large: true
+          }
+        ));
+        $("#detailEditBtn").toggle(!!permissions.updateCostCenter);
+
+        renderDetailBuyers(center);
+        var orders = ordersForCenter(center.id);
+        $("#detailPendingOrders").html(renderOrdersTable(orders.pending, "pending", "Pending"));
+        $("#detailApprovedOrders").html(renderOrdersTable(orders.approved, "approved", "Approved"));
+
+        if (window.history && window.history.replaceState) {
+          window.history.replaceState({}, "", "cost-centers.html?id=" + encodeURIComponent(center.id));
+        }
+      }
+
+      function getQueryId() {
+        try {
+          var params = new URLSearchParams(window.location.search || "");
+          return String(params.get("id") || "").trim();
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function populateManagerSelect(selectedEmail) {
+        var options = TEAM_ROSTER.map(function (member) {
+          var selected = member.email === selectedEmail ? " selected" : "";
+          return "<option value='" + escapeHtml(member.email) + "'" + selected + ">"
+            + escapeHtml(member.name) + " (" + escapeHtml(member.email) + ")</option>";
+        }).join("");
+        $managerSelect.html(options);
+      }
+
+      function populateBuyers(selectedEmails) {
+        var selected = {};
+        (selectedEmails || []).forEach(function (email) {
+          selected[String(email || "").toLowerCase()] = true;
+        });
+        var html = TEAM_ROSTER.map(function (member) {
+          var checked = selected[member.email] ? " checked" : "";
+          return ""
+            + "<label class='buyer-option'>"
+            + "<input type='checkbox' class='js-buyer-check' value='" + escapeHtml(member.email) + "'" + checked + ">"
+            + "<span>" + escapeHtml(member.name)
+            + " <span class='buyer-meta'>" + escapeHtml(member.email) + "</span></span>"
+            + "</label>";
+        }).join("");
+        $buyersBox.html(html);
+      }
+
+      function selectedBuyerEmails() {
+        var emails = [];
+        $buyersBox.find(".js-buyer-check:checked").each(function () {
+          emails.push(String($(this).val() || "").toLowerCase());
+        });
+        return emails;
+      }
+
+      function resetForm() {
+        $idInput.val("");
+        $nameInput.val("");
+        $perOrder.val("");
+        $perPeriod.val("");
+        $period.val("monthly");
+        $formError.hide().text("");
+        populateManagerSelect(TEAM_ROSTER[0].email);
+        populateBuyers([]);
+      }
+
+      function openCreateModal() {
+        if (!permissions.createCostCenter) return;
+        editingId = null;
+        resetForm();
+        $("#costCenterModalTitle").text("Create Cost Center");
+        $("#saveCostCenterBtn").text("Save Cost Center");
+        $("#costCenterModal").modal("show");
+      }
+
+      function openEditModal(center) {
+        if (!permissions.updateCostCenter) return;
+        editingId = center.id;
+        $formError.hide().text("");
+        $idInput.val(center.id);
+        $nameInput.val(center.name);
+        populateManagerSelect(center.managerEmail || TEAM_ROSTER[0].email);
+        $perOrder.val(Number(center.perOrderAmount || 0) || "");
+        $perPeriod.val(Number(center.perPeriodAmount || 0) || "");
+        $period.val(center.period || "monthly");
+        populateBuyers(center.buyerEmails || []);
+        $(".js-budget-field").toggleClass("is-disabled", !permissions.updateBudget);
+        $(".js-budget-field").find("input, select").prop("disabled", !permissions.updateBudget);
+        $("#costCenterModalTitle").text("Edit Cost Center");
+        $("#saveCostCenterBtn").text("Save Changes");
+        $("#costCenterModal").modal("show");
+      }
+
+      function readFormValues() {
+        var managerEmail = String($managerSelect.val() || "").toLowerCase();
+        var manager = TEAM_ROSTER.find(function (member) {
+          return member.email === managerEmail;
+        });
+        var perOrderAmount = Number($perOrder.val() || 0);
+        var perPeriodAmount = Number($perPeriod.val() || 0);
+        if (!isFinite(perOrderAmount) || perOrderAmount < 0) perOrderAmount = 0;
+        if (!isFinite(perPeriodAmount) || perPeriodAmount < 0) perPeriodAmount = 0;
+        return {
+          id: $.trim($idInput.val() || ""),
+          name: $.trim($nameInput.val() || ""),
+          managerEmail: managerEmail,
+          managerName: manager ? manager.name : "",
+          buyerEmails: selectedBuyerEmails(),
+          perOrderAmount: perOrderAmount,
+          perPeriodAmount: perPeriodAmount,
+          period: String($period.val() || "monthly")
+        };
+      }
+
+      centers = loadCenters();
+      saveCenters();
+      applyRoleUi();
+      var initialId = getQueryId();
+      if (initialId && permissions.viewCostCenters && findCenterById(initialId)) {
+        showDetail(initialId);
+      }
+
+      $search.on("input", renderTable);
+
+      $createBtn.on("click", function (event) {
+        event.preventDefault();
+        openCreateModal();
+      });
+
+      $(document).on("click", ".js-open-cc", function (event) {
+        event.preventDefault();
+        var id = String($(this).data("id") || $(this).closest("tr").data("id") || "");
+        if (!id) return;
+        showDetail(id);
+      });
+
+      $("#ccBackToList").on("click", function (event) {
+        event.preventDefault();
+        showList();
+      });
+
+      $(document).on("click", "#ccBreadcrumbList", function (event) {
+        event.preventDefault();
+        showList();
+      });
+
+      $("#detailEditBtn").on("click", function (event) {
+        event.preventDefault();
+        if (!activeDetailId || !permissions.updateCostCenter) return;
+        var center = findCenterById(activeDetailId);
+        if (!center) return;
+        openEditModal(center);
+      });
+
+      $("#detailSaveBuyersBtn").on("click", function () {
+        if (!activeDetailId || !permissions.updateCostCenter) return;
+        var center = findCenterById(activeDetailId);
+        if (!center) return;
+        var emails = [];
+        $("#detailBuyersEdit").find(".js-detail-buyer-check:checked").each(function () {
+          emails.push(String($(this).val() || "").toLowerCase());
+        });
+        center.buyerEmails = emails;
+        saveCenters();
+        $("#detailBuyersError").hide().text("");
+        renderDetailBuyers(center);
+        $("#detailBuyersError").text("Buyers updated.").css("color", "#067647").show();
+        setTimeout(function () {
+          $("#detailBuyersError").hide().css("color", "#b12704").text("");
+        }, 1600);
+      });
+
+      $(document).on("click", ".js-edit-cc", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!permissions.updateCostCenter) return;
+        var id = String($(this).closest("tr").data("id") || "");
+        var center = findCenterById(id);
+        if (!center) return;
+        openEditModal(center);
+      });
+
+      $(document).on("click", ".js-delete-cc", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!permissions.deleteCostCenter) return;
+        var id = String($(this).closest("tr").data("id") || "");
+        var center = findCenterById(id);
+        if (!center) return;
+        pendingDeleteId = center.id;
+        $deleteCopy.text("Are you sure you want to delete cost center \"" + center.name + "\" (" + center.id + ")? This cannot be undone.");
+        $("#deleteCostCenterModal").modal("show");
+      });
+
+      $("#confirmDeleteCostCenterBtn").on("click", function () {
+        if (!permissions.deleteCostCenter || !pendingDeleteId) {
+          $("#deleteCostCenterModal").modal("hide");
+          return;
+        }
+        centers = centers.filter(function (center) {
+          return String(center.id).toLowerCase() !== String(pendingDeleteId).toLowerCase();
+        });
+        if (activeDetailId && String(activeDetailId).toLowerCase() === String(pendingDeleteId).toLowerCase()) {
+          activeDetailId = null;
+        }
+        pendingDeleteId = null;
+        saveCenters();
+        if (activeDetailId) {
+          showDetail(activeDetailId);
+        } else {
+          showList();
+        }
+        $("#deleteCostCenterModal").modal("hide");
+      });
+
+      $("#deleteCostCenterModal").on("hidden.bs.modal", function () {
+        pendingDeleteId = null;
+      });
+
+      $("#saveCostCenterBtn").on("click", function () {
+        var isEdit = !!editingId;
+        if (isEdit && !permissions.updateCostCenter) return;
+        if (!isEdit && !permissions.createCostCenter) return;
+
+        var values = readFormValues();
+        if (!values.id || !values.name) {
+          $formError.text("ID and Cost Center Name are required.").show();
+          return;
+        }
+        if (!values.managerEmail) {
+          $formError.text("Select a cost center manager.").show();
+          return;
+        }
+        if (hasIdCollision(values.id, editingId)) {
+          $formError.text("A cost center with this ID already exists.").show();
+          return;
+        }
+
+        if (editingId) {
+          var existing = findCenterById(editingId);
+          if (!existing) return;
+          var oldId = existing.id;
+          existing.id = values.id;
+          existing.name = values.name;
+          existing.managerEmail = values.managerEmail;
+          existing.managerName = values.managerName;
+          existing.buyerEmails = values.buyerEmails;
+          if (permissions.updateBudget) {
+            existing.perOrderAmount = values.perOrderAmount;
+            existing.perPeriodAmount = values.perPeriodAmount;
+            existing.period = values.period;
+          }
+          if (activeDetailId && String(activeDetailId).toLowerCase() === String(oldId).toLowerCase()) {
+            activeDetailId = existing.id;
+          }
+        } else {
+          centers.push(normalizeCenter({
+            id: values.id,
+            name: values.name,
+            managerEmail: values.managerEmail,
+            managerName: values.managerName,
+            buyerEmails: values.buyerEmails,
+            orderCount: 0,
+            budgetSpent: 0,
+            perOrderAmount: permissions.updateBudget ? values.perOrderAmount : 0,
+            perPeriodAmount: permissions.updateBudget ? values.perPeriodAmount : 0,
+            period: permissions.updateBudget ? values.period : "monthly"
+          }));
+        }
+
+        saveCenters();
+        $("#costCenterModal").modal("hide");
+        if (activeDetailId) {
+          showDetail(activeDetailId);
+        } else {
+          showList();
+        }
+      });
+
+      $("#costCenterModal").on("hidden.bs.modal", function () {
+        editingId = null;
+        $formError.hide().text("");
+      });
+    })();
+  </script>
+</body>
+</html>

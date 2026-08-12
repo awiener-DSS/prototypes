@@ -2,5 +2,10 @@
   "name": "dealer-forum-swap-shop",
   "private": true,
   "version": "1.0.0",
-  "description": "Dealer forum prototype (Bootstrap 3, jQuery, plain CSS)"
+  "description": "Dealer forum prototype (Bootstrap 3, jQuery, plain CSS)",
+  "scripts": {
+    "start": "node tools/dev-server.mjs",
+    "insights-proxy": "node tools/groq-proxy.mjs",
+    "serve": "node tools/dev-server.mjs"
+  }
 }

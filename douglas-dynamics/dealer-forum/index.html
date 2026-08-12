@@ -22,6 +22,12 @@
           <h1>Dealer forum</h1>
           <p class="lead">Share best practices, service tips, and list swap shop items.</p>
         </div>
+        <div class="dealer-header-actions">
+          <button type="button" class="btn btn-insights" data-open-insights title="Admin insights chat">
+            <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>
+            Admin insights
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -199,8 +205,83 @@
     </div>
   </div>
 
+  <!-- Admin insights chat -->
+  <div id="admin-insights-backdrop" class="insights-backdrop" aria-hidden="true"></div>
+  <aside id="admin-insights-panel" class="insights-panel" aria-hidden="true" aria-labelledby="insights-panel-title" role="dialog">
+    <div class="insights-panel-header">
+      <div class="insights-panel-heading">
+        <p class="insights-eyebrow">Admin</p>
+        <h2 id="insights-panel-title">Forum insights</h2>
+        <p class="insights-sub">Ask about trends, engagement, and product talk.</p>
+      </div>
+      <div class="insights-panel-controls">
+        <span class="insights-status" data-insights-status></span>
+        <button type="button" class="btn btn-default btn-sm" data-insights-settings title="Connection settings">API key</button>
+        <button type="button" class="btn btn-default btn-sm" data-insights-reset title="New conversation">Reset</button>
+        <button type="button" class="btn btn-default btn-sm" data-close-insights aria-label="Close insights">×</button>
+      </div>
+    </div>
+    <div class="insights-settings" data-insights-settings-panel hidden>
+      <form data-insights-settings-form autocomplete="off">
+        <p class="insights-settings-title">Connection</p>
+        <p class="insights-settings-help">
+          Paste a <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq API key</a>
+          (starts with <code>gsk_</code>). Use <strong>Test connection</strong> before chatting.
+          Don’t use a password-manager autofill — paste the key yourself.
+        </p>
+        <div class="form-group">
+          <label for="insights-api-key">Groq API key</label>
+          <input
+            type="text"
+            class="form-control insights-api-key-input"
+            id="insights-api-key"
+            name="groq-api-key"
+            data-insights-api-key
+            autocomplete="off"
+            spellcheck="false"
+            autocapitalize="off"
+            autocorrect="off"
+            placeholder="gsk_…"
+          >
+        </div>
+        <div class="form-group">
+          <label for="insights-model">Model</label>
+          <select class="form-control" id="insights-model" name="groq-model" data-insights-model>
+            <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+            <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+            <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+            <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
+            <option value="moonshotai/kimi-k2-instruct">moonshotai/kimi-k2-instruct</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="insights-base-url">API base URL</label>
+          <input type="text" class="form-control" id="insights-base-url" name="groq-base-url" data-insights-base-url value="https://api.groq.com/openai/v1" autocomplete="off">
+        </div>
+        <div class="insights-settings-actions">
+          <button type="submit" class="btn btn-fisher btn-sm" data-insights-save-settings>Save &amp; connect</button>
+          <button type="button" class="btn btn-default btn-sm" data-insights-test-settings>Test connection</button>
+          <button type="button" class="btn btn-default btn-sm" data-insights-clear-settings>Clear key</button>
+          <button type="button" class="btn btn-default btn-sm" data-insights-close-settings>Close</button>
+        </div>
+        <p class="insights-settings-status" data-insights-test-status hidden></p>
+      </form>
+    </div>
+    <div class="insights-panel-body">
+      <div class="insights-log" data-insights-log role="log" aria-live="polite"></div>
+      <div class="insights-suggestions" data-insights-suggestions></div>
+    </div>
+    <form class="insights-composer" data-insights-form>
+      <label class="sr-only" for="insights-input">Ask a question</label>
+      <textarea id="insights-input" class="form-control" data-insights-input rows="2" placeholder="e.g. What topics are trending?"></textarea>
+      <button type="submit" class="btn btn-fisher">Ask</button>
+    </form>
+  </aside>
+
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+  <script src="js/admin-insights-tools.js"></script>
+  <script src="js/admin-insights-chat.js"></script>
   <script src="js/forum.js"></script>
 </body>
 </html>

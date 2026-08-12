@@ -1,7 +1,7 @@
 (function ($) {
   'use strict';
 
-  var STORAGE_KEY = 'dealerForum.v1';
+  var STORAGE_KEY = 'dealerForum.v2';
   var LIGHTBOX_PLACEHOLDER_SRC =
     'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
   var categoryFilterByBoard = { swap: null, service: null };
@@ -85,7 +85,7 @@
         createdAt: now - 86400000 * 3,
         taggedUserIds: ['u3'],
         attachments: [],
-        subscriberIds: [],
+        subscriberIds: ['u2', 'u4'],
         replies: [
           {
             id: 'r1',
@@ -93,6 +93,20 @@
             body: 'Thanks @northridge — still interested. Can you ship or pickup only?',
             createdAt: now - 86400000 * 2,
             taggedUserIds: ['u1']
+          },
+          {
+            id: 'r1b',
+            authorId: 'u1',
+            body: 'Pickup preferred near Buffalo. XV2 wing is ready this week.',
+            createdAt: now - 86400000,
+            taggedUserIds: []
+          },
+          {
+            id: 'r1c',
+            authorId: 'u2',
+            body: 'If Metro passes I may take it for our second truck.',
+            createdAt: now - 3600000 * 8,
+            taggedUserIds: []
           }
         ]
       },
@@ -106,8 +120,16 @@
         createdAt: now - 86400000,
         taggedUserIds: [],
         attachments: [],
-        subscriberIds: ['u1'],
-        replies: []
+        subscriberIds: ['u1', 'u3'],
+        replies: [
+          {
+            id: 'r2a',
+            authorId: 'u1',
+            body: 'We have an HDX steel we might trade — sending dims tomorrow.',
+            createdAt: now - 3600000 * 6,
+            taggedUserIds: []
+          }
+        ]
       },
       {
         id: 't3',
@@ -119,8 +141,23 @@
         createdAt: now - 86400000 * 2,
         taggedUserIds: ['u4'],
         attachments: [],
-        subscriberIds: [],
-        replies: []
+        subscriberIds: ['u1', 'u2', 'u3'],
+        replies: [
+          {
+            id: 'r3a',
+            authorId: 'u2',
+            body: 'Great checklist. We added a photo step for trip-edge wear before and after.',
+            createdAt: now - 86400000,
+            taggedUserIds: []
+          },
+          {
+            id: 'r3b',
+            authorId: 'u1',
+            body: 'Using this for our preseason bay training next week.',
+            createdAt: now - 3600000 * 20,
+            taggedUserIds: []
+          }
+        ]
       },
       {
         id: 't4',
@@ -132,8 +169,16 @@
         createdAt: now - 86400000 * 4,
         taggedUserIds: ['u2'],
         attachments: [],
-        subscriberIds: [],
-        replies: []
+        subscriberIds: ['u1', 'u2'],
+        replies: [
+          {
+            id: 'r4a',
+            authorId: 'u2',
+            body: 'Dibs on two pairs — will confirm tomorrow morning.',
+            createdAt: now - 86400000 * 3,
+            taggedUserIds: []
+          }
+        ]
       },
       {
         id: 't5',
@@ -197,8 +242,16 @@
         createdAt: now - 86400000 * 9,
         taggedUserIds: [],
         attachments: [],
-        subscriberIds: [],
-        replies: []
+        subscriberIds: ['u4'],
+        replies: [
+          {
+            id: 'r9a',
+            authorId: 'u4',
+            body: 'Interested in the POLY-CASTER motor only if you will part it out.',
+            createdAt: now - 86400000 * 7,
+            taggedUserIds: []
+          }
+        ]
       },
       {
         id: 't10',
@@ -270,13 +323,28 @@
         board: 'service',
         categoryId: 'hydraulics-service',
         title: 'Hydraulic fluid spec — cold climate',
-        body: 'What are you running below −20°F? We switched to a lighter ISO and saw better cycle times. Share batch numbers if you have them.',
+        body: 'What are you running below −20°F? We switched to a lighter ISO and saw better cycle times on HDX hydraulics. Share batch numbers if you have them.',
         authorId: 'u2',
         createdAt: now - 86400000 * 3,
         taggedUserIds: [],
         attachments: [],
-        subscriberIds: [],
-        replies: []
+        subscriberIds: ['u1', 'u4'],
+        replies: [
+          {
+            id: 'r15a',
+            authorId: 'u4',
+            body: 'Same lighter ISO here — cycle times improved on our HDX fleet too.',
+            createdAt: now - 86400000 * 2,
+            taggedUserIds: []
+          },
+          {
+            id: 'r15b',
+            authorId: 'u1',
+            body: 'We stayed heavier but preheated hoses. Hydraulics feel smoother either way.',
+            createdAt: now - 86400000,
+            taggedUserIds: []
+          }
+        ]
       },
       {
         id: 't16',
@@ -1275,6 +1343,24 @@
     }
 
     fullRefresh();
+
+    if (window.DealerForumInsights && typeof window.DealerForumInsights.initAdminInsights === 'function') {
+      window.DealerForumInsights.initAdminInsights({
+        getTopics: function () { return state.topics; },
+        getUsers: function () { return MOCK_USERS; },
+        getCategoryLabel: getCategoryLabel,
+        onOpenTopic: function (topicId) {
+          showTopic(state, topicId);
+        }
+      });
+    }
+
+    window.DealerForumApp = {
+      getState: function () { return state; },
+      getUsers: function () { return MOCK_USERS; },
+      openTopic: function (topicId) { showTopic(state, topicId); },
+      refresh: fullRefresh
+    };
 
     $('a[data-toggle="tab"]').on('shown.bs.tab', function () {
       fullRefresh();

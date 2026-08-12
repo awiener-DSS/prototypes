@@ -225,9 +225,8 @@
       <form data-insights-settings-form autocomplete="off">
         <p class="insights-settings-title">Connection</p>
         <p class="insights-settings-help">
-          Paste a <a href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq API key</a>
-          (starts with <code>gsk_</code>). Use <strong>Test connection</strong> before chatting.
-          Don’t use a password-manager autofill — paste the key yourself.
+          Demo default key can live in <code>js/insights-config.js</code> so the chat works without pasting here.
+          A key saved in this panel overrides that file for this browser only.
         </p>
         <div class="form-group">
           <label for="insights-api-key">Groq API key</label>
@@ -280,6 +279,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.4.1/dist/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+  <script src="js/insights-config.js"></script>
   <script src="js/admin-insights-tools.js"></script>
   <script src="js/admin-insights-chat.js"></script>
   <script src="js/forum.js"></script>

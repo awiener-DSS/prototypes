@@ -33,7 +33,19 @@
     return {
       mode: cfg.mode || 'auto',
       apiUrl: cfg.apiUrl || '/api/admin/insights/chat',
-      apiHeaders: cfg.apiHeaders || {}
+      apiHeaders: cfg.apiHeaders || {},
+      apiKey: normalizeApiKey(cfg.apiKey || cfg.groqApiKey || ''),
+      model: cfg.model || DEFAULT_MODEL,
+      baseUrl: cfg.baseUrl || DEFAULT_BASE_URL
+    };
+  }
+
+  function getDemoDefaults() {
+    var cfg = getConfig();
+    return {
+      apiKey: cfg.apiKey || '',
+      model: cfg.model || DEFAULT_MODEL,
+      baseUrl: cfg.baseUrl || DEFAULT_BASE_URL
     };
   }
 
@@ -51,28 +63,42 @@
   }
 
   function loadSettings() {
+    var defaults = getDemoDefaults();
     try {
       var raw = localStorage.getItem(SETTINGS_KEY);
       if (!raw) {
-        return { apiKey: '', model: DEFAULT_MODEL, baseUrl: DEFAULT_BASE_URL };
+        return {
+          apiKey: defaults.apiKey,
+          model: defaults.model,
+          baseUrl: defaults.baseUrl,
+          fromConfig: !!defaults.apiKey
+        };
       }
       var parsed = JSON.parse(raw);
-      var baseUrl = parsed.baseUrl || DEFAULT_BASE_URL;
+      var baseUrl = parsed.baseUrl || defaults.baseUrl || DEFAULT_BASE_URL;
       // Prefer direct Groq; migrate local proxy defaults from earlier builds.
       if (
         baseUrl === 'http://127.0.0.1:8787/openai/v1' ||
         baseUrl === 'http://localhost:8787/openai/v1' ||
         baseUrl === '/openai/v1'
       ) {
-        baseUrl = DEFAULT_BASE_URL;
+        baseUrl = defaults.baseUrl || DEFAULT_BASE_URL;
       }
+      var storedKey = normalizeApiKey(parsed.apiKey || '');
       return {
-        apiKey: normalizeApiKey(parsed.apiKey || ''),
-        model: parsed.model || DEFAULT_MODEL,
-        baseUrl: baseUrl
+        // UI override wins; otherwise fall back to insights-config.js
+        apiKey: storedKey || defaults.apiKey,
+        model: parsed.model || defaults.model || DEFAULT_MODEL,
+        baseUrl: baseUrl,
+        fromConfig: !storedKey && !!defaults.apiKey
       };
     } catch (e) {
-      return { apiKey: '', model: DEFAULT_MODEL, baseUrl: DEFAULT_BASE_URL };
+      return {
+        apiKey: defaults.apiKey,
+        model: defaults.model,
+        baseUrl: defaults.baseUrl,
+        fromConfig: !!defaults.apiKey
+      };
     }
   }
 
@@ -405,6 +431,8 @@
     var baseUrl = (settings.baseUrl || DEFAULT_BASE_URL).replace(/\/$/, '');
     var model = settings.model || DEFAULT_MODEL;
     var apiKey = normalizeApiKey(settings.apiKey);
+    var label =
+      'Groq · ' + model + (settings.fromConfig ? ' (config)' : '');
 
     function chatCompletions(payload) {
       return fetch(baseUrl + '/chat/completions', {
@@ -446,7 +474,7 @@
 
     return {
       id: 'groq',
-      label: 'Groq · ' + model,
+      label: label,
       ask: function (uiMessages) {
         var openaiMessages = [{ role: 'system', content: SYSTEM_PROMPT }];
         uiMessages.forEach(function (m) {
@@ -641,13 +669,16 @@
       $log.empty();
       messages = [];
       refreshAdapter();
+      var settings = loadSettings();
       var connected = adapter.id === 'groq';
       appendBubble(
         'assistant',
         connected
-          ? 'Connected to Groq. Ask about forum trends, distributor engagement, product talk, or category activity — answers use live analytics tools.'
+          ? 'Connected to Groq' +
+            (settings.fromConfig ? ' (demo key from insights-config.js)' : '') +
+            '. Ask about forum trends, distributor engagement, product talk, or category activity — answers use live analytics tools.'
           : 'Ask about forum trends, distributor engagement, product talk, or category activity. ' +
-            'Running in local demo mode. Open <strong>API key</strong> to paste a Groq key and connect.'
+            'Running in local demo mode. Add a key in <code>js/insights-config.js</code> or open <strong>API key</strong> to connect Groq.'
       );
       renderSuggestions();
     }

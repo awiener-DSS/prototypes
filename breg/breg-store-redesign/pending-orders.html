@@ -485,9 +485,167 @@
       cursor: not-allowed;
       pointer-events: none;
     }
+    .order-budget-panel {
+      margin: 12px 16px 4px;
+      padding: 12px 14px 14px;
+      border: 1px solid #d9e4ee;
+      border-radius: 10px;
+      background: #f7fbff;
+    }
+    .order-budget-panel.is-over {
+      border-color: #efc1bf;
+      background: #fff7f6;
+    }
+    .order-budget-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .order-budget-title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f1111;
+      line-height: 1.25;
+    }
+    .order-budget-meta {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.35;
+    }
+    .order-budget-flag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      background: #fdecea;
+      color: #8a260f;
+    }
+    .order-budget-legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #565959;
+    }
+    .order-budget-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .order-budget-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+    .order-budget-swatch.spent { background: #05798f; }
+    .order-budget-swatch.order { background: #0047bb; }
+    .order-budget-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+    }
+    .order-budget-card {
+      border: 1px solid #e3e7ea;
+      border-radius: 10px;
+      background: #fff;
+      padding: 10px 12px;
+      min-width: 0;
+    }
+    .order-budget-card.is-over {
+      border-color: #efc1bf;
+    }
+    .order-budget-card.is-warn {
+      border-color: #f0d7a8;
+    }
+    .order-budget-layer {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      color: #565959;
+      margin-bottom: 6px;
+    }
+    .budget-meter-copy {
+      min-width: 0;
+    }
+    .budget-meter-pct {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f1111;
+      line-height: 1.2;
+      font-variant-numeric: tabular-nums;
+    }
+    .order-budget-card.is-warn .budget-meter-pct { color: #b54708; }
+    .order-budget-card.is-over .budget-meter-pct { color: #b12704; }
+    .budget-bar {
+      display: flex;
+      width: 100%;
+      height: 10px;
+      margin: 8px 0 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e6eaed;
+    }
+    .budget-bar-spent,
+    .budget-bar-order {
+      height: 100%;
+      min-width: 0;
+    }
+    .budget-bar-spent { background: #05798f; }
+    .budget-bar-order { background: #0047bb; }
+    .order-budget-card.is-over .budget-bar-order { background: #c73c2f; }
+    .order-budget-card.is-spent-over .budget-bar-spent { background: #c73c2f; }
+    .budget-value {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #0f1111;
+      line-height: 1.3;
+    }
+    .budget-split {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #565959;
+      line-height: 1.35;
+    }
+    .budget-sub {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #565959;
+      line-height: 1.3;
+    }
+    .budget-note {
+      display: block;
+      margin-top: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #b12704;
+      line-height: 1.3;
+    }
+    .order-budget-empty {
+      margin: 0;
+      font-size: 12px;
+      color: #565959;
+    }
     @media (max-width: 1199px) {
       .pending-title { font-size: 30px; }
       .pending-subtitle { font-size: 14px; }
+    }
+    @media (max-width: 991px) {
+      .order-budget-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 767px) {
       .order-detail-grid { grid-template-columns: 1fr; }
@@ -496,6 +654,7 @@
       .rejected-order-head { grid-template-columns: 1fr 1fr; }
       .pending-title { font-size: 28px; }
       .pending-subtitle { font-size: 13px; }
+      .order-budget-grid { grid-template-columns: 1fr; }
     }
   </style>
   <link rel="stylesheet" href="assets/breg-overrides.css">
@@ -560,10 +719,10 @@
       </div>
       <h2 class="orders-section-title approvals" id="approveOrdersHeading">Orders to Approve</h2>
 
-      <section class="approve-order-card" data-req-id="REQ-240198">
+      <section class="approve-order-card" data-req-id="REQ-240198" data-buyer-email="mchen@medicalclinic.com" data-buyer-name="Michael Chen" data-center-id="CC-1001" data-order-total="612">
         <div class="approve-order-head">
           <div><span class="approve-label">Requisition Number</span><span class="approve-value">REQ-240198</span></div>
-          <div><span class="approve-label">Submitted By</span><span class="approve-value">Jordan Miller</span></div>
+          <div><span class="approve-label">Submitted By</span><span class="approve-value">Michael Chen</span></div>
           <div><span class="approve-label">Total</span><span class="approve-value">$612.00</span></div>
           <div><span class="approve-label">Status</span><span class="approve-status-pill">Awaiting Your Decision</span></div>
         </div>
@@ -594,10 +753,10 @@
         </div>
       </section>
 
-      <section class="approve-order-card" data-req-id="REQ-240173">
+      <section class="approve-order-card" data-req-id="REQ-240173" data-buyer-email="emily.davis@medicalclinic.com" data-buyer-name="Emily Davis" data-center-id="CC-1002" data-order-total="189">
         <div class="approve-order-head">
           <div><span class="approve-label">Requisition Number</span><span class="approve-value">REQ-240173</span></div>
-          <div><span class="approve-label">Submitted By</span><span class="approve-value">Avery Stone</span></div>
+          <div><span class="approve-label">Submitted By</span><span class="approve-value">Emily Davis</span></div>
           <div><span class="approve-label">Total</span><span class="approve-value">$189.00</span></div>
           <div><span class="approve-label">Status</span><span class="approve-status-pill">Awaiting Your Decision</span></div>
         </div>
@@ -626,7 +785,7 @@
 
       <h2 class="orders-section-title" id="pendingOrdersHeading">Pending Approval</h2>
 
-      <section class="pending-order-card">
+      <section class="pending-order-card" data-buyer-email="mchen@medicalclinic.com" data-buyer-name="Michael Chen" data-center-id="CC-1001" data-order-total="1249.97">
       <div class="pending-order-head">
         <div><span class="pending-label">Requisition Number</span><span class="pending-value">PO-2024-001234</span></div>
         <div><span class="pending-label">Order Date</span><span class="pending-value">December 8, 2024</span></div>
@@ -656,7 +815,7 @@
       </div>
       </section>
 
-      <section class="pending-order-card">
+      <section class="pending-order-card" data-buyer-email="emily.davis@medicalclinic.com" data-buyer-name="Emily Davis" data-center-id="CC-1002" data-order-total="879.95">
       <div class="pending-order-head">
         <div><span class="pending-label">Requisition Number</span><span class="pending-value">PO-2024-001198</span></div>
         <div><span class="pending-label">Order Date</span><span class="pending-value">December 5, 2024</span></div>
@@ -686,7 +845,7 @@
       </div>
       </section>
 
-      <section class="pending-order-card">
+      <section class="pending-order-card" data-buyer-email="mchen@medicalclinic.com" data-buyer-name="Michael Chen" data-center-id="CC-1003" data-order-total="1599.96">
       <div class="pending-order-head">
         <div><span class="pending-label">Requisition Number</span><span class="pending-value">PO-2024-001175</span></div>
         <div><span class="pending-label">Order Date</span><span class="pending-value">December 3, 2024</span></div>
@@ -718,7 +877,7 @@
 
       <h2 class="orders-section-title rejected" id="rejectedOrdersHeading">Rejected Orders</h2>
 
-      <section class="rejected-order-card">
+      <section class="rejected-order-card" data-buyer-email="mchen@medicalclinic.com" data-buyer-name="Michael Chen" data-center-id="CC-1001" data-order-total="4249.97">
         <div class="rejected-order-head">
           <div><span class="rejected-label">Requisition Number</span><span class="rejected-value">ORD-2024-5432</span></div>
           <div><span class="rejected-label">Order Date</span><span class="rejected-value">December 2, 2024</span></div>
@@ -754,7 +913,7 @@
         </div>
       </section>
 
-      <section class="rejected-order-card">
+      <section class="rejected-order-card" data-buyer-email="emily.davis@medicalclinic.com" data-buyer-name="Emily Davis" data-center-id="CC-1002" data-order-total="899.98">
         <div class="rejected-order-head">
           <div><span class="rejected-label">Requisition Number</span><span class="rejected-value">ORD-2024-5401</span></div>
           <div><span class="rejected-label">Order Date</span><span class="rejected-value">November 28, 2024</span></div>
@@ -786,7 +945,7 @@
         </div>
       </section>
 
-      <section class="rejected-order-card">
+      <section class="rejected-order-card" data-buyer-email="mchen@medicalclinic.com" data-buyer-name="Michael Chen" data-center-id="CC-1003" data-order-total="1299.95">
         <div class="rejected-order-head">
           <div><span class="rejected-label">Requisition Number</span><span class="rejected-value">ORD-2024-5389</span></div>
           <div><span class="rejected-label">Order Date</span><span class="rejected-value">November 22, 2024</span></div>
@@ -884,6 +1043,297 @@
       });
 
       attachOrderDetailToggles();
+    })();
+  </script>
+  <script>
+    (function () {
+      var USER_BUDGET_KEY = "breg_user_budget_limits_v1";
+      var COST_CENTER_KEY = "breg_cost_centers_v1";
+      var DEFAULT_USER_BUDGETS = {
+        "john.smith@medicalclinic.com": { perOrderAmount: 2500, perPeriodAmount: 8000, period: "weekly", spentAmount: 5200 },
+        "sarah.j@medicalclinic.com": { perOrderAmount: 3000, perPeriodAmount: 12000, period: "monthly", spentAmount: 9840 },
+        "mchen@medicalclinic.com": { perOrderAmount: 600, perPeriodAmount: 1800, period: "weekly", spentAmount: 1560 },
+        "emily.davis@medicalclinic.com": { perOrderAmount: 600, perPeriodAmount: 2400, period: "monthly", spentAmount: 720 },
+        "alex.rivera@medicalclinic.com": { perOrderAmount: 0, perPeriodAmount: 0, period: "monthly", spentAmount: 0 }
+      };
+      var DEFAULT_CENTERS = [
+        {
+          id: "CC-1001",
+          name: "Orthopedics",
+          buyerEmails: ["mchen@medicalclinic.com", "emily.davis@medicalclinic.com"],
+          buyerBudgets: {
+            "mchen@medicalclinic.com": { amount: 10000, spent: 7420, period: "monthly" },
+            "emily.davis@medicalclinic.com": { amount: 6000, spent: 3180, period: "weekly" }
+          },
+          budgetSpent: 18640,
+          perPeriodAmount: 20000,
+          period: "monthly"
+        },
+        {
+          id: "CC-1002",
+          name: "Sports Medicine",
+          buyerEmails: ["emily.davis@medicalclinic.com"],
+          buyerBudgets: {
+            "emily.davis@medicalclinic.com": { amount: 7500, spent: 5400, period: "monthly" }
+          },
+          budgetSpent: 9420,
+          perPeriodAmount: 12000,
+          period: "monthly"
+        },
+        {
+          id: "CC-1003",
+          name: "Outpatient Clinic",
+          buyerEmails: ["mchen@medicalclinic.com"],
+          buyerBudgets: {},
+          budgetSpent: 3180,
+          perPeriodAmount: 5000,
+          period: "weekly"
+        }
+      ];
+
+      function escapeHtml(value) {
+        return $("<div>").text(String(value == null ? "" : value)).html();
+      }
+
+      function formatMoney(amount) {
+        var value = Number(amount || 0);
+        return "$" + value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      }
+
+      function formatPeriod(period) {
+        var key = String(period || "monthly").toLowerCase();
+        if (key === "weekly") return "Weekly";
+        if (key === "quarterly") return "Quarterly";
+        if (key === "yearly") return "Yearly";
+        return "Monthly";
+      }
+
+      function readJson(key, fallback) {
+        try {
+          var parsed = JSON.parse(localStorage.getItem(key) || "null");
+          return parsed == null ? fallback : parsed;
+        } catch (e) {
+          return fallback;
+        }
+      }
+
+      function normalizeUserBudget(email) {
+        var stored = readJson(USER_BUDGET_KEY, {});
+        var key = String(email || "").toLowerCase();
+        var seeded = DEFAULT_USER_BUDGETS[key] || {
+          perOrderAmount: 0,
+          perPeriodAmount: 0,
+          period: "monthly",
+          spentAmount: 0
+        };
+        var raw = (stored && stored[key]) || seeded;
+        if (raw && raw.mode && raw.amount != null) {
+          return {
+            perOrderAmount: raw.mode === "per_order" ? Number(raw.amount || 0) : 0,
+            perPeriodAmount: raw.mode === "per_period" ? Number(raw.amount || 0) : 0,
+            period: String(raw.period || seeded.period || "monthly"),
+            spentAmount: Number(raw.spentAmount != null ? raw.spentAmount : seeded.spentAmount || 0)
+          };
+        }
+        return {
+          perOrderAmount: Number(raw.perOrderAmount || 0),
+          perPeriodAmount: Number(raw.perPeriodAmount || 0),
+          period: String(raw.period || seeded.period || "monthly"),
+          spentAmount: Number(raw.spentAmount != null ? raw.spentAmount : seeded.spentAmount || 0)
+        };
+      }
+
+      function loadCenters() {
+        var stored = readJson(COST_CENTER_KEY, null);
+        var list = Array.isArray(stored) ? stored : DEFAULT_CENTERS;
+        return list.map(function (raw) {
+          var buyerEmails = Array.isArray(raw && raw.buyerEmails) ? raw.buyerEmails : [];
+          var budgets = {};
+          var source = (raw && raw.buyerBudgets) || {};
+          Object.keys(source).forEach(function (email) {
+            var entry = source[email] || {};
+            var amount = Number(entry.amount != null ? entry.amount : entry) || 0;
+            if (amount <= 0) return;
+            budgets[String(email || "").toLowerCase()] = {
+              amount: amount,
+              spent: Math.max(0, Number(entry.spent || 0) || 0),
+              period: String(entry.period || raw.period || "monthly")
+            };
+          });
+          return {
+            id: String(raw && raw.id || ""),
+            name: String(raw && raw.name || raw.id || "Cost Center"),
+            buyerEmails: buyerEmails.map(function (email) { return String(email || "").toLowerCase(); }),
+            buyerBudgets: budgets,
+            budgetSpent: Math.max(0, Number(raw && raw.budgetSpent || 0) || 0),
+            perPeriodAmount: Math.max(0, Number(raw && raw.perPeriodAmount || 0) || 0),
+            period: String(raw && raw.period || "monthly")
+          };
+        });
+      }
+
+      var centers = loadCenters();
+
+      function findCenter(centerId) {
+        var id = String(centerId || "").toLowerCase();
+        return centers.filter(function (center) {
+          return String(center.id || "").toLowerCase() === id;
+        })[0] || null;
+      }
+
+      function layerHtml(layer) {
+        var spent = Math.max(0, Number(layer.spent || 0));
+        var orderAmount = Math.max(0, Number(layer.orderAmount || 0));
+        var limit = Math.max(0, Number(layer.limit || 0));
+        var projected = spent + orderAmount;
+        var spentOver = limit > 0 && spent > limit;
+        var over = limit > 0 && projected > limit;
+        var warn = !over && limit > 0 && projected / limit >= 0.8;
+        var state = over ? "is-over" : (warn ? "is-warn" : "");
+        if (spentOver) state += " is-spent-over";
+        var pct = limit > 0 ? Math.round((projected / limit) * 100) : 0;
+        var spentPct = limit > 0 ? Math.max(0, Math.min(100, (spent / limit) * 100)) : 0;
+        var orderPct = limit > 0 ? Math.max(0, Math.min(100 - spentPct, (orderAmount / limit) * 100)) : 0;
+        var notes = [];
+        if (over) {
+          notes.push(layer.overCopy || "Over budget if this order is included.");
+        }
+        var splitText = layer.mode === "order"
+          ? formatMoney(orderAmount) + " this order"
+          : formatMoney(spent) + " spent + " + formatMoney(orderAmount) + " this order";
+        var periodText = layer.mode === "order"
+          ? "Per-order budget"
+          : formatPeriod(layer.period) + " budget";
+        if (limit <= 0) {
+          return ""
+            + "<div class='order-budget-card'>"
+            + "<span class='order-budget-layer'>" + escapeHtml(layer.title) + "</span>"
+            + "<p class='order-budget-empty'>" + escapeHtml(layer.emptyText || "No budget set") + "</p>"
+            + "</div>";
+        }
+        return ""
+          + "<div class='order-budget-card " + state + "'>"
+          + "<span class='order-budget-layer'>" + escapeHtml(layer.title) + "</span>"
+          + "<div class='budget-meter-copy'>"
+          + "<span class='budget-meter-pct'>" + escapeHtml(String(pct) + "% used") + "</span>"
+          + "<span class='budget-value'>" + escapeHtml(formatMoney(projected) + " of " + formatMoney(limit)) + "</span>"
+          + "</div>"
+          + "<div class='budget-bar' role='img' aria-label='" + escapeHtml(layer.title + " " + pct + "% used") + "'>"
+          + "<span class='budget-bar-spent' style='width:" + spentPct.toFixed(2) + "%'></span>"
+          + "<span class='budget-bar-order' style='width:" + orderPct.toFixed(2) + "%'></span>"
+          + "</div>"
+          + "<span class='budget-split'>" + escapeHtml(splitText) + "</span>"
+          + "<span class='budget-sub'>" + escapeHtml(periodText) + "</span>"
+          + notes.map(function (note) {
+            return "<span class='budget-note'>" + escapeHtml(note) + "</span>";
+          }).join("")
+          + "</div>";
+      }
+
+      function panelHtml($card) {
+        var email = String($card.attr("data-buyer-email") || "").toLowerCase();
+        var buyerName = String($card.attr("data-buyer-name") || "Buyer");
+        var center = findCenter($card.attr("data-center-id"));
+        var orderAmount = Number($card.attr("data-order-total") || 0) || 0;
+        var isRejected = $card.hasClass("rejected-order-card");
+        var overCopy = isRejected ? "Would have exceeded this budget." : "Over budget if approved.";
+        var userBudget = normalizeUserBudget(email);
+        var buyerBudget = center && center.buyerBudgets ? center.buyerBudgets[email] : null;
+        var layers = [];
+        var anyOver = false;
+
+        if (userBudget.perOrderAmount > 0) {
+          layers.push({
+            title: "User order budget",
+            spent: 0,
+            orderAmount: orderAmount,
+            limit: userBudget.perOrderAmount,
+            mode: "order",
+            emptyText: "No per-order budget set",
+            overCopy: overCopy
+          });
+        }
+
+        layers.push({
+          title: "User budget",
+          spent: userBudget.spentAmount,
+          orderAmount: orderAmount,
+          limit: userBudget.perPeriodAmount,
+          period: userBudget.period,
+          emptyText: "No user-level budget set",
+          overCopy: overCopy
+        });
+
+        if (buyerBudget && buyerBudget.amount > 0) {
+          layers.push({
+            title: "Buyer cost center",
+            spent: buyerBudget.spent,
+            orderAmount: orderAmount,
+            limit: buyerBudget.amount,
+            period: buyerBudget.period,
+            emptyText: "Uses cost center budget",
+            overCopy: overCopy
+          });
+        } else {
+          layers.push({
+            title: "Buyer cost center",
+            spent: 0,
+            orderAmount: orderAmount,
+            limit: 0,
+            period: center && center.period,
+            emptyText: "Uses cost center budget",
+            overCopy: overCopy
+          });
+        }
+
+        layers.push({
+          title: "Cost center budget",
+          spent: center ? center.budgetSpent : 0,
+          orderAmount: orderAmount,
+          limit: center ? center.perPeriodAmount : 0,
+          period: center ? center.period : "monthly",
+          emptyText: "No cost center budget",
+          overCopy: overCopy
+        });
+
+        layers.forEach(function (layer) {
+          if (layer.limit > 0 && (Number(layer.spent || 0) + Number(layer.orderAmount || 0)) > layer.limit) anyOver = true;
+        });
+
+        var flag = anyOver
+          ? "<span class='order-budget-flag'>" + escapeHtml(isRejected ? "Would exceed budget" : "Over budget if approved") + "</span>"
+          : "";
+        var centerLine = center
+          ? buyerName + " · " + center.name + " (" + center.id + ")"
+          : buyerName;
+
+        return ""
+          + "<div class='order-budget-panel" + (anyOver ? " is-over" : "") + "'>"
+          + "<div class='order-budget-head'>"
+          + "<div><h4 class='order-budget-title'>Buyer budgets</h4>"
+          + "<p class='order-budget-meta'>" + escapeHtml(centerLine) + "</p></div>"
+          + flag
+          + "</div>"
+          + "<div class='order-budget-legend'>"
+          + "<span><i class='order-budget-swatch spent' aria-hidden='true'></i>Already spent</span>"
+          + "<span><i class='order-budget-swatch order' aria-hidden='true'></i>Included in this order</span>"
+          + "</div>"
+          + "<div class='order-budget-grid'>"
+          + layers.map(layerHtml).join("")
+          + "</div></div>";
+      }
+
+      $(".approve-order-card, .pending-order-card, .rejected-order-card").each(function () {
+        var $card = $(this);
+        if (!$card.attr("data-buyer-email")) return;
+        var html = panelHtml($card);
+        var $head = $card.children(".approve-order-head, .pending-order-head, .rejected-order-head").first();
+        if ($head.length) {
+          $head.after(html);
+        } else {
+          $card.prepend(html);
+        }
+      });
     })();
   </script>
   <script>

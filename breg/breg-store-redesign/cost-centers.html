@@ -140,6 +140,39 @@
     .table-action:hover,.table-action:focus { color: #c7511f; text-decoration: none; }
     .table-action.delete { color: #d95f19; }
     .table-action.delete:hover,.table-action.delete:focus { color: #b54812; }
+    .cc-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
+    }
+    .cc-actions .table-action {
+      font-size: 20px;
+      line-height: 1;
+      margin-right: 0;
+    }
+    .cc-actions .table-action .glyphicon {
+      top: 0;
+    }
+    .cc-status {
+      display: inline-block;
+      margin-left: 8px;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      vertical-align: middle;
+      background: #eaeded;
+      color: #565959;
+    }
+    .cc-table tbody tr.is-inactive td {
+      background: #f7f8f8;
+    }
+    .cc-table tbody tr.is-inactive .cc-name-link,
+    .cc-table tbody tr.is-inactive .cc-link {
+      color: #565959;
+    }
     .cc-empty {
       display: none;
       text-align: center;
@@ -162,41 +195,18 @@
       color: #565959;
       line-height: 1.25;
     }
+    .budget-split {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #565959;
+      line-height: 1.35;
+    }
     .budget-meter {
-      display: flex;
-      align-items: center;
-      gap: 10px;
       min-width: 0;
     }
-    .budget-ring {
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-      transform: rotate(-90deg);
-    }
-    .budget-ring.budget-ring-lg {
-      width: 72px;
-      height: 72px;
-    }
-    .budget-ring-bg {
-      fill: none;
-      stroke: #e6eaed;
-      stroke-width: 3.2;
-    }
-    .budget-ring-fill {
-      fill: none;
-      stroke: #05798f;
-      stroke-width: 3.2;
-      stroke-linecap: round;
-      transition: stroke-dasharray .35s ease;
-    }
-    .budget-meter.is-ok .budget-ring-fill { stroke: #05798f; }
-    .budget-meter.is-warn .budget-ring-fill { stroke: #d97706; }
-    .budget-meter.is-over .budget-ring-fill { stroke: #c73c2f; }
-    .budget-meter.is-empty .budget-ring-fill { stroke: #c9d3db; }
     .budget-meter-copy {
       min-width: 0;
-      flex: 1;
     }
     .budget-meter-pct {
       display: block;
@@ -208,13 +218,185 @@
     }
     .budget-meter.is-warn .budget-meter-pct { color: #b54708; }
     .budget-meter.is-over .budget-meter-pct { color: #b12704; }
-    .budget-meter-lg {
-      gap: 14px;
-      padding: 4px 0;
+    .budget-bar {
+      display: flex;
+      width: 100%;
+      height: 10px;
+      margin: 8px 0 6px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e6eaed;
     }
+    .budget-bar-spent,
+    .budget-bar-pending {
+      height: 100%;
+      min-width: 0;
+    }
+    .budget-bar-spent { background: #05798f; }
+    .budget-bar-pending { background: #0047bb; }
+    .budget-meter.is-over .budget-bar-pending { background: #c73c2f; }
+    .budget-meter.is-spent-over .budget-bar-spent { background: #c73c2f; }
     .budget-meter-lg .budget-meter-pct {
       font-size: 22px;
       font-weight: 500;
+    }
+    .budget-meter.budget-meter-hero .budget-meter-pct {
+      font-size: 28px;
+      font-weight: 600;
+    }
+    .budget-meter.budget-meter-hero .budget-value {
+      font-size: 16px;
+    }
+    .budget-meter.budget-meter-hero .budget-bar {
+      height: 14px;
+      margin: 12px 0 8px;
+    }
+    .budget-legend {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #565959;
+    }
+    .budget-legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .budget-swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      flex: 0 0 auto;
+    }
+    .budget-swatch.spent { background: #05798f; }
+    .budget-swatch.pending { background: #0047bb; }
+    .detail-overview-layout {
+      display: grid;
+      gap: 16px;
+    }
+    .detail-overview-side {
+      display: grid;
+      gap: 10px;
+    }
+    .buyer-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .buyer-summary-table th,
+    .buyer-summary-table td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #eaeded;
+      text-align: left;
+      vertical-align: middle;
+      font-size: 13px;
+    }
+    .buyer-summary-table th {
+      color: #565959;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      padding-top: 0;
+    }
+    .buyer-summary-table tbody tr:last-child td { border-bottom: 0; }
+    .buyer-summary-name {
+      display: block;
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .buyer-summary-email {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #565959;
+    }
+    .buyer-summary-budget {
+      display: block;
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .buyer-summary-budget.is-shared {
+      font-weight: 500;
+      color: #565959;
+    }
+    .buyer-summary-spent {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #565959;
+    }
+    .buyer-summary-table .budget-meter-pct {
+      font-size: 13px;
+    }
+    .buyer-summary-table .budget-bar {
+      height: 8px;
+      margin: 6px 0 4px;
+    }
+    .cc-table .budget-bar {
+      min-width: 140px;
+    }
+    .buyer-order-count-link {
+      color: #007185;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .buyer-order-count-link:hover,
+    .buyer-order-count-link:focus {
+      color: #c7511f;
+      text-decoration: none;
+    }
+    .buyer-order-count-zero {
+      color: #565959;
+    }
+    .buyer-summary-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    .buyer-summary-actions .table-action {
+      color: #565959;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .buyer-summary-actions .table-action:hover,
+    .buyer-summary-actions .table-action:focus {
+      color: #007185;
+      text-decoration: none;
+    }
+    .buyer-summary-actions .table-action.is-danger:hover,
+    .buyer-summary-actions .table-action.is-danger:focus {
+      color: #b12704;
+    }
+    @media (max-width: 991px) {
+      .detail-overview-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 767px) {
+      .buyer-summary-table thead { display: none; }
+      .buyer-summary-table tbody tr {
+        display: block;
+        border: 1px solid #eaeded;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+      .buyer-summary-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        border: 0;
+        padding: 4px 0;
+      }
+      .buyer-summary-table tbody td::before {
+        content: attr(data-label);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: #565959;
+      }
     }
     .budget-period {
       display: inline-block;
@@ -312,6 +494,11 @@
     }
     .detail-id {
       margin: 4px 0 0;
+      font-size: 13px;
+      color: #565959;
+    }
+    .detail-manager {
+      margin: 2px 0 0;
       font-size: 13px;
       color: #565959;
     }
@@ -431,6 +618,22 @@
       padding-top: 0;
     }
     .orders-table tbody tr:last-child td { border-bottom: 0; }
+    .orders-table tbody tr.is-clickable {
+      cursor: pointer;
+    }
+    .orders-table tbody tr.is-clickable:hover td {
+      background: #f7f8f8;
+    }
+    .order-id-link {
+      color: #007185;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .order-id-link:hover,
+    .order-id-link:focus {
+      color: #c7511f;
+      text-decoration: none;
+    }
     .order-status {
       display: inline-block;
       border-radius: 999px;
@@ -487,6 +690,144 @@
       width: min(640px, calc(100% - 40px));
       margin: 70px auto;
     }
+    .cc-orders-modal .modal-dialog {
+      width: min(760px, calc(100% - 40px));
+    }
+    .cc-order-detail-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+      margin: 0 0 16px;
+    }
+    .cc-order-detail-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      color: #565959;
+      margin-bottom: 2px;
+    }
+    .cc-order-detail-value {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #0f1111;
+      line-height: 1.35;
+    }
+    .cc-order-lines {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+    }
+    .cc-order-lines th,
+    .cc-order-lines td {
+      padding: 8px 0;
+      border-bottom: 1px solid #eaeded;
+      font-size: 13px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .cc-order-lines th {
+      color: #565959;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      padding-top: 0;
+    }
+    .cc-order-lines td:nth-child(2),
+    .cc-order-lines th:nth-child(2),
+    .cc-order-lines td:nth-child(3),
+    .cc-order-lines th:nth-child(3),
+    .cc-order-lines td:nth-child(4),
+    .cc-order-lines th:nth-child(4) {
+      text-align: right;
+      white-space: nowrap;
+    }
+    .cc-order-lines .line-name {
+      display: block;
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .cc-order-lines .line-sku {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #565959;
+    }
+    .cc-order-total {
+      margin: 0 0 16px;
+      text-align: right;
+      font-size: 16px;
+      font-weight: 600;
+      color: #00a7e1;
+    }
+    .cc-order-extras {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .cc-order-extra {
+      border: 1px solid #eaeded;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: #f7f8f8;
+    }
+    .cc-order-extra strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 12px;
+      color: #0f1111;
+    }
+    .cc-order-extra span {
+      font-size: 13px;
+      color: #565959;
+      line-height: 1.4;
+    }
+    @media (max-width: 767px) {
+      .cc-order-detail-meta,
+      .cc-order-extras {
+        grid-template-columns: 1fr;
+      }
+      .cc-order-lines thead { display: none; }
+      .cc-order-lines,
+      .cc-order-lines tbody,
+      .cc-order-lines tbody tr,
+      .cc-order-lines tbody td {
+        display: block;
+        width: 100%;
+      }
+      .cc-order-lines tbody tr {
+        border: 1px solid #eaeded;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+      .cc-order-lines tbody td {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        border: 0;
+        text-align: right;
+        padding: 4px 0;
+      }
+      .cc-order-lines tbody td:first-child {
+        display: block;
+        text-align: left;
+      }
+      .cc-order-lines tbody td::before {
+        content: attr(data-label);
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: #565959;
+      }
+      .cc-order-lines tbody td:first-child::before {
+        content: none;
+      }
+    }
     .cc-modal .modal-content {
       border-radius: 16px;
       border: 1px solid #d5d9d9;
@@ -533,6 +874,7 @@
       color: #0f1111;
       line-height: 1.25;
     }
+    .cc-label .req { color: #b12704; }
     .cc-input,
     .cc-select {
       width: 100%;
@@ -567,15 +909,16 @@
       border: 1px solid #c7ced4;
       border-radius: 10px;
       padding: 10px 12px;
-      max-height: 168px;
+      max-height: 280px;
       overflow-y: auto;
       background: #fff;
     }
     .buyer-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 0;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px 10px;
+      align-items: start;
+      padding: 8px 0;
       font-size: 13px;
       color: #0f1111;
       line-height: 1.3;
@@ -583,13 +926,93 @@
     .buyer-option + .buyer-option {
       border-top: 1px solid #eaeded;
     }
-    .buyer-option input {
-      margin: 0;
+    .buyer-option input[type="checkbox"] {
+      margin: 2px 0 0;
       flex-shrink: 0;
+    }
+    .buyer-option-main {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+    }
+    .buyer-option-name {
+      display: block;
+      margin: 0;
+      font-size: 13px;
+      font-weight: 400;
+      color: #0f1111;
+      cursor: pointer;
     }
     .buyer-option .buyer-meta {
       color: #565959;
       font-size: 12px;
+    }
+    .buyer-budget-row {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .buyer-option.is-selected .buyer-budget-row {
+      display: flex;
+    }
+    .buyer-budget-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #565959;
+      white-space: nowrap;
+    }
+    .buyer-budget-input {
+      width: 120px;
+      height: 34px;
+      border: 1px solid #c7ced4;
+      border-radius: 8px;
+      padding: 0 10px;
+      font-size: 13px;
+      color: #0f1111;
+      background: #fff;
+    }
+    .buyer-budget-input:focus,
+    .buyer-budget-select:focus {
+      border-color: #007185;
+      box-shadow: 0 0 0 2px rgba(0, 113, 133, .12);
+      outline: 0;
+    }
+    .buyer-budget-input:disabled,
+    .buyer-budget-select:disabled {
+      background: #f3f4f4;
+      color: #8b949e;
+    }
+    .buyer-budget-select {
+      width: 120px;
+      height: 34px;
+      border: 1px solid #c7ced4;
+      border-radius: 8px;
+      padding: 0 8px;
+      font-size: 13px;
+      color: #0f1111;
+      background: #fff;
+    }
+    .buyer-budget-hint {
+      font-size: 11px;
+      color: #8b949e;
+    }
+    .buyer-chip-budget {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f1111;
+    }
+    .buyer-chip-budget.is-shared {
+      font-weight: 500;
+      color: #565959;
+    }
+    .buyer-chip-spent {
+      display: block;
+      margin-top: 2px;
+      font-size: 11px;
+      color: #565959;
     }
     .cc-modal .modal-footer {
       border-top: 1px solid #eaeded;
@@ -613,6 +1036,11 @@
       border: 1px solid #d1d5dc;
       background: #fff;
       color: #0f1111;
+    }
+    .cc-btn .glyphicon {
+      margin-right: 6px;
+      top: 1px;
+      font-size: 12px;
     }
     .cc-btn:hover,
     .cc-btn:focus {
@@ -711,6 +1139,17 @@
       background: #ffe9e9;
       color: #9f1f02;
     }
+    .delete-btn.primary {
+      border-color: var(--breg-primary, #0047bb);
+      background: var(--breg-primary, #0047bb);
+      color: #fff;
+    }
+    .delete-btn.primary:hover,
+    .delete-btn.primary:focus {
+      border-color: var(--breg-primary-dark, #001E62);
+      background: var(--breg-primary-dark, #001E62);
+      color: #fff;
+    }
     @media (max-width: 1199px) {
       .cc-title { font-size: 30px; }
     }
@@ -797,7 +1236,7 @@
       .cc-table tbody td:nth-child(5)::before { display: none; }
       .cc-table tbody .table-action {
         margin-right: 0;
-        font-size: 16px;
+        font-size: 20px;
       }
     }
   </style>
@@ -897,51 +1336,27 @@
           <div>
             <h2 class="detail-title" id="detailName">Cost Center</h2>
             <p class="detail-id" id="detailIdLine">ID</p>
+            <p class="detail-manager" id="detailManager">Manager</p>
           </div>
-          <a class="cc-create-btn" href="#" id="detailEditBtn" style="display:none;"><span class="glyphicon glyphicon-pencil"></span>Edit</a>
+          <a class="cc-create-btn" href="#" id="detailEditBtn" style="display:none;"><span class="glyphicon glyphicon-pencil"></span>Edit Cost Center</a>
         </div>
 
         <section class="detail-card">
-          <h3 class="detail-card-title">Overview</h3>
-          <div class="detail-meta">
-            <div class="detail-meta-item">
-              <span class="detail-meta-label">Manager</span>
-              <span class="detail-meta-value" id="detailManager">—</span>
-            </div>
-            <div class="detail-meta-item">
-              <span class="detail-meta-label"># of Orders</span>
-              <span class="detail-meta-value" id="detailOrderCount">0</span>
-            </div>
-            <div class="detail-meta-item">
-              <span class="detail-meta-label">Per-order limit</span>
-              <span class="detail-meta-value" id="detailPerOrder">—</span>
-            </div>
-            <div class="detail-meta-item">
-              <span class="detail-meta-label">Period budget</span>
-              <span class="detail-meta-value" id="detailBudgetLimit">—</span>
-            </div>
+          <h3 class="detail-card-title">Cost Center Budget</h3>
+          <div class="budget-legend">
+            <span><i class="budget-swatch spent" aria-hidden="true"></i>Already spent</span>
+            <span><i class="budget-swatch pending" aria-hidden="true"></i>Pending orders</span>
           </div>
-          <div id="detailBudgetMeter" style="margin-top:14px;"></div>
+          <div id="detailBudgetMeter"></div>
         </section>
 
         <section class="detail-card">
           <div class="detail-card-head">
-            <h3 class="detail-card-title">Assigned Buyers</h3>
-            <button type="button" class="cc-btn primary" id="detailSaveBuyersBtn" style="display:none;">Save Buyers</button>
+            <h3 class="detail-card-title">Buyers</h3>
+            <button type="button" class="cc-btn primary" id="detailAddBuyerBtn" style="display:none;"><span class="glyphicon glyphicon-plus"></span> Add Buyer</button>
           </div>
-          <div id="detailBuyersRead" class="buyer-list"></div>
-          <div id="detailBuyersEdit" class="buyers-box" style="display:none;"></div>
+          <div id="detailBuyersSummary"></div>
           <p class="cc-error" id="detailBuyersError"></p>
-        </section>
-
-        <section class="detail-card">
-          <h3 class="detail-card-title">Pending Orders</h3>
-          <div id="detailPendingOrders"></div>
-        </section>
-
-        <section class="detail-card">
-          <h3 class="detail-card-title">Approved Orders</h3>
-          <div id="detailApprovedOrders"></div>
         </section>
       </div>
       </div>
@@ -970,16 +1385,12 @@
               <select id="ccManagerSelect" class="cc-select"></select>
             </div>
             <div class="cc-field js-budget-field">
-              <label class="cc-label" for="ccPerOrderInput">Spend per order (USD)</label>
-              <input id="ccPerOrderInput" class="cc-input" type="number" min="0" step="1" placeholder="Enter per-order limit">
+              <label class="cc-label" for="ccPerPeriodInput">Cost Center Budget (USD) <span class="req">*</span></label>
+              <input id="ccPerPeriodInput" class="cc-input" type="number" min="1" step="1" required placeholder="Enter budget amount">
             </div>
             <div class="cc-field js-budget-field">
-              <label class="cc-label" for="ccPerPeriodInput">Spend per period (USD)</label>
-              <input id="ccPerPeriodInput" class="cc-input" type="number" min="0" step="1" placeholder="Enter period limit">
-            </div>
-            <div class="cc-field full js-budget-field">
-              <label class="cc-label" for="ccPeriodSelect">Period</label>
-              <select id="ccPeriodSelect" class="cc-select">
+              <label class="cc-label" for="ccPeriodSelect">Period <span class="req">*</span></label>
+              <select id="ccPeriodSelect" class="cc-select" required>
                 <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
                 <option value="quarterly">Quarterly</option>
@@ -987,11 +1398,7 @@
               </select>
             </div>
             <div class="cc-field full js-budget-field">
-              <p class="cc-hint">Set either one or both limits. Leave a field empty for no limit.</p>
-            </div>
-            <div class="cc-field full">
-              <label class="cc-label">Assign Buyers</label>
-              <div class="buyers-box" id="ccBuyersBox"></div>
+              <p class="cc-hint">A cost center budget is required. Add and manage buyers from the cost center detail page.</p>
             </div>
           </div>
           <p class="cc-error" id="ccFormError"></p>
@@ -999,6 +1406,118 @@
         <div class="modal-footer">
           <button type="button" class="cc-btn" data-dismiss="modal">Cancel</button>
           <button type="button" class="cc-btn primary" id="saveCostCenterBtn">Save Cost Center</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="modal fade cc-modal" id="buyerBudgetModal" tabindex="-1" role="dialog" aria-labelledby="buyerBudgetModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="buyerBudgetModalTitle">Add Buyer</h2>
+        </div>
+        <div class="modal-body">
+          <div class="cc-grid">
+            <div class="cc-field full">
+              <label class="cc-label" for="buyerModalSelect">Buyer</label>
+              <select id="buyerModalSelect" class="cc-select"></select>
+              <p class="cc-hint" id="buyerModalLockedHint" style="display:none;margin-top:8px;">Editing an assigned buyer.</p>
+            </div>
+            <div class="cc-field js-buyer-modal-budget">
+              <label class="cc-label" for="buyerModalBudgetInput">Buyer Budget (USD)</label>
+              <input id="buyerModalBudgetInput" class="cc-input" type="number" min="0" step="1" placeholder="Optional">
+            </div>
+            <div class="cc-field js-buyer-modal-budget">
+              <label class="cc-label" for="buyerModalPeriodSelect">Frequency</label>
+              <select id="buyerModalPeriodSelect" class="cc-select">
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="quarterly">Quarterly</option>
+                <option value="yearly">Yearly</option>
+              </select>
+            </div>
+            <div class="cc-field full js-buyer-modal-budget">
+              <p class="cc-hint">Leave budget blank to use the shared cost center budget.</p>
+            </div>
+          </div>
+          <p class="cc-error" id="buyerModalError"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="cc-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="cc-btn primary" id="saveBuyerModalBtn">Save Buyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade cc-modal cc-orders-modal" id="ccOrdersModal" tabindex="-1" role="dialog" aria-labelledby="ccOrdersModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="ccOrdersModalTitle">Orders</h2>
+        </div>
+        <div class="modal-body" id="ccOrdersModalBody"></div>
+        <div class="modal-footer">
+          <button type="button" class="cc-btn" id="ccOrdersBackBtn" style="display:none;">Back to Orders</button>
+          <button type="button" class="cc-btn primary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade delete-modal" id="deleteBuyerModal" tabindex="-1" role="dialog" aria-labelledby="deleteBuyerModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="deleteBuyerModalTitle">Remove Buyer</h2>
+        </div>
+        <div class="modal-body">
+          <p class="delete-modal-copy" id="deleteBuyerModalCopy"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="delete-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="delete-btn danger" id="confirmDeleteBuyerBtn">Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade delete-modal" id="activateCostCenterModal" tabindex="-1" role="dialog" aria-labelledby="activateCostCenterModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="activateCostCenterModalTitle">Activate Cost Center</h2>
+        </div>
+        <div class="modal-body">
+          <p class="delete-modal-copy" id="activateCostCenterModalCopy"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="delete-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="delete-btn primary" id="confirmActivateCostCenterBtn">Activate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade delete-modal" id="deactivateCostCenterModal" tabindex="-1" role="dialog" aria-labelledby="deactivateCostCenterModalTitle">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h2 class="modal-title" id="deactivateCostCenterModalTitle">Deactivate Cost Center</h2>
+        </div>
+        <div class="modal-body">
+          <p class="delete-modal-copy" id="deactivateCostCenterModalCopy"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="delete-btn" data-dismiss="modal">Cancel</button>
+          <button type="button" class="delete-btn danger" id="confirmDeactivateCostCenterBtn">Deactivate</button>
         </div>
       </div>
     </div>
@@ -1042,9 +1561,12 @@
           managerEmail: "sarah.j@medicalclinic.com",
           managerName: "Sarah Johnson",
           buyerEmails: ["mchen@medicalclinic.com", "emily.davis@medicalclinic.com"],
+          buyerBudgets: {
+            "mchen@medicalclinic.com": { amount: 10000, spent: 7420, period: "monthly" },
+            "emily.davis@medicalclinic.com": { amount: 6000, spent: 3180, period: "weekly" }
+          },
           orderCount: 42,
           budgetSpent: 18640,
-          perOrderAmount: 2500,
           perPeriodAmount: 20000,
           period: "monthly"
         },
@@ -1054,9 +1576,11 @@
           managerEmail: "john.smith@medicalclinic.com",
           managerName: "John Smith",
           buyerEmails: ["emily.davis@medicalclinic.com"],
+          buyerBudgets: {
+            "emily.davis@medicalclinic.com": { amount: 7500, spent: 5400, period: "monthly" }
+          },
           orderCount: 28,
           budgetSpent: 9420,
-          perOrderAmount: 1500,
           perPeriodAmount: 12000,
           period: "monthly"
         },
@@ -1066,9 +1590,9 @@
           managerEmail: "sarah.j@medicalclinic.com",
           managerName: "Sarah Johnson",
           buyerEmails: ["mchen@medicalclinic.com"],
+          buyerBudgets: {},
           orderCount: 15,
           budgetSpent: 3180,
-          perOrderAmount: 800,
           perPeriodAmount: 5000,
           period: "weekly"
         }
@@ -1080,46 +1604,179 @@
       var $idInput = $("#ccIdInput");
       var $nameInput = $("#ccNameInput");
       var $managerSelect = $("#ccManagerSelect");
-      var $perOrder = $("#ccPerOrderInput");
       var $perPeriod = $("#ccPerPeriodInput");
       var $period = $("#ccPeriodSelect");
-      var $buyersBox = $("#ccBuyersBox");
       var $formError = $("#ccFormError");
       var $deleteCopy = $("#deleteCostCenterModalCopy");
+      var $deactivateCopy = $("#deactivateCostCenterModalCopy");
+      var $activateCopy = $("#activateCostCenterModalCopy");
       var $createBtn = $("#createCostCenterBtn");
 
       var centers = [];
       var editingId = null;
       var pendingDeleteId = null;
+      var pendingDeactivateId = null;
+      var pendingActivateId = null;
       var activeDetailId = null;
+      var editingBuyerEmail = null;
+      var pendingDeleteBuyerEmail = null;
+      var ordersModalState = null;
       var permissions = getPermissionsForRole(readStoredRole());
 
       var ORDERS_BY_CENTER = {
         "CC-1001": {
           pending: [
-            { id: "REQ-240198", buyer: "Michael Chen", date: "Aug 10, 2026", items: 4, total: 612 },
-            { id: "REQ-240211", buyer: "Emily Davis", date: "Aug 9, 2026", items: 2, total: 248 }
+            {
+              id: "REQ-240198",
+              buyer: "Michael Chen",
+              buyerEmail: "mchen@medicalclinic.com",
+              date: "Aug 10, 2026",
+              items: 2,
+              total: 612,
+              payment: "Corporate Visa ending in 4581",
+              shipping: "UPS 2nd Day Air",
+              lines: [
+                { name: "T Scope Premier Post-Op Knee Brace", sku: "T-SCOPE-PREMIER", qty: 1, price: 449.99 },
+                { name: "Breg Polar Care Kodiak Cold Therapy System", sku: "POLAR-CARE-KODIAK", qty: 1, price: 162.01 }
+              ]
+            },
+            {
+              id: "REQ-240211",
+              buyer: "Emily Davis",
+              buyerEmail: "emily.davis@medicalclinic.com",
+              date: "Aug 9, 2026",
+              items: 2,
+              total: 248,
+              payment: "Net 30 Terms",
+              shipping: "UPS Ground",
+              lines: [
+                { name: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "SHOULDER-IMMOBILIZER", qty: 2, price: 89.99 },
+                { name: "Physical Therapy Resistance Bands Set", sku: "PT-BANDS-SET", qty: 2, price: 34.01 }
+              ]
+            }
           ],
           approved: [
-            { id: "ORD-119842", buyer: "Michael Chen", date: "Aug 4, 2026", items: 6, total: 980 },
-            { id: "ORD-119701", buyer: "Emily Davis", date: "Jul 28, 2026", items: 3, total: 412 },
-            { id: "ORD-119540", buyer: "Michael Chen", date: "Jul 19, 2026", items: 5, total: 765 }
+            {
+              id: "ORD-119842",
+              buyer: "Michael Chen",
+              buyerEmail: "mchen@medicalclinic.com",
+              date: "Aug 4, 2026",
+              items: 3,
+              total: 980,
+              payment: "Corporate Visa ending in 4581",
+              shipping: "UPS Ground",
+              lines: [
+                { name: "T Scope Premier Post-Op Knee Brace", sku: "T-SCOPE-PREMIER", qty: 2, price: 449.99 },
+                { name: "Lumbar Support Belt", sku: "LUMBAR-SUPPORT-BELT", qty: 1, price: 80.02 }
+              ]
+            },
+            {
+              id: "ORD-119701",
+              buyer: "Emily Davis",
+              buyerEmail: "emily.davis@medicalclinic.com",
+              date: "Jul 28, 2026",
+              items: 3,
+              total: 412,
+              payment: "Net 30 Terms",
+              shipping: "FedEx Ground",
+              lines: [
+                { name: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "SHOULDER-IMMOBILIZER", qty: 2, price: 89.99 },
+                { name: "Physical Therapy Resistance Bands Set", sku: "PT-BANDS-SET", qty: 4, price: 29.99 },
+                { name: "Lumbar Support Belt", sku: "LUMBAR-SUPPORT-BELT", qty: 1, price: 52.06 }
+              ]
+            },
+            {
+              id: "ORD-119540",
+              buyer: "Michael Chen",
+              buyerEmail: "mchen@medicalclinic.com",
+              date: "Jul 19, 2026",
+              items: 2,
+              total: 765,
+              payment: "Corporate Visa ending in 4581",
+              shipping: "UPS Ground",
+              lines: [
+                { name: "Breg Polar Care Kodiak Cold Therapy System", sku: "POLAR-CARE-KODIAK", qty: 2, price: 299.99 },
+                { name: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "SHOULDER-IMMOBILIZER", qty: 2, price: 82.51 }
+              ]
+            }
           ]
         },
         "CC-1002": {
           pending: [
-            { id: "REQ-240173", buyer: "Emily Davis", date: "Aug 9, 2026", items: 2, total: 189 }
+            {
+              id: "REQ-240173",
+              buyer: "Emily Davis",
+              buyerEmail: "emily.davis@medicalclinic.com",
+              date: "Aug 9, 2026",
+              items: 2,
+              total: 189,
+              payment: "Net 30 Terms",
+              shipping: "UPS Ground",
+              lines: [
+                { name: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "SHOULDER-IMMOBILIZER", qty: 2, price: 94.50 }
+              ]
+            }
           ],
           approved: [
-            { id: "ORD-119660", buyer: "Emily Davis", date: "Jul 30, 2026", items: 4, total: 540 },
-            { id: "ORD-119410", buyer: "Emily Davis", date: "Jul 12, 2026", items: 1, total: 126 }
+            {
+              id: "ORD-119660",
+              buyer: "Emily Davis",
+              buyerEmail: "emily.davis@medicalclinic.com",
+              date: "Jul 30, 2026",
+              items: 2,
+              total: 540,
+              payment: "Net 30 Terms",
+              shipping: "UPS Ground",
+              lines: [
+                { name: "Breg Polar Care Kodiak Cold Therapy System", sku: "POLAR-CARE-KODIAK", qty: 1, price: 299.99 },
+                { name: "Physical Therapy Resistance Bands Set", sku: "PT-BANDS-SET", qty: 8, price: 30.00 }
+              ]
+            },
+            {
+              id: "ORD-119410",
+              buyer: "Emily Davis",
+              buyerEmail: "emily.davis@medicalclinic.com",
+              date: "Jul 12, 2026",
+              items: 1,
+              total: 126,
+              payment: "Corporate Visa ending in 4581",
+              shipping: "UPS Ground",
+              lines: [
+                { name: "Lumbar Support Belt", sku: "LUMBAR-SUPPORT-BELT", qty: 1, price: 126.00 }
+              ]
+            }
           ]
         },
         "CC-1003": {
           pending: [],
           approved: [
-            { id: "ORD-119220", buyer: "Michael Chen", date: "Jul 2, 2026", items: 3, total: 294 },
-            { id: "ORD-119088", buyer: "Michael Chen", date: "Jun 21, 2026", items: 2, total: 178 }
+            {
+              id: "ORD-119220",
+              buyer: "Michael Chen",
+              buyerEmail: "mchen@medicalclinic.com",
+              date: "Jul 2, 2026",
+              items: 3,
+              total: 294,
+              payment: "Corporate Visa ending in 4581",
+              shipping: "UPS Ground",
+              lines: [
+                { name: "Physical Therapy Resistance Bands Set", sku: "PT-BANDS-SET", qty: 6, price: 29.99 },
+                { name: "Lumbar Support Belt", sku: "LUMBAR-SUPPORT-BELT", qty: 1, price: 114.06 }
+              ]
+            },
+            {
+              id: "ORD-119088",
+              buyer: "Michael Chen",
+              buyerEmail: "mchen@medicalclinic.com",
+              date: "Jun 21, 2026",
+              items: 2,
+              total: 178,
+              payment: "Net 30 Terms",
+              shipping: "FedEx Ground",
+              lines: [
+                { name: "Shoulder Immobilizer Sling with Abduction Pillow", sku: "SHOULDER-IMMOBILIZER", qty: 2, price: 89.00 }
+              ]
+            }
           ]
         }
       };
@@ -1131,6 +1788,11 @@
       function formatMoney(amount) {
         var value = Number(amount || 0);
         return "$" + value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      }
+
+      function formatMoneyExact(amount) {
+        var value = Number(amount || 0);
+        return "$" + value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }
 
       function formatPeriodLabel(period) {
@@ -1216,65 +1878,66 @@
         var total = Number(center && center.perPeriodAmount || 0);
         var periodLabel = formatPeriodLabel(center && center.period).toLowerCase();
         if (total > 0) return formatMoney(total) + " / " + periodLabel;
-        return "No period limit";
+        return "Budget required";
+      }
+
+      function sumOrderTotals(orders) {
+        return (orders || []).reduce(function (sum, order) {
+          return sum + Math.max(0, Number(order.total || 0) || 0);
+        }, 0);
+      }
+
+      function pendingTotalForCenter(centerId) {
+        return sumOrderTotals((ordersForCenter(centerId).pending) || []);
       }
 
       function budgetMeterHtml(spent, total, options) {
         options = options || {};
         var period = String(options.period || "");
-        var perOrder = Number(options.perOrder || 0);
         var large = !!options.large;
-        var pct = 0;
+        var pending = Math.max(0, Number(options.pending || 0) || 0);
+        var spentValue = Math.max(0, Number(spent || 0) || 0);
+        var projected = spentValue + pending;
         var state = "is-empty";
 
         if (total > 0) {
-          pct = Math.max(0, Math.min(100, (spent / total) * 100));
-          if (spent > total) {
+          if (projected > total) {
             state = "is-over";
-            pct = 100;
-          } else if (spent / total >= 0.8) {
+          } else if (projected / total >= 0.8) {
             state = "is-warn";
-          } else if (spent > 0) {
+          } else if (projected > 0) {
             state = "is-ok";
           }
+          if (spentValue > total) state += " is-spent-over";
         }
 
-        var displayPct = total > 0 ? Math.round(Math.max(0, (spent / total) * 100)) : 0;
+        var displayPct = total > 0 ? Math.round((projected / total) * 100) : 0;
         var pctLabel = total > 0 ? displayPct + "%" : "—";
         var primary = total > 0
-          ? formatMoney(spent) + " of " + formatMoney(total)
-          : "No period limit";
-        var extras = [];
-        if (period && total > 0) {
-          extras.push("<span class='budget-sub'>" + escapeHtml(period) + " budget</span>");
-        }
-        if (perOrder > 0) {
-          extras.push("<span class='budget-sub'>" + escapeHtml(formatMoney(perOrder)) + " / order limit</span>");
-        }
-        if (total <= 0 && perOrder <= 0) {
-          return "<span class='budget-sub'>No limit set</span>";
+          ? formatMoney(projected) + " of " + formatMoney(total)
+          : (options.emptyLabel || "Budget required");
+        if (total > 0 && period) {
+          primary += " · " + period;
         }
         if (total <= 0) {
-          return ""
-            + "<div class='budget-meter-copy'>"
-            + "<span class='budget-value'>" + escapeHtml(formatMoney(spent)) + " spent</span>"
-            + extras.join("")
-            + "</div>";
+          return "<span class='budget-sub'>" + escapeHtml(options.emptyLabel || "Budget required") + "</span>";
         }
 
-        var dash = Math.max(0, Math.min(100, (spent / total) * 100)).toFixed(2);
+        var spentPct = Math.max(0, Math.min(100, (spentValue / total) * 100));
+        var pendingPct = Math.max(0, Math.min(100 - spentPct, (pending / total) * 100));
+        var heroClass = large ? " budget-meter-lg" : "";
+        if (options.hero) heroClass += " budget-meter-hero";
         return ""
-          + "<div class='budget-meter " + state + (large ? " budget-meter-lg" : "") + "' role='img' aria-label='"
+          + "<div class='budget-meter " + state + heroClass + "' role='img' aria-label='"
           + escapeHtml(primary + " (" + pctLabel + ")")
           + "'>"
-          + "<svg class='budget-ring" + (large ? " budget-ring-lg" : "") + "' viewBox='0 0 36 36' aria-hidden='true'>"
-          + "<circle class='budget-ring-bg' cx='18' cy='18' r='15.5'></circle>"
-          + "<circle class='budget-ring-fill' cx='18' cy='18' r='15.5' stroke-dasharray='" + dash + " 100' pathLength='100'></circle>"
-          + "</svg>"
           + "<div class='budget-meter-copy'>"
           + "<span class='budget-meter-pct'>" + escapeHtml(pctLabel) + " used</span>"
           + "<span class='budget-value'>" + escapeHtml(primary) + "</span>"
-          + extras.join("")
+          + "</div>"
+          + "<div class='budget-bar' aria-hidden='true'>"
+          + "<span class='budget-bar-spent' style='width:" + spentPct.toFixed(2) + "%'></span>"
+          + "<span class='budget-bar-pending' style='width:" + pendingPct.toFixed(2) + "%'></span>"
           + "</div>"
           + "</div>";
       }
@@ -1286,23 +1949,83 @@
           Number(center && center.perPeriodAmount || 0),
           {
             period: formatPeriodLabel(center && center.period),
-            perOrder: Number(center && center.perOrderAmount || 0)
+            pending: pendingTotalForCenter(center && center.id)
           }
         );
       }
 
-      function actionsHtml() {
+      function actionsHtml(center) {
         if (!permissions.updateCostCenter && !permissions.deleteCostCenter) {
           return "<span class='actions-muted'>—</span>";
         }
-        var html = "";
+        var html = "<div class='cc-actions'>";
         if (permissions.updateCostCenter) {
-          html += "<a class='table-action js-edit-cc' href='#' title='Edit'><span class='glyphicon glyphicon-pencil'></span></a>";
+          if (center && center.active === false) {
+            html += "<a class='table-action js-activate-cc' href='#' title='Reactivate'><span class='glyphicon glyphicon-ok-circle'></span></a>";
+          } else {
+            html += "<a class='table-action js-deactivate-cc' href='#' title='Deactivate'><span class='glyphicon glyphicon-ban-circle'></span></a>";
+          }
         }
         if (permissions.deleteCostCenter) {
           html += "<a class='table-action delete js-delete-cc' href='#' title='Delete'><span class='glyphicon glyphicon-trash'></span></a>";
         }
+        html += "</div>";
         return html;
+      }
+
+      function normalizePeriodKey(period, fallback) {
+        var key = String(period || fallback || "monthly").toLowerCase();
+        if (key === "weekly" || key === "quarterly" || key === "yearly" || key === "monthly") return key;
+        return "monthly";
+      }
+
+      function periodOptionsHtml(selectedPeriod) {
+        var selected = normalizePeriodKey(selectedPeriod);
+        return [
+          { value: "weekly", label: "Weekly" },
+          { value: "monthly", label: "Monthly" },
+          { value: "quarterly", label: "Quarterly" },
+          { value: "yearly", label: "Yearly" }
+        ].map(function (option) {
+          return "<option value='" + option.value + "'" + (selected === option.value ? " selected" : "") + ">"
+            + option.label + "</option>";
+        }).join("");
+      }
+
+      function normalizeBuyerBudgets(rawBudgets, buyerEmails, defaultPeriod) {
+        var allowed = {};
+        (buyerEmails || []).forEach(function (email) {
+          allowed[String(email || "").toLowerCase()] = true;
+        });
+        var source = rawBudgets && typeof rawBudgets === "object" ? rawBudgets : {};
+        var out = {};
+        Object.keys(source).forEach(function (email) {
+          var key = String(email || "").toLowerCase();
+          if (!key || !allowed[key]) return;
+          var entry = source[email] || {};
+          var amount = Math.max(0, Number(entry.amount != null ? entry.amount : entry) || 0);
+          if (amount <= 0) return;
+          out[key] = {
+            amount: amount,
+            spent: Math.max(0, Number(entry.spent || 0) || 0),
+            period: normalizePeriodKey(entry.period, defaultPeriod)
+          };
+        });
+        return out;
+      }
+
+      function getBuyerBudget(center, email) {
+        var key = String(email || "").toLowerCase();
+        var budgets = (center && center.buyerBudgets) || {};
+        return budgets[key] || null;
+      }
+
+      function buyerBudgetLabel(center, email) {
+        var budget = getBuyerBudget(center, email);
+        if (budget && budget.amount > 0) {
+          return formatMoney(budget.amount) + " / " + formatPeriodLabel(budget.period || (center && center.period)).toLowerCase();
+        }
+        return "$0 / fixed";
       }
 
       function normalizeCenter(raw) {
@@ -1311,19 +2034,22 @@
           return member.email === managerEmail;
         });
         var buyerEmails = Array.isArray(raw && raw.buyerEmails) ? raw.buyerEmails : [];
+        buyerEmails = buyerEmails.map(function (email) {
+          return String(email || "").toLowerCase();
+        }).filter(Boolean);
+        var period = normalizePeriodKey(raw && raw.period, "monthly");
         return {
           id: String(raw && raw.id || "").trim(),
           name: String(raw && raw.name || "").trim(),
           managerEmail: managerEmail,
           managerName: manager ? manager.name : String(raw && raw.managerName || "").trim(),
-          buyerEmails: buyerEmails.map(function (email) {
-            return String(email || "").toLowerCase();
-          }).filter(Boolean),
+          buyerEmails: buyerEmails,
+          buyerBudgets: normalizeBuyerBudgets(raw && raw.buyerBudgets, buyerEmails, period),
           orderCount: Math.max(0, Number(raw && raw.orderCount || 0) || 0),
           budgetSpent: Math.max(0, Number(raw && raw.budgetSpent || 0) || 0),
-          perOrderAmount: Math.max(0, Number(raw && raw.perOrderAmount || 0) || 0),
           perPeriodAmount: Math.max(0, Number(raw && raw.perPeriodAmount || 0) || 0),
-          period: String(raw && raw.period || "monthly")
+          period: period,
+          active: raw && raw.active === false ? false : true
         };
       }
 
@@ -1393,13 +2119,16 @@
           var haystack = searchHaystack(center);
           var match = !query || haystack.indexOf(query) !== -1;
           if (match) visible++;
+          var inactive = center.active === false;
           return ""
-            + "<tr data-id='" + escapeHtml(center.id) + "' data-search='" + escapeHtml(haystack) + "'" + (match ? "" : " style='display:none'") + ">"
+            + "<tr class='" + (inactive ? "is-inactive" : "") + "' data-id='" + escapeHtml(center.id) + "' data-search='" + escapeHtml(haystack) + "'" + (match ? "" : " style='display:none'") + ">"
             + "<td><a class='cc-link js-open-cc' href='#' data-id='" + escapeHtml(center.id) + "'>" + escapeHtml(center.id) + "</a></td>"
-            + "<td><a class='cc-name-link js-open-cc' href='#' data-id='" + escapeHtml(center.id) + "'>" + escapeHtml(center.name) + "</a></td>"
+            + "<td><a class='cc-name-link js-open-cc' href='#' data-id='" + escapeHtml(center.id) + "'>" + escapeHtml(center.name) + "</a>"
+            + (inactive ? "<span class='cc-status'>Inactive</span>" : "")
+            + "</td>"
             + "<td>" + escapeHtml(String(center.orderCount)) + "</td>"
             + (showBudget ? "<td>" + budgetSummaryHtml(center) + "</td>" : "")
-            + (showActions ? "<td>" + actionsHtml() + "</td>" : "")
+            + (showActions ? "<td>" + actionsHtml(center) + "</td>" : "")
             + "</tr>";
         }).join("");
         $tableBody.html(html);
@@ -1418,11 +2147,11 @@
         }
         var rows = orders.map(function (order) {
           return ""
-            + "<tr>"
-            + "<td data-label='Order'>" + escapeHtml(order.id) + "</td>"
+            + "<tr class='is-clickable js-open-order' data-order-id='" + escapeHtml(order.id) + "'>"
+            + "<td data-label='Order'><a class='order-id-link js-open-order' href='#' data-order-id='" + escapeHtml(order.id) + "'>" + escapeHtml(order.id) + "</a></td>"
             + "<td data-label='Buyer'>" + escapeHtml(order.buyer) + "</td>"
             + "<td data-label='Date'>" + escapeHtml(order.date) + "</td>"
-            + "<td data-label='Items'>" + escapeHtml(String(order.items)) + "</td>"
+            + "<td data-label='Items'>" + escapeHtml(String(order.items || (order.lines && order.lines.length) || 0)) + "</td>"
             + "<td data-label='Total'>" + escapeHtml(formatMoney(order.total)) + "</td>"
             + "<td data-label='Status'><span class='order-status " + statusClass + "'>" + escapeHtml(statusLabel) + "</span></td>"
             + "</tr>";
@@ -1434,51 +2163,318 @@
           + "</table>";
       }
 
-      function renderDetailBuyers(center) {
-        var canAssign = !!permissions.updateCostCenter;
-        $("#detailBuyersError").hide().text("");
-        $("#detailSaveBuyersBtn").toggle(canAssign);
-        if (canAssign) {
-          $("#detailBuyersRead").hide();
-          $("#detailBuyersEdit").show();
-          var selected = {};
-          (center.buyerEmails || []).forEach(function (email) {
-            selected[String(email || "").toLowerCase()] = true;
-          });
-          var html = TEAM_ROSTER.map(function (member) {
-            var checked = selected[member.email] ? " checked" : "";
-            return ""
-              + "<label class='buyer-option'>"
-              + "<input type='checkbox' class='js-detail-buyer-check' value='" + escapeHtml(member.email) + "'" + checked + ">"
-              + "<span>" + escapeHtml(member.name)
-              + " <span class='buyer-meta'>" + escapeHtml(member.email) + "</span></span>"
-              + "</label>";
-          }).join("");
-          $("#detailBuyersEdit").html(html);
+      function orderMatchesBuyer(order, buyer) {
+        var name = String((buyer && buyer.name) || "").toLowerCase();
+        var email = String((buyer && buyer.email) || "").toLowerCase();
+        return String(order.buyer || "").toLowerCase() === name
+          || String(order.buyerEmail || "").toLowerCase() === email;
+      }
+
+      function buyerOrdersFor(centerId, buyer, kind) {
+        var orders = ordersForCenter(centerId);
+        var list = kind === "pending" ? (orders.pending || []) : (orders.approved || []);
+        return list.filter(function (order) {
+          return orderMatchesBuyer(order, buyer);
+        });
+      }
+
+      function countBuyerOrders(centerId, buyer) {
+        return {
+          pending: buyerOrdersFor(centerId, buyer, "pending"),
+          approved: buyerOrdersFor(centerId, buyer, "approved")
+        };
+      }
+
+      function findOrderById(orderId) {
+        var orders = ordersForCenter(activeDetailId);
+        var id = String(orderId || "");
+        var pending = (orders.pending || []).filter(function (order) { return order.id === id; })[0];
+        if (pending) return { order: pending, statusClass: "pending", statusLabel: "Pending" };
+        var approved = (orders.approved || []).filter(function (order) { return order.id === id; })[0];
+        if (approved) return { order: approved, statusClass: "approved", statusLabel: "Approved" };
+        return null;
+      }
+
+      function orderCountCell(orders, kind, buyer) {
+        var count = (orders || []).length;
+        if (!count) {
+          return "<span class='buyer-order-count-zero'>0</span>";
+        }
+        return "<a class='buyer-order-count-link js-open-buyer-orders' href='#' data-email='"
+          + escapeHtml(buyer.email)
+          + "' data-kind='" + escapeHtml(kind)
+          + "'>" + escapeHtml(String(count)) + "</a>";
+      }
+
+      function lineItemCount(order) {
+        if (order.lines && order.lines.length) {
+          return order.lines.reduce(function (sum, line) {
+            return sum + Math.max(1, Number(line.qty || 1) || 1);
+          }, 0);
+        }
+        return Number(order.items || 0) || 0;
+      }
+
+      function renderOrderDetailHtml(order, statusClass, statusLabel) {
+        var lines = order.lines || [];
+        var lineRows = lines.map(function (line) {
+          var qty = Math.max(1, Number(line.qty || 1) || 1);
+          var price = Number(line.price || 0);
+          var lineTotal = Number(line.lineTotal != null ? line.lineTotal : price * qty);
+          return ""
+            + "<tr>"
+            + "<td data-label='Item'><span class='line-name'>" + escapeHtml(line.name) + "</span>"
+            + "<span class='line-sku'>Item #: " + escapeHtml(line.sku || "") + "</span></td>"
+            + "<td data-label='Qty'>" + escapeHtml(String(qty)) + "</td>"
+            + "<td data-label='Unit Price'>" + escapeHtml(formatMoneyExact(price)) + "</td>"
+            + "<td data-label='Line Total'>" + escapeHtml(formatMoneyExact(lineTotal)) + "</td>"
+            + "</tr>";
+        }).join("");
+        var linesTable = lines.length
+          ? "<table class='cc-order-lines'><thead><tr><th>Item</th><th>Qty</th><th>Unit Price</th><th>Line Total</th></tr></thead><tbody>"
+            + lineRows + "</tbody></table>"
+          : "<p class='orders-empty'>No line items on this order.</p>";
+        return ""
+          + "<div class='cc-order-detail-meta'>"
+          + "<div><span class='cc-order-detail-label'>Order</span><span class='cc-order-detail-value'>" + escapeHtml(order.id) + "</span></div>"
+          + "<div><span class='cc-order-detail-label'>Status</span><span class='cc-order-detail-value'><span class='order-status " + statusClass + "'>" + escapeHtml(statusLabel) + "</span></span></div>"
+          + "<div><span class='cc-order-detail-label'>Buyer</span><span class='cc-order-detail-value'>" + escapeHtml(order.buyer) + "</span></div>"
+          + "<div><span class='cc-order-detail-label'>Date</span><span class='cc-order-detail-value'>" + escapeHtml(order.date) + "</span></div>"
+          + "<div><span class='cc-order-detail-label'>Items</span><span class='cc-order-detail-value'>" + escapeHtml(String(lineItemCount(order))) + "</span></div>"
+          + "<div><span class='cc-order-detail-label'>Total</span><span class='cc-order-detail-value'>" + escapeHtml(formatMoneyExact(order.total)) + "</span></div>"
+          + "</div>"
+          + linesTable
+          + "<p class='cc-order-total'>Order Total " + escapeHtml(formatMoneyExact(order.total)) + "</p>"
+          + "<div class='cc-order-extras'>"
+          + "<div class='cc-order-extra'><strong>Payment</strong><span>" + escapeHtml(order.payment || "Invoice") + "</span></div>"
+          + "<div class='cc-order-extra'><strong>Shipping Method</strong><span>" + escapeHtml(order.shipping || "UPS Ground") + "</span></div>"
+          + "</div>";
+      }
+
+      function showOrdersModalList() {
+        if (!ordersModalState) return;
+        $("#ccOrdersModalTitle").text(ordersModalState.listTitle);
+        $("#ccOrdersModalBody").html(renderOrdersTable(
+          ordersModalState.orders,
+          ordersModalState.statusClass,
+          ordersModalState.statusLabel
+        ));
+        $("#ccOrdersBackBtn").hide();
+      }
+
+      function showOrdersModalDetail(orderId) {
+        var found = findOrderById(orderId);
+        if (!found) return;
+        var canGoBack = !!(ordersModalState && ordersModalState.orders && ordersModalState.orders.length > 1);
+        if (!ordersModalState) {
+          ordersModalState = {
+            listTitle: found.statusLabel + " Order",
+            orders: [found.order],
+            statusClass: found.statusClass,
+            statusLabel: found.statusLabel
+          };
+        }
+        $("#ccOrdersModalTitle").text(found.order.id);
+        $("#ccOrdersModalBody").html(renderOrderDetailHtml(found.order, found.statusClass, found.statusLabel));
+        $("#ccOrdersBackBtn").toggle(canGoBack);
+        if (!$("#ccOrdersModal").hasClass("in") && !$("#ccOrdersModal").is(":visible")) {
+          $("#ccOrdersModal").modal("show");
+        }
+      }
+
+      function openBuyerOrdersModal(email, kind) {
+        var center = findCenterById(activeDetailId);
+        if (!center) return;
+        var buyer = TEAM_ROSTER.find(function (member) { return member.email === email; }) || {
+          name: email,
+          email: email
+        };
+        var statusClass = kind === "pending" ? "pending" : "approved";
+        var statusLabel = kind === "pending" ? "Pending" : "Approved";
+        var orders = buyerOrdersFor(center.id, buyer, statusClass);
+        if (!orders.length) return;
+        ordersModalState = {
+          listTitle: buyer.name + " · " + statusLabel + " Orders",
+          orders: orders,
+          statusClass: statusClass,
+          statusLabel: statusLabel
+        };
+        if (orders.length === 1) {
+          showOrdersModalDetail(orders[0].id);
+          $("#ccOrdersModal").modal("show");
           return;
         }
+        showOrdersModalList();
+        $("#ccOrdersModal").modal("show");
+      }
 
-        $("#detailBuyersEdit").hide().empty();
-        $("#detailBuyersRead").show();
+      function renderDetailBuyers(center) {
+        var canAssign = !!permissions.updateCostCenter && center.active !== false;
+        $("#detailBuyersError").hide().text("").css("color", "#b12704");
+        $("#detailAddBuyerBtn").toggle(canAssign);
+
         var buyers = (center.buyerEmails || []).map(function (email) {
           return TEAM_ROSTER.find(function (member) { return member.email === email; }) || {
             name: email,
             email: email
           };
         });
+
         if (!buyers.length) {
-          $("#detailBuyersRead").html("<p class='buyer-empty'>No buyers assigned.</p>");
+          $("#detailBuyersSummary").html("<p class='buyer-empty'>No buyers assigned yet.</p>");
           return;
         }
-        $("#detailBuyersRead").html(buyers.map(function (buyer) {
+
+        var rows = buyers.map(function (buyer) {
+          var counts = countBuyerOrders(center.id, buyer);
+          var budgetText = buyerBudgetLabel(center, buyer.email);
+          var actions = "";
+          if (canAssign) {
+            actions = ""
+              + "<div class='buyer-summary-actions'>"
+              + "<a class='table-action js-edit-buyer' href='#' data-email='" + escapeHtml(buyer.email) + "' title='Edit buyer'><span class='glyphicon glyphicon-pencil'></span></a>"
+              + "<a class='table-action is-danger js-delete-buyer' href='#' data-email='" + escapeHtml(buyer.email) + "' title='Remove buyer'><span class='glyphicon glyphicon-trash'></span></a>"
+              + "</div>";
+          } else {
+            actions = "<span class='actions-muted'>—</span>";
+          }
           return ""
-            + "<div class='buyer-chip'>"
-            + "<div class='buyer-chip-main'>"
-            + "<span class='buyer-chip-name'>" + escapeHtml(buyer.name) + "</span>"
-            + "<span class='buyer-chip-email'>" + escapeHtml(buyer.email) + "</span>"
+            + "<tr data-email='" + escapeHtml(buyer.email) + "'>"
+            + "<td data-label='Buyer'>"
+            + "<span class='buyer-summary-name'>" + escapeHtml(buyer.name) + "</span>"
+            + "<span class='buyer-summary-email'>" + escapeHtml(buyer.email) + "</span>"
+            + "</td>"
+            + "<td data-label='Approved Orders'>" + escapeHtml(String(counts.approved.length)) + "</td>"
+            + "<td data-label='Pending Orders'>" + escapeHtml(String(counts.pending.length)) + "</td>"
+            + "<td data-label='Buyer Budget'><span class='buyer-summary-budget'>" + escapeHtml(budgetText) + "</span></td>"
+            + (canAssign ? "<td data-label='Actions'>" + actions + "</td>" : "")
+            + "</tr>";
+        }).join("");
+
+        $("#detailBuyersSummary").html(
+          "<table class='buyer-summary-table'>"
+          + "<thead><tr>"
+          + "<th>Buyer</th><th>Approved Orders</th><th>Pending Orders</th><th>Buyer Budget</th>"
+          + (canAssign ? "<th>Actions</th>" : "")
+          + "</tr></thead>"
+          + "<tbody>" + rows + "</tbody>"
+          + "</table>"
+        );
+      }
+
+      function populateBuyerModalSelect(center, selectedEmail, lockSelection) {
+        var assigned = {};
+        (center.buyerEmails || []).forEach(function (email) {
+          assigned[String(email || "").toLowerCase()] = true;
+        });
+        var options = TEAM_ROSTER.filter(function (member) {
+          if (lockSelection) return member.email === selectedEmail;
+          return !assigned[member.email] || member.email === selectedEmail;
+        }).map(function (member) {
+          var selected = member.email === selectedEmail ? " selected" : "";
+          return "<option value='" + escapeHtml(member.email) + "'" + selected + ">"
+            + escapeHtml(member.name) + " (" + escapeHtml(member.email) + ")</option>";
+        }).join("");
+        $("#buyerModalSelect").html(options || "<option value=''>No buyers available</option>");
+        $("#buyerModalSelect").prop("disabled", !!lockSelection || !options);
+        $("#buyerModalLockedHint").toggle(!!lockSelection);
+      }
+
+      function openAddBuyerModal(center) {
+        if (!permissions.updateCostCenter) return;
+        editingBuyerEmail = null;
+        $("#buyerModalError").hide().text("");
+        $("#buyerBudgetModalTitle").text("Add Buyer");
+        $("#saveBuyerModalBtn").text("Add Buyer");
+        populateBuyerModalSelect(center, "", false);
+        $("#buyerModalBudgetInput").val("");
+        $("#buyerModalPeriodSelect").val(center.period || "monthly");
+        $(".js-buyer-modal-budget").toggleClass("is-disabled", !permissions.updateBudget);
+        $(".js-buyer-modal-budget").find("input, select").prop("disabled", !permissions.updateBudget);
+        $("#buyerBudgetModal").modal("show");
+      }
+
+      function openEditBuyerModal(center, email) {
+        if (!permissions.updateCostCenter) return;
+        var key = String(email || "").toLowerCase();
+        editingBuyerEmail = key;
+        $("#buyerModalError").hide().text("");
+        $("#buyerBudgetModalTitle").text("Edit Buyer");
+        $("#saveBuyerModalBtn").text("Save Changes");
+        populateBuyerModalSelect(center, key, true);
+        var budget = getBuyerBudget(center, key) || {};
+        $("#buyerModalBudgetInput").val(Number(budget.amount || 0) || "");
+        $("#buyerModalPeriodSelect").val(normalizePeriodKey(budget.period, center.period || "monthly"));
+        $(".js-buyer-modal-budget").toggleClass("is-disabled", !permissions.updateBudget);
+        $(".js-buyer-modal-budget").find("input, select").prop("disabled", !permissions.updateBudget);
+        $("#buyerBudgetModal").modal("show");
+      }
+
+      function populateBuyerOptions($container, selectedEmails, buyerBudgets, options) {
+        options = options || {};
+        var checkboxClass = options.checkboxClass || "js-buyer-check";
+        var budgetInputClass = options.budgetInputClass || "js-buyer-budget";
+        var budgetPeriodClass = options.budgetPeriodClass || "js-buyer-budget-period";
+        var canEditBudget = options.canEditBudget !== false && !!permissions.updateBudget;
+        var defaultPeriod = normalizePeriodKey(options.defaultPeriod, "monthly");
+        var selected = {};
+        (selectedEmails || []).forEach(function (email) {
+          selected[String(email || "").toLowerCase()] = true;
+        });
+        var budgets = buyerBudgets || {};
+        var html = TEAM_ROSTER.map(function (member) {
+          var checked = !!selected[member.email];
+          var budget = budgets[member.email] || {};
+          var amount = Number(budget.amount || 0);
+          var period = normalizePeriodKey(budget.period, defaultPeriod);
+          return ""
+            + "<div class='buyer-option" + (checked ? " is-selected" : "") + "'>"
+            + "<input type='checkbox' class='" + checkboxClass + "' value='" + escapeHtml(member.email) + "'" + (checked ? " checked" : "") + ">"
+            + "<div class='buyer-option-main'>"
+            + "<label class='buyer-option-name'>"
+            + escapeHtml(member.name)
+            + " <span class='buyer-meta'>" + escapeHtml(member.email) + "</span>"
+            + "</label>"
+            + "<div class='buyer-budget-row'>"
+            + "<span class='buyer-budget-label'>Buyer budget</span>"
+            + "<input type='number' min='0' step='1' class='buyer-budget-input " + budgetInputClass + "' data-email='" + escapeHtml(member.email) + "' placeholder='Optional' value='" + (amount > 0 ? amount : "") + "'" + (canEditBudget ? "" : " disabled") + ">"
+            + "<select class='buyer-budget-select " + budgetPeriodClass + "' data-email='" + escapeHtml(member.email) + "'" + (canEditBudget ? "" : " disabled") + ">"
+            + periodOptionsHtml(period)
+            + "</select>"
+            + "</div>"
             + "</div>"
             + "</div>";
-        }).join(""));
+        }).join("");
+        $container.html(html);
+      }
+
+      function selectedBuyerEmailsFrom($container, checkboxClass) {
+        var emails = [];
+        $container.find("." + checkboxClass + ":checked").each(function () {
+          emails.push(String($(this).val() || "").toLowerCase());
+        });
+        return emails;
+      }
+
+      function selectedBuyerBudgetsFrom($container, checkboxClass, budgetInputClass, budgetPeriodClass, previousBudgets, defaultPeriod) {
+        var previous = previousBudgets || {};
+        var fallbackPeriod = normalizePeriodKey(defaultPeriod, "monthly");
+        var out = {};
+        $container.find("." + checkboxClass + ":checked").each(function () {
+          var email = String($(this).val() || "").toLowerCase();
+          if (!email) return;
+          var $row = $(this).closest(".buyer-option");
+          var $input = $row.find("." + budgetInputClass);
+          var $periodSelect = $row.find("." + budgetPeriodClass);
+          var amount = Number($input.val() || 0);
+          if (!isFinite(amount) || amount <= 0) return;
+          out[email] = {
+            amount: amount,
+            spent: Math.max(0, Number((previous[email] && previous[email].spent) || 0) || 0),
+            period: normalizePeriodKey($periodSelect.val(), fallbackPeriod)
+          };
+        });
+        return out;
       }
 
       function showList() {
@@ -1508,27 +2504,25 @@
           + escapeHtml(center.name) + "</span>"
         );
 
-        $("#detailName").text(center.name);
+        $("#detailName").html(
+          escapeHtml(center.name)
+          + (center.active === false ? " <span class='cc-status'>Inactive</span>" : "")
+        );
         $("#detailIdLine").text("ID: " + center.id);
-        $("#detailManager").text(center.managerName || center.managerEmail || "—");
-        $("#detailOrderCount").text(String(center.orderCount || 0));
-        $("#detailBudgetLimit").text(budgetLimitLabel(center));
-        $("#detailPerOrder").text(Number(center.perOrderAmount || 0) > 0 ? formatMoney(center.perOrderAmount) + " / order" : "No per-order limit");
+        $("#detailManager").text("Manager: " + (center.managerName || center.managerEmail || "—"));
         $("#detailBudgetMeter").html(budgetMeterHtml(
           Number(center.budgetSpent || 0),
           Number(center.perPeriodAmount || 0),
           {
             period: formatPeriodLabel(center.period),
-            perOrder: Number(center.perOrderAmount || 0),
-            large: true
+            large: true,
+            hero: true,
+            pending: pendingTotalForCenter(center.id)
           }
         ));
         $("#detailEditBtn").toggle(!!permissions.updateCostCenter);
 
         renderDetailBuyers(center);
-        var orders = ordersForCenter(center.id);
-        $("#detailPendingOrders").html(renderOrdersTable(orders.pending, "pending", "Pending"));
-        $("#detailApprovedOrders").html(renderOrdersTable(orders.approved, "approved", "Approved"));
 
         if (window.history && window.history.replaceState) {
           window.history.replaceState({}, "", "cost-centers.html?id=" + encodeURIComponent(center.id));
@@ -1553,46 +2547,63 @@
         $managerSelect.html(options);
       }
 
-      function populateBuyers(selectedEmails) {
-        var selected = {};
-        (selectedEmails || []).forEach(function (email) {
-          selected[String(email || "").toLowerCase()] = true;
+      function populateBuyers(selectedEmails, buyerBudgets, defaultPeriod) {
+        populateBuyerOptions($buyersBox, selectedEmails || [], buyerBudgets || {}, {
+          checkboxClass: "js-buyer-check",
+          budgetInputClass: "js-buyer-budget",
+          budgetPeriodClass: "js-buyer-budget-period",
+          canEditBudget: !!permissions.updateBudget,
+          defaultPeriod: defaultPeriod || $period.val() || "monthly"
         });
-        var html = TEAM_ROSTER.map(function (member) {
-          var checked = selected[member.email] ? " checked" : "";
-          return ""
-            + "<label class='buyer-option'>"
-            + "<input type='checkbox' class='js-buyer-check' value='" + escapeHtml(member.email) + "'" + checked + ">"
-            + "<span>" + escapeHtml(member.name)
-            + " <span class='buyer-meta'>" + escapeHtml(member.email) + "</span></span>"
-            + "</label>";
-        }).join("");
-        $buyersBox.html(html);
       }
 
       function selectedBuyerEmails() {
-        var emails = [];
-        $buyersBox.find(".js-buyer-check:checked").each(function () {
-          emails.push(String($(this).val() || "").toLowerCase());
-        });
-        return emails;
+        return selectedBuyerEmailsFrom($buyersBox, "js-buyer-check");
+      }
+
+      function selectedBuyerBudgets(previousBudgets, defaultPeriod) {
+        return selectedBuyerBudgetsFrom(
+          $buyersBox,
+          "js-buyer-check",
+          "js-buyer-budget",
+          "js-buyer-budget-period",
+          previousBudgets,
+          defaultPeriod
+        );
+      }
+
+      function validateBuyerBudgets(buyerBudgets, centerBudget) {
+        var emails = Object.keys(buyerBudgets || {});
+        for (var i = 0; i < emails.length; i += 1) {
+          var email = emails[i];
+          var amount = Number(buyerBudgets[email] && buyerBudgets[email].amount || 0);
+          if (!isFinite(amount) || amount <= 0) {
+            return "Buyer budgets must be greater than zero when set.";
+          }
+          if (centerBudget > 0 && amount > centerBudget) {
+            var member = TEAM_ROSTER.find(function (item) { return item.email === email; });
+            var label = member ? member.name : email;
+            return "Buyer budget for " + label + " cannot exceed the cost center budget.";
+          }
+        }
+        return "";
       }
 
       function resetForm() {
         $idInput.val("");
         $nameInput.val("");
-        $perOrder.val("");
         $perPeriod.val("");
         $period.val("monthly");
         $formError.hide().text("");
         populateManagerSelect(TEAM_ROSTER[0].email);
-        populateBuyers([]);
       }
 
       function openCreateModal() {
         if (!permissions.createCostCenter) return;
         editingId = null;
         resetForm();
+        $(".js-budget-field").toggleClass("is-disabled", !permissions.updateBudget);
+        $(".js-budget-field").find("input, select").prop("disabled", !permissions.updateBudget);
         $("#costCenterModalTitle").text("Create Cost Center");
         $("#saveCostCenterBtn").text("Save Cost Center");
         $("#costCenterModal").modal("show");
@@ -1605,10 +2616,8 @@
         $idInput.val(center.id);
         $nameInput.val(center.name);
         populateManagerSelect(center.managerEmail || TEAM_ROSTER[0].email);
-        $perOrder.val(Number(center.perOrderAmount || 0) || "");
         $perPeriod.val(Number(center.perPeriodAmount || 0) || "");
         $period.val(center.period || "monthly");
-        populateBuyers(center.buyerEmails || []);
         $(".js-budget-field").toggleClass("is-disabled", !permissions.updateBudget);
         $(".js-budget-field").find("input, select").prop("disabled", !permissions.updateBudget);
         $("#costCenterModalTitle").text("Edit Cost Center");
@@ -1621,19 +2630,16 @@
         var manager = TEAM_ROSTER.find(function (member) {
           return member.email === managerEmail;
         });
-        var perOrderAmount = Number($perOrder.val() || 0);
         var perPeriodAmount = Number($perPeriod.val() || 0);
-        if (!isFinite(perOrderAmount) || perOrderAmount < 0) perOrderAmount = 0;
         if (!isFinite(perPeriodAmount) || perPeriodAmount < 0) perPeriodAmount = 0;
+        var period = normalizePeriodKey($period.val(), "monthly");
         return {
           id: $.trim($idInput.val() || ""),
           name: $.trim($nameInput.val() || ""),
           managerEmail: managerEmail,
           managerName: manager ? manager.name : "",
-          buyerEmails: selectedBuyerEmails(),
-          perOrderAmount: perOrderAmount,
           perPeriodAmount: perPeriodAmount,
-          period: String($period.val() || "monthly")
+          period: period
         };
       }
 
@@ -1659,6 +2665,33 @@
         showDetail(id);
       });
 
+      $(document).on("click", ".js-open-buyer-orders", function (event) {
+        event.preventDefault();
+        var email = String($(this).data("email") || "").toLowerCase();
+        var kind = String($(this).data("kind") || "approved").toLowerCase();
+        if (!email) return;
+        openBuyerOrdersModal(email, kind === "pending" ? "pending" : "approved");
+      });
+
+      $(document).on("click", ".js-open-order", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        var orderId = String($(this).data("order-id") || $(this).closest("tr").data("order-id") || "");
+        if (!orderId) return;
+        showOrdersModalDetail(orderId);
+        $("#ccOrdersModal").modal("show");
+      });
+
+      $("#ccOrdersBackBtn").on("click", function () {
+        showOrdersModalList();
+      });
+
+      $("#ccOrdersModal").on("hidden.bs.modal", function () {
+        ordersModalState = null;
+        $("#ccOrdersBackBtn").hide();
+        $("#ccOrdersModalBody").empty();
+      });
+
       $("#ccBackToList").on("click", function (event) {
         event.preventDefault();
         showList();
@@ -1677,32 +2710,210 @@
         openEditModal(center);
       });
 
-      $("#detailSaveBuyersBtn").on("click", function () {
+      $("#detailAddBuyerBtn").on("click", function () {
         if (!activeDetailId || !permissions.updateCostCenter) return;
         var center = findCenterById(activeDetailId);
         if (!center) return;
-        var emails = [];
-        $("#detailBuyersEdit").find(".js-detail-buyer-check:checked").each(function () {
-          emails.push(String($(this).val() || "").toLowerCase());
-        });
-        center.buyerEmails = emails;
-        saveCenters();
-        $("#detailBuyersError").hide().text("");
-        renderDetailBuyers(center);
-        $("#detailBuyersError").text("Buyers updated.").css("color", "#067647").show();
-        setTimeout(function () {
-          $("#detailBuyersError").hide().css("color", "#b12704").text("");
-        }, 1600);
+        openAddBuyerModal(center);
       });
 
-      $(document).on("click", ".js-edit-cc", function (event) {
+      $(document).on("click", ".js-edit-buyer", function (event) {
+        event.preventDefault();
+        if (!activeDetailId || !permissions.updateCostCenter) return;
+        var center = findCenterById(activeDetailId);
+        if (!center) return;
+        openEditBuyerModal(center, $(this).attr("data-email"));
+      });
+
+      $(document).on("click", ".js-delete-buyer", function (event) {
+        event.preventDefault();
+        if (!activeDetailId || !permissions.updateCostCenter) return;
+        var center = findCenterById(activeDetailId);
+        if (!center) return;
+        var email = String($(this).attr("data-email") || "").toLowerCase();
+        var buyer = TEAM_ROSTER.find(function (member) { return member.email === email; });
+        pendingDeleteBuyerEmail = email;
+        $("#deleteBuyerModalCopy").text(
+          "Remove " + ((buyer && buyer.name) || email) + " from this cost center?"
+        );
+        $("#deleteBuyerModal").modal("show");
+      });
+
+      $("#confirmDeleteBuyerBtn").on("click", function () {
+        if (!activeDetailId || !pendingDeleteBuyerEmail || !permissions.updateCostCenter) {
+          $("#deleteBuyerModal").modal("hide");
+          return;
+        }
+        var center = findCenterById(activeDetailId);
+        if (!center) {
+          $("#deleteBuyerModal").modal("hide");
+          return;
+        }
+        var email = pendingDeleteBuyerEmail;
+        center.buyerEmails = (center.buyerEmails || []).filter(function (item) {
+          return item !== email;
+        });
+        if (center.buyerBudgets && center.buyerBudgets[email]) {
+          delete center.buyerBudgets[email];
+        }
+        pendingDeleteBuyerEmail = null;
+        saveCenters();
+        $("#deleteBuyerModal").modal("hide");
+        showDetail(center.id);
+      });
+
+      $("#deleteBuyerModal").on("hidden.bs.modal", function () {
+        pendingDeleteBuyerEmail = null;
+      });
+
+      $("#saveBuyerModalBtn").on("click", function () {
+        if (!activeDetailId || !permissions.updateCostCenter) return;
+        var center = findCenterById(activeDetailId);
+        if (!center) return;
+        var email = String($("#buyerModalSelect").val() || "").toLowerCase();
+        if (!email) {
+          $("#buyerModalError").text("Select a buyer.").show();
+          return;
+        }
+        var amount = Number($("#buyerModalBudgetInput").val() || 0);
+        if (!isFinite(amount) || amount < 0) amount = 0;
+        var period = normalizePeriodKey($("#buyerModalPeriodSelect").val(), center.period || "monthly");
+        var nextBudgets = {};
+        Object.keys(center.buyerBudgets || {}).forEach(function (key) {
+          nextBudgets[key] = center.buyerBudgets[key];
+        });
+        if (permissions.updateBudget) {
+          if (amount > 0) {
+            var previous = nextBudgets[email] || {};
+            nextBudgets[email] = {
+              amount: amount,
+              spent: Math.max(0, Number(previous.spent || 0) || 0),
+              period: period
+            };
+          } else {
+            delete nextBudgets[email];
+          }
+          var budgetError = validateBuyerBudgets(nextBudgets, Number(center.perPeriodAmount || 0));
+          if (budgetError) {
+            $("#buyerModalError").text(budgetError).show();
+            return;
+          }
+        }
+
+        if (!editingBuyerEmail) {
+          if ((center.buyerEmails || []).indexOf(email) > -1) {
+            $("#buyerModalError").text("That buyer is already assigned.").show();
+            return;
+          }
+          center.buyerEmails = (center.buyerEmails || []).concat([email]);
+        }
+        if (permissions.updateBudget) {
+          center.buyerBudgets = normalizeBuyerBudgets(nextBudgets, center.buyerEmails, center.period || "monthly");
+        }
+        saveCenters();
+        editingBuyerEmail = null;
+        $("#buyerBudgetModal").modal("hide");
+        showDetail(center.id);
+      });
+
+      $("#buyerBudgetModal").on("hidden.bs.modal", function () {
+        editingBuyerEmail = null;
+        $("#buyerModalError").hide().text("");
+      });
+
+      $(document).on("change", ".js-buyer-check", function () {
+        var $option = $(this).closest(".buyer-option");
+        $option.toggleClass("is-selected", this.checked);
+        if (!this.checked) {
+          $option.find(".buyer-budget-input").val("");
+        } else {
+          var defaultPeriod = normalizePeriodKey($period.val(), "monthly");
+          var $periodSelect = $option.find(".buyer-budget-select");
+          if ($periodSelect.length) {
+            $periodSelect.val(defaultPeriod);
+          }
+        }
+      });
+
+      $(document).on("click", ".buyer-option-name", function (event) {
+        event.preventDefault();
+        var $checkbox = $(this).closest(".buyer-option").find(".js-buyer-check").first();
+        if (!$checkbox.length || $checkbox.prop("disabled")) return;
+        $checkbox.prop("checked", !$checkbox.prop("checked")).trigger("change");
+      });
+
+      $(document).on("click", ".js-deactivate-cc", function (event) {
         event.preventDefault();
         event.stopPropagation();
         if (!permissions.updateCostCenter) return;
         var id = String($(this).closest("tr").data("id") || "");
         var center = findCenterById(id);
         if (!center) return;
-        openEditModal(center);
+        pendingDeactivateId = center.id;
+        $deactivateCopy.text(
+          "Deactivate cost center \"" + center.name + "\" (" + center.id + ")? It will remain in the list as inactive and can be reactivated later."
+        );
+        $("#deactivateCostCenterModal").modal("show");
+      });
+
+      $(document).on("click", ".js-activate-cc", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!permissions.updateCostCenter) return;
+        var id = String($(this).closest("tr").data("id") || "");
+        var center = findCenterById(id);
+        if (!center) return;
+        pendingActivateId = center.id;
+        $activateCopy.text(
+          "Activate cost center \"" + center.name + "\" (" + center.id + ")? It will be available for use again."
+        );
+        $("#activateCostCenterModal").modal("show");
+      });
+
+      $("#confirmActivateCostCenterBtn").on("click", function () {
+        if (!permissions.updateCostCenter || !pendingActivateId) {
+          $("#activateCostCenterModal").modal("hide");
+          return;
+        }
+        var center = findCenterById(pendingActivateId);
+        if (center) {
+          center.active = true;
+          saveCenters();
+        }
+        pendingActivateId = null;
+        $("#activateCostCenterModal").modal("hide");
+        if (activeDetailId && center && String(activeDetailId).toLowerCase() === String(center.id).toLowerCase()) {
+          showDetail(center.id);
+        } else {
+          showList();
+        }
+      });
+
+      $("#activateCostCenterModal").on("hidden.bs.modal", function () {
+        pendingActivateId = null;
+      });
+
+      $("#confirmDeactivateCostCenterBtn").on("click", function () {
+        if (!permissions.updateCostCenter || !pendingDeactivateId) {
+          $("#deactivateCostCenterModal").modal("hide");
+          return;
+        }
+        var center = findCenterById(pendingDeactivateId);
+        if (center) {
+          center.active = false;
+          saveCenters();
+        }
+        pendingDeactivateId = null;
+        $("#deactivateCostCenterModal").modal("hide");
+        if (activeDetailId && center && String(activeDetailId).toLowerCase() === String(center.id).toLowerCase()) {
+          showDetail(center.id);
+        } else {
+          showList();
+        }
+      });
+
+      $("#deactivateCostCenterModal").on("hidden.bs.modal", function () {
+        pendingDeactivateId = null;
       });
 
       $(document).on("click", ".js-delete-cc", function (event) {
@@ -1747,6 +2958,7 @@
         if (isEdit && !permissions.updateCostCenter) return;
         if (!isEdit && !permissions.createCostCenter) return;
 
+        var existing = isEdit ? findCenterById(editingId) : null;
         var values = readFormValues();
         if (!values.id || !values.name) {
           $formError.text("ID and Cost Center Name are required.").show();
@@ -1756,22 +2968,27 @@
           $formError.text("Select a cost center manager.").show();
           return;
         }
+        if (!values.period) {
+          $formError.text("Select a budget period.").show();
+          return;
+        }
+        if (!values.perPeriodAmount || values.perPeriodAmount <= 0) {
+          $formError.text("Cost center budget is required.").show();
+          return;
+        }
         if (hasIdCollision(values.id, editingId)) {
           $formError.text("A cost center with this ID already exists.").show();
           return;
         }
 
         if (editingId) {
-          var existing = findCenterById(editingId);
           if (!existing) return;
           var oldId = existing.id;
           existing.id = values.id;
           existing.name = values.name;
           existing.managerEmail = values.managerEmail;
           existing.managerName = values.managerName;
-          existing.buyerEmails = values.buyerEmails;
           if (permissions.updateBudget) {
-            existing.perOrderAmount = values.perOrderAmount;
             existing.perPeriodAmount = values.perPeriodAmount;
             existing.period = values.period;
           }
@@ -1784,12 +3001,13 @@
             name: values.name,
             managerEmail: values.managerEmail,
             managerName: values.managerName,
-            buyerEmails: values.buyerEmails,
+            buyerEmails: [],
+            buyerBudgets: {},
             orderCount: 0,
             budgetSpent: 0,
-            perOrderAmount: permissions.updateBudget ? values.perOrderAmount : 0,
             perPeriodAmount: permissions.updateBudget ? values.perPeriodAmount : 0,
-            period: permissions.updateBudget ? values.period : "monthly"
+            period: permissions.updateBudget ? values.period : "monthly",
+            active: true
           }));
         }
 

@@ -635,6 +635,43 @@
       color: #00a7e1;
       font-weight: 700;
     }
+    .cart-cost-center {
+      margin: 0 0 12px;
+    }
+    .cart-cost-center-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f1111;
+      line-height: 1.2;
+    }
+    .cart-cost-center-label .optional {
+      font-weight: 500;
+      color: #565959;
+    }
+    .cart-cost-center-select {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #c7ced4;
+      border-radius: 10px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 13px;
+      padding: 0 12px;
+      box-shadow: none;
+    }
+    .cart-cost-center-select:focus {
+      outline: 0;
+      border-color: #007185;
+      box-shadow: 0 0 0 3px rgba(0, 113, 133, 0.12);
+    }
+    .cart-cost-center-hint {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.35;
+    }
     .cart-empty {
       border: 1px solid #d5dde4;
       border-radius: 8px;
@@ -813,6 +850,28 @@
     (function () {
       var CART_STORAGE_KEY = "breg_cart_v1";
       var SAVE_LATER_STORAGE_KEY = "breg_saved_for_later_v1";
+      var COST_CENTER_STORAGE_KEY = "breg_cost_centers_v1";
+      var CART_COST_CENTER_KEY = "breg_cart_cost_center_v1";
+      var DEFAULT_COST_CENTERS = [
+        {
+          id: "CC-1001",
+          name: "Orthopedics",
+          active: true,
+          buyerEmails: ["mchen@medicalclinic.com", "emily.davis@medicalclinic.com"]
+        },
+        {
+          id: "CC-1002",
+          name: "Sports Medicine",
+          active: true,
+          buyerEmails: ["emily.davis@medicalclinic.com"]
+        },
+        {
+          id: "CC-1003",
+          name: "Outpatient Clinic",
+          active: true,
+          buyerEmails: ["mchen@medicalclinic.com"]
+        }
+      ];
       var DEFAULT_LISTS = [
         "Shopping List",
         "Recovery Supplies",
@@ -846,6 +905,69 @@
         if (window.BregCart && typeof window.BregCart.syncBadge === "function") {
           try { window.BregCart.syncBadge(); } catch (e2) {}
         }
+      }
+      function currentUserEmail() {
+        try {
+          return String(localStorage.getItem("bregUserEmail") || "test@breg.com").trim().toLowerCase();
+        } catch (e) {
+          return "test@breg.com";
+        }
+      }
+      function loadCostCenters() {
+        var email = currentUserEmail();
+        var source = DEFAULT_COST_CENTERS;
+        try {
+          var parsed = JSON.parse(localStorage.getItem(COST_CENTER_STORAGE_KEY) || "null");
+          if (Array.isArray(parsed) && parsed.length) source = parsed;
+        } catch (e) {}
+        return source.map(function (center) {
+          var buyers = Array.isArray(center && center.buyerEmails) ? center.buyerEmails : [];
+          return {
+            id: String(center && center.id || "").trim(),
+            name: String(center && center.name || "").trim(),
+            active: !(center && center.active === false),
+            buyerEmails: buyers.map(function (buyer) {
+              return String(buyer || "").trim().toLowerCase();
+            }).filter(Boolean)
+          };
+        }).filter(function (center) {
+          if (!center.id || !center.name || !center.active) return false;
+          return center.buyerEmails.indexOf(email) !== -1;
+        });
+      }
+      function loadSelectedCostCenterId() {
+        try {
+          return String(localStorage.getItem(CART_COST_CENTER_KEY) || "").trim();
+        } catch (e) {
+          return "";
+        }
+      }
+      function saveSelectedCostCenterId(id) {
+        try {
+          var value = String(id || "").trim();
+          if (!value) localStorage.removeItem(CART_COST_CENTER_KEY);
+          else localStorage.setItem(CART_COST_CENTER_KEY, value);
+        } catch (e) {}
+      }
+      function costCenterOptionsHtml() {
+        var selected = loadSelectedCostCenterId();
+        var centers = loadCostCenters();
+        var options = "<option value=''>None</option>";
+        var hasSelected = false;
+        centers.forEach(function (center) {
+          var isSelected = selected && selected.toLowerCase() === String(center.id).toLowerCase();
+          if (isSelected) hasSelected = true;
+          options += "<option value='" + escapeHtml(center.id) + "'" + (isSelected ? " selected" : "") + ">"
+            + escapeHtml(center.id + " — " + center.name)
+            + "</option>";
+        });
+        if (selected && !hasSelected) {
+          saveSelectedCostCenterId("");
+        }
+        return {
+          options: options,
+          count: centers.length
+        };
       }
       function loadSaved() {
         try {
@@ -1100,6 +1222,7 @@
         var saved = loadSaved();
         var totalQty = 0;
         var total = 0;
+        var costCenterOptions = costCenterOptionsHtml();
         cart.forEach(function (line) {
           totalQty += Number(line.qty || 0);
           total += Number(line.qty || 0) * Number(line.price || 0);
@@ -1208,6 +1331,13 @@
             "</section>" +
             "<aside class='cart-right'>" +
               "<div class='cart-summary'>" +
+                (costCenterOptions.count
+                  ? "<div class='cart-cost-center'>" +
+                      "<label class='cart-cost-center-label' for='cartCostCenterSelect'>Cost center <span class='optional'>(optional)</span></label>" +
+                      "<select id='cartCostCenterSelect' class='cart-cost-center-select'>" + costCenterOptions.options + "</select>" +
+                      "<p class='cart-cost-center-hint'>Only cost centers where you are a buyer are listed.</p>" +
+                    "</div>"
+                  : "") +
                 "<a class='cart-checkout-btn' href='checkout.html'>Proceed to Checkout</a>" +
                 "<ul class='cart-summary-lines'>" +
                   "<li><span>Items:</span><span>$" + BregFormatMoney(total) + "</span></li>" +
@@ -1243,6 +1373,10 @@
         $item.find(".cart-list-btn-text").text(count ? (count === 1 ? "Saved to List" : "Saved to Lists") : "Add to List");
         renderItemListPopover($item.find(".cart-list-wrap"), line);
       }
+
+      $(document).on("change", "#cartCostCenterSelect", function () {
+        saveSelectedCostCenterId($(this).val());
+      });
 
       $(document).on("click", ".cart-qty-dec", function () {
         var idx = Number($(this).attr("data-index"));

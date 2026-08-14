@@ -9,6 +9,7 @@
     "bregAccountName",
     "bregUserEmail",
     "bregUserPhone",
+    "bregUserRole",
     "bregOrgAccountNumber"
   ];
   var isFileProtocol = String(window.location.protocol || "") === "file:";

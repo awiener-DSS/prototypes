@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="assets/auth-gate.js?v=20260716i"></script>
+  <script src="assets/auth-gate.js?v=20260814a"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store Redesigned - Home</title>
   <link rel="icon" href="assets/breg-logo-header.png">
@@ -109,6 +109,22 @@
       width: 100%;
       margin: 0;
       align-items: stretch;
+    }
+    @media (min-width: 1200px) {
+      .home-modules-first-row .home-modules-row-inner.is-sparse {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        grid-template-columns: none;
+      }
+      .home-modules-first-row .home-modules-row-inner.is-sparse > .product-section {
+        flex: 0 1 calc((100% - 36px) / 3);
+        width: calc((100% - 36px) / 3);
+        max-width: calc((100% - 36px) / 3);
+      }
+      .home-modules-first-row .home-modules-row-inner.is-sparse[data-visible-count="1"] > .product-section {
+        flex-basis: calc((100% - 36px) / 3);
+      }
     }
     .home-modules-first-row .product-section {
       background: #fff;
@@ -686,7 +702,7 @@
         </div>
       </div>
     </div>
-    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
   </header>
 
   <section class="hero-wrap" aria-label="Featured promotion">
@@ -755,7 +771,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260729c"></script>
+  <script src="assets/shell.js?v=20260814g"></script>
   <script src="analysis/catalog-data.js?v=20260218b"></script>
   <script src="analysis/variant-data.js?v=20260218a"></script>
   <script src="assets/product-facets.js?v=20260609a"></script>
@@ -1126,15 +1142,60 @@
         });
       }
 
-      function syncSignedInHomeModules() {
-        $("#homePreviousOrdersModule").removeClass("is-hidden").show();
-        $("#homePickUpModule").removeClass("is-hidden").show();
-        $("#homeTemplatesModule").removeClass("is-hidden").show();
+      function canShowHomeFavorites() {
+        var signedIn = window.BregSessionAuth
+          ? window.BregSessionAuth.isSignedIn()
+          : localStorage.getItem("bregSignedIn") === "true";
+        if (!signedIn) return true;
+        if (window.BregRoleAccess && typeof window.BregRoleAccess.canUseFavorites === "function") {
+          return window.BregRoleAccess.canUseFavorites();
+        }
+        try {
+          var perms = window.BregRoleAccess && typeof window.BregRoleAccess.permissions === "function"
+            ? window.BregRoleAccess.permissions()
+            : null;
+          if (perms && typeof perms.favorites === "boolean") return !!perms.favorites;
+        } catch (e) {}
+        return true;
+      }
+
+      function syncFirstRowModuleLayout() {
+        var $section = $(".home-modules-first-row").first();
+        var row = document.querySelector(".home-modules-first-row .home-modules-row-inner");
+        if (!$section.length) return;
+        var visibleCount = $("#homePickUpModule, #homeTemplatesModule, #homePreviousOrdersModule").filter(":visible").length;
+        $section.toggle(visibleCount > 0);
+        if (!row) return;
+        var sparse = visibleCount > 0 && visibleCount < 3;
+        row.classList.toggle("is-sparse", sparse);
+        if (sparse) {
+          row.setAttribute("data-visible-count", String(visibleCount));
+        } else {
+          row.removeAttribute("data-visible-count");
+        }
+      }
+
+      function syncSignedInHomeModules(sections) {
+        var data = sections || {};
+        var pickUpCount = Array.isArray(data.pickUpGrid) ? data.pickUpGrid.length : $("#pickUpGrid .p-card").length;
+        var favoriteCount = Array.isArray(data.templatesGrid) ? data.templatesGrid.length : $("#templatesGrid .p-card").length;
+        var orderCount = Array.isArray(data.previousOrdersList)
+          ? data.previousOrdersList.length
+          : $("#previousOrdersList .home-order-row").length;
+
+        var showPickUp = pickUpCount > 0;
+        var showFavorites = canShowHomeFavorites() && favoriteCount > 0;
+        var showOrders = orderCount > 0;
+
+        $("#homePickUpModule").toggleClass("is-hidden", !showPickUp).toggle(showPickUp);
+        $("#homeTemplatesModule").toggleClass("is-hidden", !showFavorites).toggle(showFavorites);
+        $("#homePreviousOrdersModule").toggleClass("is-hidden", !showOrders).toggle(showOrders);
         $("#homeSignedInSecondRow").addClass("is-visible").show();
+        syncFirstRowModuleLayout();
       }
 
       function syncFirstRowModuleHeights() {
-        var $modules = $("#homePickUpModule, #homeTemplatesModule, #homePreviousOrdersModule");
+        var $modules = $("#homePickUpModule, #homeTemplatesModule, #homePreviousOrdersModule").filter(":visible");
         var row = document.querySelector(".home-modules-first-row .home-modules-row-inner");
         if (!$modules.length || !row) return;
         $modules.css("height", "");
@@ -1157,13 +1218,17 @@
       renderPreviousOrders(sections.previousOrdersList || []);
       renderGrid("topRatedGridSignedIn", sections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
       initCarousels();
-      syncSignedInHomeModules();
+      syncSignedInHomeModules(sections);
       syncFirstRowModuleHeights();
+      window.BregHome = window.BregHome || {};
+      window.BregHome.syncFirstRowModules = function () {
+        syncSignedInHomeModules(buildSectionsFromCatalog());
+        syncFirstRowModuleHeights();
+      };
       if (window.BregAuth && typeof window.BregAuth.syncHomeLoginPanel === "function") {
         window.BregAuth.syncHomeLoginPanel();
       }
       function refreshHomeModules() {
-        syncSignedInHomeModules();
         var nextSections = buildSectionsFromCatalog();
         renderGrid("pickUpGrid", nextSections.pickUpGrid || []);
         renderListGrid("templatesGrid", nextSections.templatesGrid || []);
@@ -1171,6 +1236,7 @@
         renderPreviousOrders(nextSections.previousOrdersList || []);
         renderGrid("topRatedGridSignedIn", nextSections.topRatedGridSignedIn || [], sectionLimit("topRatedGridSignedIn", 6));
         initCarousels();
+        syncSignedInHomeModules(nextSections);
         syncFirstRowModuleHeights();
       }
 

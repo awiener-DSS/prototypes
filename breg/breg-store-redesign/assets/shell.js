@@ -59,10 +59,8 @@
   var $allToggle = $(".sub-nav-inner .sub-nav-link").filter(function () {
     return $(this).find(".glyphicon-menu-hamburger").length > 0;
   }).first();
-  var $subNavQuickOrder = $(".sub-nav-inner > .sub-nav-link.quick-order").first();
-  if ($allToggle.length && $subNavQuickOrder.length) {
-    $subNavQuickOrder.insertAfter($allToggle);
-  }
+  // Quick Order lives on the search/actions row only — remove any leftover category-row link.
+  $(".sub-nav-inner > .sub-nav-link.quick-order").remove();
   var allToggleOriginalHtml = $allToggle.length ? $allToggle.html() : "";
   var $allDrawerOverlay = $();
   var allMenuState = { expandedParent: null };
@@ -1272,6 +1270,345 @@
     });
   }
 
+  var KNOWN_USER_ROLES = [
+    "Account Admin",
+    "Cost Center Manager",
+    "Approver",
+    "Buyer",
+    "View Only"
+  ];
+
+  var ROLE_PERMISSIONS = {
+    "Account Admin": {
+      favorites: true,
+      pendingOrders: true,
+      ordersToApprove: true,
+      invoices: true,
+      orderHistory: true,
+      profileSettings: true,
+      savedAddresses: true,
+      savedPayment: true,
+      addUsers: true,
+      costCenters: true,
+      accountAdministrators: true,
+      quickOrder: true,
+      purchasing: true
+    },
+    "Buyer": {
+      favorites: true,
+      pendingOrders: true,
+      ordersToApprove: false,
+      invoices: true,
+      orderHistory: true,
+      profileSettings: true,
+      savedAddresses: true,
+      savedPayment: true,
+      addUsers: false,
+      costCenters: false,
+      accountAdministrators: true,
+      quickOrder: true,
+      purchasing: true
+    },
+    "Approver": {
+      favorites: false,
+      pendingOrders: true,
+      ordersToApprove: true,
+      invoices: true,
+      orderHistory: false,
+      profileSettings: true,
+      savedAddresses: false,
+      savedPayment: false,
+      addUsers: false,
+      costCenters: false,
+      accountAdministrators: true,
+      quickOrder: true,
+      purchasing: true
+    },
+    "Cost Center Manager": {
+      favorites: false,
+      pendingOrders: false,
+      ordersToApprove: false,
+      invoices: true,
+      orderHistory: false,
+      profileSettings: true,
+      savedAddresses: false,
+      savedPayment: false,
+      addUsers: false,
+      costCenters: true,
+      accountAdministrators: true,
+      quickOrder: true,
+      purchasing: true
+    },
+    "View Only": {
+      favorites: true,
+      pendingOrders: false,
+      ordersToApprove: false,
+      invoices: true,
+      orderHistory: true,
+      profileSettings: true,
+      savedAddresses: false,
+      savedPayment: false,
+      addUsers: false,
+      costCenters: false,
+      accountAdministrators: true,
+      quickOrder: false,
+      purchasing: false
+    }
+  };
+
+  function normalizeUserRole(raw) {
+    var value = String(raw || "").trim().toLowerCase();
+    if (!value) return "";
+    if (value.indexOf("account admin") !== -1 || value === "admin" || value === "administrator" || value.indexOf("account administrator") !== -1) {
+      return "Account Admin";
+    }
+    if (value.indexOf("cost center manager") !== -1 || value === "cc manager" || value === "cc_manager") {
+      return "Cost Center Manager";
+    }
+    if (value.indexOf("approver") !== -1) return "Approver";
+    if (value.indexOf("view only") !== -1 || value === "view-only") return "View Only";
+    if (value.indexOf("buyer") !== -1 || value === "user") return "Buyer";
+    return "";
+  }
+
+  function parseUserRoles(raw) {
+    var source = String(raw == null ? "" : raw).trim();
+    var parts = [];
+    if (!source) return ["Account Admin"];
+    if (source.charAt(0) === "[") {
+      try {
+        var parsed = JSON.parse(source);
+        if (Array.isArray(parsed)) {
+          parts = parsed;
+        }
+      } catch (e) {
+        parts = [];
+      }
+    } else {
+      parts = source.split(/[|,;]+/);
+    }
+    var roles = [];
+    parts.forEach(function (part) {
+      var role = normalizeUserRole(part);
+      if (role && roles.indexOf(role) === -1) roles.push(role);
+    });
+    if (!roles.length) {
+      var fallback = normalizeUserRole(source);
+      roles = [fallback || "Account Admin"];
+    }
+    return roles;
+  }
+
+  function readStoredUserRoles() {
+    try {
+      return parseUserRoles(localStorage.getItem("bregUserRole") || "Account Admin");
+    } catch (e) {
+      return ["Account Admin"];
+    }
+  }
+
+  function readStoredUserRole() {
+    return readStoredUserRoles()[0] || "Account Admin";
+  }
+
+  function emptyPermissions() {
+    return {
+      roles: [],
+      favorites: false,
+      pendingOrders: false,
+      ordersToApprove: false,
+      invoices: false,
+      orderHistory: false,
+      profileSettings: false,
+      savedAddresses: false,
+      savedPayment: false,
+      addUsers: false,
+      costCenters: false,
+      accountAdministrators: false,
+      quickOrder: false,
+      purchasing: false
+    };
+  }
+
+  function getNavPermissionsForRoles(roleLabels) {
+    var roles = Array.isArray(roleLabels) ? roleLabels.slice() : parseUserRoles(roleLabels);
+    var perms = emptyPermissions();
+    perms.roles = roles;
+    roles.forEach(function (role) {
+      var map = ROLE_PERMISSIONS[role];
+      if (!map) return;
+      Object.keys(map).forEach(function (key) {
+        if (map[key]) perms[key] = true;
+      });
+    });
+    return perms;
+  }
+
+  function getNavPermissionsForRole(roleLabel) {
+    return getNavPermissionsForRoles(roleLabel);
+  }
+
+  function currentNavPermissions() {
+    if (!isSignedIn) return getNavPermissionsForRoles(["Account Admin"]);
+    return getNavPermissionsForRoles(readStoredUserRoles());
+  }
+
+  function accountLinkPermissionKey(href, label) {
+    var path = String(href || "").split("?")[0].split("#")[0].split("/").pop().toLowerCase();
+    var text = String(label || "").trim().toLowerCase();
+    if (path === "my-favorites.html" || path === "favorites.html" || text.indexOf("favorite") !== -1) return "favorites";
+    if (path === "pending-orders.html" || text.indexOf("pending") !== -1 || text.indexOf("orders to approve") !== -1) return "pendingOrders";
+    if (path === "invoices.html" || text === "invoices") return "invoices";
+    if (path === "order-history.html" || text.indexOf("order history") !== -1 || text === "your orders") return "orderHistory";
+    if (path === "profile-settings.html" || text.indexOf("profile") !== -1) return "profileSettings";
+    if (path === "saved-addresses.html" || text.indexOf("saved addresses") !== -1) return "savedAddresses";
+    if (path === "saved-payment.html" || text.indexOf("saved payment") !== -1) return "savedPayment";
+    if (path === "add-users.html" || text.indexOf("add users") !== -1 || text.indexOf("team members") !== -1) return "addUsers";
+    if (path === "cost-centers.html" || text.indexOf("cost center") !== -1) return "costCenters";
+    if (text.indexOf("account administrator") !== -1) return "accountAdministrators";
+    if (path === "quick-order.html" || text.indexOf("quick order") !== -1) return "quickOrder";
+    return "";
+  }
+
+  function ensureRoleRestrictionStyles() {
+    if (document.getElementById("bregRoleRestrictionStyles")) return;
+    var style = document.createElement("style");
+    style.id = "bregRoleRestrictionStyles";
+    style.textContent = ""
+      + "body.breg-no-purchase .top-quick-order-link,"
+      + "body.breg-no-purchase .scroll-quick-order-btn,"
+      + "body.breg-no-purchase .js-quick-order-link{display:none !important;}"
+      + "body.breg-no-purchase .pdp-top-cart-btn,"
+      + "body.breg-no-purchase #stickyAddToCartBtn,"
+      + "body.breg-no-purchase #topAddToCartBtn,"
+      + "body.breg-no-purchase .js-card-hover-add,"
+      + "body.breg-no-purchase .preview-item-add,"
+      + "body.breg-no-purchase .preview-btn-add-selected,"
+      + "body.breg-no-purchase .accessories-add-btn,"
+      + "body.breg-no-purchase .pdp-mobile-sticky-cart-btn,"
+      + "body.breg-no-purchase [data-add-to-cart],"
+      + "body.breg-no-purchase .js-add-to-cart{display:none !important;}"
+      + "body.breg-no-purchase .cart-box{pointer-events:none;opacity:.45;}"
+      + "body.breg-no-favorites .js-heart-toggle,"
+      + "body.breg-no-favorites .p-heart-btn,"
+      + "body.breg-no-favorites .pdp-heart-btn,"
+      + "body.breg-no-favorites #topHeartBtn,"
+      + "body.breg-no-favorites .pdp-list-btn,"
+      + "body.breg-no-favorites #topListBtn,"
+      + "body.breg-no-favorites .pdp-list-wrap,"
+      + "body.breg-no-favorites .cart-heart-btn,"
+      + "body.breg-no-favorites .cart-list-btn,"
+      + "body.breg-no-favorites .cart-list-wrap,"
+      + "body.breg-no-favorites #cartAddAllToListBtn,"
+      + "body.breg-no-favorites #bulkSaveListBtn,"
+      + "body.breg-no-favorites #confirmListPickerSaveBtn,"
+      + "body.breg-no-favorites .js-add-to-list,"
+      + "body.breg-no-favorites [data-add-to-list],"
+      + "body.breg-no-favorites #homeTemplatesModule,"
+      + "body.breg-no-favorites .home-templates-module{display:none !important;}"
+      + "body.breg-role-toast::after{content:attr(data-role-toast);position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:14000;background:#0f1111;color:#fff;padding:10px 14px;border-radius:999px;font-size:13px;box-shadow:0 10px 24px rgba(0,0,0,.24);max-width:min(420px,92vw);text-align:center;}";
+    document.head.appendChild(style);
+  }
+
+  function showRoleToast(message) {
+    ensureRoleRestrictionStyles();
+    document.body.setAttribute("data-role-toast", String(message || "You do not have access to this action."));
+    document.body.classList.add("breg-role-toast");
+    window.clearTimeout(showRoleToast._timer);
+    showRoleToast._timer = window.setTimeout(function () {
+      document.body.classList.remove("breg-role-toast");
+    }, 2600);
+  }
+
+  function showPurchaseBlockedToast() {
+    showRoleToast("Your role is View Only. Purchasing and Quick Order are not available.");
+  }
+
+  function showFavoritesBlockedToast() {
+    showRoleToast("Your role does not include My Favorites. Saving to lists is not available.");
+  }
+
+  function canUseFavorites() {
+    if (!isSignedIn) return false;
+    return !!currentNavPermissions().favorites;
+  }
+
+  function applyPurchasingRestrictions(permissions) {
+    ensureRoleRestrictionStyles();
+    var canPurchase = !isSignedIn || !!permissions.purchasing;
+    var canQuickOrder = !isSignedIn || !!permissions.quickOrder;
+    var canFavorites = !isSignedIn || !!permissions.favorites;
+    document.body.classList.toggle("breg-no-purchase", isSignedIn && !canPurchase);
+    document.body.classList.toggle("breg-no-favorites", isSignedIn && !permissions.favorites);
+    $(".top-quick-order-link, .scroll-quick-order-btn, a.js-quick-order-link").not(".sub-nav-link").toggle(canQuickOrder);
+    $(".cart-box").toggleClass("is-disabled", isSignedIn && !canPurchase);
+    // Keep favorites controls hidden for restricted roles even if re-rendered later.
+    if (isSignedIn && !permissions.favorites) {
+      $(".js-heart-toggle, .p-heart-btn, .pdp-heart-btn, #topHeartBtn, .pdp-list-btn, #topListBtn, .pdp-list-wrap, .cart-heart-btn, .cart-list-btn, .cart-list-wrap, #cartAddAllToListBtn, #bulkSaveListBtn, #confirmListPickerSaveBtn").hide();
+      $("#homeTemplatesModule, .home-templates-module").hide();
+    }
+    if (window.BregHome && typeof window.BregHome.syncFirstRowModules === "function") {
+      window.BregHome.syncFirstRowModules();
+    }
+  }
+
+  function applyRoleNavVisibility() {
+    var permissions = currentNavPermissions();
+    var $links = $accountDropdown.find("a.account-link")
+      .add($("#allDrawer a"))
+      .add($(".all-menu a"))
+      .add($("a.account-tile"))
+      .add($(".top-quick-order-link"))
+      .add($(".scroll-quick-order-btn"));
+    $links.each(function () {
+      var $link = $(this);
+      if ($link.attr("id") === "accountSignoutLink") {
+        $link.show();
+        return;
+      }
+      var key = accountLinkPermissionKey($link.attr("href"), $link.text());
+      if (!key && ($link.hasClass("js-quick-order-link") || $link.hasClass("top-quick-order-link") || $link.hasClass("scroll-quick-order-btn"))) {
+        key = "quickOrder";
+      }
+      if (!key) return;
+      var allowed = !isSignedIn || !!permissions[key];
+      $link.toggle(allowed);
+      $link.closest("li").toggle(allowed);
+    });
+
+    $(".account-section").each(function () {
+      var $section = $(this);
+      var $tiles = $section.find("a.account-tile");
+      if (!$tiles.length) return;
+      $section.toggle($tiles.filter(":visible").length > 0);
+    });
+
+    $accountDropdown.find(".account-col").each(function () {
+      var $col = $(this);
+      var title = $.trim($col.find(".account-col-title").first().text()).toLowerCase();
+      if (title === "my favorites") {
+        $col.toggle(!isSignedIn || !!permissions.favorites);
+      }
+    });
+
+    // Approver / Account Admin: Orders to Approve dashboard widget
+    $(".dashboard-card").filter(function () {
+      return $.trim($(this).find(".dashboard-title").first().text()).toLowerCase().indexOf("orders to approve") !== -1
+        || $(this).find("a[href*='pending-orders.html']").length > 0;
+    }).toggle(!!isSignedIn && !!permissions.ordersToApprove);
+
+    applyPurchasingRestrictions(permissions);
+  }
+
+  window.BregRoleAccess = {
+    parseRoles: parseUserRoles,
+    readRoles: readStoredUserRoles,
+    permissions: currentNavPermissions,
+    knownRoles: KNOWN_USER_ROLES.slice(),
+    canUseFavorites: canUseFavorites,
+    showFavoritesBlockedToast: showFavoritesBlockedToast
+  };
+
   function ensureAccountSignoutInMyAccount() {
     if (!$accountDropdown.length) return;
 
@@ -1628,10 +1965,24 @@
 
   function syncHomeLoginPanel() {
     $("#homeLoginPanel").removeClass("show");
-    $("#homePreviousOrdersModule").removeClass("is-hidden").show();
-    $("#homePickUpModule").removeClass("is-hidden").show();
-    $("#homeTemplatesModule").removeClass("is-hidden").show();
     $("#homeSignedInSecondRow").addClass("is-visible").show();
+    if (window.BregHome && typeof window.BregHome.syncFirstRowModules === "function") {
+      window.BregHome.syncFirstRowModules();
+      return;
+    }
+    if (isSignedIn && !currentNavPermissions().favorites) {
+      $("#homeTemplatesModule").addClass("is-hidden").hide();
+    }
+    var $row = $(".home-modules-first-row .home-modules-row-inner").first();
+    var $section = $(".home-modules-first-row").first();
+    if ($row.length) {
+      var visibleCount = $("#homePickUpModule, #homeTemplatesModule, #homePreviousOrdersModule").filter(":visible").length;
+      $section.toggle(visibleCount > 0);
+      var sparse = visibleCount > 0 && visibleCount < 3;
+      $row.toggleClass("is-sparse", sparse);
+      if (sparse) $row.attr("data-visible-count", String(visibleCount));
+      else $row.removeAttr("data-visible-count");
+    }
   }
 
   function performSignOut() {
@@ -1646,6 +1997,7 @@
       localStorage.removeItem("bregAccountName");
       localStorage.removeItem("bregUserEmail");
       localStorage.removeItem("bregUserPhone");
+      localStorage.removeItem("bregUserRole");
     }
     updateAccountStateUI();
     $accountDropdown.removeClass("open");
@@ -1806,6 +2158,7 @@
     }
     syncHomeLoginPanel();
     initAccountDropdownFavoritesLinks();
+    applyRoleNavVisibility();
   }
 
   function initAccountDropdownFavoritesLinks() {
@@ -2078,6 +2431,10 @@
     }
     if (title === "my favorites") {
       if (isSignedIn) {
+        if (!canUseFavorites()) {
+          showFavoritesBlockedToast();
+          return;
+        }
         window.location.href = "my-favorites.html";
         return;
       }
@@ -2098,6 +2455,23 @@
     var target = $(this).attr("href") || "order-history.html";
     window.location.href = "login.html?redirect=" + encodeURIComponent(target);
   });
+  $(document).on("click", "#topAddToCartBtn, #stickyAddToCartBtn, .pdp-top-cart-btn, .js-card-hover-add, .preview-item-add, .preview-btn-add-selected, .accessories-add-btn, .js-add-to-cart, [data-add-to-cart]", function (event) {
+    var permissions = currentNavPermissions();
+    if (isSignedIn && !permissions.purchasing) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      showPurchaseBlockedToast();
+    }
+  });
+
+  $(document).on("click", ".js-heart-toggle, .p-heart-btn, .pdp-heart-btn, #topHeartBtn, .pdp-list-btn, #topListBtn, .cart-heart-btn, .cart-list-btn, #cartAddAllToListBtn, #bulkSaveListBtn, #confirmListPickerSaveBtn, .js-add-to-list, [data-add-to-list]", function (event) {
+    if (!isSignedIn) return;
+    if (canUseFavorites()) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    showFavoritesBlockedToast();
+  });
+
   $cartLink.on("click", function (event) {
     if (isSignedIn) return;
     event.preventDefault();
@@ -2107,6 +2481,11 @@
   $(document).on("click", "a.js-quick-order-link, a.quick-order", function (event) {
     if ($(this).closest(".sub-nav-inner").length) return;
     event.preventDefault();
+    var permissions = currentNavPermissions();
+    if (isSignedIn && !permissions.quickOrder) {
+      showPurchaseBlockedToast();
+      return;
+    }
     if ($(this).closest("#allDropdown").length) closeAllDropdown();
     openQuickOrderModal();
   });
@@ -2117,11 +2496,6 @@
     }
     var label = $.trim($(this).text()).replace(/\s+/g, " ");
     if (!label || label === "All") return;
-    if (label === "Quick Order") {
-      event.preventDefault();
-      openQuickOrderModal();
-      return;
-    }
     event.preventDefault();
     trackRecentCategory(label);
     window.location.href = categoryPageHref(label);
@@ -2720,6 +3094,10 @@
   }
 
   function toggleFavoriteSku(listName, item) {
+    if (isSignedIn && !canUseFavorites()) {
+      showFavoritesBlockedToast();
+      return false;
+    }
     var meta = normalizeFavoriteMeta(item);
     if (!meta) return false;
     var lists = readFavoriteLists();
@@ -2774,6 +3152,10 @@
     return favoriteListItems(FAVORITES_SHOPPING_LIST);
   };
   window.BregFavorites.addToList = function (listName, item) {
+    if (isSignedIn && !canUseFavorites()) {
+      showFavoritesBlockedToast();
+      return false;
+    }
     var meta = normalizeFavoriteMeta(item);
     if (!meta) return false;
     var lists = readFavoriteLists();
@@ -2786,6 +3168,10 @@
     return true;
   };
   window.BregFavorites.removeFromList = function (listName, sku) {
+    if (isSignedIn && !canUseFavorites()) {
+      showFavoritesBlockedToast();
+      return false;
+    }
     var key = String(sku || "").trim();
     if (!key) return false;
     var lists = readFavoriteLists();

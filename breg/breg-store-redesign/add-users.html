@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="assets/auth-gate.js?v=20260716i"></script>
+  <script src="assets/auth-gate.js?v=20260814a"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Add Users</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -145,11 +145,55 @@
     .role-badge.approver { background: #eef2ff; color: #3538cd; }
     .role-badge.buyer { background: #ecfdf3; color: #067647; }
     .role-badge.view-only { background: #f0f1f3; color: #565959; }
+    .role-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .role-checkboxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 12px;
+      margin-top: 2px;
+    }
+    .role-check {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-size: 13px;
+      color: #0f1111;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .role-check input {
+      margin: 0;
+      width: 16px;
+      height: 16px;
+      flex: 0 0 auto;
+    }
+    .role-multi-hint {
+      margin: 8px 0 0;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.4;
+    }
     .table-action {
       color: #007185;
       text-decoration: none;
-      margin-right: 10px;
-      font-size: 14px;
+      margin-right: 0;
+      font-size: 20px;
+      line-height: 1;
+    }
+    .table-action .glyphicon {
+      top: 0;
+    }
+    .users-table td:last-child {
+      white-space: nowrap;
+    }
+    .users-table td:last-child .table-action + .table-action {
+      margin-left: 14px;
     }
     .table-action:last-child { margin-right: 0; }
     .table-action:hover,.table-action:focus { color: #c7511f; text-decoration: none; }
@@ -189,6 +233,28 @@
       line-height: 1.55;
     }
     .permissions-col .role-badge { margin-bottom: 2px; }
+    .users-access-denied {
+      display: none;
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 28px 22px;
+      margin: 0 0 18px;
+      text-align: center;
+    }
+    .users-access-title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .users-access-copy {
+      margin: 0;
+      font-size: 14px;
+      color: #565959;
+      line-height: 1.45;
+    }
     @media (max-width: 1199px) {
       .users-title { font-size: 30px; }
       .users-subtitle { font-size: 14px; }
@@ -317,7 +383,7 @@
       }
       .users-table tbody .table-action {
         margin-right: 0;
-        font-size: 16px;
+        font-size: 20px;
       }
     }
     .budget-value {
@@ -641,7 +707,7 @@
         </div>
       </div>
     </div>
-    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
   </header>
 
   <main class="site-max">
@@ -655,6 +721,12 @@
         <a class="users-invite-btn" href="#" id="inviteUserBtn"><span class="glyphicon glyphicon-user"></span>+ Create User</a>
       </div>
 
+      <div class="users-access-denied" id="usersAccessDenied">
+        <h2 class="users-access-title">Access restricted</h2>
+        <p class="users-access-copy">Your role does not include permission to manage users. Contact an Account Admin if you need access.</p>
+      </div>
+
+      <div id="usersManageContent">
       <div class="users-search-wrap">
         <span class="glyphicon glyphicon-search"></span>
         <input id="usersSearch" class="users-search" type="text" placeholder="Search by name, email, or role...">
@@ -673,10 +745,10 @@
             </tr>
           </thead>
           <tbody id="usersTableBody">
-            <tr data-email="john.smith@medicalclinic.com" data-first-name="John" data-last-name="Smith" data-department="Administration" data-phone="(555) 100-1001" data-search="john smith john.smith@medicalclinic.com account admin administration">
+            <tr data-email="john.smith@medicalclinic.com" data-first-name="John" data-last-name="Smith" data-department="Administration" data-phone="(555) 100-1001" data-roles="Account Admin" data-search="john smith john.smith@medicalclinic.com account admin administration">
               <td><span class="user-id">JS</span><span class="user-name">John Smith</span></td>
               <td>john.smith@medicalclinic.com</td>
-              <td><span class="role-badge account-admin">Account Admin</span></td>
+              <td class="js-roles-cell"><div class="role-badges"><span class="role-badge account-admin">Account Admin</span></div></td>
               <td class="js-budget-cell"></td>
               <td>Jan 14, 2024</td>
               <td>
@@ -684,10 +756,10 @@
                 <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
               </td>
             </tr>
-            <tr data-email="sarah.j@medicalclinic.com" data-first-name="Sarah" data-last-name="Johnson" data-department="Orthopedics" data-phone="(555) 100-1002" data-search="sarah johnson sarah.j@medicalclinic.com cost center manager orthopedics">
+            <tr data-email="sarah.j@medicalclinic.com" data-first-name="Sarah" data-last-name="Johnson" data-department="Orthopedics" data-phone="(555) 100-1002" data-roles="Cost Center Manager" data-search="sarah johnson sarah.j@medicalclinic.com cost center manager orthopedics">
               <td><span class="user-id">SJ</span><span class="user-name">Sarah Johnson</span></td>
               <td>sarah.j@medicalclinic.com</td>
-              <td><span class="role-badge cc-manager">Cost Center Manager</span></td>
+              <td class="js-roles-cell"><div class="role-badges"><span class="role-badge cc-manager">Cost Center Manager</span></div></td>
               <td class="js-budget-cell"></td>
               <td>Mar 19, 2024</td>
               <td>
@@ -695,10 +767,10 @@
                 <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
               </td>
             </tr>
-            <tr data-email="mchen@medicalclinic.com" data-first-name="Michael" data-last-name="Chen" data-department="Sports Medicine" data-phone="(555) 100-1003" data-search="michael chen mchen@medicalclinic.com approver sports medicine">
+            <tr data-email="mchen@medicalclinic.com" data-first-name="Michael" data-last-name="Chen" data-department="Sports Medicine" data-phone="(555) 100-1003" data-roles="Approver" data-search="michael chen mchen@medicalclinic.com approver sports medicine">
               <td><span class="user-id">MC</span><span class="user-name">Michael Chen</span></td>
               <td>mchen@medicalclinic.com</td>
-              <td><span class="role-badge approver">Approver</span></td>
+              <td class="js-roles-cell"><div class="role-badges"><span class="role-badge approver">Approver</span></div></td>
               <td class="js-budget-cell"></td>
               <td>May 9, 2024</td>
               <td>
@@ -706,10 +778,10 @@
                 <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
               </td>
             </tr>
-            <tr data-email="emily.davis@medicalclinic.com" data-first-name="Emily" data-last-name="Davis" data-department="Outpatient Clinic" data-phone="(555) 100-1004" data-search="emily davis emily.davis@medicalclinic.com buyer outpatient clinic">
+            <tr data-email="emily.davis@medicalclinic.com" data-first-name="Emily" data-last-name="Davis" data-department="Outpatient Clinic" data-phone="(555) 100-1004" data-roles="Buyer" data-search="emily davis emily.davis@medicalclinic.com buyer outpatient clinic">
               <td><span class="user-id">ED</span><span class="user-name">Emily Davis</span></td>
               <td>emily.davis@medicalclinic.com</td>
-              <td><span class="role-badge buyer">Buyer</span></td>
+              <td class="js-roles-cell"><div class="role-badges"><span class="role-badge buyer">Buyer</span></div></td>
               <td class="js-budget-cell"></td>
               <td>Dec 7, 2024</td>
               <td>
@@ -717,10 +789,10 @@
                 <a class="table-action delete js-delete-user" href="#"><span class="glyphicon glyphicon-trash"></span></a>
               </td>
             </tr>
-            <tr data-email="alex.rivera@medicalclinic.com" data-first-name="Alex" data-last-name="Rivera" data-department="" data-phone="" data-search="alex rivera alex.rivera@medicalclinic.com view only">
+            <tr data-email="alex.rivera@medicalclinic.com" data-first-name="Alex" data-last-name="Rivera" data-department="" data-phone="" data-roles="View Only" data-search="alex rivera alex.rivera@medicalclinic.com view only">
               <td><span class="user-id">AR</span><span class="user-name">Alex Rivera</span></td>
               <td>alex.rivera@medicalclinic.com</td>
-              <td><span class="role-badge view-only">View Only</span></td>
+              <td class="js-roles-cell"><div class="role-badges"><span class="role-badge view-only">View Only</span></div></td>
               <td class="js-budget-cell"></td>
               <td>Feb 3, 2025</td>
               <td>
@@ -739,48 +811,44 @@
           <div class="permissions-col">
             <span class="role-badge buyer">Buyer</span>
             <ul>
-              <li>Manage purchases (including requisitions, order templates and orders)</li>
+              <li>Your Account, My Favorites, Pending &amp; Rejected Orders, Invoices, Order History</li>
+              <li>Profile Settings, Saved Addresses, Saved Payment Information</li>
+              <li>Manage purchases (cart and Quick Order)</li>
             </ul>
           </div>
           <div class="permissions-col">
             <span class="role-badge approver">Approver</span>
             <ul>
-              <li>Approve pending requisitions</li>
-              <li>Assign a cost object to a cart</li>
-              <li>Assign a cost object to a line item in a cart</li>
-              <li>Manage purchases (incl. requisitions, order templates and orders)</li>
-              <li>View cost objects</li>
+              <li>Your Account, Invoices, Pending &amp; Rejected Orders, Profile Settings</li>
+              <li>Orders to Approve</li>
             </ul>
           </div>
           <div class="permissions-col">
             <span class="role-badge view-only">View Only</span>
             <ul>
-              <li>View Invoices, Order Templates and Order History</li>
+              <li>Your Account, My Favorites, Invoices, Order History, Profile Settings</li>
+              <li>Cannot add to cart or use Quick Order</li>
+              <li>Cannot be combined with other roles</li>
             </ul>
           </div>
           <div class="permissions-col">
             <span class="role-badge account-admin">Account Admin</span>
             <ul>
-              <li>Activate/deactivate cost objects</li>
+              <li>Full account access, including Add Users and Cost Centers</li>
               <li>Approve pending requisitions</li>
-              <li>Assign a cost object to a cart or line item</li>
-              <li>Assign / unassign users to cost objects</li>
-              <li>Create, edit, and delete cost objects and cost object types</li>
-              <li>Manage cost centers</li>
-              <li>Manage purchases (incl. requisitions, order templates and orders)</li>
-              <li>Manage users</li>
-              <li>View cost centers, cost objects, and cost object types</li>
+              <li>Manage users (users may have multiple roles)</li>
             </ul>
           </div>
           <div class="permissions-col">
             <span class="role-badge cc-manager">Cost Center Manager</span>
             <ul>
-              <li>Manage cost centers</li>
-              <li>View cost centers</li>
+              <li>Your Account, Invoices, Profile Settings</li>
+              <li>View and manage cost centers</li>
             </ul>
           </div>
         </div>
       </section>
+      </div>
     </div>
   </main>
 
@@ -814,14 +882,15 @@
               <input id="editUserPhone" class="user-input" type="tel" maxlength="40">
             </div>
             <div class="user-field full">
-              <label class="user-label" for="editUserRole">Role <span class="req">*</span></label>
-              <select id="editUserRole" class="user-select">
-                <option value="Buyer">Buyer</option>
-                <option value="Approver">Approver</option>
-                <option value="View Only">View Only</option>
-                <option value="Account Admin">Account Admin</option>
-                <option value="Cost Center Manager">Cost Center Manager</option>
-              </select>
+              <span class="user-label">Roles <span class="req">*</span></span>
+              <div class="role-checkboxes" id="editUserRoles" role="group" aria-label="User roles">
+                <label class="role-check"><input type="checkbox" value="Buyer"> Buyer</label>
+                <label class="role-check"><input type="checkbox" value="Approver"> Approver</label>
+                <label class="role-check"><input type="checkbox" value="View Only"> View Only</label>
+                <label class="role-check"><input type="checkbox" value="Cost Center Manager"> Cost Center Manager</label>
+                <label class="role-check"><input type="checkbox" value="Account Admin"> Account Admin</label>
+              </div>
+              <p class="role-multi-hint">Select one or more roles. Permissions are combined across selected roles. View Only cannot be combined with other roles.</p>
             </div>
             <div class="user-section-label">Budget <span class="opt">(optional)</span></div>
             <div class="user-field">
@@ -883,15 +952,15 @@
               <input id="inviteUserPhone" class="user-input" type="tel" maxlength="40" placeholder="(555) 555-5555">
             </div>
             <div class="user-field full">
-              <label class="user-label" for="inviteUserRole">Role <span class="req">*</span></label>
-              <select id="inviteUserRole" class="user-select">
-                <option value="">Select a role</option>
-                <option value="Buyer">Buyer</option>
-                <option value="Approver">Approver</option>
-                <option value="View Only">View Only</option>
-                <option value="Cost Center Manager">Cost Center Manager</option>
-                <option value="Account Admin">Account Admin</option>
-              </select>
+              <span class="user-label">Roles <span class="req">*</span></span>
+              <div class="role-checkboxes" id="inviteUserRoles" role="group" aria-label="User roles">
+                <label class="role-check"><input type="checkbox" value="Buyer"> Buyer</label>
+                <label class="role-check"><input type="checkbox" value="Approver"> Approver</label>
+                <label class="role-check"><input type="checkbox" value="View Only"> View Only</label>
+                <label class="role-check"><input type="checkbox" value="Cost Center Manager"> Cost Center Manager</label>
+                <label class="role-check"><input type="checkbox" value="Account Admin"> Account Admin</label>
+              </div>
+              <p class="role-multi-hint">Select one or more roles. Permissions are combined across selected roles. View Only cannot be combined with other roles.</p>
             </div>
             <div class="user-section-label">Budget <span class="opt">(optional)</span></div>
             <div class="user-field">
@@ -943,7 +1012,7 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260729c"></script>
+  <script src="assets/shell.js?v=20260814g"></script>
   <script>
     (function () {
       var STORAGE_KEY = "breg_user_budget_limits_v1";
@@ -955,7 +1024,7 @@
       var $editEmail = $("#editUserEmail");
       var $editDepartment = $("#editUserDepartment");
       var $editPhone = $("#editUserPhone");
-      var $editRole = $("#editUserRole");
+      var $editRoles = $("#editUserRoles");
       var $editBudgetPerOrder = $("#editBudgetPerOrder");
       var $editBudgetPerPeriod = $("#editBudgetPerPeriod");
       var $editBudgetPeriod = $("#editBudgetPeriod");
@@ -965,7 +1034,7 @@
       var $inviteEmail = $("#inviteUserEmail");
       var $inviteDepartment = $("#inviteUserDepartment");
       var $invitePhone = $("#inviteUserPhone");
-      var $inviteRole = $("#inviteUserRole");
+      var $inviteRoles = $("#inviteUserRoles");
       var $inviteBudgetPerOrder = $("#inviteBudgetPerOrder");
       var $inviteBudgetPerPeriod = $("#inviteBudgetPerPeriod");
       var $inviteBudgetPeriod = $("#inviteBudgetPeriod");
@@ -974,6 +1043,111 @@
       var $currentEditRow = null;
       var $pendingDeleteRow = null;
       var budgetLimits = loadBudgets();
+      var KNOWN_ROLES = ["Buyer", "Approver", "View Only", "Cost Center Manager", "Account Admin"];
+
+      function normalizeRole(raw) {
+        var value = String(raw || "").trim().toLowerCase();
+        if (!value) return "";
+        if (value.indexOf("account admin") !== -1 || value === "admin" || value === "administrator") return "Account Admin";
+        if (value.indexOf("cost center manager") !== -1) return "Cost Center Manager";
+        if (value.indexOf("approver") !== -1) return "Approver";
+        if (value.indexOf("view only") !== -1) return "View Only";
+        if (value.indexOf("buyer") !== -1) return "Buyer";
+        return "";
+      }
+
+      function parseRoles(raw) {
+        if (window.BregRoleAccess && typeof window.BregRoleAccess.parseRoles === "function") {
+          return window.BregRoleAccess.parseRoles(raw);
+        }
+        var source = String(raw == null ? "" : raw).trim();
+        if (!source) return [];
+        var parts = source.indexOf("|") !== -1 ? source.split("|") : source.split(/[,;]+/);
+        var roles = [];
+        parts.forEach(function (part) {
+          var role = normalizeRole(part);
+          if (role && roles.indexOf(role) === -1) roles.push(role);
+        });
+        return roles;
+      }
+
+      function serializeRoles(roles) {
+        return (roles || []).join("|");
+      }
+
+      function getCheckedRoles($root) {
+        var roles = [];
+        var hasViewOnly = false;
+        $root.find("input[type='checkbox']").each(function () {
+          if (!this.checked) return;
+          var role = normalizeRoleLabel(this.value);
+          if (role === "View Only") hasViewOnly = true;
+          if (role && roles.indexOf(role) === -1) roles.push(role);
+        });
+        if (hasViewOnly) return ["View Only"];
+        return roles;
+      }
+
+      function setCheckedRoles($root, roles) {
+        var selected = {};
+        (roles || []).forEach(function (role) {
+          selected[normalizeRoleLabel(role)] = true;
+        });
+        // View Only cannot be combined with other roles.
+        if (selected["View Only"]) {
+          Object.keys(selected).forEach(function (role) {
+            if (role !== "View Only") delete selected[role];
+          });
+        }
+        $root.find("input[type='checkbox']").each(function () {
+          this.checked = !!selected[normalizeRoleLabel(this.value)];
+        });
+      }
+
+      function bindExclusiveViewOnly($root) {
+        $root.on("change", "input[type='checkbox']", function () {
+          var $input = $(this);
+          var role = normalizeRoleLabel($input.val());
+          if (!$input.prop("checked")) return;
+          if (role === "View Only") {
+            $root.find("input[type='checkbox']").each(function () {
+              if (this === $input.get(0)) return;
+              this.checked = false;
+            });
+            return;
+          }
+          $root.find("input[type='checkbox']").each(function () {
+            if (normalizeRoleLabel(this.value) === "View Only") this.checked = false;
+          });
+        });
+      }
+
+      bindExclusiveViewOnly($editRoles);
+      bindExclusiveViewOnly($inviteRoles);
+
+      function rolesBadgesHtml(roles) {
+        return "<div class='role-badges'>" + (roles || []).map(function (role) {
+          return "<span class='role-badge " + roleClass(role) + "'>" + $("<div>").text(role).html() + "</span>";
+        }).join("") + "</div>";
+      }
+
+      function canManageUsers() {
+        try {
+          var roles = parseRoles(localStorage.getItem("bregUserRole") || "Account Admin");
+          return roles.indexOf("Account Admin") !== -1;
+        } catch (e) {
+          return true;
+        }
+      }
+
+      function applyUsersAccessUi() {
+        var allowed = canManageUsers();
+        $("#usersAccessDenied").toggle(!allowed);
+        $("#usersManageContent").toggle(allowed);
+        $("#inviteUserBtn").toggle(allowed);
+      }
+
+      applyUsersAccessUi();
 
       var defaultBudgets = {
         "john.smith@medicalclinic.com": { perOrderAmount: 2500, perPeriodAmount: 8000, period: "weekly", spentAmount: 5200 },
@@ -1163,15 +1337,18 @@
       }
 
       function normalizeRoleLabel(roleText) {
-        var key = String(roleText || "").toLowerCase();
-        if (key.indexOf("account admin") !== -1 || key === "admin" || key === "administrator") {
-          return "Account Admin";
-        }
-        if (key.indexOf("cost center manager") !== -1) return "Cost Center Manager";
-        if (key.indexOf("approver") !== -1 || key === "manager") return "Approver";
-        if (key.indexOf("view only") !== -1 || key === "view-only") return "View Only";
-        if (key.indexOf("buyer") !== -1 || key === "user") return "Buyer";
-        return "Buyer";
+        return normalizeRole(roleText) || "Buyer";
+      }
+
+      function readRowRoles($row) {
+        var fromAttr = parseRoles($row.attr("data-roles") || "");
+        if (fromAttr.length) return fromAttr;
+        var roles = [];
+        $row.find(".role-badge").each(function () {
+          var role = normalizeRoleLabel($.trim($(this).text() || ""));
+          if (role && roles.indexOf(role) === -1) roles.push(role);
+        });
+        return roles.length ? roles : ["Buyer"];
       }
 
       function formatJoinedDate(date) {
@@ -1241,7 +1418,7 @@
         $inviteEmail.val("");
         $inviteDepartment.val("");
         $invitePhone.val("");
-        $inviteRole.val("");
+        setCheckedRoles($inviteRoles, []);
         $inviteBudgetPerOrder.val("");
         $inviteBudgetPerPeriod.val("");
         $inviteBudgetPeriod.val("monthly");
@@ -1257,7 +1434,7 @@
         var firstName = String($row.attr("data-first-name") || split.firstName || "").trim();
         var lastName = String($row.attr("data-last-name") || split.lastName || "").trim();
         var email = $.trim($row.children().eq(1).text() || "");
-        var role = normalizeRoleLabel($.trim($row.find(".role-badge").first().text() || "Buyer"));
+        var roles = readRowRoles($row);
         var department = String($row.attr("data-department") || "").trim();
         var phone = String($row.attr("data-phone") || "").trim();
         var budget = getBudgetForEmail(email);
@@ -1267,7 +1444,7 @@
         $editEmail.val(email);
         $editDepartment.val(department);
         $editPhone.val(phone);
-        $editRole.val(role);
+        setCheckedRoles($editRoles, roles);
         setBudgetFields($editBudgetPerOrder, $editBudgetPerPeriod, $editBudgetPeriod, budget);
         $editError.hide().text("");
         $("#editUserModal").modal("show");
@@ -1310,13 +1487,12 @@
         var email = $.trim(String($editEmail.val() || "").toLowerCase());
         var department = $.trim($editDepartment.val() || "");
         var phone = $.trim($editPhone.val() || "");
-        var role = $.trim($editRole.val() || "");
+        var roles = getCheckedRoles($editRoles);
         var budget = readBudgetFields($editBudgetPerOrder, $editBudgetPerPeriod, $editBudgetPeriod);
-        if (!firstName || !lastName || !email || !role) {
-          $editError.text("First Name, Last Name, Email Address, and Role are required.").show();
+        if (!firstName || !lastName || !email || !roles.length) {
+          $editError.text("First Name, Last Name, Email Address, and at least one Role are required.").show();
           return;
         }
-        role = normalizeRoleLabel(role);
         if (!isValidEmail(email)) {
           $editError.text("Enter a valid email address.").show();
           return;
@@ -1334,19 +1510,18 @@
         budgetLimits[email] = budget;
         saveBudgets();
         var name = (firstName + " " + lastName).replace(/\s+/g, " ").trim();
+        var rolesLabel = roles.join(", ");
         $currentEditRow.find(".user-id").first().text(initialsFromName(name));
         $currentEditRow.find(".user-name").first().text(name);
         $currentEditRow.children().eq(1).text(email);
-        $currentEditRow.find(".role-badge").first()
-          .removeClass("admin manager user cs-manager purchasing agent account-admin cc-manager approver buyer view-only")
-          .addClass(roleClass(role))
-          .text(role);
+        $currentEditRow.find(".js-roles-cell").html(rolesBadgesHtml(roles));
         $currentEditRow.attr("data-email", email);
         $currentEditRow.attr("data-first-name", firstName);
         $currentEditRow.attr("data-last-name", lastName);
         $currentEditRow.attr("data-department", department);
         $currentEditRow.attr("data-phone", phone);
-        $currentEditRow.attr("data-search", buildSearchKey(firstName, lastName, email, role, department));
+        $currentEditRow.attr("data-roles", serializeRoles(roles));
+        $currentEditRow.attr("data-search", buildSearchKey(firstName, lastName, email, rolesLabel, department));
         renderBudgetCells();
         applySearchFilter();
         $("#editUserModal").modal("hide");
@@ -1358,13 +1533,12 @@
         var email = $.trim(String($inviteEmail.val() || "").toLowerCase());
         var department = $.trim($inviteDepartment.val() || "");
         var phone = $.trim($invitePhone.val() || "");
-        var role = $.trim($inviteRole.val() || "");
+        var roles = getCheckedRoles($inviteRoles);
         var budget = readBudgetFields($inviteBudgetPerOrder, $inviteBudgetPerPeriod, $inviteBudgetPeriod);
-        if (!firstName || !lastName || !email || !role) {
-          $inviteError.text("First Name, Last Name, Email Address, and Role are required.").show();
+        if (!firstName || !lastName || !email || !roles.length) {
+          $inviteError.text("First Name, Last Name, Email Address, and at least one Role are required.").show();
           return;
         }
-        role = normalizeRoleLabel(role);
         if (!isValidEmail(email)) {
           $inviteError.text("Enter a valid email address.").show();
           return;
@@ -1376,8 +1550,8 @@
         var name = (firstName + " " + lastName).replace(/\s+/g, " ").trim();
         var joined = formatJoinedDate(new Date());
         var initials = initialsFromName(name);
-        var roleClassName = roleClass(role);
-        var search = buildSearchKey(firstName, lastName, email, role, department);
+        var rolesLabel = roles.join(", ");
+        var search = buildSearchKey(firstName, lastName, email, rolesLabel, department);
         if (budget.perOrderAmount > 0 || budget.perPeriodAmount > 0) {
           budget.spentAmount = 0;
           budgetLimits[email] = budget;
@@ -1389,10 +1563,11 @@
           + " data-last-name='" + $("<div>").text(lastName).html() + "'"
           + " data-department='" + $("<div>").text(department).html() + "'"
           + " data-phone='" + $("<div>").text(phone).html() + "'"
+          + " data-roles='" + $("<div>").text(serializeRoles(roles)).html() + "'"
           + " data-search='" + $("<div>").text(search).html() + "'>"
           + "<td><span class='user-id'>" + $("<div>").text(initials).html() + "</span><span class='user-name'>" + $("<div>").text(name).html() + "</span></td>"
           + "<td>" + $("<div>").text(email).html() + "</td>"
-          + "<td><span class='role-badge " + roleClassName + "'>" + $("<div>").text(role).html() + "</span></td>"
+          + "<td class='js-roles-cell'>" + rolesBadgesHtml(roles) + "</td>"
           + "<td class='js-budget-cell'></td>"
           + "<td>" + $("<div>").text(joined).html() + "</td>"
           + "<td>"

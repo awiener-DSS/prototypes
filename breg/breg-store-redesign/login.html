@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="assets/auth-gate.js?v=20260725a"></script>
+  <script src="assets/auth-gate.js?v=20260814a"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Sign In</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,8 +35,10 @@
         linear-gradient(160deg, #c5d0de 0%, #aebccd 45%, #9aadc0 100%);
       min-height: 100%;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      gap: 14px;
       padding: 28px 18px;
       -webkit-font-smoothing: antialiased;
     }
@@ -464,6 +466,136 @@
       margin-top: 12px;
     }
 
+    .demo-users {
+      width: min(1120px, 100%);
+      margin: 0;
+      border: 1px solid rgba(0, 30, 98, 0.14);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 0;
+      box-shadow: 0 8px 20px rgba(0, 30, 98, 0.08);
+    }
+
+    .auth-shell.register-mode ~ .demo-users,
+    .auth-shell.forgot-mode ~ .demo-users {
+      display: none;
+    }
+
+    .demo-users-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border: 0;
+      background: transparent;
+      color: var(--auth-primary-dark);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1.35;
+      text-align: left;
+      padding: 12px 16px;
+      cursor: pointer;
+    }
+
+    .demo-users-toggle:hover,
+    .demo-users-toggle:focus {
+      color: var(--auth-primary);
+      outline: 0;
+    }
+
+    .demo-users-toggle-hint {
+      color: #5f6b76;
+      font-weight: 400;
+      white-space: nowrap;
+    }
+
+    .demo-users-chevron {
+      flex: 0 0 auto;
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg);
+      transition: transform 0.15s ease;
+      opacity: 0.7;
+    }
+
+    .demo-users.is-open .demo-users-chevron {
+      transform: rotate(-135deg);
+      margin-top: 4px;
+    }
+
+    .demo-users-body {
+      display: none;
+      border-top: 1px solid rgba(0, 71, 187, 0.12);
+      padding: 12px 14px 14px;
+    }
+
+    .demo-users.is-open .demo-users-body {
+      display: block;
+    }
+
+    .demo-users-copy {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #5f6b76;
+      line-height: 1.4;
+    }
+
+    .demo-user-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+
+    .demo-user-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid rgba(0, 71, 187, 0.14);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 12px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .demo-user-btn:hover,
+    .demo-user-btn:focus {
+      border-color: rgba(0, 71, 187, 0.35);
+      background: #fff;
+      outline: 0;
+    }
+
+    .demo-user-btn.active {
+      border-color: var(--auth-primary);
+      background: rgba(0, 71, 187, 0.08);
+      box-shadow: 0 0 0 2px rgba(0, 71, 187, 0.1);
+    }
+
+    .demo-user-name {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--auth-ink);
+      line-height: 1.25;
+    }
+
+    .demo-user-meta {
+      display: block;
+      margin-top: 2px;
+      font-size: 12px;
+      color: #5f6b76;
+      line-height: 1.35;
+    }
+
+    .demo-user-note {
+      display: none;
+    }
+
     .auth-link {
       font-size: 13px;
       color: var(--auth-primary);
@@ -818,12 +950,12 @@
           <form id="loginForm" autocomplete="on">
             <div class="field">
               <label class="field-label" for="loginEmail">Email</label>
-              <input id="loginEmail" class="field-input" type="email" value="test@breg.com" placeholder="Enter your email" required>
+              <input id="loginEmail" class="field-input" type="email" value="" placeholder="Enter your email" required>
             </div>
             <div class="field">
               <label class="field-label" for="loginPassword">Password</label>
               <div class="field-input-wrap">
-                <input id="loginPassword" class="field-input has-toggle" type="password" value="password123" placeholder="Enter your password" required>
+                <input id="loginPassword" class="field-input has-toggle" type="password" value="" placeholder="Enter your password" required>
                 <button type="button" class="password-toggle" id="toggleLoginPassword" aria-label="Show password">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -834,7 +966,7 @@
               <a class="auth-link" href="#" id="forgotPasswordLink">Forgot password?</a>
               <a class="auth-link" href="#" id="salesRepSignIn">Breg Sales Representative sign-in</a>
             </div>
-            <div class="error-msg" id="loginError">Invalid email or password. Please try test@breg.com / password123</div>
+            <div class="error-msg" id="loginError">Invalid email or password. Please try again.</div>
           </form>
         </div>
 
@@ -1008,6 +1140,20 @@
       >
     </aside>
   </div>
+
+  <aside class="demo-users" id="demoUsersPanel" aria-label="Prototype demo users">
+    <button type="button" class="demo-users-toggle" id="demoUsersToggle" aria-expanded="false" aria-controls="demoUsersBody">
+      <span>
+        Prototype helpers
+        <span class="demo-users-toggle-hint"> · Sign in as a demo role</span>
+      </span>
+      <span class="demo-users-chevron" aria-hidden="true"></span>
+    </button>
+    <div class="demo-users-body" id="demoUsersBody">
+      <p class="demo-users-copy">Choose a role to fill the sign-in form. Password for all demo users is <strong>password123</strong>.</p>
+      <div class="demo-user-list" id="demoUserList"></div>
+    </div>
+  </aside>
 
   <div class="terms-modal" id="termsModal" aria-hidden="true">
     <div class="terms-dialog" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
@@ -1243,6 +1389,9 @@
         localStorage.setItem("bregUserDepartment", String(details.department || "").trim());
         localStorage.setItem("bregUserEmail", String(details.email || "").trim());
         localStorage.setItem("bregUserPhone", String(details.phone || "").trim());
+        if (details.role) {
+          localStorage.setItem("bregUserRole", String(details.role || "").trim());
+        }
         if (details.password) {
           localStorage.setItem("bregUserPassword", details.password);
         }
@@ -1256,6 +1405,123 @@
           localStorage.setItem("bregSignedIn", "true");
         }
       }
+
+      var DEMO_USERS = [
+        {
+          email: "john.smith@medicalclinic.com",
+          firstName: "John",
+          lastName: "Smith",
+          phone: "(555) 100-1001",
+          department: "Administration",
+          role: "Account Admin",
+          note: "Full access: users, cost centers, approvals, and purchasing."
+        },
+        {
+          email: "sarah.j@medicalclinic.com",
+          firstName: "Sarah",
+          lastName: "Johnson",
+          phone: "(555) 100-1002",
+          department: "Orthopedics",
+          role: "Cost Center Manager",
+          note: "Can view and manage cost centers and budgets."
+        },
+        {
+          email: "mchen@medicalclinic.com",
+          firstName: "Michael",
+          lastName: "Chen",
+          phone: "(555) 100-1003",
+          department: "Sports Medicine",
+          role: "Approver",
+          note: "Approves requisitions and can assign cost centers in cart."
+        },
+        {
+          email: "emily.davis@medicalclinic.com",
+          firstName: "Emily",
+          lastName: "Davis",
+          phone: "(555) 100-1004",
+          department: "Outpatient Clinic",
+          role: "Buyer",
+          note: "Purchasing access; sees only cost centers where they are a buyer."
+        },
+        {
+          email: "alex.rivera@medicalclinic.com",
+          firstName: "Alex",
+          lastName: "Rivera",
+          phone: "(555) 100-1005",
+          department: "",
+          role: "View Only",
+          note: "View invoices and order history; no purchasing or admin tools."
+        }
+      ];
+      var DEMO_PASSWORD = "password123";
+
+      function findDemoUser(email) {
+        var key = String(email || "").trim().toLowerCase();
+        return DEMO_USERS.filter(function (user) {
+          return user.email === key;
+        })[0] || null;
+      }
+
+      function escapeDemoHtml(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/\"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function selectDemoUser(email) {
+        var user = findDemoUser(email);
+        if (!user) return;
+        document.getElementById("loginEmail").value = user.email;
+        document.getElementById("loginPassword").value = DEMO_PASSWORD;
+        Array.prototype.forEach.call(document.querySelectorAll(".demo-user-btn"), function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-email") === user.email);
+        });
+        hideError(loginError);
+        showSignIn();
+        window.setTimeout(function () {
+          document.getElementById("loginPassword").focus();
+        }, 0);
+      }
+
+      function renderDemoUsers() {
+        var list = document.getElementById("demoUserList");
+        if (!list) return;
+        list.innerHTML = DEMO_USERS.map(function (user) {
+          return ""
+            + "<button type='button' class='demo-user-btn' data-email='" + escapeDemoHtml(user.email) + "'>"
+            + "<span class='demo-user-name'>" + escapeDemoHtml(user.firstName + " " + user.lastName) + "</span>"
+            + "<span class='demo-user-meta'>" + escapeDemoHtml(user.role) + "</span>"
+            + "</button>";
+        }).join("");
+      }
+
+      renderDemoUsers();
+
+      var demoUsersPanel = document.getElementById("demoUsersPanel");
+      var demoUsersToggle = document.getElementById("demoUsersToggle");
+      if (demoUsersToggle && demoUsersPanel) {
+        demoUsersToggle.addEventListener("click", function () {
+          var open = !demoUsersPanel.classList.contains("is-open");
+          demoUsersPanel.classList.toggle("is-open", open);
+          demoUsersToggle.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      }
+
+      document.getElementById("demoUserList").addEventListener("click", function (event) {
+        var btn = event.target.closest(".demo-user-btn");
+        if (!btn) return;
+        selectDemoUser(btn.getAttribute("data-email"));
+      });
+
+      document.getElementById("loginEmail").addEventListener("input", function () {
+        var email = String(this.value || "").trim().toLowerCase();
+        Array.prototype.forEach.call(document.querySelectorAll(".demo-user-btn"), function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-email") === email);
+        });
+      });
 
       document.getElementById("goToRegister").addEventListener("click", function (event) {
         event.preventDefault();
@@ -1420,20 +1686,35 @@
         event.preventDefault();
         var email = document.getElementById("loginEmail").value.trim().toLowerCase();
         var password = loginPassword.value;
-        var storedPassword = localStorage.getItem("bregUserPassword") || "password123";
-        if (email === "test@breg.com" && password === storedPassword) {
+        var storedPassword = localStorage.getItem("bregUserPassword") || DEMO_PASSWORD;
+        var demoUser = findDemoUser(email);
+        var legacyDemo = email === "test@breg.com";
+        var passwordOk = password === DEMO_PASSWORD || password === storedPassword;
+        if (demoUser && passwordOk) {
           hideError(loginError);
-          localStorage.setItem("bregFirstName", "Jordan");
-          localStorage.setItem("bregLastName", "Lee");
-          localStorage.setItem("bregUserName", "Jordan Lee");
-          localStorage.setItem("bregAccountName", "Medical Clinic Inc.");
-          localStorage.setItem("bregUserPhone", "555-010-0000");
-          localStorage.setItem("bregUserEmail", "test@breg.com");
-          if (window.BregSessionAuth) {
-            window.BregSessionAuth.markSignedIn();
-          } else {
-            localStorage.setItem("bregSignedIn", "true");
-          }
+          persistNewUserSession({
+            firstName: demoUser.firstName,
+            lastName: demoUser.lastName,
+            phone: demoUser.phone,
+            department: demoUser.department,
+            email: demoUser.email,
+            role: demoUser.role,
+            password: DEMO_PASSWORD
+          });
+          window.location.href = redirect;
+          return;
+        }
+        if (legacyDemo && passwordOk) {
+          hideError(loginError);
+          persistNewUserSession({
+            firstName: "Jordan",
+            lastName: "Lee",
+            phone: "555-010-0000",
+            department: "Administration",
+            email: "test@breg.com",
+            role: "Account Admin",
+            password: DEMO_PASSWORD
+          });
           window.location.href = redirect;
           return;
         }

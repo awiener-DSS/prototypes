@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="assets/auth-gate.js?v=20260716i"></script>
+  <script src="assets/auth-gate.js?v=20260814a"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Checkout</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -367,6 +367,43 @@
       color: #00a7e1;
       font-weight: 700;
     }
+    .checkout-cost-center {
+      margin: 0 0 12px;
+    }
+    .checkout-cost-center-label {
+      display: block;
+      margin: 0 0 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f1111;
+      line-height: 1.2;
+    }
+    .checkout-cost-center-label .optional {
+      font-weight: 500;
+      color: #565959;
+    }
+    .checkout-cost-center-select {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #c7ced4;
+      border-radius: 10px;
+      background: #fff;
+      color: #0f1111;
+      font-size: 13px;
+      padding: 0 12px;
+      box-shadow: none;
+    }
+    .checkout-cost-center-select:focus {
+      outline: 0;
+      border-color: #007185;
+      box-shadow: 0 0 0 3px rgba(0, 113, 133, 0.12);
+    }
+    .checkout-cost-center-hint {
+      margin: 6px 0 0;
+      font-size: 12px;
+      color: #565959;
+      line-height: 1.35;
+    }
     .checkout-place {
       margin-top: 12px;
       width: 100%;
@@ -707,11 +744,33 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-  <script src="assets/shell.js?v=20260729c"></script>
+  <script src="assets/shell.js?v=20260814g"></script>
   <script>
     (function () {
       var CART_STORAGE_KEY = "breg_cart_v1";
       var ORDER_STORAGE_KEY = "breg_last_order_v1";
+      var COST_CENTER_STORAGE_KEY = "breg_cost_centers_v1";
+      var CART_COST_CENTER_KEY = "breg_cart_cost_center_v1";
+      var DEFAULT_COST_CENTERS = [
+        {
+          id: "CC-1001",
+          name: "Orthopedics",
+          active: true,
+          buyerEmails: ["mchen@medicalclinic.com", "emily.davis@medicalclinic.com"]
+        },
+        {
+          id: "CC-1002",
+          name: "Sports Medicine",
+          active: true,
+          buyerEmails: ["emily.davis@medicalclinic.com"]
+        },
+        {
+          id: "CC-1003",
+          name: "Outpatient Clinic",
+          active: true,
+          buyerEmails: ["mchen@medicalclinic.com"]
+        }
+      ];
       var MISSING_IMAGE = "https://store.breg.com/INTERSHOP/static/WFS/Breg-B2B-Site/-/Breg/en_US/not_available.png";
       var didHideInitialLoader = false;
       var pageLoader = window.BregPageLoader && typeof window.BregPageLoader.for === "function"
@@ -758,6 +817,85 @@
 
       function saveCart(cart) {
         try { localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart || [])); } catch (e) {}
+      }
+
+      function currentUserEmail() {
+        try {
+          return String(localStorage.getItem("bregUserEmail") || "test@breg.com").trim().toLowerCase();
+        } catch (e) {
+          return "test@breg.com";
+        }
+      }
+
+      function loadAssignableCostCenters() {
+        var email = currentUserEmail();
+        var source = DEFAULT_COST_CENTERS;
+        try {
+          var parsed = JSON.parse(localStorage.getItem(COST_CENTER_STORAGE_KEY) || "null");
+          if (Array.isArray(parsed) && parsed.length) source = parsed;
+        } catch (e) {}
+        return source.map(function (center) {
+          var buyers = Array.isArray(center && center.buyerEmails) ? center.buyerEmails : [];
+          return {
+            id: String(center && center.id || "").trim(),
+            name: String(center && center.name || "").trim(),
+            active: !(center && center.active === false),
+            buyerEmails: buyers.map(function (buyer) {
+              return String(buyer || "").trim().toLowerCase();
+            }).filter(Boolean)
+          };
+        }).filter(function (center) {
+          if (!center.id || !center.name || !center.active) return false;
+          return center.buyerEmails.indexOf(email) !== -1;
+        });
+      }
+
+      function loadSelectedCostCenterId() {
+        try {
+          return String(localStorage.getItem(CART_COST_CENTER_KEY) || "").trim();
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function saveSelectedCostCenterId(id) {
+        try {
+          var value = String(id || "").trim();
+          if (!value) localStorage.removeItem(CART_COST_CENTER_KEY);
+          else localStorage.setItem(CART_COST_CENTER_KEY, value);
+        } catch (e) {}
+      }
+
+      function getSelectedCostCenter() {
+        var selectedId = loadSelectedCostCenterId();
+        if (!selectedId) return null;
+        var match = loadAssignableCostCenters().filter(function (center) {
+          return String(center.id).toLowerCase() === selectedId.toLowerCase();
+        })[0];
+        if (!match) {
+          saveSelectedCostCenterId("");
+          return null;
+        }
+        return match;
+      }
+
+      function costCenterOptionsHtml() {
+        var selected = loadSelectedCostCenterId();
+        var centers = loadAssignableCostCenters();
+        var options = "<option value=''>None</option>";
+        var hasSelected = false;
+        centers.forEach(function (center) {
+          var isSelected = selected && selected.toLowerCase() === String(center.id).toLowerCase();
+          if (isSelected) hasSelected = true;
+          options += "<option value='" + escapeHtml(center.id) + "'" + (isSelected ? " selected" : "") + ">"
+            + escapeHtml(center.id + " — " + center.name)
+            + "</option>";
+        });
+        if (selected && !hasSelected) saveSelectedCostCenterId("");
+        return {
+          options: options,
+          count: centers.length
+        };
       }
 
       function parseJson(key) {
@@ -1095,7 +1233,8 @@
             signatureRequired: shippingSignature
           },
           purchaser: defaults.purchaser,
-          shippingAttentionTo: attentionTo
+          shippingAttentionTo: attentionTo,
+          costCenter: getSelectedCostCenter()
         };
       }
 
@@ -1228,7 +1367,13 @@
           paymentCard: selections ? selections.selectedCard : null,
           shippingMethod: selections ? selections.shippingMethod : null,
           purchaser: selections ? selections.purchaser : null,
-          shippingAttentionTo: selections ? (selections.shippingAttentionTo || "") : ""
+          shippingAttentionTo: selections ? (selections.shippingAttentionTo || "") : "",
+          costCenter: selections && selections.costCenter
+            ? {
+                id: String(selections.costCenter.id || ""),
+                name: String(selections.costCenter.name || "")
+              }
+            : null
         };
       }
 
@@ -1279,6 +1424,14 @@
 
         var summaryLines = "";
         var linesHtml = "";
+        var costCenterOptions = costCenterOptionsHtml();
+        var costCenterHtml = costCenterOptions.count
+          ? ("<div class='checkout-cost-center'>" +
+              "<label class='checkout-cost-center-label' for='checkoutCostCenterSelect'>Cost center <span class='optional'>(optional)</span></label>" +
+              "<select id='checkoutCostCenterSelect' class='checkout-cost-center-select'>" + costCenterOptions.options + "</select>" +
+              "<p class='checkout-cost-center-hint'>Only cost centers where you are a buyer are listed.</p>" +
+            "</div>")
+          : "";
         function inventoryFromSku(sku, qty) {
           var code = String(sku || "");
           if (!code) return "In Stock";
@@ -1414,6 +1567,7 @@
             "</section>" +
             "<aside class='checkout-summary'>" +
               "<h3>Order Summary</h3>" +
+              costCenterHtml +
               "<ul class='checkout-summary-list'>" +
                 "<li><span>Items (" + totalQty + ")</span><span>$" + BregFormatMoney(total) + "</span></li>" +
                 "<li><span>Shipping &amp; handling</span><span style='color:#067d62;'>FREE</span></li>" +
@@ -1437,6 +1591,10 @@
           }, 50);
         }
       }
+
+      $(document).on("change", "#checkoutCostCenterSelect", function () {
+        saveSelectedCostCenterId($(this).val());
+      });
 
       $(document).on("change", "input[name='paymentMethodMode']", function () {
         try { localStorage.setItem("bregCheckoutPaymentMode", String($(this).val() || "invoice")); } catch (e) {}
@@ -1622,6 +1780,7 @@
           window.BregHomeActivity.trackPurchasedFromOrder(order);
         }
         saveCart([]);
+        saveSelectedCostCenterId("");
         window.location.href = "order-confirmation.html";
       });
 

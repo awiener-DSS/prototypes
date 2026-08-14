@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="assets/auth-gate.js?v=20260716i"></script>
+  <script src="assets/auth-gate.js?v=20260814a"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - Pending & Rejected Orders</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,28 @@
       letter-spacing: -0.5px;
     }
     .pending-subtitle { margin: 4px 0 16px; font-size: 14px; color: #565959; line-height: 1.35; }
+    .pending-access-denied {
+      display: none;
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 28px 22px;
+      margin: 8px 0 18px;
+      text-align: center;
+    }
+    .pending-access-title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .pending-access-copy {
+      margin: 0;
+      font-size: 14px;
+      color: #565959;
+      line-height: 1.45;
+    }
     .orders-filter {
       display: flex;
       align-items: center;
@@ -704,13 +726,18 @@
         </div>
       </div>
     </div>
-    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
   </header>
 
   <main class="site-max">
     <div class="pending-page">
       <div class="pending-breadcrumb"><a href="index.html">Home</a> <span class="sep">&gt;</span> <a href="your-account.html">Your Account</a> <span class="sep">&gt;</span> <span>Pending &amp; Rejected Orders</span></div>
       <h1 class="pending-title">Pending &amp; Rejected Orders</h1>
+      <div class="pending-access-denied" id="pendingAccessDenied">
+        <h2 class="pending-access-title">Access restricted</h2>
+        <p class="pending-access-copy">Your role does not include permission to review pending and rejected orders. Contact an Account Admin or Approver if you need access.</p>
+      </div>
+      <div id="pendingManageContent">
       <div class="orders-filter" role="group" aria-label="Filter order status">
         <button type="button" class="orders-filter-btn active" data-order-filter="all">All</button>
         <button type="button" class="orders-filter-btn" data-order-filter="approve">Orders to Approve</button>
@@ -976,6 +1003,7 @@
           <div class="rejected-order-foot"><a class="rejected-btn primary" href="#">Resubmit Order</a></div>
         </div>
       </section>
+      </div>
     </div>
   </main>
 
@@ -1004,9 +1032,64 @@
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="analysis/catalog-data.js"></script>
   <script src="assets/catalog-image-resolver.js"></script>
-  <script src="assets/shell.js?v=20260729c"></script>
+  <script src="assets/shell.js?v=20260814g"></script>
   <script>
     (function () {
+      function normalizeRole(raw) {
+        var value = String(raw || "").trim().toLowerCase();
+        if (!value) return "";
+        if (value.indexOf("account admin") !== -1 || value === "admin" || value === "administrator") return "Account Admin";
+        if (value.indexOf("cost center manager") !== -1) return "Cost Center Manager";
+        if (value.indexOf("approver") !== -1) return "Approver";
+        if (value.indexOf("view only") !== -1) return "View Only";
+        if (value.indexOf("buyer") !== -1) return "Buyer";
+        return "";
+      }
+
+      function parseRoles(raw) {
+        if (window.BregRoleAccess && typeof window.BregRoleAccess.parseRoles === "function") {
+          return window.BregRoleAccess.parseRoles(raw);
+        }
+        var source = String(raw == null ? "" : raw).trim();
+        if (!source) return ["Account Admin"];
+        var parts = source.indexOf("|") !== -1 ? source.split("|") : source.split(/[,;]+/);
+        var roles = [];
+        parts.forEach(function (part) {
+          var role = normalizeRole(part);
+          if (role && roles.indexOf(role) === -1) roles.push(role);
+        });
+        return roles.length ? roles : ["Account Admin"];
+      }
+
+      function canReviewPendingOrders() {
+        try {
+          var roles = parseRoles(localStorage.getItem("bregUserRole") || "Account Admin");
+          return roles.indexOf("Account Admin") !== -1
+            || roles.indexOf("Approver") !== -1
+            || roles.indexOf("Buyer") !== -1;
+        } catch (e) {
+          return true;
+        }
+      }
+
+      function applyPendingAccessUi() {
+        var allowed = canReviewPendingOrders();
+        $("#pendingAccessDenied").toggle(!allowed);
+        $("#pendingManageContent").toggle(allowed);
+        // Approver / Account Admin see "Orders to Approve"; Buyer sees pending/rejected only.
+        var roles = parseRoles(localStorage.getItem("bregUserRole") || "Account Admin");
+        var canApprove = roles.indexOf("Account Admin") !== -1 || roles.indexOf("Approver") !== -1;
+        $("[data-order-filter='approve'], #approveOrdersHeading, .approve-order-card").toggle(canApprove);
+        if (!canApprove) {
+          $(".orders-filter-btn[data-order-filter='approve']").removeClass("active");
+          if (!$(".orders-filter-btn.active").length) {
+            $(".orders-filter-btn[data-order-filter='all']").addClass("active");
+          }
+        }
+      }
+
+      applyPendingAccessUi();
+
       function attachOrderDetailToggles() {
         $(".approve-order-foot, .pending-order-foot, .rejected-order-foot").each(function () {
           var $foot = $(this);

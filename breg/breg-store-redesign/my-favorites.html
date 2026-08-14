@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <script src="assets/auth-gate.js?v=20260716i"></script>
+  <script src="assets/auth-gate.js?v=20260814a"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Breg Store - My Favorites</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,6 +16,28 @@
     }
     .lists-page {
       margin: 12px 0 18px;
+    }
+    .lists-access-denied {
+      display: none;
+      border: 1px solid #d5d9d9;
+      border-radius: 12px;
+      background: #fff;
+      padding: 28px 22px;
+      margin: 8px 0 18px;
+      text-align: center;
+    }
+    .lists-access-title {
+      margin: 0 0 8px;
+      font-size: 22px;
+      color: #0f1111;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+    .lists-access-copy {
+      margin: 0;
+      font-size: 14px;
+      color: #565959;
+      line-height: 1.45;
     }
     .lists-breadcrumb {
       margin: 0 0 10px;
@@ -1305,7 +1327,7 @@
         </div>
       </div>
     </div>
-    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link quick-order" href="index.html">Quick Order</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
+    <div class="sub-nav"><div class="container site-max"><div class="sub-nav-inner"><a class="sub-nav-link" href="index.html"><span class="glyphicon glyphicon-menu-hamburger"></span> All</a><a class="sub-nav-link" href="index.html">Knee Bracing</a><a class="sub-nav-link" href="index.html">Shoulder Bracing</a><a class="sub-nav-link" href="index.html">Spine Bracing</a><a class="sub-nav-link" href="index.html">Cold Therapy and DVT</a><a class="sub-nav-link" href="index.html">Walker/Ankle/Foot Bracing</a><a class="sub-nav-link" href="index.html">Elbow/Wrist Bracing</a><a class="sub-nav-link" href="index.html">Hip Bracing</a><a class="sub-nav-link" href="index.html">Splints and Fracture Management</a><a class="sub-nav-link" href="index.html">Crutches, Canes &amp; Walkers</a><a class="sub-nav-link" href="index.html">Home Therapy &amp; Misc.</a><a class="sub-nav-link" href="index.html">Pediatrics</a></div></div></div>
   </header>
 
   <main class="site-max">
@@ -1319,6 +1341,12 @@
         <a href="#" class="btn-create-list" id="createListBtn">+ Create a List</a>
       </div>
 
+      <div class="lists-access-denied" id="listsAccessDenied">
+        <h2 class="lists-access-title">Access restricted</h2>
+        <p class="lists-access-copy">Your role does not include My Favorites. Contact an Account Admin if you need access to saved lists.</p>
+      </div>
+
+      <div id="listsManageContent">
       <div class="lists-layout" id="listsLayout">
         <section class="lists-panel">
           <div class="lists-panel-head">Saved Lists</div>
@@ -1369,6 +1397,7 @@
             </div>
           </div>
         </aside>
+      </div>
       </div>
     </div>
   </main>
@@ -1480,13 +1509,39 @@
   <script src="analysis/variant-data.js?v=20260218a"></script>
   <script src="assets/catalog-listing.js?v=20260609a"></script>
   <script src="assets/catalog-image-resolver.js"></script>
-  <script src="assets/shell.js?v=20260729c"></script>
+  <script src="assets/shell.js?v=20260814g"></script>
   <script>
     (function () {
       if (!(window.BregSessionAuth ? window.BregSessionAuth.isSignedIn() : localStorage.getItem("bregSignedIn") === "true")) {
         window.location.href = "login.html?redirect=" + encodeURIComponent("my-favorites.html");
         return;
       }
+
+      function canUseFavorites() {
+        if (window.BregRoleAccess && typeof window.BregRoleAccess.canUseFavorites === "function") {
+          return window.BregRoleAccess.canUseFavorites();
+        }
+        try {
+          var raw = String(localStorage.getItem("bregUserRole") || "Account Admin").toLowerCase();
+          if (raw.indexOf("approver") !== -1 && raw.indexOf("buyer") === -1 && raw.indexOf("account admin") === -1 && raw.indexOf("view only") === -1) {
+            return false;
+          }
+          if (raw.indexOf("cost center manager") !== -1 && raw.indexOf("buyer") === -1 && raw.indexOf("account admin") === -1 && raw.indexOf("view only") === -1) {
+            return false;
+          }
+          return true;
+        } catch (e) {
+          return true;
+        }
+      }
+
+      if (!canUseFavorites()) {
+        $("#listsAccessDenied").show();
+        $("#listsManageContent, #createListBtn").hide();
+        return;
+      }
+      $("#listsAccessDenied").hide();
+      $("#listsManageContent, #createListBtn").show();
 
       var lists = [
         {

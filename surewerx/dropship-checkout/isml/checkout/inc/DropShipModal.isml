@@ -1,0 +1,68 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!--
+    Drop ship destination modal and remove-address confirmation.
+    Include once at page level with other checkout dialogs (not inside a column
+    that may set overflow:hidden). Opened by #dropShipOpen / #dropShipEdit /
+    #dropShipClear.
+-->
+<isinclude template="inc/Modules"/>
+
+<div class="modal fade" id="dropShipDialog" tabindex="-1" role="dialog" aria-labelledby="dropShipDialogTitle">
+    <div class="modal-dialog modal-lg dropship-modal-dialog">
+        <div class="modal-content">
+            <form id="dropShipAddressForm"
+                  class="form-horizontal dropship-address-form"
+                  method="post"
+                  action="<isurl pipeline="ViewOnePageCheckoutAjax" startnode="SetDropShipAddress"/>"
+                  autocomplete="off">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="dropShipDialogTitle">
+                        <istext key="checkout.dropship.destination" default="Drop ship destination"/>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p class="dropship-modal-intro">
+                        <istext key="checkout.dropship.toggle.help" default="Ship directly to your customer. Invoice still bills your account."/>
+                    </p>
+                    <div class="alert alert-danger hide" id="dropShipFormError"></div>
+                    <isinclude template="checkout/inc/DropShipAddressForm"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" id="dropShipCancel" name="cancelDropShip" data-dismiss="modal">
+                        <istext key="form.cancel" default="Cancel"/>
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="dropShipApply" name="applyDropShip">
+                        <istext key="checkout.dropship.apply" default="Apply Drop Ship Address"/>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="dropShipClearDialog" tabindex="-1" role="dialog" aria-labelledby="dropShipClearDialogTitle">
+    <div class="modal-dialog modal-md dropship-clear-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="dropShipClearDialogTitle">
+                    <istext key="checkout.dropship.remove.title" default="Remove drop ship address"/>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <istext key="checkout.dropship.remove.body" default="Are you sure you want to remove this drop ship address?"/>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <istext key="form.cancel" default="Cancel"/>
+                </button>
+                <a href="<isurl pipeline="ViewOnePageCheckoutAjax" startnode="ClearDropShipAddress"/>"
+                   class="btn btn-primary"
+                   id="dropShipClearConfirm">
+                    <istext key="checkout.dropship.remove.confirm" default="Remove Address"/>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

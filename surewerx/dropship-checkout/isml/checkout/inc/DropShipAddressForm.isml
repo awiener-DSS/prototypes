@@ -1,0 +1,163 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!-- Field markup for the drop ship destination modal. Wrapped by DropShipModal.isml. -->
+<isinclude template="inc/Modules"/>
+
+<input type="hidden" name="SynchronizerToken" value="#CSRFToken#"/>
+<input type="hidden" name="BasketID" value="#Basket:UUID#"/>
+
+<p class="indicates-required"><span class="required">*</span><istext key="form.required" default="Required field"/></p>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipCompany">
+        <istext key="checkout.dropship.company" default="Company"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-9">
+        <input type="text"
+               class="form-control"
+               id="dropShipCompany"
+               name="company"
+               maxlength="60"
+               value="<isprint value="#DropShipForm:Company#" encoding="on"/>">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipAttentionTo">
+        <istext key="checkout.dropship.attentionto" default="Attention To"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-9">
+        <input type="text"
+               class="form-control"
+               id="dropShipAttentionTo"
+               name="attentionTo"
+               maxlength="22"
+               value="<isprint value="#DropShipForm:AttentionTo#" encoding="on"/>">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipAddress1">
+        <istext key="checkout.dropship.address1" default="Address Line 1"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-9 dropship-avs-wrap">
+        <input type="text"
+               class="form-control"
+               id="dropShipAddress1"
+               name="address1"
+               maxlength="60"
+               placeholder="Start typing an address"
+               autocomplete="off"
+               data-avs-url="<isurl pipeline="ViewOnePageCheckoutAjax" startnode="ValidateDropShipAddress"/>"
+               value="<isprint value="#DropShipForm:Address1#" encoding="on"/>">
+        <input type="hidden" id="dropShipAvsStatus" name="avsStatus" value="<isprint value="#DropShipForm:AvsStatus#" encoding="on"/>"/>
+        <input type="hidden" id="dropShipAvsPlaceId" name="avsPlaceId" value="<isprint value="#DropShipForm:AvsPlaceId#" encoding="on"/>"/>
+        <ul class="dropship-avs-results" id="dropShipAvsResults" role="listbox"></ul>
+        <p class="dropship-avs-hint">
+            <istext key="checkout.dropship.avs.hint" default="Address lookup uses Google. If no match is found, enter the address manually."/>
+        </p>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipAddress2">
+        <istext key="checkout.dropship.address2" default="Address Line 2"/>
+    </label>
+    <div class="col-sm-9">
+        <input type="text"
+               class="form-control"
+               id="dropShipAddress2"
+               name="address2"
+               maxlength="60"
+               value="<isprint value="#DropShipForm:Address2#" encoding="on"/>">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipCity">
+        <istext key="checkout.dropship.city" default="City"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-9">
+        <input type="text"
+               class="form-control"
+               id="dropShipCity"
+               name="city"
+               maxlength="35"
+               value="<isprint value="#DropShipForm:City#" encoding="on"/>">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipState">
+        <istext key="checkout.dropship.state" default="State/Province"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-9">
+        <select class="form-control" id="dropShipState" name="state">
+            <option value=""><istext key="form.pleaseselect" default="Please select"/></option>
+            <isloop iterator="Regions" alias="Region">
+                <option value="<isprint value="#Region:ID#" encoding="on"/>"
+                    <isif condition="#DropShipForm:State EQ Region:ID#">selected="selected"</isif>>
+                    <isprint value="#Region:Name#" encoding="on"/>
+                </option>
+            </isloop>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipPostalCode">
+        <istext key="checkout.dropship.postalcode" default="ZIP/Postal Code"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-9">
+        <input type="text"
+               class="form-control"
+               id="dropShipPostalCode"
+               name="postalCode"
+               maxlength="10"
+               value="<isprint value="#DropShipForm:PostalCode#" encoding="on"/>">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipPhone">
+        <istext key="checkout.dropship.phone" default="Phone"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-9">
+        <input type="tel"
+               class="form-control"
+               id="dropShipPhone"
+               name="phone"
+               maxlength="13"
+               placeholder="(XXX)XXX-XXXX"
+               autocomplete="tel"
+               value="<isprint value="#DropShipForm:Phone#" encoding="on"/>">
+    </div>
+</div>
+
+<div class="form-group">
+    <label class="control-label col-sm-3" for="dropShipShippingNotes">
+        <istext key="checkout.dropship.notes" default="Shipping notes"/>
+    </label>
+    <div class="col-sm-9">
+        <textarea class="form-control"
+                  id="dropShipShippingNotes"
+                  name="shippingNotes"
+                  rows="3"
+                  maxlength="250"><isprint value="#DropShipForm:ShippingNotes#" encoding="on"/></textarea>
+    </div>
+</div>
+
+<div class="dropship-avs-unverified hide" id="dropShipAvsUnverified">
+    <div class="alert alert-warning">
+        <strong><istext key="checkout.dropship.avs.unverified.title" default="Google could not verify this address."/></strong>
+        <istext key="checkout.dropship.avs.unverified.body" default="Confirm it is a valid shipping location before continuing."/>
+    </div>
+    <div class="checkbox">
+        <label for="dropShipAvsConfirm">
+            <input type="checkbox" id="dropShipAvsConfirm" name="avsManualConfirm" value="true">
+            <istext key="checkout.dropship.avs.confirm" default="I confirm this is a valid shipping address"/>
+        </label>
+    </div>
+    <p class="dropship-avs-confirm-error text-danger hide">
+        <istext key="checkout.dropship.avs.confirm.required" default="Please confirm this is a valid shipping address."/>
+    </p>
+</div>

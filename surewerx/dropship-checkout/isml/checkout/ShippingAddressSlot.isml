@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!--
+    Patch point for the existing registered one-page checkout shipping address slot.
+
+    Add this include to the template that renders .checkout-shipping-address
+    (captured in Checkout Shipping.html). Include checkout/inc/DropShipPanel
+    before the warehouse address-box so the applied destination sits directly
+    under the drop ship control.
+
+    Also include checkout/inc/DropShipModal once at page level with other checkout dialogs,
+    and enqueue dropship-checkout.js + dropship-checkout.css from the page footer.
+
+    Suggested pipelines:
+      ViewOnePageCheckoutAjax-SetDropShipAddress
+      ViewOnePageCheckoutAjax-ClearDropShipAddress
+      ViewOnePageCheckoutAjax-ValidateDropShipAddress (Google Address Validation API)
+
+    Eligibility is server-driven in production via Basket:DropShipEligible and
+    Basket:DropShipIneligibleReason (MIN_ORDER, RESTRICTED_ITEM, or BOTH).
+    Prototype: ?dropship=min | ?dropship=restricted | ?dropship=both.
+-->
+<div class="checkout-shipping-address" data-testing-id="shipping-address-slot">
+    <h2 class="in-address-title">
+        <i class="fas fa-home"></i>
+        <istext key="checkout.shipping.address" default="Shipping Address"/>
+    </h2>
+
+    <isinclude template="checkout/inc/DropShipPanel"/>
+
+    <isinclude template="checkout/inc/CurrentShippingAddress"/>
+</div>

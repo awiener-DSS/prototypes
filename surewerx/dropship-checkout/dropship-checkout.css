@@ -1,0 +1,337 @@
+/* Local file:// prototype: theme CSS points at fonts that were not saved. */
+@font-face {
+    font-family: "Glyphicons Halflings";
+    src: url("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/fonts/glyphicons-halflings-regular.woff2") format("woff2"),
+         url("https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/fonts/glyphicons-halflings-regular.woff") format("woff");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "proxima_nova_condensedbold";
+    src: url("https://fonts.gstatic.com/s/robotocondensed/v31/ieVo2ZhZI2eCN5jzbjEETS9weq8-_d6T_POl0fRJeyVVpcBO5XxjLdSL17o.woff2") format("woff2");
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Roboto Condensed", "proxima_nova_condensedbold", Arial, sans-serif;
+}
+
+.dropship-prototype-banner {
+    background: #1f2937;
+    color: #fff;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    text-align: center;
+}
+
+.dropship-prototype-banner strong {
+    color: #ff4612;
+}
+
+.dropship-demo-mode {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 8px;
+    background: #ff4612;
+    color: #fff;
+    letter-spacing: 0.03em;
+}
+
+.dropship-toggle.is-ineligible {
+    opacity: 1;
+    background: #fff8f6;
+    border-color: #ff4612;
+}
+
+.dropship-toggle.is-ineligible .dropship-open-btn,
+.dropship-toggle.is-ineligible .dropship-toggle-title,
+.dropship-toggle.is-ineligible .dropship-toggle-help {
+    display: none;
+}
+
+.dropship-ineligible {
+    color: #333;
+}
+
+.dropship-ineligible strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 6px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.dropship-ineligible span {
+    display: block;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #555;
+}
+
+.dropship-restricted-badge {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 8px;
+    background: #fff8f6;
+    border: 1px solid #ff4612;
+    color: #ff4612;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.checkout-shipping-address .in-address-title {
+    margin-bottom: 12px;
+}
+
+.dropship-toggle {
+    background: #f7f7f7;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    padding: 12px 14px;
+    margin: 0 0 14px;
+}
+
+.dropship-toggle.is-disabled {
+    opacity: 0.55;
+}
+
+.dropship-open-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.dropship-toggle.is-applied {
+    margin-bottom: 0;
+}
+
+.dropship-toggle-title {
+    display: none;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.dropship-toggle.is-applied .dropship-toggle-title {
+    display: block;
+}
+
+.dropship-toggle.is-applied .dropship-open-btn {
+    display: none;
+}
+
+.dropship-toggle-help {
+    display: block;
+    margin: 8px 0 0;
+    color: #555;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.dropship-pickup-note {
+    margin-bottom: 12px;
+}
+
+.warehouse-address-box.is-inactive {
+    opacity: 0.45;
+}
+
+.warehouse-address-box.is-inactive .ship-address-default-link {
+    display: none;
+}
+
+.dropship-applied-box {
+    border: 1px solid #ff4612;
+    background: #fff8f6;
+    padding: 12px 14px;
+    margin: 8px 0 14px;
+}
+
+.dropship-applied-box h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.dropship-applied-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.dropship-applied-actions {
+    white-space: nowrap;
+}
+
+.dropship-applied-actions a {
+    display: inline-block;
+    color: #333;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.dropship-applied-actions a:hover,
+.dropship-applied-actions a:focus {
+    color: #ff4612;
+    text-decoration: none;
+}
+
+.dropship-applied-notes {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: #333;
+}
+
+.dropship-avs-wrap {
+    position: relative;
+}
+
+.dropship-avs-hint {
+    margin: 4px 0 0;
+    font-size: 11px;
+    color: #777;
+}
+
+.dropship-avs-results {
+    display: none;
+    position: absolute;
+    z-index: 1060;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: #fff;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.dropship-avs-results li {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+}
+
+.dropship-avs-results li:last-child {
+    border-bottom: 0;
+}
+
+.dropship-avs-results li.is-active,
+.dropship-avs-results li:hover {
+    background: #f5f5f5;
+}
+
+.dropship-avs-results .avs-main {
+    display: block;
+    color: #111;
+}
+
+.dropship-avs-results .avs-sub {
+    display: block;
+    color: #777;
+    font-size: 12px;
+}
+
+.dropship-avs-results .avs-empty,
+.dropship-avs-results .avs-footer {
+    cursor: default;
+    color: #777;
+    font-size: 12px;
+}
+
+.dropship-avs-results .avs-footer {
+    background: #fafafa;
+}
+
+.dropship-avs-unverified {
+    margin-top: 12px;
+    padding-top: 4px;
+}
+
+.dropship-avs-unverified .checkbox {
+    margin-top: 0;
+}
+
+.dropship-modal-intro {
+    margin-bottom: 12px;
+    color: #555;
+}
+
+#dropShipDialog .modal-body {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+#dropShipDialog .form-group {
+    margin-bottom: 10px;
+}
+
+#dropShipDialog .control-label {
+    font-size: 12px;
+    font-weight: 500;
+    padding-top: 7px;
+}
+
+#dropShipDialog .form-group.has-error .form-control {
+    border-color: #a94442;
+}
+
+.purchase-order-no-error.hide {
+    display: none;
+}
+
+.order-confirm-list {
+    padding-left: 18px;
+}
+
+.order-confirm-list li {
+    margin-bottom: 8px;
+}
+
+.loggedin-user .shipping-methods .panel.is-selected {
+    background: #fafafa;
+}
+
+#dropShipClearDialog .modal-dialog {
+    margin-top: 80px;
+}
+
+#dropShipClearDialog .modal-header {
+    padding-top: 24px;
+}
+
+#dropShipClearDialog .modal-body {
+    padding-top: 20px;
+    padding-bottom: 16px;
+}
+
+#dropShipClearDialog .modal-footer .btn {
+    min-width: 160px;
+    height: 38px;
+    padding: 8px 16px;
+    line-height: 20px;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+@media (max-width: 767px) {
+    #dropShipDialog .control-label {
+        padding-top: 0;
+    }
+}

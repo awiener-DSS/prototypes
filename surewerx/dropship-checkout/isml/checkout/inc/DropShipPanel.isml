@@ -1,0 +1,54 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!--
+    Drop ship action and applied destination for one-page registered checkout.
+    Include from the shipping address slot, before the current warehouse address
+    so the destination sits directly under the drop ship control.
+    The destination form is a modal: checkout/inc/DropShipModal.isml
+
+    Basket:DropShipEligible / Basket:DropShipIneligibleReason:
+      MIN_ORDER, RESTRICTED_ITEM, BOTH
+    Prototype URLs: ?dropship=min | ?dropship=restricted | ?dropship=both
+-->
+<isinclude template="inc/Modules"/>
+
+<isset name="IsPickup" value="#(isDefined(SelectedShipMethod) AND (SelectedShipMethod EQ 'PICKUP'))#" type="boolean"/>
+<isset name="DropShipEnabled" value="#isDefined(Basket:DropShipEnabled) AND isTrue(Basket:DropShipEnabled)#" type="boolean"/>
+<isset name="DropShipEligible" value="#NOT isDefined(Basket:DropShipEligible) OR isTrue(Basket:DropShipEligible)#" type="boolean"/>
+<isif condition="#isDefined(Basket:DropShipIneligibleReason)#">
+    <isset name="DropShipIneligibleReason" value="#Basket:DropShipIneligibleReason#" type="string"/>
+<iselse>
+    <isset name="DropShipIneligibleReason" value="" type="string"/>
+</isif>
+
+<div class="alert alert-info dropship-pickup-note<isif condition="#NOT IsPickup#"> hide</isif>" id="dropShipPickupNote">
+    <istext key="checkout.dropship.pickup.unavailable" default="Drop ship is not available when Pickup is selected."/>
+</div>
+
+<div class="dropship-toggle<isif condition="#IsPickup#"> is-disabled</isif><isif condition="#DropShipEnabled#"> is-applied</isif><isif condition="#NOT DropShipEligible#"> is-ineligible</isif>">
+    <button type="button"
+            class="btn btn-primary dropship-open-btn"
+            id="dropShipOpen"
+            <isif condition="#IsPickup OR (NOT DropShipEligible)#">disabled="disabled"</isif>>
+        <istext key="checkout.dropship.toggle" default="Drop ship this order"/>
+    </button>
+    <span class="dropship-toggle-title">
+        <istext key="checkout.dropship.toggle" default="Drop ship this order"/>
+    </span>
+    <span class="dropship-toggle-help">
+        <istext key="checkout.dropship.toggle.help" default="Ship directly to your customer. Invoice still bills your account."/>
+    </span>
+    <div class="dropship-ineligible<isif condition="#DropShipEligible#"> hide</isif>" id="dropShipIneligible">
+        <strong><istext key="checkout.dropship.ineligible.title" default="Drop ship is not available"/></strong>
+        <span id="dropShipIneligibleReason">
+            <isif condition="#DropShipIneligibleReason EQ 'RESTRICTED_ITEM'#">
+                <istext key="checkout.dropship.ineligible.restricted" default="This order includes an item that cannot be drop shipped."/>
+            <iselseif condition="#DropShipIneligibleReason EQ 'BOTH'#">
+                <istext key="checkout.dropship.ineligible.both" default="This order is under the drop ship minimum and includes a restricted item."/>
+            <iselse>
+                <istext key="checkout.dropship.ineligible.minimum" default="Drop ship requires a minimum order total."/>
+            </isif>
+        </span>
+    </div>
+</div>
+
+<isinclude template="checkout/inc/DropShipAppliedAddress"/>

@@ -1,0 +1,41 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!-- Applied drop ship destination summary after SetDropShipAddress succeeds. -->
+<isinclude template="inc/Modules"/>
+
+<isset name="DropShipApplied" value="#isDefined(Basket:DropShipAddress) AND isTrue(Basket:DropShipApplied)#" type="boolean"/>
+
+<div class="dropship-applied-box<isif condition="#NOT DropShipApplied#"> hide</isif>" id="dropShipAppliedAddress">
+    <isif condition="#DropShipApplied#">
+        <div class="dropship-applied-header">
+            <h4><istext key="checkout.dropship.destination" default="Drop ship destination"/></h4>
+            <div class="dropship-applied-actions">
+                <a href="#" id="dropShipEdit" title="Edit" aria-label="Edit">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+                <a href="#"
+                   id="dropShipClear"
+                   title="Delete"
+                   aria-label="Delete">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+            </div>
+        </div>
+        <address id="dropShipAppliedBody">
+            <strong><isprint value="#Basket:DropShipAddress:Company#" encoding="on"/></strong><br/>
+            Attn: <isprint value="#Basket:DropShipAddress:AttentionTo#" encoding="on"/><br/>
+            <isprint value="#Basket:DropShipAddress:Address1#" encoding="on"/><br/>
+            <isif condition="#isDefined(Basket:DropShipAddress:Address2) AND (Basket:DropShipAddress:Address2 NE '')#">
+                <isprint value="#Basket:DropShipAddress:Address2#" encoding="on"/><br/>
+            </isif>
+            <isprint value="#Basket:DropShipAddress:City#" encoding="on"/>,&nbsp;<isprint value="#Basket:DropShipAddress:State#" encoding="on"/>&nbsp;<isprint value="#Basket:DropShipAddress:PostalCode#" encoding="on"/><br/>
+            <isprint value="#Basket:DropShipAddress:Country#" encoding="on"/><br/>
+            <isprint value="#Basket:DropShipAddress:Phone#" encoding="on"/>
+        </address>
+        <isif condition="#isDefined(Basket:DropShipShippingNotes) AND (Basket:DropShipShippingNotes NE '')#">
+            <div class="dropship-applied-notes" id="dropShipAppliedNotes">
+                <strong><istext key="checkout.dropship.notes" default="Shipping notes"/>:</strong>
+                <isprint value="#Basket:DropShipShippingNotes#" encoding="on"/>
+            </div>
+        </isif>
+    </isif>
+</div>

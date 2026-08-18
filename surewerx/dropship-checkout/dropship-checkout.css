@@ -330,8 +330,28 @@ h1, h2, h3, h4, h5, h6,
     vertical-align: middle;
 }
 
+#dropShipDialog .modal-footer .btn + .btn {
+    margin-left: 10px;
+}
+
 @media (max-width: 767px) {
     #dropShipDialog .control-label {
         padding-top: 0;
+    }
+
+    #dropShipDialog .modal-footer {
+        text-align: center;
+    }
+
+    #dropShipDialog .modal-footer .btn,
+    #dropShipDialog .modal-footer .btn + .btn {
+        display: block;
+        float: none;
+        width: 100%;
+        margin: 0 0 10px;
+    }
+
+    #dropShipDialog .modal-footer .btn:last-child {
+        margin-bottom: 0;
     }
 }

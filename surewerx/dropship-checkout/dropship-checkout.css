@@ -283,9 +283,9 @@ h1, h2, h3, h4, h5, h6,
 }
 
 #dropShipDialog .control-label {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
-    padding-top: 7px;
+    padding-top: 8px;
 }
 
 #dropShipDialog .form-group.has-error .form-control {

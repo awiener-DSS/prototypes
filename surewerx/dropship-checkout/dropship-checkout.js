@@ -21,7 +21,8 @@
         { name: 'city', label: 'City' },
         { name: 'state', label: 'State/Province' },
         { name: 'postalCode', label: 'ZIP/Postal Code' },
-        { name: 'phone', label: 'Phone' }
+        { name: 'phone', label: 'Phone' },
+        { name: 'email', label: 'Email' }
     ];
 
     /* Prototype stand-in for Google Places Autocomplete + Address Validation API.
@@ -291,6 +292,11 @@
                 $('[name="phone"]', this.$form).closest('.form-group').addClass('has-error');
             }
 
+            if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+                errors.push('Enter a valid email address.');
+                $('[name="email"]', this.$form).closest('.form-group').addClass('has-error');
+            }
+
             this.showFormErrors(errors);
             return errors.length === 0;
         },
@@ -340,7 +346,8 @@
                 state: data.state,
                 postalCode: data.postalCode,
                 country: 'United States',
-                phone: data.phone
+                phone: data.phone,
+                email: data.email
             };
             this.options = {
                 shippingNotes: data.shippingNotes || '',
@@ -560,6 +567,7 @@
 
         syncHiddenFields: function () {
             $('#dropShipEnabledHidden').val(this.enabled && this.applied ? 'true' : 'false');
+            $('#dropShipEmailHidden').val(this.applied ? (this.address.email || '') : '');
             $('#dropShipShippingNotesHidden').val(this.applied ? (this.options.shippingNotes || '') : '');
             $('#dropShipAvsStatusHidden').val(this.applied ? (this.options.avsStatus || '') : '');
         },
@@ -575,7 +583,8 @@
                 (addr.address2 ? this.escape(addr.address2) + '<br>' : '') +
                 this.escape(addr.city) + ',&nbsp;' + this.escape(addr.state) + '&nbsp;' + this.escape(addr.postalCode) + '<br>' +
                 this.escape(addr.country) + '<br>' +
-                this.escape(addr.phone)
+                this.escape(addr.phone) + '<br>' +
+                this.escape(addr.email)
             );
 
             if (notes) {

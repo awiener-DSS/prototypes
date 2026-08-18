@@ -29,7 +29,8 @@
             </isif>
             <isprint value="#Basket:DropShipAddress:City#" encoding="on"/>,&nbsp;<isprint value="#Basket:DropShipAddress:State#" encoding="on"/>&nbsp;<isprint value="#Basket:DropShipAddress:PostalCode#" encoding="on"/><br/>
             <isprint value="#Basket:DropShipAddress:Country#" encoding="on"/><br/>
-            <isprint value="#Basket:DropShipAddress:Phone#" encoding="on"/>
+            <isprint value="#Basket:DropShipAddress:Phone#" encoding="on"/><br/>
+            <isprint value="#Basket:DropShipAddress:Email#" encoding="on"/>
         </address>
         <isif condition="#isDefined(Basket:DropShipShippingNotes) AND (Basket:DropShipShippingNotes NE '')#">
             <div class="dropship-applied-notes" id="dropShipAppliedNotes">

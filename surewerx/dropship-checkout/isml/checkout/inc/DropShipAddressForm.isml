@@ -7,6 +7,40 @@
 
 <p class="indicates-required"><span class="required">*</span><istext key="form.required" default="Required field"/></p>
 
+<div class="form-group dropship-destination-type-group">
+    <label class="control-label col-sm-12 dropship-destination-type-label">
+        <istext key="checkout.dropship.destination.type" default="Product is directly shipping to customer at:"/><span class="required">*</span>
+    </label>
+    <div class="col-sm-12">
+        <div class="dropship-destination-type-options" role="group" aria-label="Destination type">
+            <label class="dropship-dest-btn" for="dropShipDestResidential">
+                <input type="radio"
+                       name="destinationType"
+                       id="dropShipDestResidential"
+                       value="RESIDENTIAL"
+                       <isif condition="#DropShipForm:DestinationType EQ 'RESIDENTIAL'#">checked="checked"</isif>>
+                <span><istext key="checkout.dropship.destination.residential" default="Residential"/></span>
+            </label>
+            <label class="dropship-dest-btn" for="dropShipDestCommercial">
+                <input type="radio"
+                       name="destinationType"
+                       id="dropShipDestCommercial"
+                       value="COMMERCIAL"
+                       <isif condition="#DropShipForm:DestinationType EQ 'COMMERCIAL'#">checked="checked"</isif>>
+                <span><istext key="checkout.dropship.destination.commercial" default="Commercial / Business"/></span>
+            </label>
+            <label class="dropship-dest-btn" for="dropShipDestJobSite">
+                <input type="radio"
+                       name="destinationType"
+                       id="dropShipDestJobSite"
+                       value="JOB_SITE"
+                       <isif condition="#DropShipForm:DestinationType EQ 'JOB_SITE'#">checked="checked"</isif>>
+                <span><istext key="checkout.dropship.destination.jobsite" default="Job Site/Other Restricted Access"/></span>
+            </label>
+        </div>
+    </div>
+</div>
+
 <div class="form-group">
     <label class="control-label col-sm-3" for="dropShipCompany">
         <istext key="checkout.dropship.company" default="Company"/><span class="required">*</span>
@@ -119,7 +153,7 @@
 
 <div class="form-group">
     <label class="control-label col-sm-3" for="dropShipPhone">
-        <istext key="checkout.dropship.phone" default="Phone"/><span class="required">*</span>
+        <istext key="checkout.dropship.phone" default="Receiver Phone Number #"/><span class="required">*</span>
     </label>
     <div class="col-sm-9">
         <input type="tel"
@@ -135,7 +169,7 @@
 
 <div class="form-group">
     <label class="control-label col-sm-3" for="dropShipEmail">
-        <istext key="checkout.dropship.email" default="Email"/><span class="required">*</span>
+        <istext key="checkout.dropship.email" default="Receiver Email"/><span class="required">*</span>
     </label>
     <div class="col-sm-9">
         <input type="email"
@@ -157,10 +191,14 @@
         <textarea class="form-control"
                   id="dropShipShippingNotes"
                   name="shippingNotes"
-                  rows="3"
-                  maxlength="250"><isprint value="#DropShipForm:ShippingNotes#" encoding="on"/></textarea>
+                  rows="2"
+                  maxlength="80"><isprint value="#DropShipForm:ShippingNotes#" encoding="on"/></textarea>
     </div>
 </div>
+
+<p class="dropship-lift-gate-note">
+    <istext key="checkout.dropship.liftgate.note" default="Please review Lift Gate needs under Shipping Methods. Incorrect selection may result in additional shipping charges."/>
+</p>
 
 <div class="dropship-avs-unverified hide" id="dropShipAvsUnverified">
     <div class="alert alert-warning">

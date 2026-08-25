@@ -21,6 +21,17 @@
             </div>
         </div>
         <address id="dropShipAppliedBody">
+            <isif condition="#isDefined(Basket:DropShipAddress:DestinationType)#">
+                <div class="dropship-applied-type">
+                    <isif condition="#Basket:DropShipAddress:DestinationType EQ 'RESIDENTIAL'#">
+                        <istext key="checkout.dropship.destination.residential" default="Residential"/>
+                    <iselseif condition="#Basket:DropShipAddress:DestinationType EQ 'COMMERCIAL'#">
+                        <istext key="checkout.dropship.destination.commercial" default="Commercial / Business"/>
+                    <iselseif condition="#Basket:DropShipAddress:DestinationType EQ 'JOB_SITE'#">
+                        <istext key="checkout.dropship.destination.jobsite" default="Job Site/Other Restricted Access"/>
+                    </isif>
+                </div>
+            </isif>
             <strong><isprint value="#Basket:DropShipAddress:Company#" encoding="on"/></strong><br/>
             Attn: <isprint value="#Basket:DropShipAddress:AttentionTo#" encoding="on"/><br/>
             <isprint value="#Basket:DropShipAddress:Address1#" encoding="on"/><br/>

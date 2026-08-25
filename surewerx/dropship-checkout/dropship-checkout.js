@@ -14,15 +14,22 @@
         phone: ''
     };
 
+    var DESTINATION_TYPE_LABELS = {
+        RESIDENTIAL: 'Residential',
+        COMMERCIAL: 'Commercial / Business',
+        JOB_SITE: 'Job Site/Other Restricted Access'
+    };
+
     var REQUIRED_FIELDS = [
+        { name: 'destinationType', label: 'Destination type' },
         { name: 'company', label: 'Company' },
         { name: 'attentionTo', label: 'Attention To' },
         { name: 'address1', label: 'Address Line 1' },
         { name: 'city', label: 'City' },
         { name: 'state', label: 'State/Province' },
         { name: 'postalCode', label: 'ZIP/Postal Code' },
-        { name: 'phone', label: 'Phone' },
-        { name: 'email', label: 'Email' }
+        { name: 'phone', label: 'Receiver Phone Number #' },
+        { name: 'email', label: 'Receiver Email' }
     ];
 
     /* Prototype stand-in for Google Places Autocomplete + Address Validation API.
@@ -131,6 +138,11 @@
                 self.formatPhoneInput(this);
             });
 
+            this.$form.on('change', 'input[name="destinationType"]', function () {
+                self.syncDestinationTypeButtons();
+                $('.dropship-destination-type-group', self.$form).removeClass('has-error');
+            });
+
             $('#dropShipAddress1').on('input', function () {
                 self.onAddress1Input();
             });
@@ -161,6 +173,7 @@
             });
 
             this.$modal.on('shown.bs.modal', function () {
+                self.syncDestinationTypeButtons();
                 $('#dropShipCompany').trigger('focus');
             });
 
@@ -276,9 +289,13 @@
             REQUIRED_FIELDS.forEach(function (field) {
                 if (!data[field.name]) {
                     errors.push(field.label + ' is required.');
-                    $('[name="' + field.name + '"]', this.$form)
-                        .closest('.form-group')
-                        .addClass('has-error');
+                    if (field.name === 'destinationType') {
+                        $('.dropship-destination-type-group', this.$form).addClass('has-error');
+                    } else {
+                        $('[name="' + field.name + '"]', this.$form)
+                            .closest('.form-group')
+                            .addClass('has-error');
+                    }
                 }
             }, this);
 
@@ -338,6 +355,7 @@
             }
 
             this.address = {
+                destinationType: data.destinationType,
                 company: data.company,
                 attentionTo: data.attentionTo,
                 address1: data.address1,
@@ -563,10 +581,19 @@
             this.$form[0].reset();
             this.clearFieldErrors();
             this.resetAvsUi();
+            this.syncDestinationTypeButtons();
+        },
+
+        syncDestinationTypeButtons: function () {
+            this.$form.find('.dropship-dest-btn').each(function () {
+                var $btn = $(this);
+                $btn.toggleClass('is-selected', $btn.find('input[type="radio"]').is(':checked'));
+            });
         },
 
         syncHiddenFields: function () {
             $('#dropShipEnabledHidden').val(this.enabled && this.applied ? 'true' : 'false');
+            $('#dropShipDestinationTypeHidden').val(this.applied ? (this.address.destinationType || '') : '');
             $('#dropShipEmailHidden').val(this.applied ? (this.address.email || '') : '');
             $('#dropShipShippingNotesHidden').val(this.applied ? (this.options.shippingNotes || '') : '');
             $('#dropShipAvsStatusHidden').val(this.applied ? (this.options.avsStatus || '') : '');
@@ -575,8 +602,10 @@
         renderAppliedAddress: function () {
             var addr = this.address;
             var notes = this.options.shippingNotes;
+            var destinationLabel = DESTINATION_TYPE_LABELS[addr.destinationType] || addr.destinationType || '';
 
             $('#dropShipAppliedBody').html(
+                (destinationLabel ? '<div class="dropship-applied-type">' + this.escape(destinationLabel) + '</div>' : '') +
                 '<strong>' + this.escape(addr.company) + '</strong><br>' +
                 'Attn: ' + this.escape(addr.attentionTo) + '<br>' +
                 this.escape(addr.address1) + '<br>' +

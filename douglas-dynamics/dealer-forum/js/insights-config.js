@@ -14,6 +14,6 @@ window.DEALER_FORUM_INSIGHTS = {
   // Paste demo key here, e.g. 'gsk_...'
   // Do not commit a real key — GitHub push protection will block it.
   apiKey: '',
-  model: 'llama-3.3-70b-versatile',
+  model: 'openai/gpt-oss-20b',
   baseUrl: 'https://api.groq.com/openai/v1'
 };

@@ -11,7 +11,12 @@
 
   var SETTINGS_KEY = 'dealerForum.insights.connection';
   var DEFAULT_BASE_URL = 'https://api.groq.com/openai/v1';
-  var DEFAULT_MODEL = 'llama-3.3-70b-versatile';
+  // Developer-plan default. Llama 3.1 8B is enterprise-only on many Groq accounts now.
+  var DEFAULT_MODEL = 'openai/gpt-oss-20b';
+  var AUTO_MIGRATE_MODELS = {
+    'llama-3.1-8b-instant': true,
+    'moonshotai/kimi-k2-instruct': true
+  };
   var MAX_TOOL_ROUNDS = 4;
 
   var SUGGESTED_PROMPTS = [
@@ -35,16 +40,22 @@
       apiUrl: cfg.apiUrl || '/api/admin/insights/chat',
       apiHeaders: cfg.apiHeaders || {},
       apiKey: normalizeApiKey(cfg.apiKey || cfg.groqApiKey || ''),
-      model: cfg.model || DEFAULT_MODEL,
+      model: resolveModel(cfg.model || DEFAULT_MODEL),
       baseUrl: cfg.baseUrl || DEFAULT_BASE_URL
     };
+  }
+
+  function resolveModel(model) {
+    var id = (model || '').trim();
+    if (!id || AUTO_MIGRATE_MODELS[id]) return DEFAULT_MODEL;
+    return id;
   }
 
   function getDemoDefaults() {
     var cfg = getConfig();
     return {
       apiKey: cfg.apiKey || '',
-      model: cfg.model || DEFAULT_MODEL,
+      model: resolveModel(cfg.model || DEFAULT_MODEL),
       baseUrl: cfg.baseUrl || DEFAULT_BASE_URL
     };
   }
@@ -85,10 +96,18 @@
         baseUrl = defaults.baseUrl || DEFAULT_BASE_URL;
       }
       var storedKey = normalizeApiKey(parsed.apiKey || '');
+      var model = resolveModel(parsed.model || defaults.model || DEFAULT_MODEL);
+      // Persist migration off retired / inaccessible model IDs.
+      if (parsed.model && parsed.model !== model) {
+        try {
+          parsed.model = model;
+          localStorage.setItem(SETTINGS_KEY, JSON.stringify(parsed));
+        } catch (e) { /* ignore quota / private mode */ }
+      }
       return {
         // UI override wins; otherwise fall back to insights-config.js
         apiKey: storedKey || defaults.apiKey,
-        model: parsed.model || defaults.model || DEFAULT_MODEL,
+        model: model,
         baseUrl: baseUrl,
         fromConfig: !storedKey && !!defaults.apiKey
       };
@@ -390,6 +409,12 @@
       return (
         'Groq rejected the API key (401). Using ' + keyHint(apiKey) + '. ' +
         'Create a new key at console.groq.com/keys, paste it (no autofill), then Test connection.'
+      );
+    }
+    if (/does not exist or you do not have access/i.test(msg)) {
+      return (
+        msg +
+        ' Open API key settings and switch to openai/gpt-oss-20b (or another model your Groq plan allows).'
       );
     }
     return msg;

@@ -1,0 +1,21 @@
+# Copy this file to sites.toml. The real file is ignored by Git so dataset
+# configuration can differ between environments.
+default_site = "connect_canada"
+
+[sites.connect_canada]
+name = "SureWerx - Connect Canada"
+gcp_project_id = "adam-test-506904"
+ga4_dataset = ""
+location = "US"
+# Optional Intershop ICM catalog enrichment (anonymous token by default).
+# icm_base_url = "https://connect.surewerx.com"
+# icm_site = "SUREWERX-SWC_CA-Site"
+
+# Add more storefront accounts as separate site blocks, for example:
+# [sites.connect_us]
+# name = "SureWerx - Connect US"
+# gcp_project_id = "your-gcp-project"
+# ga4_dataset = "analytics_123456789"
+# location = "US"
+# icm_base_url = "https://connect-us.example.com"
+# icm_site = "SUREWERX-US-Site"

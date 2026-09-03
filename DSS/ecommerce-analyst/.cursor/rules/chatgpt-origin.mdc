@@ -1,0 +1,29 @@
+---
+description: Origin ChatGPT conversation — product vision, architecture, and autonomy ladder for Commerce Analyst
+alwaysApply: true
+---
+
+# Origin conversation
+
+This project started from a ChatGPT conversation. Read `docs/chatgpt-origin-conversation.md` before changing product scope, agent behavior, data access, or autonomy. Source: https://chatgpt.com/share/6a92e5c4-26dc-83ea-8559-d0238db9167e
+
+## Product
+
+Build a **read-only AI eCommerce analyst**, not another dashboard or “ask your data anything” chatbot. The standing goal is: continuously find opportunities to increase revenue.
+
+The loop is **detect → investigate → quantify impact → recommend → prioritize**. Output structured opportunities (issue, evidence, estimated revenue, likely cause, next step, confidence). A human decides what to change.
+
+## Architecture (v1)
+
+- Data: GA4 daily BigQuery export in `adam-test-506904` (US). Event data only. No streaming, no user-data export.
+- Give the model **named analysis tools**, not raw table dumps. Do not start with LangChain/CrewAI/multi-agent.
+- Stack: Python + OpenAI tool calling; dashboard later. No write access to the storefront, catalog, pricing, or merchandising.
+
+## Autonomy ladder
+
+- **V1:** read-only detect / investigate / recommend
+- **V2:** create tickets, reports, proposed experiments
+- **V3:** changes only with human approval
+- **V4:** limited autonomous changes (never pricing without approval)
+
+Do not skip ahead on this ladder unless the user explicitly asks.

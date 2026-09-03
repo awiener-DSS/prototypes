@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "commerce-analyst"
+version = "0.1.0"
+description = "Read-only AI ecommerce analyst for GA4 BigQuery exports"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "google-cloud-bigquery>=3.25,<4",
+  "openai>=1.68,<3",
+  "pydantic-settings>=2.5,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<9",
+  "pytest-cov>=5,<7",
+]
+
+[project.scripts]
+commerce-analyst = "commerce_analyst.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]

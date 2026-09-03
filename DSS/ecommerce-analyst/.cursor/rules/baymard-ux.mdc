@@ -1,0 +1,39 @@
+---
+description: Design and UX must follow applicable Baymard best-practice guidelines
+alwaysApply: true
+---
+
+# Baymard UX (required)
+
+All UI/UX work in this project must follow applicable [Baymard Institute](https://baymard.com/) research-backed guidelines. Prefer Baymard patterns over decorative or inconsistent layouts.
+
+This product is a **read-only commerce analyst dashboard** (not a storefront checkout/PDP). Apply Baymard findings that fit dashboards, accounts/self-service, scannability, forms, feedback, and information architecture.
+
+## Non-negotiables
+
+1. **Consistent cards/lists** — Same structure, typography, icon treatment, spacing, and CTA style for the same content type. Do not mix colored shells, lift shadows, or uneven chrome that make some items dominate attention ([dashboard cards](https://baymard.com/blog/cards-dashboard-layout)).
+2. **Scannable headers** — Prominent, clear section and row titles; keep body copy short. Put detail behind progressive disclosure (details, Inspect, secondary panels).
+3. **Subtle icons for scent** — Use small, equal-weight icons to aid scanning. Avoid large graphics/images that pull attention to one path.
+4. **Primary vs secondary actions** — One clear primary CTA per decision area; secondary actions use outline/ghost. Never present two equal competing primaries ([primary vs secondary paths](https://baymard.com/blog/current-state-accounts-selfservice)).
+5. **Honest labels** — Estimates must read as estimates (`Est. $X/mo`), not actual revenue. Methodology is available but not forced on first view.
+6. **Visible action feedback** — Creates/applies/saves must confirm *inside* the surface the user is looking at (modal/panel), not only behind it. Next step must be obvious.
+7. **Jobs-based IA** — Organize by analyst jobs (detect → inspect → act → monitor), not internal feature taxonomy. Empty states say what to do next.
+8. **Touch/target & focus** — Adequate hit areas; visible focus rings; don’t rely on hover-only affordances.
+
+## Prefer
+
+```tsx
+// ✅ Equal-weight list row: icon → title → short detail → meta → Inspect
+<BriefingListItem icon={Search} title="…" detail="…" footer={<BriefingInspectFooter />} />
+```
+
+```tsx
+// ❌ Uneven attention: severity-colored card shells, lift shadows, mixed CTA styles
+<button className="border-rose-200 bg-rose-50 hover:-translate-y-0.5 shadow-md">…
+```
+
+## When designing or reviewing
+
+- Check Overview pillars, opportunity cards, inspect panel/modal, and Monitor against the list above.
+- If a Baymard guideline conflicts with brand decoration, **Baymard usability wins**.
+- Cite the guideline briefly in the PR/summary when a UX choice is driven by Baymard.
